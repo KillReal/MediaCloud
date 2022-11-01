@@ -1,0 +1,40 @@
+﻿@page
+@model MediaCloud.Pages.Medias.CollectionModel
+
+@{
+    ViewData["Title"] = "Collection";
+}
+
+<div class = "page rounded-3 p-3 text-white">
+    <h1>Collection</h1>
+
+    <div class="button-panel d-flex flex-row align-items-center">
+           <div>
+                <a href="@(Model.ReturnUrl)" class="btn btn-info mt-4">Back to Gallery</a>
+            </div>
+        </div> 
+
+    <hr />
+    <div class="row gallery"> 
+        @for(int i = 0; i < Model.Collection.Previews.Count; i++)
+            {
+                <div class="picture-card picture shadow-1-strong col-md-4"
+                     onclick="window.location='/Medias/Detail?id=@(Model.Collection.Previews[i].Id)&returnUrl=/Medias/Collection?id=@(Model.Collection.Id)'">
+                        <img class="w-100 shadow-1-strong" style="border-radius: 0.5rem"
+                            src="data:image/png;base64,@Convert.ToBase64String(Model.Collection.Previews[i].Content)"/>
+                </div> 
+            }
+    </div>
+    <div class="form-group mb-3 d-flex justify-content-between">
+        <a class="btn btn-info btn-rounded me-1 ms-2 mb-2" asp-page="/Medias/CollectionReorder" asp-route-id=@Model.Collection.Id asp-route-returnUrl="/Medias/Collection?id=@Model.Collection.Id")>Reorder</a>
+        <form enctype="multipart/form-data" method="post">
+            <input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control"></input>
+            <button class="btn btn-danger btn-rounded" asp-page-handler="Delete" asp-route-id=@(Model.Collection.Id)>Remove</button>
+        </form>
+    </div>
+    
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

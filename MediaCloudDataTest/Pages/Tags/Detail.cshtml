@@ -1,0 +1,48 @@
+﻿@page
+@model MediaCloud.Pages.Tags.DetailModel
+@using MediaCloud.Data.Types
+
+@{
+    ViewData["Title"] = "TagDetail";
+}
+
+<h1 class="pt-3 text-white">Tag details</h1>
+
+<div class="button-panel d-flex flex-row align-items-center mt-3">
+        <div>
+            <a href="@(Model.ReturnUrl)" class="btn btn-info">Back to Tags</a>
+        </div>
+    </div>
+
+<hr />
+<div class="row">
+    <div class="col-md-4 text-white">
+        <form enctype="multipart/form-data" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for=@(Model.Tag.Id) class="form-control"></input>
+            <input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control"></input>
+            <div class="form-group mb-3">
+                <label class="col-form-label">Enter tag name</label>
+                <input asp-for="@Model.Tag.Name" class="form-control" />
+            </div>
+            <div class="form-group mb-3">
+                <label class="col-form-label">Enter tag description</label>
+                <textarea asp-for="@Model.Tag.Description" class="form-control"></textarea>
+            </div>
+            <div class="form-group mb-3">
+                <label class="col-form-label">Choose tag type</label>
+                <select asp-for="@Model.Tag.Type" asp-items="Html.GetEnumSelectList<TagType>()">
+                    <option selected="selected" value="">Please select</option>
+                </select>
+            </div>
+            <div class="form-group mb-3 d-flex justify-content-between">
+                <input type="submit" value="Edit" class="btn btn-success" />
+                <button class="btn btn-danger btn-rounded" asp-page-handler="Delete" asp-route-id=@(Model.Tag.Id)>Remove</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

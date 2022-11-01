@@ -1,0 +1,101 @@
+﻿@page
+@model MediaCloud.Pages.Tags.ListModel
+@using MediaCloud.Extensions
+@using MediaCloud.Data.Types
+
+@{
+    ViewData["Title"] = "Tag list";
+}
+
+<h1 class="pt-3 text-white">Tag list</h1>
+
+<div class="button-panel d-flex flex-row align-items-center text-white flex-wrap">
+    <div>
+        <a class="btn btn-success btn-rounded me-3 mt-3" asp-page="Create">Create</a>
+    </div>
+
+    <div class="vr me-3 mt-3"></div>
+    <div class="align-self-center me-3 mt-3 text-white ">Sorting:</div>
+
+    @if (@Model.ListBuilder.Sort == "Name") {
+        <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("NameDesc")>Name ↓</a>
+    }
+    else if (@Model.ListBuilder.Sort == "NameDesc"){
+        <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("Name")>Name ↑</a>
+    }
+    else {
+        <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("Name")>Name</a>
+    }
+
+    @if (@Model.ListBuilder.Sort == "UpdatedAt") {
+        <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("UpdatedAtDesc")>Date ↓</a>
+    }
+    else if (@Model.ListBuilder.Sort == "UpdatedAtDesc"){
+        <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("UpdatedAt")>Date ↑</a>
+    }
+    else {
+        <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("UpdatedAt")>Date</a>
+    }
+
+    @if (@Model.ListBuilder.Sort == "Type") {
+        <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("TypeDesc")>Type ↓</a>
+    }
+    else if (@Model.ListBuilder.Sort == "TypeDesc"){
+        <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("Type")>Type ↑</a>
+    }
+    else {
+        <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("Type")>Type</a>
+    }
+
+    @if (@Model.ListBuilder.Sort == "PreviewsCount") {
+        <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("PreviewsCountDesc")>Media count ↓</a>
+    }
+    else if (@Model.ListBuilder.Sort == "PreviewsCountDesc"){
+        <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("PreviewsCount")>Media count ↑</a>
+    }
+    else {
+        <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("PreviewsCount")>Media count</a>
+    }
+
+</div>  
+<hr class="text-white"/>
+
+ <partial name="~/Pages/Shared/_Pagination.cshtml" />
+
+<table class="table" style="background-color: white; border-radius: 1rem">
+    <thead>
+        <tr>
+            <th class="table-item-padding">
+                @Html.DisplayNameFor(model => model.Tags[0].Name)
+            </th>
+            <th class="table-item-padding">
+                @Html.DisplayNameFor(model => model.Tags[0].Description)
+            </th>
+            <th class="table-item-padding">
+                @Html.DisplayNameFor(model => model.Tags[0].Type)
+            </th>
+            <th class="table-item-padding">
+                Medias count
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Tags) {
+        <tr class="list-clickable" onclick="document.location = '/Tags/Detail?id=@item.Id&returnUrl=/Tags/Index?sort=@Model.ListBuilder.Sort';">
+            <td class="table-item-padding">
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td class="table-item-padding">
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td class="table-item-padding">
+                @(item.Type.GetDisplayName())
+            </td>
+            <td class="table-item-padding">
+                @Html.DisplayFor(modelItem => item.PreviewsCount)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+ <partial name="~/Pages/Shared/_Pagination.cshtml" />

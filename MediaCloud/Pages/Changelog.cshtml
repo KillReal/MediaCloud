@@ -1,0 +1,84 @@
+﻿@page
+@model ChangelogModel
+@{
+    ViewData["Title"] = "Version changelog";
+}
+
+<h1 class="pt-3 text-white">Version changelog</h1>
+
+<hr />
+
+<div class="container">
+    <div class="row justify-content-left">
+        <div class="col-lg-8 col-md-10 col-12 bg-white rounded">
+              
+            <h5 class="mt-4"> <span class="p-2 bg-success shadow rounded text-white"> Version 0.3.3</span> - 22th Oct, 2022</h5>
+            <ul class="list-unstyled mt-3">
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Added related medias button to (<b>Tags/Detail</b> and <b>Tags</b>)</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Some minor perfomance improvements</li>
+            </ul> 
+
+            <h5 class="mt-4"> <span class="p-2 bg-success shadow rounded text-white"> Version 0.3.2</span> - 21th Oct, 2022</h5>
+            <ul class="list-unstyled mt-3">
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Increased lists loading speed (<b>Medias</b> and <b>Tags</b>) by 20-50%</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Implemented entity chaching</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixed some layouts issues</li>
+            </ul> 
+
+            <h5 class="mt-4"> <span class="p-2 bg-success shadow rounded text-white"> Version 0.3.1</span> - 20th Oct, 2022</h5>
+            <ul class="list-unstyled mt-3">
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixed drag-and-drop when placeholder not hides</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixed <b>Medias/Collection</b> image auto sizing and effects</li>
+            </ul> 
+
+            <h5 class="mt-4"> <span class="p-2 bg-success shadow rounded text-white"> Version 0.3.0</span> - 20th Oct, 2022</h5>
+            <ul class="list-unstyled mt-3">
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Implemented drag-and-drop collection reorder</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixed disapearing tags in collection after reordering</li>
+            </ul> 
+
+            <h5 class="mt-4"> <span class="p-2 bg-success shadow rounded text-white"> Version 0.2.1</span> - 19th Oct, 2022</h5>
+            <ul class="list-unstyled mt-3">
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Increased <b>Medias/Index</b> loading speed by 10-55%</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Some fixes and improvements in layouts</li>
+            </ul> 
+
+            <h5 class="mt-4"> <span class="p-2 bg-success shadow rounded text-white"> Version 0.2.0</span> - 16th Oct, 2022</h5>
+            <ul class="list-unstyled mt-3">
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Completely reworked collection storing</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Significantly improved speed of collection loading</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Added <b>Medias/Collection</b> view</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Added <b>Medias/CollectionReorder</b> page for reordering collection</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Updated Tag types</li>
+            </ul> 
+
+            <h5 class="mt-4"> <span class="p-2 bg-success shadow rounded text-white"> Version 0.1.0</span> - 14th Oct, 2022</h5>
+            <ul class="list-unstyled mt-3">
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Added <b>Medias/Index</b> "Random" ordering</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Added <b>Medias/Collection</b> view for Collection medias</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Reworker <b>Medias/Detail</b> for single media view</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixed <b>Tags/Index</b> MediasCount sorting</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixed <b>Medias/Detail</b> pages return url</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixed <b>Medias/Index</b> filter button returnUrl</li>
+            </ul> 
+
+            <h5 class="mt-4"> <span class="p-2 bg-success shadow rounded text-white"> Version 0.0.2</span> - 8th Oct, 2022</h5>
+            <ul class="list-unstyled mt-3">
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixed <b>Medias/Edit</b> ReturnUrls</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixed <b>Medias/Index</b> missing tags in filter queryes</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixed <b>Medias/Upload</b> unnecessary require validation for tags textarea</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixed <b>Tags/Detail</b> tags links</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixed overlapping <b>Footer</b> on pages</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixed mobile layout and content wrap</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Set minimal layout width to 450px</li>
+            </ul>
+      
+
+            <h5 class="mt-4"> <span class="p-2 bg-success shadow rounded text-white"> Version 0.0.1</span> - 4th Oct, 2022</h5>
+            <ul class="list-unstyled mt-3">
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Initial Released</li>
+            </ul>    
+
+        </div><!--end col-->
+    </div><!--end row-->
+</div>

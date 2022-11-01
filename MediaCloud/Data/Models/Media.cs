@@ -1,0 +1,45 @@
+﻿using MediaCloud.Extensions;
+using MediaCloud.Services;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Drawing;
+
+namespace MediaCloud.Data.Models
+{
+    public class Media : Entity
+    {
+        public virtual Preview Preview { get; set; }
+
+        public byte[] Content { get; set; }
+
+        public string Resolution { get; set; }
+
+        public int Rate { get; set; }
+
+        public int Size { get; set; }
+
+        [NotMapped]
+        public string SizeInfo
+        {
+            get => PictureService.FormatSize(Size);
+            set => Size = int.Parse(value);
+        }
+
+        public Media(IFormFile file)
+        {
+            Content = file.GetBytes();
+
+            var stream = new MemoryStream(Content);
+            var picture = new Bitmap(stream);
+
+            Resolution = $"{picture.Width}x{picture.Height}";
+            Size = Content.Count();
+
+            Rate = 0;
+        }
+
+        public Media()
+        {
+
+        }
+    }
+}

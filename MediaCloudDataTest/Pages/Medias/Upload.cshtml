@@ -1,0 +1,44 @@
+﻿@page
+@model MediaCloud.Pages.Medias.UploadModel
+
+@{
+    ViewData["Title"] = "MediaUpload";
+}
+
+<h1 class="pt-3 text-white">Media upload</h1>
+<div class="button-panel d-flex flex-row align-items-center">
+           <div>
+                <a href="@(Model.ReturnUrl)" class="btn btn-info">Back to Gallery</a>
+            </div>
+        </div>
+<hr />
+<div class="row text-white">
+    <div class="col-md-4">
+        <form enctype="multipart/form-data" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control"></input>
+            <div class="form-group mb-3">
+              <label class="col-form-label">Select File</label>
+                <input asp-for="Files" class="form-control" />
+                <span asp-validation-for="Files" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label class="col-form-label">Enter tags with spaces between</label>
+                <textarea asp-for="@Model.Tags" class="form-control"></textarea>
+            </div>
+            <div class="form-group mb-3 form-check">
+              <input class="form-check-input" type="checkbox" asp-for=IsCollection>
+              <label class="form-check-label" asp-for=IsCollection>
+                It's a collection
+              </label>
+            </div>
+            <div class="form-group mb-3">
+                <input type="submit" value="Update" class="btn btn-success" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
