@@ -14,7 +14,7 @@
 <hr class="text-white"/>
 <div class="row text-white">
     <div class="col-md-4">
-        <form enctype="multipart/form-data" method="post">
+        <form enctype="multipart/form-data" id='uploadForm' method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control"></input>
             <div class="form-group mb-3">
@@ -39,6 +39,86 @@
     </div>
 </div>
 
+<div class="modal" id="loadingModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalTitle">Media uploading...</h5>
+        <div class="spinner-border text-primary" role="status" id="loadingSpinner">
+        </div>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <div class="mb-1">
+                <label class="col-form-label" id="isInProgress">Is in progress: </label>
+        </div>
+        <div class="mb-1">
+                <label class="col-form-label" id="orderPos">Your position in order: </label>
+        </div>
+        <div class="mb-1">
+                <label class="col-form-label" id="mediasCount">Medias count: </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a href="@Model.ReturnUrl" class="btn btn-primary">Back to Gallery</a>
+      </div>
+    </div>
+  </div>
+</div>
+
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+
+<script type="text/javascript">
+    function formSubmit(event) {
+        var url = "/Medias/Upload";
+        var request = new XMLHttpRequest();
+        request.open('POST', url, true);
+        request.onload = function() { // request successful
+            $('#loadingModal').modal('show')
+            var res = JSON.parse(request.response);
+            document.getElementById('isInProgress').innerHTML = 'Is in progress: ' + res.isInProcess;
+            document.getElementById('orderPos').innerHTML = 'Your position in order: ' + res.queuePosition;
+            document.getElementById('mediasCount').innerHTML = 'Medias count: ' + res.mediaCount;
+
+            var url = "/Uploader/GetTaskStatus?id=" + res.id;
+            
+            var loadingUpdateInterval = setInterval(function()
+            {
+                 fetch(url)
+                .then((response) => response.json())
+                .then(function(data){
+                        document.getElementById('isInProgress').innerHTML = 'Is in progress: ' + data.isInProcess;
+                        document.getElementById('orderPos').innerHTML = 'Your position in order: ' + data.queuePosition;
+                        document.getElementById('mediasCount').innerHTML = 'Medias count: ' + data.mediaCount;
+
+                        if (data.mediaCount == 0 && data.isInProcess == false)
+                        {
+                            document.getElementById('modalTitle').innerHTML = 'Media successfully uploaded!';
+                            document.getElementById("modalBody").outerHTML = "";
+                            document.getElementById("loadingSpinner").outerHTML = "";
+                            clearInterval(loadingUpdateInterval);
+                        }
+                        else if (data.mediaCount == 0)
+                        {
+                            document.getElementById('modalTitle').innerHTML = 'Saving in database...';
+                        }
+                    })
+            }, 1000);
+        };
+
+        request.onerror = function() {
+        // request failed
+        };
+
+        request.send(new FormData(event.target)); // create FormData from form that triggered event
+        event.preventDefault();
+    }
+
+        // and you can attach form submit event like this for example
+    function attachFormSubmitEvent(formId){
+        document.getElementById(formId).addEventListener("submit", formSubmit);
+    }
+
+    attachFormSubmitEvent('uploadForm');
+</script>

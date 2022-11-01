@@ -14,11 +14,11 @@ namespace MediaCloud.Pages.Tags
 {
     public class CreateModel : PageModel
     {
-        private AppDbContext _context;
+        private TagRepository TagRepository;
 
         public CreateModel(AppDbContext context)
         {
-            _context = context;
+            TagRepository = new(context);
         }
 
         public IActionResult OnGet()
@@ -31,7 +31,8 @@ namespace MediaCloud.Pages.Tags
 
         public async Task<IActionResult> OnPostAsync()
         {       
-            new TagRepository(_context).Create(Tag);
+            TagRepository.Create(Tag);
+            TagRepository.SaveChanges();
 
             return RedirectToPage("/Tags/Index");
         }

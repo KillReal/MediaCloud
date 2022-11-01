@@ -49,11 +49,12 @@ namespace MediaCloud.Pages.Tags
 
         public IActionResult OnPostDelete(Guid id)
         {
-
             if (TagRepository.TryRemove(id) == false)
             {
-                TagRepository.Remove(tag);
+                return Redirect("/Error");
             }
+
+            TagRepository.SaveChanges();
 
             return Redirect(ReturnUrl.Replace("$", "&"));
         }

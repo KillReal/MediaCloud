@@ -1,71 +1,70 @@
-﻿using MediaCloud.Data.Models;
-using MediaCloud.Uploader.Tasks;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MediaCloud.Uploader
+﻿namespace MediaCloud.MediaUploader
 {
     public static class Scheduler
     {
-        private static Thread _workRoutine = new(new ThreadStart(WorkRoutine));
+        private static List<Worker> _workers;
 
-        public static bool IsRunning { get; set; }
+        public static int MaxWorkersCount = 1;
 
         public static int WorkersActive
         {
-            get => IsRunning
-                ? 1
-                : 0;
+            get
+            {
+                var count = 0;
+
+                foreach (var worker in _workers)
+                {
+                    if (worker.IsRunning)
+                    {
+                        count++;
+                    }
+                }
+
+                return count;
+            }
+        }
+
+        public static void InitWorkers()
+        {
+            _workers = new List<Worker>();
+            for (int i = 0; i < MaxWorkersCount; i++)
+            {
+                _workers.Add(new Worker());
+            }
         }
 
         public static void Run()
         {
-            IsRunning = true;
-
-            _workRoutine.Start();
-        }
-
-        public static void Stop()
-        {
-            IsRunning = false;
-
-            _workRoutine.Join();
-        }
-
-        public static void WorkRoutine()
-        {
-            while (IsRunning)
+            if (_workers == null)
             {
-                if (Queue.IsEmpty)
-                {
-                    IsRunning = false;
-                    return;
-                }
-
-                var task = Queue.GetTask();
-                var foundTags = Uploader.TagRepository.GetRangeByString(task.TagString);
-                var medias = new List<Media>();
-
-                if (task.IsCollection)
-                {
-                    medias = Uploader.MediaRepository.CreateCollection(task.Content);
-                    medias.First(x => x.Preview.Order == 0).Preview.Tags = foundTags;
-                }
-                else
-                {
-                    medias = Uploader.MediaRepository.CreateRange(task.Content);
-
-                    foreach (var media in medias)
-                    {
-                        media.Preview.Tags = foundTags;
-                    }
-                }
-
-                Uploader.MediaRepository.Update(medias);
+                throw new Exception($"{nameof(_workers)} doesn't initialized. Use InitWorkers() for that.");
             }
+
+            foreach (var worker in _workers)
+            {
+                if (worker.IsRunning == false)
+                {
+                    worker.Run();
+                }
+            }
+        }
+
+        public static bool IsTaskInProgress(Guid id)
+        {
+            if (id == Guid.Empty)
+            {
+                return false;
+            }
+
+            foreach (var worker in _workers)
+            {
+                if (worker.CurrentTask == id)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

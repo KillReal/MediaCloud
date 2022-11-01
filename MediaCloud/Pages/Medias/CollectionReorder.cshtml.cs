@@ -19,15 +19,15 @@ namespace MediaCloud.Pages.Medias
     {
         private CollectionRepository CollectionRepository;
 
-
         [BindProperty]
-        public Collection Collection { get; set; }
+        public Collection? Collection { get; set; }
         [BindProperty]
         public string ReturnUrl { get; set; }
 
         public CollectionReorderModel(AppDbContext context)
         {
             CollectionRepository = new(context);
+            ReturnUrl = "/Medias/Index";
         }
 
         public IActionResult OnGet(Guid id, string returnUrl = "/Medias/Index")
@@ -53,6 +53,8 @@ namespace MediaCloud.Pages.Medias
             {
                 return Redirect("/Error");
             }
+
+            CollectionRepository.SaveChanges();
 
             return Redirect(ReturnUrl.Replace("$", "&"));
         }

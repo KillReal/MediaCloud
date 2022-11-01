@@ -26,7 +26,7 @@ namespace MediaCloud.Repositories
                                         .CountAsync();
         }
 
-        public Media Create(IFormFile file)
+        public Media Create(byte[] file)
         {
             var media = new Media(file);
             media.Preview = new Preview(media);
@@ -34,12 +34,11 @@ namespace MediaCloud.Repositories
             media.Updator = media.Creator;
 
             _context.Add(media);
-            _context.SaveChanges();
 
             return media;
         }
 
-        public List<Media> CreateRange(List<IFormFile> files)
+        public List<Media> CreateRange(List<byte[]> files)
         {
             if (files.Count == 1)
             {
@@ -47,23 +46,25 @@ namespace MediaCloud.Repositories
             }
 
             var medias = new List<Media>();
-            foreach (var file in files)
+            
+            while (files.Count > 0)
             {
+                var file = files.Last();
                 var media = new Media(file);
                 media.Preview = new Preview(media);
                 media.Creator = new ActorRepository(_context).GetCurrent();
                 media.Updator = media.Creator;
 
+                files.Remove(file);
                 medias.Add(media);
             }
 
             _context.AddRange(medias);
-            _context.SaveChanges();
 
             return medias;
         }
 
-        public List<Media> CreateCollection(List<IFormFile> files)
+        public List<Media> CreateCollection(List<byte[]> files)
         {
             if (files.Count == 1)
             {
@@ -71,6 +72,7 @@ namespace MediaCloud.Repositories
             }
 
             var medias = CreateRange(files);
+            _context.SaveChanges();
 
             var previews = new List<Preview>();
             foreach (var media in medias)
@@ -91,7 +93,6 @@ namespace MediaCloud.Repositories
             }
 
             _context.UpdateRange(previews);
-            _context.SaveChanges();
 
             return medias;
         }

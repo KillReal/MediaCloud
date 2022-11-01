@@ -24,9 +24,9 @@ namespace MediaCloud.Data.Models
             set => Size = int.Parse(value);
         }
 
-        public Media(IFormFile file)
+        public Media(byte[] file)
         {
-            Content = file.GetBytes();
+            Content = file;
 
             var stream = new MemoryStream(Content);
             var picture = new Bitmap(stream);

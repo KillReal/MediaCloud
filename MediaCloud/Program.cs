@@ -2,6 +2,7 @@ using BenchmarkDotNet.Running;
 using MediaCloud.Data;
 using MediaCloud.Repositories;
 using MediaCloud.Services;
+using MediaCloud.MediaUploader;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
@@ -26,7 +27,11 @@ builder.Services.Configure<KestrelServerOptions>(options =>
 });
 
 var app = builder.Build();
-PictureService.PictureServicelazyInit(app.Services.GetService<IConfiguration>());
+
+using var scope = app.Services.CreateScope();
+
+PictureService.PictureServicelazyInit(scope.ServiceProvider.GetRequiredService<IConfiguration>());
+Uploader.InitRepositories(scope.ServiceProvider.GetRequiredService<AppDbContext>());
 
 
 // Configure the HTTP request pipeline.
@@ -43,6 +48,10 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapRazorPages();
 

@@ -8,7 +8,7 @@ using MediaCloud.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using MediaCloud.Repositories;
+using MediaCloud.MediaUploader;
 
 namespace MediaCloud.Pages.Medias
 {
@@ -39,41 +39,9 @@ namespace MediaCloud.Pages.Medias
 
         public async Task<IActionResult> OnPostAsync()
         {
-            List<Media> medias;
+            var taskId = Uploader.AddTask(new(Files, IsCollection, Tags));
 
-            if (IsCollection)
-            {
-                medias = new MediaRepository(_context).CreateCollection(Files.OrderBy(x => x.FileName)
-                                                                                .ToList());
-            }
-            else
-            {
-                medias = new MediaRepository(_context).CreateRange(Files);
-            }
-
-            if (!medias.Any())
-            {
-                Redirect("/Error");
-            }
-
-            var foundTags = new TagRepository(_context).GetRangeByString(Tags);
-
-            if (IsCollection)
-            {
-                medias.First(x => x.Preview.Order == 0).Preview.Tags = foundTags;
-            }
-            else
-            {
-                foreach (var media in medias)
-                {
-                    media.Preview.Tags = foundTags;
-                }
-            }
-                
-            _context.Medias.UpdateRange(medias);
-            _context.SaveChanges();
-
-            return Redirect(ReturnUrl.Replace("$", "&"));
+            return Redirect($"/Uploader/GetTaskStatus?id={taskId}");
         }
     }
 }
