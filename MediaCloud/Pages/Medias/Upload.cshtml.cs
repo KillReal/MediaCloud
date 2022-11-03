@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MediaCloud.MediaUploader;
+using MediaCloud.MediaUploader.Tasks;
 
 namespace MediaCloud.Pages.Medias
 {
@@ -39,7 +40,9 @@ namespace MediaCloud.Pages.Medias
 
         public async Task<IActionResult> OnPostAsync()
         {
-            var taskId = Uploader.AddTask(new(Files, IsCollection, Tags));
+            var task = new UploadTask(Files, IsCollection, Tags ?? "");
+            
+            var taskId = Uploader.AddTask(task);
 
             return Redirect($"/Uploader/GetTaskStatus?id={taskId}");
         }

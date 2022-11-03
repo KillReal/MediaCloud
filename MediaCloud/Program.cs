@@ -31,7 +31,7 @@ var app = builder.Build();
 using var scope = app.Services.CreateScope();
 
 PictureService.PictureServicelazyInit(scope.ServiceProvider.GetRequiredService<IConfiguration>());
-Uploader.InitRepositories(scope.ServiceProvider.GetRequiredService<AppDbContext>());
+Uploader.Init(scope.ServiceProvider.GetRequiredService<AppDbContext>());
 
 
 // Configure the HTTP request pipeline.

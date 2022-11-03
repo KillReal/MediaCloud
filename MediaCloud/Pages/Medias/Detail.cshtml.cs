@@ -18,7 +18,6 @@ namespace MediaCloud.Pages.Medias
         private PreviewRepository PreviewRepository;
         private TagRepository TagRepository;
         private MediaRepository MediaRepository;
-        private CollectionRepository CollectionRepository;
 
         [BindProperty]
         public Guid PreviewId { get; set; }
@@ -36,7 +35,6 @@ namespace MediaCloud.Pages.Medias
             PreviewRepository = new(context);
             TagRepository = new(context);
             MediaRepository = new(context);
-            CollectionRepository = new(context);
         }
 
         public IActionResult OnGet(Guid id, string returnUrl = "/Medias/Index")

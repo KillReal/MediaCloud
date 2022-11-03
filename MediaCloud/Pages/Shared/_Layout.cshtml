@@ -44,18 +44,17 @@
         </nav>
     </header>
     <div class="gradient-main" style="min-height: 100vh">
-         <div class="container mb-5">
+         <div class="container mb-4">
             <main role="main" class="pb-3">
                 @RenderBody()
             </main>
         </div>
+        <footer class="footer text-white">
+            <div class="container m-2">
+                &copy; 2022 - MediaCloud - <a asp-area="" asp-page="/Privacy">Privacy</a>
+            </div>
+        </footer>
     </div>
-
-    <footer class="footer text-white" style="min-width: 450px">
-        <div class="container">
-            &copy; 2022 - MediaCloud - <a class="btn btn-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-        </div>
-    </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

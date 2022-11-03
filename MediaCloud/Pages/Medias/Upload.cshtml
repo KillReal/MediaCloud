@@ -44,13 +44,10 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="modalTitle">Media uploading...</h5>
-        <div class="spinner-border text-primary" role="status" id="loadingSpinner">
+        <div class="spinner-border text-primary" role="status" id="loadingSpinner" style="display: block">
         </div>
       </div>
       <div class="modal-body" id="modalBody">
-        <div class="mb-1">
-                <label class="col-form-label" id="isInProgress">Is in progress: </label>
-        </div>
         <div class="mb-1">
                 <label class="col-form-label" id="orderPos">Your position in order: </label>
         </div>
@@ -69,42 +66,76 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
 
-<script type="text/javascript">
+<script type="text/javascript">    
+    var orderPosElem = document.getElementById('orderPos');
+    var mediaCountElem = document.getElementById('mediasCount');
+    var modalTitle = document.getElementById('modalTitle');
+    var modalBody = document.getElementById("modalBody");
+    var loadSpinner = document.getElementById("loadingSpinner");
+    
+    function updateModalLoadBody(data)
+    {
+        orderPosElem.innerHTML = 'Your position in order: ' + data.queuePosition;
+        mediaCountElem.innerHTML = 'Medias count: ' + data.mediaCount;
+    }
+
+    function setModalTitle(title)
+    {
+        modalTitle.innerHTML = title;
+    }
+
+    function hideModalBody()
+    {
+        modalBody.style.display = "none";
+    }
+
+    function showLoadSpinner()
+    {
+        loadSpinner.style.display = "block";
+    }
+
+    function hideLoadSpinner()
+    {
+        loadSpinner.style.display = "none";
+    }
+    
     function formSubmit(event) {
         var url = "/Medias/Upload";
         var request = new XMLHttpRequest();
         request.open('POST', url, true);
         request.onload = function() { // request successful
             $('#loadingModal').modal('show')
-            var res = JSON.parse(request.response);
-            document.getElementById('isInProgress').innerHTML = 'Is in progress: ' + res.isInProcess;
-            document.getElementById('orderPos').innerHTML = 'Your position in order: ' + res.queuePosition;
-            document.getElementById('mediasCount').innerHTML = 'Medias count: ' + res.mediaCount;
+            var data = JSON.parse(request.response);
+            updateModalLoadBody(data);
 
-            var url = "/Uploader/GetTaskStatus?id=" + res.id;
+            var url = "/Uploader/GetTaskStatus?id=" + data.id;
             
-            var loadingUpdateInterval = setInterval(function()
-            {
+            var loadingUpdateInterval = setInterval(function() {
                  fetch(url)
                 .then((response) => response.json())
                 .then(function(data){
-                        document.getElementById('isInProgress').innerHTML = 'Is in progress: ' + data.isInProcess;
-                        document.getElementById('orderPos').innerHTML = 'Your position in order: ' + data.queuePosition;
-                        document.getElementById('mediasCount').innerHTML = 'Medias count: ' + data.mediaCount;
+                        updateModalLoadBody(data);
 
-                        if (data.mediaCount == 0 && data.isInProcess == false)
+                        if (data.queuePosition > 1){
+                            setModalTitle('Waiting for queue');
+                        }
+                        else if (data.queuePosition = 0 && data.workCount > 0)
                         {
-                            document.getElementById('modalTitle').innerHTML = 'Media successfully uploaded!';
-                            document.getElementById("modalBody").outerHTML = "";
-                            document.getElementById("loadingSpinner").outerHTML = "";
+                            setModalTitle('Media uploading...');
+                        }
+                        else if (data.workCount == 0 && data.isInProcess == false) {
+                            setModalTitle('Media successfully uploaded!');
+                            hideModalBody();
+                            hideLoadSpinner();
+                            
                             clearInterval(loadingUpdateInterval);
                         }
-                        else if (data.mediaCount == 0)
-                        {
-                            document.getElementById('modalTitle').innerHTML = 'Saving in database...';
+                        else if (data.workCount == 0) {
+                            setModalTitle('Saving in database...');
+                            showLoadSpinner();
                         }
                     })
-            }, 1000);
+            }, 2500);
         };
 
         request.onerror = function() {

@@ -1,31 +1,20 @@
-﻿namespace MediaCloud.MediaUploader
+﻿using MediaCloud.Data;
+
+namespace MediaCloud.MediaUploader
 {
     public static class Scheduler
     {
+        private static AppDbContext _context;
         private static List<Worker> _workers;
 
         public static int MaxWorkersCount = 1;
 
-        public static int WorkersActive
+        public static int WorkersActive => _workers.Count(x => x.IsRunning);
+
+        public static void Init(AppDbContext context)
         {
-            get
-            {
-                var count = 0;
+            _context = context;
 
-                foreach (var worker in _workers)
-                {
-                    if (worker.IsRunning)
-                    {
-                        count++;
-                    }
-                }
-
-                return count;
-            }
-        }
-
-        public static void InitWorkers()
-        {
             _workers = new List<Worker>();
             for (int i = 0; i < MaxWorkersCount; i++)
             {
@@ -37,7 +26,7 @@
         {
             if (_workers == null)
             {
-                throw new Exception($"{nameof(_workers)} doesn't initialized. Use InitWorkers() for that.");
+                throw new Exception($"{nameof(_workers)} doesn't initialized. Use Init() for that.");
             }
 
             foreach (var worker in _workers)
@@ -49,22 +38,16 @@
             }
         }
 
-        public static bool IsTaskInProgress(Guid id)
+        public static bool IsTaskInProgress(Guid id) => _workers.First(x => x.CurrentTask == id) == null;
+
+        public static AppDbContext GetContext()
         {
-            if (id == Guid.Empty)
+            if (_context == null)
             {
-                return false;
+                throw new InvalidOperationException($"{nameof(_context)} doesn't initialized. Use Init().");
             }
 
-            foreach (var worker in _workers)
-            {
-                if (worker.CurrentTask == id)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return _context;
         }
     }
 }

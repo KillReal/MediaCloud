@@ -3,46 +3,28 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using Task = MediaCloud.MediaUploader.Tasks.Task;
 
 namespace MediaCloud.MediaUploader
 {
     public static class Queue
     {
-        private static List<UploadTask> _tasks = new();
+        private static List<Task> _tasks = new();
 
-        public static bool IsEmpty
-        {
-            get => _tasks.Count == 0;
-        }
+        public static bool IsEmpty => _tasks.Count == 0;
 
-        public static int TaskCount
-        {
-            get => _tasks.Count;
-        }
+        public static int TaskCount => _tasks.Count;
 
-        public static int MediaCount
-        {
-            get
-            {
-                var count = 0;
+        public static int WorkCount => _tasks.Sum(x => x.GetWorkCount());
 
-                foreach (var task in _tasks)
-                {
-                    count += task.Content.Count;
-                }
+        public static void AddTask(Task task) => _tasks.Add(task);
 
-                return count;
-            }
-        }
+        public static void RemoveTask(Task task) => _tasks.Remove(task);
 
-        public static void AddTask(UploadTask task) => _tasks.Add(task);
+        public static Task GetTask() => _tasks.First();
 
-        public static void RemoveTask(UploadTask task) => _tasks.Remove(task);
+        public static Task? GetTask(Guid id) => _tasks.FirstOrDefault(x => x.Id == id);
 
-        public static UploadTask GetTask() => _tasks.First();
-
-        public static UploadTask? GetTask(Guid id) => _tasks.FirstOrDefault(x => x.Id == id);
         public static int GetTaskPosition(Guid id)
         {
             var task = GetTask(id);

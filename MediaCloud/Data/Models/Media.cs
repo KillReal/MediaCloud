@@ -32,7 +32,7 @@ namespace MediaCloud.Data.Models
             var picture = new Bitmap(stream);
 
             Resolution = $"{picture.Width}x{picture.Height}";
-            Size = Content.Count();
+            Size = Content.Length;
 
             Rate = 0;
         }

@@ -1,4 +1,5 @@
-﻿using MediaCloud.Data.Models;
+﻿using MediaCloud.Data;
+using MediaCloud.Data.Models;
 using MediaCloud.MediaUploader.Tasks;
 using System;
 using System.Collections.Generic;
@@ -43,28 +44,8 @@ namespace MediaCloud.MediaUploader
 
                 var task = Queue.GetTask();
                 CurrentTask = task.Id;
-                var foundTags = Uploader.TagRepository.GetRangeByString(task.TagString);
-                var medias = new List<Media>();
 
-                if (task.IsCollection)
-                {
-                    medias = Uploader.MediaRepository.CreateCollection(task.Content);
-                    medias.First(x => x.Preview.Order == 0).Preview.Tags = foundTags;
-                }
-                else
-                {
-                    medias = Uploader.MediaRepository.CreateRange(task.Content);
-
-                    foreach (var media in medias)
-                    {
-                        media.Preview.Tags = foundTags;
-                    }
-                }
-
-                Uploader.MediaRepository.SaveChanges();
-
-                Uploader.MediaRepository.Update(medias);
-                Uploader.MediaRepository.SaveChanges();
+                task.DoTheTask();
 
                 Queue.RemoveTask(task);
                 CurrentTask = Guid.Empty;

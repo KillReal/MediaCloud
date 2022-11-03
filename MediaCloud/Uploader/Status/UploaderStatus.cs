@@ -15,7 +15,7 @@ namespace MediaCloud.MediaUploader
 
         public UploaderStatus()
         {
-            MediaCount = Queue.MediaCount;
+            MediaCount = Queue.WorkCount;
             TaskCount = Queue.TaskCount;
             WorkersActive = Scheduler.WorkersActive;
             MaxWorkersAvailable = Scheduler.MaxWorkersCount - WorkersActive;

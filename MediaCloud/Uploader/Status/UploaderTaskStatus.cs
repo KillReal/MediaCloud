@@ -9,20 +9,26 @@ namespace MediaCloud.MediaUploader
     public class UploaderTaskStatus
     {
         public Guid Id { get; set; }
+        public string TaskType { get; set; }
         public bool IsInProcess { get; set; }
-        public int MediaCount { get; set; }
+        public int WorkCount { get; set; }
         public int QueuePosition { get; set; }
 
         public UploaderTaskStatus(Guid id)
         {
             Id = id;
             IsInProcess = Scheduler.IsTaskInProgress(id);
+            QueuePosition = Queue.GetTaskPosition(id) + 1;
             
             var task = Queue.GetTask(id);
-            QueuePosition = Queue.GetTaskPosition(id) + 1;
-            MediaCount = task == null
+
+            TaskType = task == null
+                ? "Doesn't exist"
+                : task.GetType().Name;
+
+            WorkCount = task == null
                 ? 0
-                : task.Content.Count;
+                : task.GetWorkCount();
         }
     }
 }
