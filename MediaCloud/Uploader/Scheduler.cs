@@ -38,7 +38,7 @@ namespace MediaCloud.MediaUploader
             }
         }
 
-        public static bool IsTaskInProgress(Guid id) => _workers.First(x => x.CurrentTask == id) == null;
+        public static bool IsTaskInProgress(Guid id) => _workers.FirstOrDefault(x => x.CurrentTask == id) != null;
 
         public static AppDbContext GetContext()
         {
