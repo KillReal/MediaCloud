@@ -75,16 +75,9 @@ namespace MediaCloud.Repositories
 
             if (!string.IsNullOrEmpty(listBuilder.Filter))
             {
-                var tagIds = _context.Tags.Where(x => listBuilder.Filter
-                                                                 .Contains(x.Name.ToLower()))
-                                          .Select(x => x.Id)
-                                          .ToList();
+                var tagFilter = new TagRepository(_context).GetTagFilter(listBuilder.Filter);
 
-                if (tagIds.Any())
-                {
-                    query = query.Where(x => (x.Tags.Where(y => tagIds.Contains(y.Id))
-                                                    .Count() == tagIds.Count));
-                }
+                query = tagFilter.GetQuery(query);
             }
 
             if (listBuilder.Sort.Contains("Random") &&
