@@ -30,35 +30,17 @@ namespace MediaCloud.Builders.List
                 request.Offset);
         }
 
-        public string Filter
-        {
-            get => Filtering.Filter;
-        }
+        public string Filter => Filtering.Filter;
 
-        public string Sort
-        {
-            get => Sorting.PropertyName;
-        }
+        public string Sort => Sorting.PropertyName;
 
-        public Ordering Order
-        {
-            get => Sorting.GetOrder();
-        }
+        public Ordering Order => Sorting.GetOrder();
 
-        public int Count
-        {
-            get => Pagination.Count;
-        }
+        public int Count => Pagination.Count;
 
-        public int TotalCount
-        {
-            get => Pagination.TotalCount;
-        }
+        public int TotalCount => Pagination.TotalCount;
 
-        public int Offset
-        {
-            get => Pagination.Offset;
-        }
+        public int Offset => Pagination.Offset;
 
         public List<T> Build(IListBuildable<T> repository)
         {

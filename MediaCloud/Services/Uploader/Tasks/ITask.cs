@@ -1,4 +1,6 @@
-﻿namespace MediaCloud.MediaUploader.Tasks
+﻿using MediaCloud.Data;
+
+namespace MediaCloud.MediaUploader.Tasks
 {
     public interface ITask
     {

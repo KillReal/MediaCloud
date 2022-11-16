@@ -24,9 +24,9 @@ namespace MediaCloud.Pages.Medias
         [BindProperty]
         public string ReturnUrl { get; set; }
 
-        public CollectionModel(AppDbContext context)
+        public CollectionModel(AppDbContext context, ILogger<CollectionModel> logger)
         {
-            CollectionRepository = new(context);
+            CollectionRepository = new(context, logger);
         }
 
         public IActionResult OnGet(Guid id, string returnUrl = "/Medias/Index")
@@ -45,7 +45,7 @@ namespace MediaCloud.Pages.Medias
 
         public IActionResult OnPostDelete(Guid id)
         {
-            if (!CollectionRepository.TryRemove(id))
+            if (CollectionRepository.TryRemove(id) == false)
             {
                 return Redirect("/Error");
             }

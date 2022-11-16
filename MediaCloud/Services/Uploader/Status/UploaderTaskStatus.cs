@@ -18,7 +18,7 @@ namespace MediaCloud.MediaUploader
         {
             Id = id;
             IsInProcess = Scheduler.IsTaskInProgress(id);
-            QueuePosition = Queue.GetTaskPosition(id) + 1;
+            QueuePosition = Queue.GetTaskPosition(id);
             
             var task = Queue.GetTask(id);
 

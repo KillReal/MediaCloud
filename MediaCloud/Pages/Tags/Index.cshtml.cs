@@ -15,11 +15,11 @@ namespace MediaCloud.Pages.Tags
 {
     public class ListModel : PageModel
     {
-        private AppDbContext _context;
+        private TagRepository TagRepository;
 
-        public ListModel(AppDbContext context)
+        public ListModel(AppDbContext context, ILogger<ListModel> logger)
         {
-            _context = context;
+            TagRepository = new(context, logger);
         }
 
         [BindProperty]
@@ -30,7 +30,7 @@ namespace MediaCloud.Pages.Tags
         public IActionResult OnGet(ListRequest request)
         {
             ListBuilder = new(request);
-            Tags = ListBuilder.Build(new TagRepository(_context));
+            Tags = ListBuilder.Build(TagRepository);
 
             return Page();
         }

@@ -34,7 +34,7 @@ namespace MediaCloud.MediaUploader
                 return -1;
             }
 
-            return _tasks.IndexOf(task);
+            return _tasks.IndexOf(task) + 1;
         }
     }
 }

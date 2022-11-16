@@ -30,11 +30,11 @@ namespace MediaCloud.Pages.Medias
         [BindProperty]
         public string ReturnUrl { get; set; }
 
-        public DetailModel(AppDbContext context)
+        public DetailModel(AppDbContext context, ILogger<DetailModel> logger)
         {
-            PreviewRepository = new(context);
-            TagRepository = new(context);
-            MediaRepository = new(context);
+            PreviewRepository = new(context, logger);
+            TagRepository = new(context, logger);
+            MediaRepository = new(context, logger);
         }
 
         public IActionResult OnGet(Guid id, string returnUrl = "/Medias/Index")
@@ -52,9 +52,8 @@ namespace MediaCloud.Pages.Medias
             {
                 Tags = preview.Collection.Previews.OrderBy(x => x.Order)
                                                   .First()
-                                                        .Tags
-                                                        .OrderBy(x => x.Type)
-                                                        .ToList();
+                                                  .Tags.OrderBy(x => x.Type)
+                                                       .ToList();
             }
             else
             {
@@ -70,20 +69,19 @@ namespace MediaCloud.Pages.Medias
 
         public IActionResult OnPost()
         {
-            var tags = TagRepository.GetRangeByString(TagsString);
-            var preview = PreviewRepository.GetAndSetTags(PreviewId, tags);
+            var preview = PreviewRepository.Get(PreviewId);
 
             if (preview == null)
             {
                 return Redirect("/Error");
             }
 
-            TagRepository.RecalculateCounts();
-
+            var tags = TagRepository.GetRangeByString(TagsString);
+            PreviewRepository.SetPreviewTags(preview, tags);
+            
             var media = preview.Media;
             media.Rate = Media.Rate;
             MediaRepository.Update(media);
-            MediaRepository.SaveChanges();
 
             return Redirect(ReturnUrl.Replace("$", "&"));
         }
@@ -96,8 +94,6 @@ namespace MediaCloud.Pages.Medias
             {
                 return Redirect("/Error");
             }
-
-            PreviewRepository.SaveChanges();
 
             if (collection != null)
             {

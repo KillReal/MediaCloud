@@ -11,19 +11,13 @@ namespace MediaCloud.Repositories
 {
     public class PreviewRepository : Repository<Preview>, IListBuildable<Preview>
     {
-        public PreviewRepository(AppDbContext context) : base(context)
+        public PreviewRepository(AppDbContext context, ILogger logger)
+            : base(context, logger)
         {
         }
 
-        public Preview? GetAndSetTags(Guid id, List<Tag> tags)
+        public void SetPreviewTags(Preview preview, List<Tag>? tags)
         {
-            var preview = Get(id);
-
-            if (preview == null)
-            {
-                return null;
-            }
-
             if (preview.Collection != null)
             {
                 preview = preview.Collection.Previews.OrderBy(x => x.Order)
@@ -31,11 +25,17 @@ namespace MediaCloud.Repositories
             }
 
             preview.Tags.Clear();
-            preview.Tags.AddRange(tags);
+            if (tags != null)
+            {
+                preview.Tags.AddRange(tags);
+            }
+
             _context.Previews.Update(preview);
             _context.SaveChanges();
 
-            return preview;
+            new TagRepository(_context, _logger).RecalculateCountsAsync();
+
+            return;
         }
 
         public async Task<int> GetMediaCountAsync(Guid id)
@@ -49,23 +49,16 @@ namespace MediaCloud.Repositories
 
         public async Task<int> GetListCountAsync(ListBuilder<Preview> listBuilder)
         {
-            var query = _context.Previews.AsQueryable()
-                                         .Where(x => x.Order == 0);
+            var query = _context.Previews.AsQueryable().Where(x => x.Order == 0);
 
-            if (!string.IsNullOrEmpty(listBuilder.Filter))
+            if (string.IsNullOrEmpty(listBuilder.Filter) == false)
             {
-                var tagIds = _context.Tags.AsNoTracking()
-                                          .Where(x => listBuilder.Filter.ToLower()
-                                                                        .Contains(x.Name.ToLower()))
-                                          .Select(x => x.Id)
-                                          .ToList();
-
-                query = query.Where(x => x.Tags.Where(y => tagIds.Contains(y.Id))
-                                               .Count() == tagIds.Count);
+                var tagFilter = new TagRepository(_context, _logger).GetTagFilter(listBuilder.Filter);
+                query = tagFilter.GetQuery(query);
             }
 
             return await query.AsNoTracking()
-                                .CountAsync();
+                              .CountAsync();
         }
 
         public List<Preview> GetList(ListBuilder<Preview> listBuilder)
@@ -73,21 +66,19 @@ namespace MediaCloud.Repositories
             var query = _context.Previews.AsNoTracking()
                                          .Where(x => x.Order == 0);
 
-            if (!string.IsNullOrEmpty(listBuilder.Filter))
+            if (string.IsNullOrEmpty(listBuilder.Filter) == false)
             {
-                var tagFilter = new TagRepository(_context).GetTagFilter(listBuilder.Filter);
-
+                var tagFilter = new TagRepository(_context, _logger).GetTagFilter(listBuilder.Filter);
                 query = tagFilter.GetQuery(query);
             }
 
             if (listBuilder.Sort.Contains("Random") &&
                 int.TryParse(listBuilder.Sort.Split('-').Last(), out int seed))
             {
-                var previewIds = _context.Previews.Where(x => x.Order == 0)
-                                                        .Select(x => x.Id);
-
-                var previewIdsList = previewIds.Shuffle(seed)
-                                               .ToList();
+                var previewIdsList = _context.Previews.Where(x => x.Order == 0)
+                                                      .Select(x => x.Id)
+                                                      .Shuffle(seed)
+                                                      .ToList();
 
                 return query.Where(x => previewIdsList.Any(id => id == x.Id))
                             .Include(x => x.Collection)
@@ -125,22 +116,25 @@ namespace MediaCloud.Repositories
                         preview.Collection.Previews[1].Order = 0;
                         preview.Collection.Previews[1].Tags = preview.Tags;
                         preview.Collection.Count--;
+                          
+                        new CollectionRepository(_context, _logger).Update(preview.Collection);
+                        new MediaRepository(_context, _logger).Remove(preview.Media);
+                        SaveChanges();
 
-                        _context.Collections.Update(preview.Collection);
-                        _context.Medias.Remove(preview.Media);
-                        _context.SaveChanges();
                         return true;
                     }
 
-                    _context.Medias.Remove(preview.Media);
-                    _context.Collections.Remove(preview.Collection);
-                    _context.SaveChanges();
+                    new MediaRepository(_context, _logger).Remove(preview.Media);
+                    new CollectionRepository(_context, _logger).Remove(preview.Collection);
+                    SaveChanges();
+                    
                     return true;
                 }
             }
 
-            _context.Medias.Remove(preview.Media);
-            _context.SaveChanges();
+            new MediaRepository(_context, _logger).Remove(preview.Media);
+            SaveChanges();
+
             return true;
         }
     }

@@ -9,10 +9,17 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddDbContext<AppDbContext>(
     options => options.UseSqlite(builder.Configuration.GetConnectionString("Database")));
+builder.Services.AddLogging();
+builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
+builder.Services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
+builder.Services.AddScoped<IUploader, Uploader>();
 
 builder.Services.Configure<FormOptions>(x =>
 {
@@ -27,12 +34,10 @@ builder.Services.Configure<KestrelServerOptions>(options =>
 });
 
 var app = builder.Build();
-
 using var scope = app.Services.CreateScope();
 
-PictureService.PictureServicelazyInit(scope.ServiceProvider.GetRequiredService<IConfiguration>());
-Uploader.Init(scope.ServiceProvider.GetRequiredService<AppDbContext>());
-
+PictureService.LazyInit(scope.ServiceProvider.GetRequiredService<IConfiguration>());
+Scheduler.LazyInit(scope.ServiceProvider.GetRequiredService<AppDbContext>(), scope.ServiceProvider.GetRequiredService<ILogger<Uploader>>());
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

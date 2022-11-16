@@ -15,19 +15,7 @@ namespace MediaCloud.Pages.Medias
 {
     public class UploadModel : PageModel
     {
-        private AppDbContext _context;  
-
-        public UploadModel(AppDbContext context)
-        {
-            _context = context;
-        }
-
-        public IActionResult OnGet(string returnUrl = "/Medias/Index")
-        {
-            ReturnUrl = returnUrl.Replace("$", "&");
-
-            return Page();
-        }  
+        private IUploader Uploader;
 
         [BindProperty]
         public List<IFormFile> Files { get; set; }
@@ -38,10 +26,21 @@ namespace MediaCloud.Pages.Medias
         [BindProperty]
         public string ReturnUrl { get; set; }
 
-        public async Task<IActionResult> OnPostAsync()
+        public UploadModel(IUploader uploader)
         {
-            var task = new UploadTask(Files, IsCollection, Tags ?? "");
-            
+            Uploader = uploader;
+        }
+
+        public IActionResult OnGet(string returnUrl = "/Medias/Index")
+        {
+            ReturnUrl = returnUrl.Replace("$", "&");
+
+            return Page();
+        }
+
+        public IActionResult OnPost()
+        {
+            var task = new UploadTask(Files, IsCollection, Tags);
             var taskId = Uploader.AddTask(task);
 
             return Redirect($"/Uploader/GetTaskStatus?id={taskId}");

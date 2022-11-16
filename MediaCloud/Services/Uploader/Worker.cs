@@ -14,7 +14,6 @@ namespace MediaCloud.MediaUploader
         private Thread _workRoutine;
 
         public Guid CurrentTask = Guid.Empty;
-
         public bool IsRunning { get; set; } = false;
 
         public void Run()

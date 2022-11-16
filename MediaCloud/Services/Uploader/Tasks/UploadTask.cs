@@ -20,19 +20,12 @@ namespace MediaCloud.MediaUploader.Tasks
 
         public string TagString { get; set; }
 
-        public UploadTask(List<IFormFile> content, bool isCollection, string tagString)
+        public UploadTask(List<IFormFile> content, bool isCollection, string? tagString)
         {
             Id = Guid.NewGuid();
-
-            Content = new();
-            content = content.OrderBy(x => x.FileName).ToList();
-            foreach(var file in content)
-            {
-                Content.Add(file.GetBytes());
-            }
-
+            Content = content.OrderBy(x => x.FileName).Select(x => x.GetBytes()).ToList();
             IsCollection = isCollection;
-            TagString = tagString;
+            TagString = tagString ?? "";
         }
 
         public override int GetWorkCount()
@@ -43,9 +36,10 @@ namespace MediaCloud.MediaUploader.Tasks
         public override void DoTheTask()
         {
             var context = Scheduler.GetContext();
+            var logger = Scheduler.GetLogger();
 
-            var tagRepository = new TagRepository(context);
-            var mediaRepository = new MediaRepository(context);
+            var tagRepository = new TagRepository(context, logger);
+            var mediaRepository = new MediaRepository(context, logger);
 
             var foundTags = tagRepository.GetRangeByString(TagString);
             var medias = new List<Media>();
@@ -58,17 +52,10 @@ namespace MediaCloud.MediaUploader.Tasks
             else
             {
                 medias = mediaRepository.CreateRange(Content);
-
-                foreach (var media in medias)
-                {
-                    media.Preview.Tags = foundTags;
-                }
+                medias.ForEach(x => x.Preview.Tags = foundTags);
             }
 
-            mediaRepository.SaveChanges();
-
             mediaRepository.Update(medias);
-            mediaRepository.SaveChanges();
         }
     }
 }

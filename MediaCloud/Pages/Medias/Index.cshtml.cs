@@ -14,11 +14,17 @@ namespace MediaCloud.Pages.Medias
 {
     public class ListModel : PageModel
     {
-        private PreviewRepository PreviewRepository; 
+        private PreviewRepository PreviewRepository;
 
-        public ListModel(AppDbContext context)
+        [BindProperty]
+        public List<Preview> Previews { get; set; }
+
+        [BindProperty]
+        public ListBuilder<Preview> ListBuilder { get; set; }
+
+        public ListModel(AppDbContext context, ILogger<ListModel> logger)
         {
-            PreviewRepository = new(context);
+            PreviewRepository = new(context, logger);
         }
 
         public IActionResult OnGet(ListRequest request)
@@ -28,11 +34,5 @@ namespace MediaCloud.Pages.Medias
 
             return Page();
         }  
-
-        [BindProperty]
-        public List<Preview> Previews { get; set; }
-
-        [BindProperty]
-        public ListBuilder<Preview> ListBuilder { get; set; }
     }
 }

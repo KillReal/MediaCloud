@@ -24,9 +24,9 @@ namespace MediaCloud.Pages.Medias
         [BindProperty]
         public string ReturnUrl { get; set; }
 
-        public CollectionReorderModel(AppDbContext context)
+        public CollectionReorderModel(AppDbContext context, ILogger<CollectionReorderModel> logger)
         {
-            CollectionRepository = new(context);
+            CollectionRepository = new(context, logger);
             ReturnUrl = "/Medias/Index";
         }
 
@@ -46,15 +46,18 @@ namespace MediaCloud.Pages.Medias
 
         public IActionResult OnPost()
         {
-            var orders = Collection.Previews.Select(x => x.Order)
-                                            .ToList();
-
-            if (!CollectionRepository.UpdateOrder(Collection.Id, orders))
+            if (Collection == null)
             {
                 return Redirect("/Error");
             }
 
-            CollectionRepository.SaveChanges();
+            var orders = Collection.Previews.Select(x => x.Order)
+                                            .ToList();
+
+            if (CollectionRepository.TryUpdateOrder(Collection.Id, orders) == false)
+            {
+                return Redirect("/Error");
+            }
 
             return Redirect(ReturnUrl.Replace("$", "&"));
         }

@@ -12,27 +12,27 @@ namespace MediaCloud.Services
             _configuration = configuration;
         }
 
-        public static void PictureServicelazyInit(IConfiguration configuration)
+        public static void LazyInit(IConfiguration configuration)
         {
             _configuration = configuration;
         }
 
-        public static byte[] LowerResolution(byte[] pictureBytes)
+        public static byte[] LowerResolutionToPreview(byte[] pictureBytes)
         {
             var maxSize = Convert.ToInt32(_configuration["MaxPreviewHeight"]);
 
-            Stream stream = new MemoryStream(pictureBytes);
-            Image image = new Bitmap(stream);
-            Size size = image.Size;
-            int width = maxSize;
-            int height = maxSize;
-            float[] div = new float[] { size.Width / (float)width, size.Height / (float)height };
-            float maxDiv = Math.Max(div[0], div[1]);
+            var stream = new MemoryStream(pictureBytes);
+            var image = new Bitmap(stream);
+            var size = image.Size;
+            var width = maxSize;
+            var height = maxSize;
+            var div = new float[] { size.Width / (float)width, size.Height / (float)height };
+            var maxDiv = Math.Max(div[0], div[1]);
 
             if (maxDiv > 1.0)
             {
-                Bitmap bitmap = new Bitmap(image, new Size(Convert.ToInt32(size.Width / maxDiv), Convert.ToInt32(size.Height / maxDiv)));
-                MemoryStream ms = new MemoryStream();
+                var bitmap = new Bitmap(image, new(Convert.ToInt32(size.Width / maxDiv), Convert.ToInt32(size.Height / maxDiv)));
+                var ms = new MemoryStream();
                 bitmap.Save(ms, ImageFormat.Jpeg);
                 pictureBytes = ms.ToArray();
             }

@@ -20,6 +20,8 @@ namespace MediaCloud.Repositories
             {
                 _context.Actors.Add(new Actor { Id = Guid.Empty, Name = "Initial Admin" });
             }
+
+            _context.SaveChanges();
         }
 
         public Actor GetCurrent()

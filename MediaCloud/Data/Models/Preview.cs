@@ -1,12 +1,13 @@
 ﻿using MediaCloud.Data.Types;
 using MediaCloud.Services;
+using MediaCloud.WebApp.Data.Models.Interfaces;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Drawing;
 using System.Drawing.Imaging;
 
 namespace MediaCloud.Data.Models
 {
-    public class Preview : Entity
+    public class Preview : Entity, ITaggable
     {
         [ForeignKey("MediaId")]
         public virtual Media Media { get; set; }
@@ -26,7 +27,7 @@ namespace MediaCloud.Data.Models
         {
             Media =  media;
             MediaType = MediaType.JPG;
-            Content = PictureService.LowerResolution(media.Content);
+            Content = PictureService.LowerResolutionToPreview(media.Content);
             Order = 0;
         }
 

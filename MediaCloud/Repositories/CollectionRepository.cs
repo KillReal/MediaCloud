@@ -5,7 +5,8 @@ namespace MediaCloud.Repositories
 {
     public class CollectionRepository : Repository<Collection>
     {
-        public CollectionRepository(AppDbContext context) : base(context)
+        public CollectionRepository(AppDbContext context, ILogger logger)
+            : base(context, logger)
         {
         }
 
@@ -24,17 +25,16 @@ namespace MediaCloud.Repositories
             return collection;
         }
 
-        public bool UpdateOrder(Guid id, List<int> orders)
+        public bool TryUpdateOrder(Guid id, List<int> orders)
         {
             var collection = Get(id);
 
-            if (collection == null && collection.Previews.Count != orders.Count)
+            if (collection == null || collection.Previews.Count != orders.Count)
             {
                 return false;
             }
 
-            var previews = collection.Previews.OrderBy(x => x.Order)
-                                              .ToList();
+            var previews = collection.Previews.OrderBy(x => x.Order).ToList();
 
             var tags = new List<Tag>();
 
@@ -48,18 +48,18 @@ namespace MediaCloud.Repositories
                 }
             }
 
-            if (!previews.Where(x => x.Order == 0).Any())
+            if (previews.Where(x => x.Order == 0).Any() == false)
             {
                 previews.First().Order = 0;
             }
 
-            previews.First(x => x.Order == 0)
-                                    .Tags.AddRange(tags);
+            previews.First(x => x.Order == 0).Tags.AddRange(tags);
 
-            _context.Previews.UpdateRange(previews);
-            _context.Collections.Update(collection);
-            _context.SaveChanges();
+            new PreviewRepository(_context, _logger).Update(previews);
+            new CollectionRepository(_context, _logger).Update(collection);
+            SaveChanges();
 
+            _logger.LogInformation($"Updated previews order for collection with id: {collection.Id} by: {collection.Updator.Id}");
             return true;
         }
 
@@ -72,16 +72,13 @@ namespace MediaCloud.Repositories
                 return false;
             }
 
-            var medias = new List<Media>();
-            foreach (var collectionPreview in collection.Previews)
-            {
-                medias.Add(collectionPreview.Media);
-            }
+            var collectionId = collection.Id;
+            var medias = collection.Previews.Select(x => x.Media).ToList();
 
-            _context.Medias.RemoveRange(medias);
-            _context.Collections.Remove(collection);
-            _context.SaveChanges();
-            
+            new MediaRepository(_context, _logger).Remove(medias);
+            new CollectionRepository(_context, _logger).Remove(collection);
+            SaveChanges();
+
             return true;
         }
     }

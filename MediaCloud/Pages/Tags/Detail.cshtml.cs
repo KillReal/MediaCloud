@@ -14,33 +14,28 @@ namespace MediaCloud.Pages.Tags
 {
     public class DetailModel : PageModel
     {
-        private TagRepository TagRepository;
+        private readonly TagRepository TagRepository;
 
-        public DetailModel(AppDbContext context)
+        public DetailModel(AppDbContext context, ILogger<TagRepository> logger)
         {
-            TagRepository = new(context);
+            TagRepository = new(context, logger);
         }
 
         public IActionResult OnGet(Guid id, string returnUrl = "/Tags/Index")
         {
-            ReturnUrl = returnUrl.Replace("$", "&");
-
-            var tag = TagRepository.Get(id);
-            
-            Tag = tag == null 
-                ? new() 
-                : tag;
+            ReturnUrl = returnUrl.Replace("$", "&");  
+            Tag = TagRepository.Get(id) ?? new();
 
             return Page();
-        }
+        }   
 
         [BindProperty]
-        public Tag Tag { get; set; } = new();
+        public Tag Tag { get; set; }
 
         [BindProperty]
-        public string ReturnUrl { get; set; } 
+        public string ReturnUrl { get; set; }
 
-        public async Task<IActionResult> OnPostAsync()
+        public IActionResult OnPost()
         {
             TagRepository.Update(Tag);
 
