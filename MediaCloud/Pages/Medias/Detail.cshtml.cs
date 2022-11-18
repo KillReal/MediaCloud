@@ -10,9 +10,13 @@ using MediaCloud.Data;
 using MediaCloud.Services;
 using MediaCloud.Builders.Components;
 using MediaCloud.Repositories;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using MediaCloud.WebApp.Services;
 
 namespace MediaCloud.Pages.Medias
 {
+    [Authorize]
     public class DetailModel : PageModel
     {
         private PreviewRepository PreviewRepository;
@@ -30,11 +34,13 @@ namespace MediaCloud.Pages.Medias
         [BindProperty]
         public string ReturnUrl { get; set; }
 
-        public DetailModel(AppDbContext context, ILogger<DetailModel> logger)
+        public DetailModel(AppDbContext context, ILogger<DetailModel> logger, IActorProvider actorProvider)
         {
-            PreviewRepository = new(context, logger);
-            TagRepository = new(context, logger);
-            MediaRepository = new(context, logger);
+            var actor = actorProvider.GetCurrent() ?? new();
+
+            PreviewRepository = new(context, logger, actor.Id);
+            TagRepository = new(context, logger, actor.Id);
+            MediaRepository = new(context, logger, actor.Id);
         }
 
         public IActionResult OnGet(Guid id, string returnUrl = "/Medias/Index")
@@ -69,7 +75,7 @@ namespace MediaCloud.Pages.Medias
 
         public IActionResult OnPost()
         {
-            var preview = PreviewRepository.Get(PreviewId);
+            var preview = PreviewRepository.Get(PreviewId) as Preview;
 
             if (preview == null)
             {
@@ -88,7 +94,7 @@ namespace MediaCloud.Pages.Medias
 
         public IActionResult OnPostDelete(Guid id)
         {
-            var collection = PreviewRepository.Get(id)?.Collection;
+            var collection = (PreviewRepository.Get(id) as Preview)?.Collection;
 
             if (!PreviewRepository.TryRemove(id))
             {

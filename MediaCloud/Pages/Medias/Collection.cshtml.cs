@@ -12,9 +12,13 @@ using MediaCloud.Services;
 using System.Drawing;
 using System.Drawing.Imaging;
 using MediaCloud.Repositories;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using MediaCloud.WebApp.Services;
 
 namespace MediaCloud.Pages.Medias
 {
+    [Authorize]
     public class CollectionModel : PageModel
     {
         private CollectionRepository CollectionRepository;
@@ -24,9 +28,12 @@ namespace MediaCloud.Pages.Medias
         [BindProperty]
         public string ReturnUrl { get; set; }
 
-        public CollectionModel(AppDbContext context, ILogger<CollectionModel> logger)
+        public CollectionModel(AppDbContext context, ILogger<CollectionModel> logger, 
+            IActorProvider actorProvider)
         {
-            CollectionRepository = new(context, logger);
+            var actor = actorProvider.GetCurrent() ?? new();
+
+            CollectionRepository = new(context, logger, actor.Id);
         }
 
         public IActionResult OnGet(Guid id, string returnUrl = "/Medias/Index")

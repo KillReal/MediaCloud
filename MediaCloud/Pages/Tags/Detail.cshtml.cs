@@ -9,22 +9,29 @@ using MediaCloud.Data;
 using MediaCloud.Services;
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using MediaCloud.WebApp.Services;
 
 namespace MediaCloud.Pages.Tags
 {
+    [Authorize]
     public class DetailModel : PageModel
     {
         private readonly TagRepository TagRepository;
 
-        public DetailModel(AppDbContext context, ILogger<TagRepository> logger)
+        public DetailModel(AppDbContext context, ILogger<TagRepository> logger,
+            IActorProvider actorProvider)
         {
-            TagRepository = new(context, logger);
+            var actor = actorProvider.GetCurrent() ?? new();
+
+            TagRepository = new(context, logger, actor.Id);
         }
 
         public IActionResult OnGet(Guid id, string returnUrl = "/Tags/Index")
         {
             ReturnUrl = returnUrl.Replace("$", "&");  
-            Tag = TagRepository.Get(id) ?? new();
+            Tag = TagRepository.Get(id) as Tag ?? new();
 
             return Page();
         }   

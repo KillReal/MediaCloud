@@ -5,8 +5,8 @@ namespace MediaCloud.Repositories
 {
     public class CollectionRepository : Repository<Collection>
     {
-        public CollectionRepository(AppDbContext context, ILogger logger)
-            : base(context, logger)
+        public CollectionRepository(AppDbContext context, ILogger logger, Guid actorId)
+            : base(context, logger, actorId)
         {
         }
 
@@ -14,7 +14,7 @@ namespace MediaCloud.Repositories
         {
             var collection = _context.Collections.Find(id);
 
-            if (collection == null)
+            if (collection == null || collection.Creator.Id != _actorId)
             {
                 return null;
             }
@@ -55,11 +55,11 @@ namespace MediaCloud.Repositories
 
             previews.First(x => x.Order == 0).Tags.AddRange(tags);
 
-            new PreviewRepository(_context, _logger).Update(previews);
-            new CollectionRepository(_context, _logger).Update(collection);
+            _context.Previews.UpdateRange(previews);
+            Update(collection);
             SaveChanges();
 
-            _logger.LogInformation($"Updated previews order for collection with id: {collection.Id} by: {collection.Updator.Id}");
+            _logger.LogInformation($"Updated previews order for collection with id: {collection.Id} by: {_actorId}");
             return true;
         }
 
@@ -75,8 +75,8 @@ namespace MediaCloud.Repositories
             var collectionId = collection.Id;
             var medias = collection.Previews.Select(x => x.Media).ToList();
 
-            new MediaRepository(_context, _logger).Remove(medias);
-            new CollectionRepository(_context, _logger).Remove(collection);
+            _context.Medias.RemoveRange(medias);
+            Remove(collection);
             SaveChanges();
 
             return true;

@@ -8,8 +8,8 @@ namespace MediaCloud.Repositories
 {
     public class MediaRepository : Repository<Media>
     {
-        public MediaRepository(AppDbContext context, ILogger logger)
-            : base(context, logger)
+        public MediaRepository(AppDbContext context, ILogger logger, Guid actorId)
+            : base(context, logger, actorId)
         {
         }
 
@@ -17,13 +17,15 @@ namespace MediaCloud.Repositories
         {
             var media = new Media(file);
             media.Preview = new Preview(media);
-            media.Creator = new ActorRepository(_context).GetCurrent();
+            media.Creator = new ActorRepository(_context).Get(_actorId);
             media.Updator = media.Creator;
+            media.Preview.Creator = media.Creator;
+            media.Preview.Updator = media.Creator;
 
             _context.Add(media);
             SaveChanges();
 
-            _logger.LogInformation($"Created new media with id: {media.Id} by: {media.Creator.Id}");
+            _logger.LogInformation($"Created new media with id: {media.Id} by: {_actorId}");
             return media;
         }
 
@@ -41,7 +43,7 @@ namespace MediaCloud.Repositories
                 var file = files.Last();
                 var media = new Media(file);
                 media.Preview = new Preview(media);
-                media.Creator = new ActorRepository(_context).GetCurrent();
+                media.Creator = new ActorRepository(_context).Get(_actorId);
                 media.Updator = media.Creator;
 
                 files.Remove(file);
@@ -51,7 +53,7 @@ namespace MediaCloud.Repositories
             _context.AddRange(medias);
             SaveChanges();
 
-            _logger.LogInformation($"Created <{medias.Count}> new medias by: {medias.First().Creator.Id}");
+            _logger.LogInformation($"Created <{medias.Count}> new medias by: {_actorId}");
             return medias;
         }
 
@@ -79,10 +81,10 @@ namespace MediaCloud.Repositories
                 previews[i].Collection = collection;
             }
 
-            new PreviewRepository(_context, _logger).Update(previews);
+            _context.Previews.UpdateRange(previews);
             SaveChanges();
 
-            _logger.LogInformation($"Created new collection with id: {collection.Id} by: {collection.Creator.Id}");
+            _logger.LogInformation($"Created new collection with <{collection.Count}> previews and id: {collection.Id} by: {_actorId}");
             return medias;
         }
     }

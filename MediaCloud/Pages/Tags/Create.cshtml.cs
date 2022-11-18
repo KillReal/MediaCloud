@@ -9,9 +9,13 @@ using MediaCloud.Data;
 using MediaCloud.Services;
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using MediaCloud.WebApp.Services;
 
 namespace MediaCloud.Pages.Tags
 {
+    [Authorize]
     public class CreateModel : PageModel
     {
         private TagRepository TagRepository;
@@ -19,9 +23,12 @@ namespace MediaCloud.Pages.Tags
         [BindProperty]
         public Tag Tag { get; set; } = new();
 
-        public CreateModel(AppDbContext context, ILogger<CreateModel> logger)
+        public CreateModel(AppDbContext context, ILogger<CreateModel> logger, 
+            IActorProvider actorProvider)
         {
-            TagRepository = new(context, logger);
+            var actor = actorProvider.GetCurrent() ?? new();
+
+            TagRepository = new(context, logger, actor.Id);
         }
 
         public IActionResult OnGet()

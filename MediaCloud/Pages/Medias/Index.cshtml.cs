@@ -9,9 +9,14 @@ using MediaCloud.Data;
 using MediaCloud.Builders.List;
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Security.Claims;
+using MediaCloud.WebApp.Services;
 
 namespace MediaCloud.Pages.Medias
 {
+    [Authorize]
     public class ListModel : PageModel
     {
         private PreviewRepository PreviewRepository;
@@ -22,9 +27,10 @@ namespace MediaCloud.Pages.Medias
         [BindProperty]
         public ListBuilder<Preview> ListBuilder { get; set; }
 
-        public ListModel(AppDbContext context, ILogger<ListModel> logger)
+        public ListModel(AppDbContext context, ILogger<ListModel> logger, IActorProvider actorProvider)
         {
-            PreviewRepository = new(context, logger);
+            var actor = actorProvider.GetCurrent() ?? new();
+            PreviewRepository = new(context, logger, actor.Id);
         }
 
         public IActionResult OnGet(ListRequest request)

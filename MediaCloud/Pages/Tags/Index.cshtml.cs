@@ -10,16 +10,23 @@ using MediaCloud.Data.Models;
 using MediaCloud.Builders.List;
 using MediaCloud.Services;
 using MediaCloud.Repositories;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using MediaCloud.WebApp.Services;
 
 namespace MediaCloud.Pages.Tags
 {
+    [Authorize]
     public class ListModel : PageModel
     {
         private TagRepository TagRepository;
 
-        public ListModel(AppDbContext context, ILogger<ListModel> logger)
+        public ListModel(AppDbContext context, ILogger<ListModel> logger, 
+            IActorProvider actorProvider)
         {
-            TagRepository = new(context, logger);
+            var actor = actorProvider.GetCurrent() ?? new();
+
+            TagRepository = new(context, logger, actor.Id);
         }
 
         [BindProperty]

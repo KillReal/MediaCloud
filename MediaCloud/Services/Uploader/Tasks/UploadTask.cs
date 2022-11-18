@@ -20,7 +20,8 @@ namespace MediaCloud.MediaUploader.Tasks
 
         public string TagString { get; set; }
 
-        public UploadTask(List<IFormFile> content, bool isCollection, string? tagString)
+        public UploadTask(List<IFormFile> content, Guid actorId, bool isCollection, string? tagString) 
+            : base(actorId)
         {
             Id = Guid.NewGuid();
             Content = content.OrderBy(x => x.FileName).Select(x => x.GetBytes()).ToList();
@@ -38,8 +39,8 @@ namespace MediaCloud.MediaUploader.Tasks
             var context = Scheduler.GetContext();
             var logger = Scheduler.GetLogger();
 
-            var tagRepository = new TagRepository(context, logger);
-            var mediaRepository = new MediaRepository(context, logger);
+            var tagRepository = new TagRepository(context, logger, ActorId);
+            var mediaRepository = new MediaRepository(context, logger, ActorId);
 
             var foundTags = tagRepository.GetRangeByString(TagString);
             var medias = new List<Media>();

@@ -10,11 +10,17 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MediaCloud.MediaUploader;
 using MediaCloud.MediaUploader.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using MediaCloud.Repositories;
+using MediaCloud.WebApp.Services;
 
 namespace MediaCloud.Pages.Medias
 {
+    [Authorize]
     public class UploadModel : PageModel
     {
+        private Actor? Actor;
         private IUploader Uploader;
 
         [BindProperty]
@@ -26,8 +32,9 @@ namespace MediaCloud.Pages.Medias
         [BindProperty]
         public string ReturnUrl { get; set; }
 
-        public UploadModel(IUploader uploader)
+        public UploadModel(AppDbContext context, IUploader uploader, IActorProvider actorProvider)
         {
+            Actor = actorProvider.GetCurrent();
             Uploader = uploader;
         }
 
@@ -40,7 +47,12 @@ namespace MediaCloud.Pages.Medias
 
         public IActionResult OnPost()
         {
-            var task = new UploadTask(Files, IsCollection, Tags);
+            if (Actor == null)
+            {
+                return Redirect("/Login");
+            }
+
+            var task = new UploadTask(Files, Actor.Id, IsCollection, Tags);
             var taskId = Uploader.AddTask(task);
 
             return Redirect($"/Uploader/GetTaskStatus?id={taskId}");

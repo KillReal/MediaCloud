@@ -3,35 +3,30 @@ using MediaCloud.Builders.List;
 using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace MediaCloud.Repositories
 {
-    public class ActorRepository 
+    public class ActorRepository
     {
         private AppDbContext _context;
-        private Guid CurrentActorId;
 
         public ActorRepository(AppDbContext context)
         {
             _context = context;
+
             // DEV
-            CurrentActorId = Guid.Empty;
-            if (_context.Actors.First(x => x.Id == CurrentActorId) == null)
+            if (_context.Actors.Count() == 0)
             {
-                _context.Actors.Add(new Actor { Id = Guid.Empty, Name = "Initial Admin" });
+                _context.Actors.Add(new Actor { Id = Guid.NewGuid(), Name = "superadmin", PasswordHash = "superadmin" });
+                _context.SaveChanges();
             }
-
-            _context.SaveChanges();
         }
 
-        public Actor GetCurrent()
-        {
-            return Get(CurrentActorId);
-        }
+        public Actor? Get(string? actorName) 
+            => _context.Actors.FirstOrDefault(x => x.Name == actorName);
 
-        public Actor Get(Guid id)
-        {
-            return _context.Actors.Find(id) ?? new();
-        }
+        public Actor Get(Guid id) 
+            => _context.Actors.Find(id) ?? new();
     }
 }

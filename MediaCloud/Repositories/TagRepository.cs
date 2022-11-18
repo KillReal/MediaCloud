@@ -10,8 +10,8 @@ namespace MediaCloud.Repositories
 {
     public class TagRepository : Repository<Tag>, IListBuildable<Tag>
     {
-        public TagRepository(AppDbContext context, ILogger logger) 
-            : base(context, logger)
+        public TagRepository(AppDbContext context, ILogger logger, Guid actorId) 
+            : base(context, logger, actorId)
         {
         }
 
@@ -19,13 +19,13 @@ namespace MediaCloud.Repositories
         {
             try
             {
-                tag.Creator = new ActorRepository(_context).GetCurrent();
+                tag.Creator = new ActorRepository(_context).Get(_actorId);
                 tag.Updator = tag.Creator;
 
                 _context.Tags.Add(tag);
                 SaveChanges();
 
-                _logger.LogInformation($"Created new tag with id:{tag.Id} by: {new ActorRepository(_context).GetCurrent().Id}");
+                _logger.LogInformation($"Created new tag with id:{tag.Id} by: {_actorId}");
                 return true;
             }
             catch (Exception ex)
@@ -46,7 +46,7 @@ namespace MediaCloud.Repositories
 
             var rowsAffected = await _context.Database.ExecuteSqlRawAsync(query);
 
-            _logger.LogInformation($"Recalculated <{rowsAffected}> tags usage count by: {new ActorRepository(_context).GetCurrent().Id}");
+            _logger.LogInformation($"Recalculated <{rowsAffected}> tags usage count by: {_actorId}");
         }
 
         public List<Tag> GetRangeByString(string? tagsString)
@@ -56,8 +56,8 @@ namespace MediaCloud.Repositories
                 return new();
             }
 
-            return _context.Tags.Where(x => tagsString.ToLower()
-                                                      .Contains(x.Name.ToLower()))
+            return _context.Tags.Where(x => tagsString.ToLower().Contains(x.Name.ToLower())
+                                         && x.Creator.Id == _actorId)
                                 .ToList();
         }
 
@@ -90,12 +90,13 @@ namespace MediaCloud.Repositories
         public List<Tag> GetList(ListBuilder<Tag> listBuilder)
         {
             return _context.Tags.AsNoTracking().Order(listBuilder.Order)
+                                               .Where(x => x.Creator.Id == _actorId)
                                                .Skip(listBuilder.Offset)
                                                .Take(listBuilder.Count)
                                                .ToList();
         }
 
         public async Task<int> GetListCountAsync(ListBuilder<Tag> listBuilder) 
-            => await _context.Tags.AsNoTracking().CountAsync();
+            => await _context.Tags.Where(x => x.Creator.Id == _actorId).AsNoTracking().CountAsync();
     }
 }

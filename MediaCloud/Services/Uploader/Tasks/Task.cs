@@ -6,6 +6,13 @@ namespace MediaCloud.MediaUploader.Tasks
     {
         public Guid Id { get; set; }
 
+        public Guid ActorId { get; set; }
+
+        public Task(Guid actorId)
+        {
+            ActorId = actorId;
+        }
+
         public virtual int GetWorkCount()
         {
             throw new NotImplementedException();
