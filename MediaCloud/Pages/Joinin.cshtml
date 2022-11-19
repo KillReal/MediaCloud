@@ -1,0 +1,64 @@
+﻿@page
+@model MediaCloud.WebApp.Pages.JoininModel
+@{
+    ViewData["Title"] = "Join in page";
+}
+
+<section class="gradient-custom">
+  <div class="container py-5 h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+        <div class="card bg-white" style="border-radius: 1rem;">
+          <div class="card-body p-5 text-center">
+
+            <div class="mb-md-5 mt-md-4 pb-5">
+                <form enctype="multipart/form-data" method="post">
+
+              <h2 class="fw-bold mb-4">Join In 😋</h2>
+
+              @if(Model.FailStatus == "invite code")
+              {
+                    <div class="alert alert-danger mt-2" role="alert">
+                        Join in failed due to incorrect invite code.
+                    </div>
+              }
+              else if (Model.FailStatus == "name")
+              {
+                    <div class="alert alert-danger mt-2" role="alert">
+                        Join in failed due to choosen name is already taken.
+                    </div>                 
+              }
+              else if (Model.FailStatus == "password")
+              {
+                    <div class="alert alert-danger mt-2" role="alert">
+                        Join in failed due to too short password (need 6 or more length).
+                    </div>                 
+              }
+
+              <input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control">
+
+              <div class="form-outline form-white mb-4 mt-5">
+                <label class="col-form-label mb-1">Invite code</label>
+                <input id="login" asp-for=@Model.InviteCode class="form-control form-control-lg" />
+              </div>
+
+              <div class="form-outline form-white mb-4">
+                <label class="col-form-label mb-1">Name</label>
+                <input id="login" asp-for=@Model.AuthData.Name class="form-control form-control-lg" />
+              </div>
+
+              <div class="form-outline form-white mb-4">
+                <label class="col-form-label mb-1" for="typePasswordX">Password</label>
+                <input type="password" id="password" asp-for=@Model.AuthData.Password class="form-control form-control-lg" />
+              </div>
+
+              <input class="btn btn-success btn-lg px-5 mt-5" type="submit" value="Join in">
+              </form>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

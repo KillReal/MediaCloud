@@ -1,0 +1,64 @@
+﻿@page
+@model MediaCloud.Pages.Actors.DetailModel
+@using MediaCloud.Data.Types
+
+@{
+    ViewData["Title"] = "Actor details";
+}
+
+<h1 class="pt-3 text-white">Actor details</h1>
+
+<div class="button-panel d-flex flex-row align-items-center mt-3">
+        <div>
+            <a href="@(Model.ReturnUrl)" class="btn btn-info">Back to Actors</a>
+        </div>
+    </div>
+
+<hr />
+<div class="row">
+    <div class="col-md-4 text-white">
+        <form enctype="multipart/form-data" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for=@(Model.Actor.Id) class="form-control"></input>
+            <input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control"></input>
+            <div class="form-group mb-3">
+                <label class="col-form-label">Enter name</label>
+                <input asp-for="@Model.Actor.Name" class="form-control" />
+            </div>
+            <div class="form-group mb-3">
+                <label class="col-form-label">Enter password description</label>
+                <input asp-for="@Model.Actor.PasswordHash" class="form-control" placeholder="Leave empty to keep existing password">
+            </div>
+            <div class="form-group mb-3 form-check">
+              <input class="form-check-input" type="checkbox" asp-for=Actor.IsAdmin>
+              <label class="form-check-label" asp-for=Actor.IsAdmin>
+                It's a admin
+              </label>
+            </div>
+            <div class="form-group mb-3 form-check">
+              <input class="form-check-input" type="checkbox" asp-for=Actor.IsPublic>
+              <label class="form-check-label" asp-for=Actor.IsPublic>
+                It's a public
+              </label>
+            </div>
+            <div class="form-group mb-3 form-check">
+              <input class="form-check-input" type="checkbox" asp-for=Actor.IsActivated>
+              <label class="form-check-label" asp-for=Actor.IsActivated>
+                It's activated (leave unchecked if need invite activation)
+              </label>
+            </div>
+            <div class="form-group mb-3">
+                <label class="col-form-label">Enter invite code</label>
+                <input asp-for="@Model.Actor.InviteCode" class="form-control">
+            </div>
+            <div class="form-group mb-3 d-flex justify-content-between">
+                <input type="submit" value="Edit" class="btn btn-success" />
+                <button class="btn btn-danger btn-rounded" asp-page-handler="Delete" asp-route-id=@(Model.Actor.Id)>Remove</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

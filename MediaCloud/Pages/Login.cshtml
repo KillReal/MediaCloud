@@ -4,7 +4,7 @@
     ViewData["Title"] = "Login page";
 }
 
-<section class="vh-100 gradient-custom">
+<section class="gradient-custom">
   <div class="container py-5 h-100">
     <div class="row d-flex justify-content-center align-items-center h-100">
       <div class="col-12 col-md-8 col-lg-6 col-xl-5">
@@ -14,29 +14,35 @@
             <div class="mb-md-5 mt-md-4 pb-5">
                 <form enctype="multipart/form-data" method="post">
 
-              <h2 class="fw-bold mb-2 text-uppercase">Sign In</h2>
-              <p class="text-white-50 mb-5">Please enter your name and password!</p>
+              <h2 class="fw-bold mb-4">Sign In 🖐</h2>
+
+              @if(Model.IsFailed)
+              {
+                <div class="alert alert-danger mt-2" role="alert">
+                    Sign in failed due to incorrect name or password.
+                </div>
+              }
 
               <input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control">
 
-              <div class="form-outline form-white mb-4">
-                <label class="col-form-label">Name</label>
-                <input id="login" asp-for=@Model.Actor.Name class="form-control form-control-lg" />
+              <div class="form-outline form-white mb-4 mt-5">
+                <label class="col-form-label mb-1">Name</label>
+                <input id="login" asp-for=@Model.AuthData.Name class="form-control form-control-lg" />
               </div>
 
               <div class="form-outline form-white mb-4">
-                <labelclass="col-form-label" for="typePasswordX">Password</label>
-                <input type="password" id="password" asp-for=@Model.Actor.PasswordHash class="form-control form-control-lg" />
+                <label class="col-form-label mb-1" for="typePasswordX">Password</label>
+                <input type="password" id="password" asp-for=@Model.AuthData.Password class="form-control form-control-lg" />
               </div>
 
-              <p class="small mb-5 pb-lg-2"><a href="#!">Forgot password? (Not implemented yet)</a></p>
+              <p class="small mb-5 pb-lg-2" hidden><a href="#!">Forgot password? (Not implemented yet)</a></p>
 
-              <input class="btn btn-success btn-lg px-5" type="submit" value="Sign In">
+              <input class="btn btn-success btn-lg px-5 mt-5" type="submit" value="Enter">
               </form>
             </div>
 
             <div>
-              <p class="mb-0">Don't have an account yet? <a href="#!" class="fw-bold">Join Up</a>
+              <p class="mb-0">Have an invite code? <a href="/Joinin" class="fw-bold">Join In</a>
               </p>
             </div>
 

@@ -8,7 +8,7 @@ using MediaCloud.Services;
 
 namespace MediaCloud.Builders.List
 {
-    public class ListBuilder<T> where T : Entity
+    public class ListBuilder<T> where T : Record
     {
         private Sorting Sorting { get; set; }
 

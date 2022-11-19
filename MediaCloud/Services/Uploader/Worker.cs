@@ -44,9 +44,11 @@ namespace MediaCloud.MediaUploader
                 var task = Queue.GetTask();
                 CurrentTask = task.Id;
 
+                Scheduler.GetLogger().LogInformation($"Worker ({Scheduler.WorkersActive}/{Scheduler.MaxWorkersCount}) running with task: {CurrentTask}");
                 task.DoTheTask();
 
                 Queue.RemoveTask(task);
+                Scheduler.GetLogger().LogInformation($"Worker ({Scheduler.WorkersActive - 1}/{Scheduler.MaxWorkersCount}) done task: {CurrentTask}");
                 CurrentTask = Guid.Empty;
             }
         }

@@ -25,17 +25,17 @@ namespace MediaCloud.Data
         {
             var entries = ChangeTracker
                 .Entries()
-                .Where(e => e.Entity is Entity && (
+                .Where(e => e.Entity is Record && (
                         e.State == EntityState.Added
                         || e.State == EntityState.Modified));
 
             foreach (var entityEntry in entries)
             {
-                ((Entity)entityEntry.Entity).UpdatedAt = DateTime.Now;
+                ((Record)entityEntry.Entity).UpdatedAt = DateTime.Now;
 
                 if (entityEntry.State == EntityState.Added)
                 {
-                    ((Entity)entityEntry.Entity).CreatedAt = DateTime.Now;
+                    ((Record)entityEntry.Entity).CreatedAt = DateTime.Now;
                 }
             }
 

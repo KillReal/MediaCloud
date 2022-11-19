@@ -45,6 +45,8 @@ namespace MediaCloud.Repositories
                 media.Preview = new Preview(media);
                 media.Creator = new ActorRepository(_context).Get(_actorId);
                 media.Updator = media.Creator;
+                media.Preview.Creator = media.Creator;
+                media.Preview.Updator = media.Creator;
 
                 files.Remove(file);
                 medias.Add(media);
