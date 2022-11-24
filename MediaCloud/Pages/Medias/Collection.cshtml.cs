@@ -21,24 +21,21 @@ namespace MediaCloud.Pages.Medias
     [Authorize]
     public class CollectionModel : PageModel
     {
-        private CollectionRepository CollectionRepository;
+        private IRepository _repository;
 
         [BindProperty]
         public Collection? Collection { get; set; }
         [BindProperty]
         public string ReturnUrl { get; set; }
 
-        public CollectionModel(AppDbContext context, ILogger<CollectionModel> logger, 
-            IActorProvider actorProvider)
+        public CollectionModel(IRepository repository)
         {
-            var actor = actorProvider.GetCurrent() ?? new();
-
-            CollectionRepository = new(context, logger, actor.Id);
+            _repository = repository;
         }
 
         public IActionResult OnGet(Guid id, string returnUrl = "/Medias/Index")
         {
-            Collection = CollectionRepository.Get(id);
+            Collection = _repository.Collections.Get(id);
 
             if (Collection == null)
             {
@@ -52,12 +49,12 @@ namespace MediaCloud.Pages.Medias
 
         public IActionResult OnPostDelete(Guid id)
         {
-            if (CollectionRepository.TryRemove(id) == false)
+            if (_repository.Collections.TryRemove(id) == false)
             {
                 return Redirect("/Error");
             }
 
-            CollectionRepository.SaveChanges();
+            _repository.SaveChanges();
 
             return Redirect(ReturnUrl.Replace("$", "&"));
         }

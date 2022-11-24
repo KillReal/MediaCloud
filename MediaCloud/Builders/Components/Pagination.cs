@@ -6,18 +6,56 @@
         public int TotalCount { get; set; }
         public int Offset { get; set; }
         //TODO get setting
-        public int MaxPages { get; } = 20;
+        public int PageMaxCount { get; }
 
-        public Pagination(int count, int offset)
+        public int CurrentPageNumber { get; }
+        public int StartPageNumber { get; set; }
+        public int EndPageNumber { get; set; }
+
+        public Pagination(int count, int offset, int maxPages)
         {
             Count = count;
             TotalCount = count;
             Offset = offset;
+            PageMaxCount = maxPages;
+
+            CurrentPageNumber = offset / count;
+            StartPageNumber = CurrentPageNumber - PageMaxCount / 2 < 0
+                ? 0
+                : CurrentPageNumber - PageMaxCount / 2;
+
+            EndPageNumber = CurrentPageNumber + 1 + PageMaxCount / 2;
         }
 
         public Pagination()
         {
 
+        }
+
+        public void SetTotalCount(int totalCount)
+        {
+            TotalCount = totalCount;
+
+            var offsetRef = PageMaxCount / 2;
+            var leftOffset = CurrentPageNumber - StartPageNumber;
+            if (leftOffset < offsetRef)
+            {
+                EndPageNumber += offsetRef - leftOffset;
+            }
+
+            EndPageNumber = EndPageNumber * Count > TotalCount
+                ? TotalCount / Count + 1
+                : EndPageNumber;
+
+            var rightOffset = EndPageNumber - CurrentPageNumber;
+            if (rightOffset < offsetRef)
+            {
+                StartPageNumber -= offsetRef - rightOffset;
+            }
+
+            StartPageNumber = StartPageNumber < 0
+                ? 0
+                : StartPageNumber;
         }
     }
 }

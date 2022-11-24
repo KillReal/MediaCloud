@@ -5,28 +5,29 @@
         <li class="page-item">
           <a class="page-link" href="?count=@(Model.ListBuilder.Count)&offset=0&sort=@(Model.ListBuilder.Sort)&filter=@(Model.ListBuilder.Filter)">First</a>
         </li>
-        @for (int i = Model.ListBuilder.Offset; i > 0; i -= Model.ListBuilder.Count)
-            {
-                <li class="page-item">
-                    <a class="page-link" 
-                        href="?count=@(Model.ListBuilder.Count)&offset=@((Model.ListBuilder.Offset - i))&sort=@(Model.ListBuilder.Sort)&filter=@(Model.ListBuilder.Filter)">
-                        @((Model.ListBuilder.Offset - i + Model.ListBuilder.Count) / Model.ListBuilder.Count)
-                    </a>
-                </li>
-            }
-            <li class="page-item active z-1">
-                <span class="page-link" style="z-index: 0">@((Model.ListBuilder.Offset + Model.ListBuilder.Count) / Model.ListBuilder.Count)
-                        <span class="sr-only"></span>
-                </span>
+        @for (int i = Model.ListBuilder.StartPageNumber; i < Model.ListBuilder.CurrentPageNumber; i++)
+        {
+            <li class="page-item">
+                <a class="page-link" 
+                    href="?count=@(Model.ListBuilder.Count)&offset=@(i * Model.ListBuilder.Count)&sort=@(Model.ListBuilder.Sort)&filter=@(Model.ListBuilder.Filter)">
+                    @(i + 1)
+                </a>
             </li>
-            @for (int i = Model.ListBuilder.Offset + Model.ListBuilder.Count; i <= Model.ListBuilder.TotalCount; i += Model.ListBuilder.Count)
-            {
-                <li class="page-item">
-                    <a class="page-link" href="?count=@(Model.ListBuilder.Count)&offset=@(i)&sort=@(Model.ListBuilder.Sort)&filter=@(Model.ListBuilder.Filter)">
-                    @((i + Model.ListBuilder.Count) / Model.ListBuilder.Count)
-                    </a>
-                </li>
-            }
+        }
+        <li class="page-item active z-1">
+            <span class="page-link" style="z-index: 0">@(Model.ListBuilder.CurrentPageNumber + 1)
+                    <span class="sr-only"></span>
+            </span>
+        </li>
+        @for (int i = Model.ListBuilder.CurrentPageNumber + 1; i < Model.ListBuilder.LastPageNumber; i++)
+        {
+            <li class="page-item">
+                <a class="page-link" 
+                    href="?count=@(Model.ListBuilder.Count)&offset=@(i * Model.ListBuilder.Count)&sort=@(Model.ListBuilder.Sort)&filter=@(Model.ListBuilder.Filter)">
+                    @(i + 1)
+                </a>
+            </li>
+        }
         <li class="page-item">
           <a class="page-link" 
             href="?count=@(Model.ListBuilder.Count)&offset=@(Model.ListBuilder.TotalCount / Model.ListBuilder.Count * Model.ListBuilder.Count)&sort=@(Model.ListBuilder.Sort)&filter=@(Model.ListBuilder.Filter)">Last</a>

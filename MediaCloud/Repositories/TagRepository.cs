@@ -8,10 +8,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MediaCloud.Repositories
 {
-    public class TagRepository : Repository<Tag>, IListBuildable<Tag>
+    public class TagRepository : BaseRepository<Tag>, IListBuildable<Tag>
     {
-        public TagRepository(AppDbContext context, ILogger logger, Guid actorId) 
-            : base(context, logger, actorId)
+        public TagRepository(RepositoryContext repositoryContext) : base(repositoryContext)
         {
         }
 
@@ -72,11 +71,10 @@ namespace MediaCloud.Repositories
                 if (tag.Contains('!'))
                 {
                     negativeTags.Add(tag.Remove(0, 1));
+                    continue;
                 }
-                else
-                {
-                    positiveTags.Add(tag);
-                }
+
+                positiveTags.Add(tag);
             }
 
             var positiveTagIds = _context.Tags.Where(x => positiveTags.Contains(x.Name.ToLower()))
@@ -98,5 +96,18 @@ namespace MediaCloud.Repositories
 
         public async Task<int> GetListCountAsync(ListBuilder<Tag> listBuilder) 
             => await _context.Tags.Where(x => x.Creator.Id == _actorId).AsNoTracking().CountAsync();
+
+        /// <summary>
+        /// Return list of tags ordered by PreviewsCount with specified count.
+        /// </summary>
+        /// <param name="limit"> List count. </param>
+        /// <returns> List of tags. </returns>
+        public List<Tag> GetTopUsed(int limit)
+        {
+            return _context.Tags.OrderByDescending(x => x.PreviewsCount)
+                                .Where(x => x.Creator.Id == _actorId)
+                                .Take(limit)
+                                .ToList();
+        }
     }
 }

@@ -19,7 +19,7 @@ namespace MediaCloud.Pages.Medias
     [Authorize]
     public class ListModel : PageModel
     {
-        private PreviewRepository PreviewRepository;
+        private IRepository _repository;
 
         [BindProperty]
         public List<Preview> Previews { get; set; }
@@ -27,16 +27,21 @@ namespace MediaCloud.Pages.Medias
         [BindProperty]
         public ListBuilder<Preview> ListBuilder { get; set; }
 
-        public ListModel(AppDbContext context, ILogger<ListModel> logger, IActorProvider actorProvider)
+        [BindProperty]
+        public string ExampleFilter { get; set; }
+
+        public ListModel(IRepository repository)
         {
-            var actor = actorProvider.GetCurrent() ?? new();
-            PreviewRepository = new(context, logger, actor.Id);
+            _repository = repository;
         }
 
         public IActionResult OnGet(ListRequest request)
         {
             ListBuilder = new ListBuilder<Preview>(request);
-            Previews = ListBuilder.Build(PreviewRepository);
+            Previews = ListBuilder.Build(_repository.Previews);
+
+            var topTagNames = _repository.Tags.GetTopUsed(2).Select(x => x.Name.ToLower());
+            ExampleFilter = $"{topTagNames.First()} !{topTagNames.Last()}";
 
             return Page();
         }  

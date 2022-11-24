@@ -21,25 +21,22 @@ namespace MediaCloud.Pages.Medias
     [Authorize]
     public class CollectionReorderModel : PageModel
     {
-        private CollectionRepository CollectionRepository;
+        private IRepository _repository;
 
         [BindProperty]
         public Collection? Collection { get; set; }
         [BindProperty]
         public string ReturnUrl { get; set; }
 
-        public CollectionReorderModel(AppDbContext context, ILogger<CollectionReorderModel> logger, 
-            IActorProvider actorProvider)
+        public CollectionReorderModel(IRepository repository)
         {
-            var actor = actorProvider.GetCurrent() ?? new();
-
-            CollectionRepository = new(context, logger, actor.Id);
+            _repository = repository;
             ReturnUrl = "/Medias/Index";
         }
 
         public IActionResult OnGet(Guid id, string returnUrl = "/Medias/Index")
         {
-            Collection = CollectionRepository.Get(id);
+            Collection = _repository.Collections.Get(id);
 
             if (Collection == null)
             {
@@ -61,7 +58,7 @@ namespace MediaCloud.Pages.Medias
             var orders = Collection.Previews.Select(x => x.Order)
                                             .ToList();
 
-            if (CollectionRepository.TryUpdateOrder(Collection.Id, orders) == false)
+            if (_repository.Collections.TryUpdateOrder(Collection.Id, orders) == false)
             {
                 return Redirect("/Error");
             }

@@ -39,7 +39,7 @@ namespace MediaCloud.Pages.Actors
         {
             if (Actor.IsAdmin == false)
             {
-                return Redirect("/Login");
+                return Redirect("/Account/Login");
             }
 
             ListBuilder = new(request);

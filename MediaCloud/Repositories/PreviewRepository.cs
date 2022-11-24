@@ -9,14 +9,29 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MediaCloud.Repositories
 {
-    public class PreviewRepository : Repository<Preview>, IListBuildable<Preview>
+    public class PreviewRepository : BaseRepository<Preview>, IListBuildable<Preview>
     {
         private TagRepository TagRepository;
 
-        public PreviewRepository(AppDbContext context, ILogger logger, Guid actorId)
-            : base(context, logger, actorId)
+        private IQueryable<Preview> SetFilterToQuery(IQueryable<Preview> query, string filter)
         {
-            TagRepository = new TagRepository(_context, _logger, _actorId);
+            if (string.IsNullOrEmpty(filter) == false)
+            {
+                if (filter.Contains("notag"))
+                {
+                    return query.Where(x => x.Tags.Any() == false);
+                }
+
+                var tagFilter = TagRepository.GetTagFilter(filter);
+                return tagFilter.GetQuery(query);
+            }
+
+            return query;
+        }
+
+        public PreviewRepository(RepositoryContext repositoryContext) : base(repositoryContext)
+        {
+            TagRepository = new(repositoryContext);
         }
 
         public void SetPreviewTags(Preview preview, List<Tag>? tags)
@@ -36,7 +51,7 @@ namespace MediaCloud.Repositories
             _context.Previews.Update(preview);
             _context.SaveChanges();
 
-            TagRepository.RecalculateCountsAsync();
+            _ = TagRepository.RecalculateCountsAsync();
 
             return;
         }
@@ -44,12 +59,7 @@ namespace MediaCloud.Repositories
         public async Task<int> GetListCountAsync(ListBuilder<Preview> listBuilder)
         {
             var query = _context.Previews.AsQueryable().Where(x => x.Order == 0);
-
-            if (string.IsNullOrEmpty(listBuilder.Filter) == false)
-            {
-                var tagFilter = TagRepository.GetTagFilter(listBuilder.Filter);
-                query = tagFilter.GetQuery(query);
-            }
+            query = SetFilterToQuery(query, listBuilder.Filter);
 
             return await query.AsNoTracking()
                               .Where(x => x.Creator.Id == _actorId)
@@ -58,14 +68,8 @@ namespace MediaCloud.Repositories
 
         public List<Preview> GetList(ListBuilder<Preview> listBuilder)
         {
-            var query = _context.Previews.AsNoTracking()
-                                         .Where(x => x.Order == 0);
-
-            if (string.IsNullOrEmpty(listBuilder.Filter) == false)
-            {
-                var tagFilter = TagRepository.GetTagFilter(listBuilder.Filter);
-                query = tagFilter.GetQuery(query);
-            }
+            var query = _context.Previews.AsNoTracking().Where(x => x.Order == 0);
+            query = SetFilterToQuery(query, listBuilder.Filter);
 
             if (listBuilder.Sort.Contains("Random") &&
                 int.TryParse(listBuilder.Sort.Split('-').Last(), out int seed))

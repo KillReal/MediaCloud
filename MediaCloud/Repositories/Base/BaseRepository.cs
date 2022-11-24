@@ -3,17 +3,19 @@ using MediaCloud.Data.Models;
 
 namespace MediaCloud.Repositories
 {
-    public class Repository<T> where T : Entity
+    public class BaseRepository<T> where T : Entity
     {
         protected AppDbContext _context;
         protected ILogger _logger;
         protected Guid _actorId;
 
-        public Repository(AppDbContext context, ILogger logger, Guid actorId)
+        public BaseRepository(RepositoryContext repositoryContext)
         {
-            _context = context;
-            _logger = logger;
-            _actorId = actorId;
+            _context = repositoryContext.Context;
+            _logger = repositoryContext.Logger;
+            _actorId = repositoryContext.Actor == null
+                ? Guid.Empty
+                : repositoryContext.Actor.Id;
         }
 
         public virtual T? Get(Guid id)

@@ -16,26 +16,26 @@
             <div class="align-self-center me-3 mt-3 text-white ">Sorting:</div>
             @if (@Model.ListBuilder.Sort == "UpdatedAt")
             {
-                <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@("UpdatedAtDesc")>Update date ↓</a>
+                <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@("UpdatedAtDesc")>Updated ↓</a>
             }
             else if (@Model.ListBuilder.Sort == "UpdatedAtDesc"){
-                <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@("UpdatedAt")>Update date ↑</a>
+                <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@("UpdatedAt")>Updated ↑</a>
             }
             else
             {
-                <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@("UpdatedAt")>Update date</a>
+                <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@("UpdatedAtDesc")>Updated</a>
             }
 
             @if (@Model.ListBuilder.Sort == "CreatedAt")
             {
-                <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@("CreatedAtDesc")>Create date ↓</a>
+                <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@("CreatedAtDesc")>Created ↓</a>
             }
             else if (@Model.ListBuilder.Sort == "CreatedAtDesc"){
-                <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@("CreatedAt")>Create date ↑</a>
+                <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@("CreatedAt")>Created ↑</a>
             }
             else
             {
-                <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@("CreatedAt")>Create date</a>
+                <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@("CreatedAtDesc")>Created</a>
             }
 
             @if (@Model.ListBuilder.Sort.Contains("Random"))
@@ -52,7 +52,7 @@
         </div>
         <div class="form-group align-self-center d-flex" style="min-width: 30rem">
             <div class="align-self-center me-3 mt-3" style="white-space: nowrap;">Tag filter:</div>
-            <input asp-for=@Model.ListBuilder.Filter class="form-control me-3 mt-3" id="filterGrab" placeholder="example: nature !forest"/>
+            <input asp-for=@Model.ListBuilder.Filter class="form-control me-3 mt-3" id="filterGrab" placeholder="example: @Model.ExampleFilter"/>
             <a class="btn btn-info btn-rounded me-3 mt-3" onclick="filterClicked()">Filter</a>
         </div>
     </div>  

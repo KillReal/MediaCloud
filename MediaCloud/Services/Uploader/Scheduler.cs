@@ -1,10 +1,12 @@
 ﻿using MediaCloud.Data;
+using MediaCloud.Repositories;
+using MediaCloud.WebApp.Services;
 
 namespace MediaCloud.MediaUploader
 {
     public static class Scheduler
     {
-        private static AppDbContext _context;
+        private static IRepository _repository;
         private static ILogger _logger;
         private static List<Worker> _workers = new();
 
@@ -12,9 +14,9 @@ namespace MediaCloud.MediaUploader
 
         public static int WorkersActive => _workers.Count(x => x.IsRunning);
 
-        public static void LazyInit(AppDbContext context, ILogger<Uploader> logger)
+        public static void LazyInit(IRepository repository, ILogger<Uploader> logger)
         {
-            _context = context;
+            _repository = repository;
             _logger = logger;
             _workers = new List<Worker>();
             for (int i = 0; i < MaxWorkersCount; i++)
@@ -35,14 +37,14 @@ namespace MediaCloud.MediaUploader
 
         public static bool IsTaskInProgress(Guid id) => _workers.FirstOrDefault(x => x.CurrentTask == id) != null;
 
-        public static AppDbContext GetContext()
+        public static IRepository GetRepository()
         {
-            if (_context == null)
+            if (_repository == null)
             {
-                throw new InvalidOperationException($"{nameof(_context)} doesn't initialized. Use Init().");
+                throw new InvalidOperationException($"{nameof(_repository)} doesn't initialized. Use Init().");
             }
 
-            return _context;
+            return _repository;
         }
 
         public static ILogger GetLogger()

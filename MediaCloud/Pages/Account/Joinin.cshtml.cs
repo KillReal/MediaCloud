@@ -64,12 +64,12 @@ namespace MediaCloud.WebApp.Pages
             }
 
             actor.Name = AuthData.Name;
-            actor.PasswordHash = SecurePasswordHasher.Hash(AuthData.Password);
+            actor.PasswordHash = SecureHash.Hash(AuthData.Password);
             actor.IsActivated = true;
             _repository.Update(actor);
 
             _logger.LogInformation($"Joined in actor with id: {actor.Id} and invite code: {InviteCode}");
-            return Redirect("/Login");
+            return Redirect("/Account/Login");
         }
     }
 }

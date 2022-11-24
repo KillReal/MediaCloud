@@ -45,7 +45,15 @@ namespace MediaCloud.MediaUploader
                 CurrentTask = task.Id;
 
                 Scheduler.GetLogger().LogInformation($"Worker ({Scheduler.WorkersActive}/{Scheduler.MaxWorkersCount}) running with task: {CurrentTask}");
-                task.DoTheTask();
+                
+                try
+                {
+                    task.DoTheTask();
+                }
+                catch (Exception ex)
+                {
+                    Scheduler.GetLogger().LogError($"Worker failed Media[{task.GetWorkCount}] creation with task: {CurrentTask} exception: {ex}");
+                }
 
                 Queue.RemoveTask(task);
                 Scheduler.GetLogger().LogInformation($"Worker ({Scheduler.WorkersActive - 1}/{Scheduler.MaxWorkersCount}) done task: {CurrentTask}");

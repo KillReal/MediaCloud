@@ -19,14 +19,11 @@ namespace MediaCloud.Pages.Tags
     [Authorize]
     public class ListModel : PageModel
     {
-        private TagRepository TagRepository;
+        private IRepository _repository;
 
-        public ListModel(AppDbContext context, ILogger<ListModel> logger, 
-            IActorProvider actorProvider)
+        public ListModel(IRepository repository)
         {
-            var actor = actorProvider.GetCurrent() ?? new();
-
-            TagRepository = new(context, logger, actor.Id);
+            _repository = repository;
         }
 
         [BindProperty]
@@ -37,7 +34,7 @@ namespace MediaCloud.Pages.Tags
         public IActionResult OnGet(ListRequest request)
         {
             ListBuilder = new(request);
-            Tags = ListBuilder.Build(TagRepository);
+            Tags = ListBuilder.Build(_repository.Tags);
 
             return Page();
         }

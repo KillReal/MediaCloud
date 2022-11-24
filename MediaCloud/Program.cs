@@ -18,7 +18,7 @@ using MediaCloud.WebApp.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options => options.LoginPath = "/Login");
+    .AddCookie(options => options.LoginPath = "/Account/Login");
 builder.Services.AddAuthorization();
 
 builder.Logging.ClearProviders();
@@ -31,10 +31,11 @@ builder.Services.AddDbContext<AppDbContext>(
 builder.Services.AddLogging();
 builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
 builder.Services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
-builder.Services.AddScoped<IUploader, Uploader>();
 builder.Services.AddScoped<IActorProvider, ActorProvider>();
+builder.Services.AddScoped<IUploader, Uploader>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddTransient<IRepository, Repository>();
 
 builder.Services.Configure<FormOptions>(x =>
 {
@@ -52,7 +53,8 @@ var app = builder.Build();
 using var scope = app.Services.CreateScope();
 
 PictureService.LazyInit(scope.ServiceProvider.GetRequiredService<IConfiguration>());
-Scheduler.LazyInit(scope.ServiceProvider.GetRequiredService<AppDbContext>(), scope.ServiceProvider.GetRequiredService<ILogger<Uploader>>());
+ConfigurationService.LazyInit(scope.ServiceProvider.GetRequiredService<IConfiguration>());
+Scheduler.LazyInit(scope.ServiceProvider.GetRequiredService<IRepository>(), scope.ServiceProvider.GetRequiredService<ILogger<Uploader>>());
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -74,7 +76,7 @@ app.MapControllerRoute(
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGet("/logout", async (HttpContext context) =>
+app.MapGet("/Account/Logout", async (HttpContext context) =>
 {
     await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     return Results.Redirect("/");

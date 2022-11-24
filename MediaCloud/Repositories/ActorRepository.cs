@@ -68,7 +68,7 @@ namespace MediaCloud.Repositories
             var actor = _context.Actors.FirstOrDefault(x => x.Name == data.Name
                                                          && x.IsActivated);
 
-            if (actor == null || SecurePasswordHasher.Verify(data.Password, actor.PasswordHash) == false)
+            if (actor == null || SecureHash.Verify(data.Password, actor.PasswordHash) == false)
             {
                 return null;
             }

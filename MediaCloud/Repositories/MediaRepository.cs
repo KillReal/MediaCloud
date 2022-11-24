@@ -6,14 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MediaCloud.Repositories
 {
-    public class MediaRepository : Repository<Media>
+    public class MediaRepository : BaseRepository<Media>
     {
-        public MediaRepository(AppDbContext context, ILogger logger, Guid actorId)
-            : base(context, logger, actorId)
-        {
-        }
-
-        public Media Create(byte[] file)
+        private Media FillMediaByFile(byte[] file)
         {
             var media = new Media(file);
             media.Preview = new Preview(media);
@@ -22,6 +17,16 @@ namespace MediaCloud.Repositories
             media.Preview.Creator = media.Creator;
             media.Preview.Updator = media.Creator;
 
+            return media;
+        }
+
+        public MediaRepository(RepositoryContext repositoryContext) : base(repositoryContext)
+        {
+        }
+
+        public Media Create(byte[] file)
+        {
+            var media = FillMediaByFile(file);
             _context.Add(media);
             SaveChanges();
 
@@ -41,15 +46,8 @@ namespace MediaCloud.Repositories
             while (files.Count > 0)
             {
                 var file = files.Last();
-                var media = new Media(file);
-                media.Preview = new Preview(media);
-                media.Creator = new ActorRepository(_context).Get(_actorId);
-                media.Updator = media.Creator;
-                media.Preview.Creator = media.Creator;
-                media.Preview.Updator = media.Creator;
-
+                medias.Add(FillMediaByFile(file));
                 files.Remove(file);
-                medias.Add(media);
             }
 
             _context.AddRange(medias);

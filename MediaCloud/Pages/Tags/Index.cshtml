@@ -24,7 +24,7 @@
         <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("Name")>Name ↑</a>
     }
     else {
-        <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("Name")>Name</a>
+        <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("NameDesc")>Name</a>
     }
 
     @if (@Model.ListBuilder.Sort == "UpdatedAt") {
@@ -34,7 +34,7 @@
         <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("UpdatedAt")>Date ↑</a>
     }
     else {
-        <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("UpdatedAt")>Date</a>
+        <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("UpdatedAtDesc")>Date</a>
     }
 
     @if (@Model.ListBuilder.Sort == "Type") {
@@ -44,7 +44,7 @@
         <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("Type")>Type ↑</a>
     }
     else {
-        <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("Type")>Type</a>
+        <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("TypeDesc")>Type</a>
     }
 
     @if (@Model.ListBuilder.Sort == "PreviewsCount") {
@@ -54,7 +54,7 @@
         <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("PreviewsCount")>Media count ↑</a>
     }
     else {
-        <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("PreviewsCount")>Media count</a>
+        <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("PreviewsCountDesc")>Media count</a>
     }
 
 </div>  

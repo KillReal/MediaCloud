@@ -44,7 +44,7 @@ namespace MediaCloud.Pages.Actors
         {
             if (Actor.IsAdmin == false)
             {
-                return Redirect("/Login");
+                return Redirect("/Account/Login");
             }
 
             ReturnUrl = returnUrl.Replace("$", "&");  
@@ -57,14 +57,22 @@ namespace MediaCloud.Pages.Actors
         public IActionResult OnPost()
         {
             var referenceActor = ActorRepository.Get(Actor.Id);
+
             if (string.IsNullOrEmpty(Actor.PasswordHash) == false)
             {
-                referenceActor.PasswordHash = SecurePasswordHasher.Hash(Actor.PasswordHash);
+                referenceActor.PasswordHash = SecureHash.Hash(Actor.PasswordHash);
             }
+
+            if (string.IsNullOrEmpty(Actor.InviteCode) == false)
+            {
+                referenceActor.InviteCode = SecureHash.HashMD5(Actor.InviteCode);
+            }
+
             referenceActor.Name = Actor.Name;
             referenceActor.IsPublic = Actor.IsPublic;
             referenceActor.IsAdmin = Actor.IsAdmin;
             referenceActor.IsActivated = Actor.IsActivated;
+            referenceActor.InviteCode = Actor.InviteCode;
 
             ActorRepository.Update(referenceActor);
 

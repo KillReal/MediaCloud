@@ -41,7 +41,7 @@ namespace MediaCloud.Pages.Actors
             if (currentActor.IsAdmin == false)
             {
                 _logger.LogError($"Fail attempt to access to Actor/Create by: {currentActor.Id}");
-                return Redirect("/Login");
+                return Redirect("/Account/Login");
             }
 
             return Page();
@@ -54,12 +54,17 @@ namespace MediaCloud.Pages.Actors
             if (currentActor.IsAdmin == false)
             {
                 _logger.LogError($"Fail attempt to access to Actor/Create by: {currentActor.Id}");
-                return Redirect("/Login");
+                return Redirect("/Account/Login");
             }
 
             if (string.IsNullOrEmpty(Actor.PasswordHash) == false)
             {
-                Actor.PasswordHash = SecurePasswordHasher.Hash(Actor.PasswordHash);
+                Actor.PasswordHash = SecureHash.Hash(Actor.PasswordHash);
+            }
+
+            if (string.IsNullOrEmpty(Actor.InviteCode) == false)
+            {
+                Actor.InviteCode = SecureHash.HashMD5(Actor.InviteCode);
             }
 
             _repository.Create(Actor);

@@ -3,10 +3,9 @@ using MediaCloud.Data.Models;
 
 namespace MediaCloud.Repositories
 {
-    public class CollectionRepository : Repository<Collection>
+    public class CollectionRepository : BaseRepository<Collection>
     {
-        public CollectionRepository(AppDbContext context, ILogger logger, Guid actorId)
-            : base(context, logger, actorId)
+        public CollectionRepository(RepositoryContext repositoryContext) : base(repositoryContext)
         {
         }
 

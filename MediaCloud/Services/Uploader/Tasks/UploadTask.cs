@@ -24,7 +24,9 @@ namespace MediaCloud.MediaUploader.Tasks
             : base(actorId)
         {
             Id = Guid.NewGuid();
-            Content = content.OrderBy(x => x.FileName).Select(x => x.GetBytes()).ToList();
+            Content = content.OrderBy(x => x.FileName).Where(x => x.FileName.Contains("mp4") == false)
+                                                      .Select(x => x.GetBytes())
+                                                      .ToList();
             IsCollection = isCollection;
             TagString = tagString ?? "";
         }
@@ -36,27 +38,23 @@ namespace MediaCloud.MediaUploader.Tasks
 
         public override void DoTheTask()
         {
-            var context = Scheduler.GetContext();
-            var logger = Scheduler.GetLogger();
+            var repository = Scheduler.GetRepository();
 
-            var tagRepository = new TagRepository(context, logger, ActorId);
-            var mediaRepository = new MediaRepository(context, logger, ActorId);
-
-            var foundTags = tagRepository.GetRangeByString(TagString);
+            var foundTags = repository.Tags.GetRangeByString(TagString);
             var medias = new List<Media>();
 
             if (IsCollection)
             {
-                medias = mediaRepository.CreateCollection(Content);
+                medias = repository.Medias.CreateCollection(Content);
                 medias.First(x => x.Preview.Order == 0).Preview.Tags = foundTags;
             }
             else
             {
-                medias = mediaRepository.CreateRange(Content);
+                medias = repository.Medias.CreateRange(Content);
                 medias.ForEach(x => x.Preview.Tags = foundTags);
             }
 
-            mediaRepository.Update(medias);
+            repository.Medias.Update(medias);
         }
     }
 }

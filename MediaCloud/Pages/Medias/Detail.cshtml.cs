@@ -19,9 +19,7 @@ namespace MediaCloud.Pages.Medias
     [Authorize]
     public class DetailModel : PageModel
     {
-        private PreviewRepository PreviewRepository;
-        private TagRepository TagRepository;
-        private MediaRepository MediaRepository;
+        private IRepository _repository;
 
         [BindProperty]
         public Guid PreviewId { get; set; }
@@ -34,18 +32,14 @@ namespace MediaCloud.Pages.Medias
         [BindProperty]
         public string ReturnUrl { get; set; }
 
-        public DetailModel(AppDbContext context, ILogger<DetailModel> logger, IActorProvider actorProvider)
+        public DetailModel(IRepository repository)
         {
-            var actor = actorProvider.GetCurrent() ?? new();
-
-            PreviewRepository = new(context, logger, actor.Id);
-            TagRepository = new(context, logger, actor.Id);
-            MediaRepository = new(context, logger, actor.Id);
+            _repository = repository;
         }
 
         public IActionResult OnGet(Guid id, string returnUrl = "/Medias/Index")
         {
-            var preview = PreviewRepository.Get(id);
+            var preview = _repository.Previews.Get(id);
 
             if (preview == null)
             {
@@ -75,38 +69,38 @@ namespace MediaCloud.Pages.Medias
 
         public IActionResult OnPost()
         {
-            var preview = PreviewRepository.Get(PreviewId) as Preview;
+            var preview = _repository.Previews.Get(PreviewId);
 
             if (preview == null)
             {
                 return Redirect("/Error");
             }
 
-            var tags = TagRepository.GetRangeByString(TagsString);
-            PreviewRepository.SetPreviewTags(preview, tags);
+            var tags = _repository.Tags.GetRangeByString(TagsString);
+            _repository.Previews.SetPreviewTags(preview, tags);
             
             var media = preview.Media;
             media.Rate = Media.Rate;
-            MediaRepository.Update(media);
+            _repository.Medias.Update(media);
 
             return Redirect(ReturnUrl.Replace("$", "&"));
         }
 
         public IActionResult OnPostDelete(Guid id)
         {
-            var collection = (PreviewRepository.Get(id) as Preview)?.Collection;
+            var collection = (_repository.Previews.Get(id))?.Collection;
 
-            if (!PreviewRepository.TryRemove(id))
+            if (_repository.Previews.TryRemove(id) == false)
             {
                 return Redirect("/Error");
             }
 
             if (collection != null)
             {
-                return Redirect($"/Medias/Collection?id={collection.Previews[0].Id}");
+                return Redirect($"/Medias/Collection?id={collection.Id}");
             }
 
-            return Redirect("/Medias/Index");
+            return Redirect(ReturnUrl.Replace("$", "&"));
         }
     }
 }

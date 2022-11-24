@@ -18,23 +18,7 @@ namespace MediaCloud.Pages.Tags
     [Authorize]
     public class DetailModel : PageModel
     {
-        private readonly TagRepository TagRepository;
-
-        public DetailModel(AppDbContext context, ILogger<TagRepository> logger,
-            IActorProvider actorProvider)
-        {
-            var actor = actorProvider.GetCurrent() ?? new();
-
-            TagRepository = new(context, logger, actor.Id);
-        }
-
-        public IActionResult OnGet(Guid id, string returnUrl = "/Tags/Index")
-        {
-            ReturnUrl = returnUrl.Replace("$", "&");  
-            Tag = TagRepository.Get(id) as Tag ?? new();
-
-            return Page();
-        }   
+        private readonly IRepository _repository;
 
         [BindProperty]
         public Tag Tag { get; set; }
@@ -42,21 +26,34 @@ namespace MediaCloud.Pages.Tags
         [BindProperty]
         public string ReturnUrl { get; set; }
 
+        public DetailModel(IRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public IActionResult OnGet(Guid id, string returnUrl = "/Tags/Index")
+        {
+            ReturnUrl = returnUrl.Replace("$", "&");  
+            Tag = _repository.Tags.Get(id) as Tag ?? new();
+
+            return Page();
+        }   
+
         public IActionResult OnPost()
         {
-            TagRepository.Update(Tag);
+            _repository.Tags.Update(Tag);
 
             return Redirect(ReturnUrl.Replace("$", "&"));
         }
 
         public IActionResult OnPostDelete(Guid id)
         {
-            if (TagRepository.TryRemove(id) == false)
+            if (_repository.Tags.TryRemove(id) == false)
             {
                 return Redirect("/Error");
             }
 
-            TagRepository.SaveChanges();
+            _repository.SaveChanges();
 
             return Redirect(ReturnUrl.Replace("$", "&"));
         }

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace MediaCloud.WebApp
 {
-    public static class SecurePasswordHasher
+    public static class SecureHash
     {
         /// <summary>
         /// Size of salt.
@@ -16,6 +16,25 @@ namespace MediaCloud.WebApp
         /// Size of hash.
         /// </summary>
         private const int HashSize = 20;
+
+        /// <summary>
+        /// Creates MD5 hash from string.
+        /// </summary>
+        /// <param name="data">The data string.</param>
+        /// <returns>The MD5 hash.</returns>
+        public static string HashMD5(string data)
+        {
+            byte[] hash = Encoding.ASCII.GetBytes(data);
+            MD5 md5 = new MD5CryptoServiceProvider();
+            byte[] hashenc = md5.ComputeHash(hash);
+            string result = "";
+            foreach (var b in hashenc)
+            {
+                result += b.ToString("x2");
+            }
+
+            return result.ToUpper();
+        }
 
         /// <summary>
         /// Creates a hash from a password.

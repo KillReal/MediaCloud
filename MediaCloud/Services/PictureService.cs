@@ -1,9 +1,10 @@
-﻿using System.Drawing;
+﻿using MediaCloud.WebApp.Services;
+using System.Drawing;
 using System.Drawing.Imaging;
 
 namespace MediaCloud.Services
 {
-    public class PictureService : IPictureService
+    public class PictureService
     {
         private static IConfiguration _configuration;
 
@@ -19,7 +20,7 @@ namespace MediaCloud.Services
 
         public static byte[] LowerResolutionToPreview(byte[] pictureBytes)
         {
-            var maxSize = Convert.ToInt32(_configuration["MaxPreviewHeight"]);
+            var maxSize = ConfigurationService.Preview.GetMaxHeight();
 
             var stream = new MemoryStream(pictureBytes);
             var image = new Bitmap(stream);
