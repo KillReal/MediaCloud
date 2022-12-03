@@ -7,11 +7,23 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace MediaCloud.MediaUploader.Tasks
 {
+    internal class FileNameComparer : IComparer<string>
+    {
+        [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
+        public static extern int StrCmpLogicalW(string psz1, string psz2);
+
+        public int Compare(string a, string b)
+        {
+            return StrCmpLogicalW(a, b);
+        }
+    }
+
     public class UploadTask : Task, ITask
     {
         public List<byte[]> Content { get; set; }
@@ -24,7 +36,8 @@ namespace MediaCloud.MediaUploader.Tasks
             : base(actorId)
         {
             Id = Guid.NewGuid();
-            Content = content.OrderBy(x => x.FileName).Where(x => x.FileName.Contains("mp4") == false)
+            var orderedContent = content.OrderByDescending(x => x.FileName, new FileNameComparer());
+            Content = orderedContent.Where(x => x.FileName.Contains("mp4") == false)
                                                       .Select(x => x.GetBytes())
                                                       .ToList();
             IsCollection = isCollection;

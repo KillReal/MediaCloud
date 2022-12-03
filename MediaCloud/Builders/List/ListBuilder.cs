@@ -19,21 +19,6 @@ namespace MediaCloud.Builders.List
 
         public int ColumnCount { get; set; }
 
-        public ListBuilder(ListRequest request)
-        {
-            Sorting = new Sorting(request.Sort ?? "UpdatedAtDesc");
-
-            Filtering = new Filtering((request.Filter ?? "").ToLower());
-
-            Pagination = new Components.Pagination(request.Count == 0 
-                ? ConfigurationService.List.GetEntityMaxCount()
-                : request.Count, 
-                request.Offset,
-                ConfigurationService.List.GetShowedPagesMaxCount());
-
-            ColumnCount = ConfigurationService.Gallery.GetColumnCount();
-        }
-
         public string Filter => Filtering.Filter;
 
         public string Sort => Sorting.PropertyName;
@@ -49,6 +34,21 @@ namespace MediaCloud.Builders.List
         public int StartPageNumber => Pagination.StartPageNumber;
         public int CurrentPageNumber => Pagination.CurrentPageNumber;
         public int LastPageNumber => Pagination.EndPageNumber;
+
+        public ListBuilder(ListRequest request)
+        {
+            Sorting = new Sorting(request.Sort ?? "UpdatedAtDesc");
+
+            Filtering = new Filtering((request.Filter ?? "").ToLower());
+
+            Pagination = new Components.Pagination(request.Count == 0 
+                ? ConfigurationService.List.GetEntityMaxCount()
+                : request.Count, 
+                request.Offset,
+                ConfigurationService.List.GetShowedPagesMaxCount());
+
+            ColumnCount = ConfigurationService.Gallery.GetColumnCount();
+        }
 
         public List<T> Build(IListBuildable<T> repository)
         {

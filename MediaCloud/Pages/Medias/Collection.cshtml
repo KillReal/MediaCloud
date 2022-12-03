@@ -1,4 +1,6 @@
 ﻿@page
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using MediaCloud.Data.Types
 @model MediaCloud.Pages.Medias.CollectionModel
 
 @{
@@ -15,8 +17,27 @@
         </div> 
 
     <hr />
-    <div class="row gallery"> 
-        @for(int i = 0; i < Model.Collection.Previews.Count; i++)
+
+    <form enctype="multipart/form-data" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control">
+        <input type="hidden" asp-for=@(Model.IsOrderChanged) class="form-control" id="order-changed">
+        <input type="hidden" asp-for=@(Model.Collection.Id) class="form-control">
+        <div class="row thumbnail-sortable" id="sortable-gallery" style="display: none"> 
+            @for(int i = 0; i < Model.Collection.Previews.Count(); i++)
+                {
+                    <div class="picture-card shadow-1-strong col-md-2" draggable="true">
+                            <div class="card list-clickable p-2 pb-4 d-flex flex-column align-items-center justify-content-between thumbnail" style="border-radius: 0.75rem">
+                                <img class="w-100 shadow-1-strong" style="border-radius: 0.5rem"
+                                src="data:image/png;base64,@Convert.ToBase64String(Model.Collection.Previews[i].Content)"/>
+                                <input class="order-val visually-hidden" asp-for=@(Model.Collection.Previews[i].Order)  class="form-control">
+                            </div>
+                    </div> 
+                }
+        </div>
+
+        <div class="row gallery" id="gallery" style="display: flex"> 
+            @for(int i = 0; i < Model.Collection.Previews.Count; i++)
             {
                 <div class="picture-card picture shadow-1-strong col-md-4"
                      onclick="window.location='/Medias/Detail?id=@(Model.Collection.Previews[i].Id)&returnUrl=/Medias/Collection?id=@(Model.Collection.Id)'">
@@ -24,16 +45,75 @@
                             src="data:image/png;base64,@Convert.ToBase64String(Model.Collection.Previews[i].Content)"/>
                 </div> 
             }
-    </div>
-    <div class="form-group mb-3 d-flex justify-content-between">
-        <a class="btn btn-info btn-rounded me-1 ms-2 mb-2" asp-page="/Medias/CollectionReorder" asp-route-id=@Model.Collection.Id asp-route-returnUrl="/Medias/Collection?id=@Model.Collection.Id")>Reorder</a>
-        <form enctype="multipart/form-data" method="post">
-            <input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control"></input>
+        </div>
+
+        <div class="row">
+            <div class="form-group mb-3 col-sm h-100">
+                <label class="col-form-label">Enter tags with spaces between</label>
+                <textarea asp-for="@Model.TagsString" class="form-control"></textarea>
+            </div>
+            <div class="col-sm">
+                <label class="col-form-label" style="visibility: hidden">List of existed tags</label>
+                <ul class="list-group">
+                    <li class="list-group-item h-100">Related tags: 
+                        @foreach(var tag in Model.Tags)
+                        {
+                            if (tag.Type == TagType.Character)
+                            {
+                                <a class="btn btn-warning btn-rounded me-1 mb-2" asp-page="/Tags/Detail" asp-route-id=@tag.Id>@tag.Name</a>
+                            }
+                            else if (tag.Type == TagType.Series)
+                            {
+                                <a class="btn btn-success btn-rounded me-1 mb-2" asp-page="/Tags/Detail" asp-route-id=@tag.Id>@tag.Name</a>
+                            }
+                            else if (tag.Type == TagType.Clothes)
+                            {
+                                <a class="btn btn-danger btn-rounded me-1 mb-2" asp-page="/Tags/Detail" asp-route-id=@tag.Id>@tag.Name</a>
+                            }
+                            else
+                            {
+                                <a class="btn btn-info btn-rounded me-1 mb-2" asp-page="/Tags/Detail" asp-route-id=@tag.Id>@tag.Name</a>
+                            }
+                        }
+                    </li>         
+                </ul>
+            </div>
+        </div>
+
+        <div class="form-group mt-3 mb-3 d-flex justify-content-between">
+            <input type="submit" value="Edit" class="btn btn-success" />
+            <a class="btn btn-info btn-rounded me-1 ms-2 mb-2" onclick="startReorder();" id="reorder-button">Reorder</a>
             <button class="btn btn-danger btn-rounded" asp-page-handler="Delete" asp-route-id=@(Model.Collection.Id)>Remove</button>
-        </form>
-    </div>
+        </div>
+    </form>
     
 </div>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+<script src="~/js/jquery.sortable.js"></script>
+
+<script type="text/javascript">
+    $('.thumbnail-sortable').sortable({
+        placeholderClass: 'col-md-2'
+    }).bind('sortupdate', function(e, ui) {
+        var row = document.getElementById('sortable-gallery');
+        var place = 0;
+        for (const child of row.children) {
+            var order = child.getElementsByClassName("order-val visually-hidden");
+            order[0].value = place;
+            place++;
+        }
+    });
+
+    function startReorder() {
+        document.getElementById('order-changed').value = true;
+        document.getElementById('reorder-button').style.display = "none";
+        document.getElementById('sortable-gallery').style.display = "flex";
+        document.getElementById('gallery').style.display = "none";
+    }
+
+</script>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

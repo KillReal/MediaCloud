@@ -74,7 +74,7 @@ namespace MediaCloud.Repositories
             {
                 if (i != 0)
                 {
-                    previews[i].Order = 1;
+                    previews[i].Order = i;
                 }
 
                 collection.Count = previews.Count;

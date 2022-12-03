@@ -34,18 +34,12 @@ namespace MediaCloud.Repositories
             }
         }
 
-        public async Task RecalculateCountsAsync()
+        public async Task RecalculateCountsAsync(List<Tag> tags)
         {
-            var query = @"UPDATE 'Tags' AS t
-                          SET 'PreviewsCount' = (
-                                SELECT Count(*) 
-                                FROM 'PreviewTag' AS pt 
-                                WHERE pt.TagsId = t.Id
-                          )";
+            tags.ForEach(x => x.PreviewsCount = (_context.Tags.Find(x.Id) ?? new()).Previews.Count);
+            _context.Tags.UpdateRange(tags);
 
-            var rowsAffected = await _context.Database.ExecuteSqlRawAsync(query);
-
-            _logger.LogInformation($"Recalculated <{rowsAffected}> tags usage count by: {_actorId}");
+            _logger.LogInformation($"Recalculated <{tags.Count}> tags usage count by: {_actorId}");
         }
 
         public List<Tag> GetRangeByString(string? tagsString)

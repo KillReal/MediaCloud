@@ -8,15 +8,6 @@
     }
   },
   "profiles": {
-    "MediaCloudDataTest": {
-      "commandName": "Project",
-      "workingDirectory": "D:\\Проекты\\MediaCloud\\MediaCloud",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "applicationUrl": "http://localhost:5020",
-      "dotnetRunMessages": true
-    },
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
@@ -30,8 +21,22 @@
       "publishAllPorts": true,
       "useSSL": true
     },
-    "Profile 1": {
-      "commandName": "Project"
+    "Developer": {
+      "commandName": "Project",
+      "workingDirectory": "D:\\Проекты\\MediaCloud\\MediaCloud",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://localhost:5020",
+      "dotnetRunMessages": true
+    },
+    "Production": {
+      "commandName": "Project",
+      "workingDirectory": "D:\\Проекты\\MediaCloud\\MediaCloud",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production"
+      },
+      "hotReloadEnabled": false
     }
   }
 }

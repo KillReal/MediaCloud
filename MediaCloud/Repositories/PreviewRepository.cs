@@ -42,16 +42,18 @@ namespace MediaCloud.Repositories
                                                      .First();
             }
 
+            var affectedTags = new List<Tag>(preview.Tags);
             preview.Tags.Clear();
             if (tags != null)
             {
+                affectedTags.AddRange(tags);
                 preview.Tags.AddRange(tags);
             }
 
             _context.Previews.Update(preview);
-            _context.SaveChanges();
+            SaveChanges();
 
-            _ = TagRepository.RecalculateCountsAsync();
+            _ = TagRepository.RecalculateCountsAsync(affectedTags.Distinct().ToList());
 
             return;
         }

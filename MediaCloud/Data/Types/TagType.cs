@@ -12,7 +12,11 @@ namespace MediaCloud.Data.Types
         Character = 2,
         [Display(Name = "Clothes")]
         Clothes = 3,
-        [Display(Name = "Fetish")]
-        Fetish = 4,
+        [Display(Name = "Trait")]
+        Trait = 4,
+        [Display(Name = "Location")]
+        Location = 5,
+        [Display(Name = "Mark")]
+        Mark = 6,
     }
 }

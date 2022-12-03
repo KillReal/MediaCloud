@@ -21,40 +21,86 @@ namespace MediaCloud.Pages.Medias
     [Authorize]
     public class CollectionModel : PageModel
     {
-        private IRepository _repository;
+        private IRepository Repository;
 
         [BindProperty]
         public Collection? Collection { get; set; }
         [BindProperty]
         public string ReturnUrl { get; set; }
+        [BindProperty]
+        public List<Tag> Tags { get; set; }
+        [BindProperty]
+        public string TagsString { get; set; }
+        [BindProperty]
+        public bool IsOrderChanged { get; set; } = false;
 
         public CollectionModel(IRepository repository)
         {
-            _repository = repository;
+            Repository = repository;
         }
 
         public IActionResult OnGet(Guid id, string returnUrl = "/Medias/Index")
         {
-            Collection = _repository.Collections.Get(id);
+            Collection = Repository.Collections.Get(id);
 
             if (Collection == null)
             {
                 return Redirect("/Error");
             }
 
+            var preview = Collection.Previews.OrderBy(x => x.Order).First();
+
+            Tags = preview.Tags.OrderBy(x => x.Type).ToList();
+            TagsString = string.Join(" ", Tags.Select(x => x.Name.ToLower()));
             ReturnUrl = returnUrl.Replace("$", "&");
 
             return Page();
         }
 
-        public IActionResult OnPostDelete(Guid id)
+        public IActionResult OnPost()
         {
-            if (_repository.Collections.TryRemove(id) == false)
+            if (Collection == null)
             {
                 return Redirect("/Error");
             }
 
-            _repository.SaveChanges();
+            if (IsOrderChanged)
+            {
+                var orders = Collection.Previews.Select(x => x.Order)
+                                            .ToList();
+
+                if (Repository.Collections.TryUpdateOrder(Collection.Id, orders) == false)
+                {
+                    return Redirect("/Error");
+                }
+            }
+
+            var collection = Repository.Collections.Get(Collection.Id);
+            if (collection == null)
+            {
+                return Redirect("/Error");
+            }
+
+            var preview = collection.Previews.OrderBy(x => x.Order).First();
+            var tags = Repository.Tags.GetRangeByString(TagsString);
+            Repository.Previews.SetPreviewTags(preview, tags);
+
+            if (IsOrderChanged)
+            {
+                return Redirect($"/Medias/Collection?id={collection.Id}&returnUrl={ReturnUrl.Replace("&", "$")}");
+            }
+
+            return Redirect(ReturnUrl.Replace("$", "&"));
+        }
+
+        public IActionResult OnPostDelete(Guid id)
+        {
+            if (Repository.Collections.TryRemove(id) == false)
+            {
+                return Redirect("/Error");
+            }
+
+            Repository.SaveChanges();
 
             return Redirect(ReturnUrl.Replace("$", "&"));
         }

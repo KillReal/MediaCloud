@@ -25,11 +25,11 @@
         <div class="row">
         <form enctype="multipart/form-data" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control"></input>
-            <input type="hidden" asp-for=@(Model.PreviewId) class="form-control"></input>
-            <input type="hidden" asp-for=@(Model.Media.Preview.Id) class="form-control"></input>
-            <input type="hidden" asp-for=@(Model.Media.Id) class="form-control"></input>
-            <input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control"></input>
+            <input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control">
+            <input type="hidden" asp-for=@(Model.PreviewId) class="form-control">
+            <input type="hidden" asp-for=@(Model.Media.Preview.Id) class="form-control">
+            <input type="hidden" asp-for=@(Model.Media.Id) class="form-control">
+            <input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control">
             <div class="row">
                 <div class="form-group mb-3 col">
                     <label class="col-form-label">Enter tags with spaces between</label>

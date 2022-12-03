@@ -19,7 +19,7 @@ namespace MediaCloud.Pages.Medias
     [Authorize]
     public class DetailModel : PageModel
     {
-        private IRepository _repository;
+        private IRepository Repository;
 
         [BindProperty]
         public Guid PreviewId { get; set; }
@@ -34,12 +34,12 @@ namespace MediaCloud.Pages.Medias
 
         public DetailModel(IRepository repository)
         {
-            _repository = repository;
+            Repository = repository;
         }
 
         public IActionResult OnGet(Guid id, string returnUrl = "/Medias/Index")
         {
-            var preview = _repository.Previews.Get(id);
+            var preview = Repository.Previews.Get(id);
 
             if (preview == null)
             {
@@ -48,18 +48,9 @@ namespace MediaCloud.Pages.Medias
 
             PreviewId = preview.Id;
             Media = preview.Media;
-            if (preview.Collection != null)
-            {
-                Tags = preview.Collection.Previews.OrderBy(x => x.Order)
-                                                  .First()
-                                                  .Tags.OrderBy(x => x.Type)
-                                                       .ToList();
-            }
-            else
-            {
-                Tags = preview.Tags.OrderBy(x => x.Type)
-                                   .ToList();
-            }
+
+            Tags = preview.Tags.OrderBy(x => x.Type)
+                               .ToList();
 
             ReturnUrl = returnUrl.Replace("$", "&");
             TagsString = string.Join(" ", Tags.Select(x => x.Name.ToLower()));
@@ -69,35 +60,28 @@ namespace MediaCloud.Pages.Medias
 
         public IActionResult OnPost()
         {
-            var preview = _repository.Previews.Get(PreviewId);
+            var preview = Repository.Previews.Get(PreviewId);
 
             if (preview == null)
             {
                 return Redirect("/Error");
             }
 
-            var tags = _repository.Tags.GetRangeByString(TagsString);
-            _repository.Previews.SetPreviewTags(preview, tags);
+            var tags = Repository.Tags.GetRangeByString(TagsString);
+            Repository.Previews.SetPreviewTags(preview, tags);
             
             var media = preview.Media;
             media.Rate = Media.Rate;
-            _repository.Medias.Update(media);
+            Repository.Medias.Update(media);
 
             return Redirect(ReturnUrl.Replace("$", "&"));
         }
 
         public IActionResult OnPostDelete(Guid id)
         {
-            var collection = (_repository.Previews.Get(id))?.Collection;
-
-            if (_repository.Previews.TryRemove(id) == false)
+            if (Repository.Previews.TryRemove(id) == false)
             {
                 return Redirect("/Error");
-            }
-
-            if (collection != null)
-            {
-                return Redirect($"/Medias/Collection?id={collection.Id}");
             }
 
             return Redirect(ReturnUrl.Replace("$", "&"));

@@ -27,11 +27,6 @@
             EndPageNumber = CurrentPageNumber + 1 + PageMaxCount / 2;
         }
 
-        public Pagination()
-        {
-
-        }
-
         public void SetTotalCount(int totalCount)
         {
             TotalCount = totalCount;
