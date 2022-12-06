@@ -36,7 +36,8 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Production"
       },
-      "hotReloadEnabled": false
+      "hotReloadEnabled": false,
+      "applicationUrl": "http://localhost:5020"
     }
   }
 }

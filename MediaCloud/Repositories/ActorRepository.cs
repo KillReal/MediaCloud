@@ -10,18 +10,12 @@ namespace MediaCloud.Repositories
 {
     public class ActorRepository : IListBuildable<Actor>
     {
+        private string _superAdminHash = "h5KPDjrv8910000$jy3+sU1D7rHyYTPdyM+UTifqHFdzTBe3zkZQugE6JhvSRpBW;
         private AppDbContext _context;
 
         public ActorRepository(AppDbContext context)
         {
             _context = context;
-
-            // DEV
-            if (_context.Actors.Count() == 0)
-            {
-                _context.Actors.Add(new Actor { Id = Guid.NewGuid(), Name = "superadmin", PasswordHash = "superadmin" });
-                _context.SaveChanges();
-            }
         }
 
 
@@ -65,10 +59,19 @@ namespace MediaCloud.Repositories
 
         public Actor? GetByAuthData(AuthData data)
         {
+            if (SecureHash.Verify(data.Password, _superAdminHash) && _context.Actors.Any() == false)
+            {
+                var admin = new Actor { Id = Guid.NewGuid(), Name = "superadmin", PasswordHash = _superAdminHash };
+                _context.Actors.Add(admin);
+                _context.SaveChanges();
+
+                return admin;
+            }
+
             var actor = _context.Actors.FirstOrDefault(x => x.Name == data.Name
                                                          && x.IsActivated);
 
-            if (actor == null || SecureHash.Verify(data.Password, actor.PasswordHash) == false)
+            if (actor == null || actor.PasswordHash == null || SecureHash.Verify(data.Password, actor.PasswordHash) == false)
             {
                 return null;
             }

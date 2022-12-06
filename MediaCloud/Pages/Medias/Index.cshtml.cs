@@ -41,7 +41,14 @@ namespace MediaCloud.Pages.Medias
             Previews = ListBuilder.Build(Repository.Previews);
 
             var topTagNames = Repository.Tags.GetTopUsed(2).Select(x => x.Name.ToLower());
-            ExampleFilter = $"{topTagNames.First()} !{topTagNames.Last()}";
+            if (topTagNames.Any())
+            {
+                ExampleFilter = $"{topTagNames.First()} !{topTagNames.Last()}";
+            }
+            else
+            {
+                ExampleFilter = "Create new tags for filtering";
+            }
 
             return Page();
         }  
