@@ -1,6 +1,7 @@
 using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
+using MediaCloud.WebApp.Services.Repository;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +12,7 @@ namespace MediaCloud.WebApp.Pages
 {
     public class LoginModel : PageModel
     {
-        private ActorRepository _repository;
+        private IRepository Repository;
         private ILogger _logger;
 
         [BindProperty]
@@ -22,9 +23,9 @@ namespace MediaCloud.WebApp.Pages
         [BindProperty]
         public string ReturnUrl { get; set; }
 
-        public LoginModel(AppDbContext context, ILogger<LoginModel> logger)
+        public LoginModel(IRepository repository, ILogger<LoginModel> logger)
         {
-            _repository = new(context);
+            Repository = repository;
             _logger = logger;
         }
 
@@ -38,7 +39,7 @@ namespace MediaCloud.WebApp.Pages
 
         public async Task<IActionResult> OnPostAsync()
         {
-            var actor = _repository.GetByAuthData(AuthData);
+            var actor = Repository.Actors.GetByAuthData(AuthData);
 
             if (actor == null)
             {
@@ -51,7 +52,7 @@ namespace MediaCloud.WebApp.Pages
             var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
-            _repository.SetLastLoginAt(actor, DateTime.Now);
+            Repository.Actors.SetLastLoginAt(actor, DateTime.Now);
             _logger.LogInformation($"Signed in actor with name: {AuthData.Name}");
 
             return Redirect(ReturnUrl);

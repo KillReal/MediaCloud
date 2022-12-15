@@ -14,6 +14,7 @@ using MediaCloud.WebApp;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using MediaCloud.WebApp.Services;
+using MediaCloud.WebApp.Services.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 

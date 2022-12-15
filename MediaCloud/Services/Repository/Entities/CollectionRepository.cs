@@ -1,9 +1,10 @@
 ﻿using MediaCloud.Data;
 using MediaCloud.Data.Models;
+using MediaCloud.WebApp.Services.Repository.Entities.Base;
 
 namespace MediaCloud.Repositories
 {
-    public class CollectionRepository : BaseRepository<Collection>
+    public class CollectionRepository : Repository<Collection>
     {
         public CollectionRepository(RepositoryContext repositoryContext) : base(repositoryContext)
         {

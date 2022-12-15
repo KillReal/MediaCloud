@@ -12,18 +12,18 @@ using MediaCloud.Services;
 using MediaCloud.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using MediaCloud.WebApp.Services;
+using MediaCloud.WebApp.Services.Repository;
 
 namespace MediaCloud.Pages.Tags
 {
     [Authorize]
     public class ListModel : PageModel
     {
-        private IRepository _repository;
+        private IRepository Repository;
 
         public ListModel(IRepository repository)
         {
-            _repository = repository;
+            Repository = repository;
         }
 
         [BindProperty]
@@ -34,7 +34,7 @@ namespace MediaCloud.Pages.Tags
         public IActionResult OnGet(ListRequest request)
         {
             ListBuilder = new(request);
-            Tags = ListBuilder.Build(_repository.Tags);
+            Tags = ListBuilder.Build(Repository.Tags);
 
             return Page();
         }

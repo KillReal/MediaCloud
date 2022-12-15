@@ -4,11 +4,12 @@ using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.Data.Types;
 using MediaCloud.WebApp.Repositories.Base;
+using MediaCloud.WebApp.Services.Repository.Entities.Base;
 using Microsoft.EntityFrameworkCore;
 
 namespace MediaCloud.Repositories
 {
-    public class TagRepository : BaseRepository<Tag>, IListBuildable<Tag>
+    public class TagRepository : Repository<Tag>, IListBuildable<Tag>
     {
         public TagRepository(RepositoryContext repositoryContext) : base(repositoryContext)
         {

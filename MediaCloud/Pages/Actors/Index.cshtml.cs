@@ -9,10 +9,11 @@ using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.Builders.List;
 using MediaCloud.Services;
-using MediaCloud.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using MediaCloud.WebApp.Services;
+using MediaCloud.Repositories;
+using MediaCloud.WebApp.Services.Repository;
 
 namespace MediaCloud.Pages.Actors
 {
@@ -20,14 +21,13 @@ namespace MediaCloud.Pages.Actors
     public class ListModel : PageModel
     {
         private Actor Actor;
-        private ActorRepository ActorRepository;
+        private IRepository Repository;
+        private IActorProvider ActorProvider;
 
-        public ListModel(AppDbContext context, ILogger<ListModel> logger, 
-            IActorProvider actorProvider)
+        public ListModel(IRepository repository, IActorProvider actorProvider)
         {
-            Actor = actorProvider.GetCurrent() ?? new();
-
-            ActorRepository = new(context);
+            Repository = repository;
+            ActorProvider = actorProvider;  
         }
 
         [BindProperty]
@@ -37,13 +37,15 @@ namespace MediaCloud.Pages.Actors
 
         public IActionResult OnGet(ListRequest request)
         {
-            if (Actor.IsAdmin == false)
+            Actor = ActorProvider.GetCurrent();
+
+            if (Actor == null || Actor.IsAdmin == false)
             {
                 return Redirect("/Account/Login");
             }
 
             ListBuilder = new(request);
-            Actors = ListBuilder.Build(ActorRepository);
+            Actors = ListBuilder.Build(Repository.Actors);
 
             return Page();
         }

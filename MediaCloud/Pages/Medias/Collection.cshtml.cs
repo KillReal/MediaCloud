@@ -14,7 +14,7 @@ using System.Drawing.Imaging;
 using MediaCloud.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using MediaCloud.WebApp.Services;
+using MediaCloud.WebApp.Services.Repository;
 
 namespace MediaCloud.Pages.Medias
 {

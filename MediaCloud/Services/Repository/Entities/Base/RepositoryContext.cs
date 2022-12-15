@@ -1,9 +1,9 @@
 ﻿using MediaCloud.Data;
 using MediaCloud.Data.Models;
-using MediaCloud.WebApp.Services;
+using MediaCloud.WebApp.Services.Repository;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace MediaCloud.Repositories
+namespace MediaCloud.WebApp.Services.Repository.Entities.Base
 {
     public class RepositoryContext
     {

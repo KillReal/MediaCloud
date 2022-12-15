@@ -8,39 +8,39 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using MediaCloud.Data;
 using MediaCloud.Services;
 using MediaCloud.Data.Models;
-using MediaCloud.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using MediaCloud.WebApp.Services;
 using MediaCloud.WebApp;
+using MediaCloud.Repositories;
+using MediaCloud.WebApp.Services.Repository;
 
 namespace MediaCloud.Pages.Actors
 {
     [Authorize]
     public class CreateModel : PageModel
     {
-        private ActorRepository _repository;
-        private IActorProvider _provider;
-        private ILogger _logger;
+        private IRepository Repository;
+        private IActorProvider ActorProvider;
+        private ILogger Logger;
 
         [BindProperty]
         public Actor Actor { get; set; } = new();
 
-        public CreateModel(AppDbContext context, ILogger<CreateModel> logger, 
-            IActorProvider actorProvider)
+        public CreateModel(IRepository repository, IActorProvider actorProvider, ILogger<CreateModel> logger)
         {
-            _repository = new(context);
-            _provider = actorProvider;
-            _logger = logger;
+            Repository = repository;
+            ActorProvider = actorProvider;
+            Logger = logger;
         }
 
         public IActionResult OnGet()
         {
-            var currentActor = _provider.GetCurrent() ?? new();
+            var currentActor = ActorProvider.GetCurrent() ?? new();
 
             if (currentActor.IsAdmin == false)
             {
-                _logger.LogError($"Fail attempt to access to Actor/Create by: {currentActor.Id}");
+                Logger.LogError($"Fail attempt to access to Actor/Create by: {currentActor.Id}");
                 return Redirect("/Account/Login");
             }
 
@@ -49,11 +49,11 @@ namespace MediaCloud.Pages.Actors
 
         public async Task<IActionResult> OnPostAsync()
         {
-            var currentActor = _provider.GetCurrent() ?? new();
+            var currentActor = ActorProvider.GetCurrent() ?? new();
 
             if (currentActor.IsAdmin == false)
             {
-                _logger.LogError($"Fail attempt to access to Actor/Create by: {currentActor.Id}");
+                Logger.LogError($"Fail attempt to access to Actor/Create by: {currentActor.Id}");
                 return Redirect("/Account/Login");
             }
 
@@ -67,7 +67,7 @@ namespace MediaCloud.Pages.Actors
                 Actor.InviteCode = SecureHash.HashMD5(Actor.InviteCode);
             }
 
-            _repository.Create(Actor);
+            Repository.Actors.Create(Actor);
 
             return RedirectToPage("/Actors/Index");
         }

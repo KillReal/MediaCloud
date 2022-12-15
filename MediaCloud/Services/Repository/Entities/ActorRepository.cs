@@ -10,7 +10,7 @@ namespace MediaCloud.Repositories
 {
     public class ActorRepository : IListBuildable<Actor>
     {
-        private string _superAdminHash = "h5KPDjrv8910000$jy3+sU1D7rHyYTPdyM+UTifqHFdzTBe3zkZQugE6JhvSRpBW;
+        private string _superAdminHash = "h5KPDjrv8910000$jy3+sU1D7rHyYTPdyM+UTifqHFdzTBe3zkZQugE6JhvSRpBW";
         private AppDbContext _context;
 
         public ActorRepository(AppDbContext context)

@@ -12,7 +12,7 @@ using MediaCloud.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Security.Claims;
-using MediaCloud.WebApp.Services;
+using MediaCloud.WebApp.Services.Repository;
 
 namespace MediaCloud.Pages.Medias
 {

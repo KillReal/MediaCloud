@@ -1,6 +1,7 @@
 ﻿using MediaCloud.Repositories;
+using MediaCloud.WebApp.Repositories.Base;
 
-namespace MediaCloud.WebApp.Services
+namespace MediaCloud.WebApp.Services.Repository
 {
     public interface IRepository
     {

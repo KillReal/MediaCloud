@@ -1,15 +1,16 @@
 ﻿using MediaCloud.Data;
 using MediaCloud.Data.Models;
+using MediaCloud.WebApp.Services.Repository.Entities.Base;
 
 namespace MediaCloud.Repositories
 {
-    public class BaseRepository<T> where T : Entity
+    public class Repository<T> where T : Entity
     {
         protected AppDbContext _context;
         protected ILogger _logger;
         protected Guid _actorId;
 
-        public BaseRepository(RepositoryContext repositoryContext)
+        public Repository(RepositoryContext repositoryContext)
         {
             _context = repositoryContext.Context;
             _logger = repositoryContext.Logger;

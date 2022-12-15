@@ -8,18 +8,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using MediaCloud.Data;
 using MediaCloud.Services;
 using MediaCloud.Data.Models;
-using MediaCloud.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using MediaCloud.WebApp.Services;
 using MediaCloud.WebApp;
+using MediaCloud.Repositories;
+using MediaCloud.WebApp.Services.Repository;
 
 namespace MediaCloud.Pages.Actors
 {
     [Authorize]
     public class DetailModel : PageModel
     {
-        private readonly ActorRepository ActorRepository;
+        private readonly IRepository Repository;
 
         [BindProperty]
         public Actor Actor { get; set; }
@@ -27,17 +28,9 @@ namespace MediaCloud.Pages.Actors
         [BindProperty]
         public string ReturnUrl { get; set; }
 
-        public DetailModel(AppDbContext context, ILogger<TagRepository> logger,
-            IActorProvider actorProvider)
+        public DetailModel(IRepository repository)
         {
-            Actor = actorProvider.GetCurrent() ?? new();
-
-            if (Actor.IsAdmin == false)
-            {
-                Actor = new();
-            }
-
-            ActorRepository = new(context);
+            Repository = repository;
         }
 
         public IActionResult OnGet(Guid id, string returnUrl = "/Tags/Index")
@@ -48,7 +41,7 @@ namespace MediaCloud.Pages.Actors
             }
 
             ReturnUrl = returnUrl.Replace("$", "&");  
-            Actor = ActorRepository.Get(id) ?? new();
+            Actor = Repository.Actors.Get(id) ?? new();
             Actor.PasswordHash = string.Empty;
 
             return Page();
@@ -56,7 +49,7 @@ namespace MediaCloud.Pages.Actors
 
         public IActionResult OnPost()
         {
-            var referenceActor = ActorRepository.Get(Actor.Id);
+            var referenceActor = Repository.Actors.Get(Actor.Id);
 
             if (string.IsNullOrEmpty(Actor.PasswordHash) == false)
             {
@@ -74,14 +67,14 @@ namespace MediaCloud.Pages.Actors
             referenceActor.IsActivated = Actor.IsActivated;
             referenceActor.InviteCode = Actor.InviteCode;
 
-            ActorRepository.Update(referenceActor);
+            Repository.Actors.Update(referenceActor);
 
             return Redirect(ReturnUrl.Replace("$", "&"));
         }
 
         public IActionResult OnPostDelete(Guid id)
         {
-            if (ActorRepository.TryRemove(id) == false)
+            if (Repository.Actors.TryRemove(id) == false)
             {
                 return Redirect("/Error");
             }

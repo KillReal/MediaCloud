@@ -1,6 +1,6 @@
 ﻿using MediaCloud.Data;
 using MediaCloud.Repositories;
-using MediaCloud.WebApp.Services;
+using MediaCloud.WebApp.Services.Repository;
 
 namespace MediaCloud.MediaUploader
 {

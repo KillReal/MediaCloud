@@ -1,7 +1,8 @@
 ﻿using MediaCloud.Data;
 using MediaCloud.Repositories;
+using MediaCloud.WebApp.Services.Repository.Entities.Base;
 
-namespace MediaCloud.WebApp.Services
+namespace MediaCloud.WebApp.Services.Repository
 {
     public class Repository : IRepository
     {

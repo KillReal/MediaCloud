@@ -2,11 +2,12 @@
 using MediaCloud.Builders.List;
 using MediaCloud.Data;
 using MediaCloud.Data.Models;
+using MediaCloud.WebApp.Services.Repository.Entities.Base;
 using Microsoft.EntityFrameworkCore;
 
 namespace MediaCloud.Repositories
 {
-    public class MediaRepository : BaseRepository<Media>
+    public class MediaRepository : Repository<Media>
     {
         private Media FillMediaByFile(byte[] file)
         {

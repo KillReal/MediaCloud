@@ -11,14 +11,14 @@ using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using MediaCloud.WebApp.Services;
+using MediaCloud.WebApp.Services.Repository;
 
 namespace MediaCloud.Pages.Tags
 {
     [Authorize]
     public class DetailModel : PageModel
     {
-        private readonly IRepository _repository;
+        private readonly IRepository Repository;
 
         [BindProperty]
         public Tag Tag { get; set; }
@@ -28,32 +28,32 @@ namespace MediaCloud.Pages.Tags
 
         public DetailModel(IRepository repository)
         {
-            _repository = repository;
+            Repository = repository;
         }
 
         public IActionResult OnGet(Guid id, string returnUrl = "/Tags/Index")
         {
             ReturnUrl = returnUrl.Replace("$", "&");  
-            Tag = _repository.Tags.Get(id) as Tag ?? new();
+            Tag = Repository.Tags.Get(id) as Tag ?? new();
 
             return Page();
         }   
 
         public IActionResult OnPost()
         {
-            _repository.Tags.Update(Tag);
+            Repository.Tags.Update(Tag);
 
             return Redirect(ReturnUrl.Replace("$", "&"));
         }
 
         public IActionResult OnPostDelete(Guid id)
         {
-            if (_repository.Tags.TryRemove(id) == false)
+            if (Repository.Tags.TryRemove(id) == false)
             {
                 return Redirect("/Error");
             }
 
-            _repository.SaveChanges();
+            Repository.SaveChanges();
 
             return Redirect(ReturnUrl.Replace("$", "&"));
         }

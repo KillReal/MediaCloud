@@ -1,6 +1,7 @@
 using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
+using MediaCloud.WebApp.Services.Repository;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +12,7 @@ namespace MediaCloud.WebApp.Pages
 {
     public class JoininModel : PageModel
     {
-        private ActorRepository _repository;
+        private IRepository Repository;
         private ILogger _logger;
 
         [BindProperty]
@@ -24,9 +25,9 @@ namespace MediaCloud.WebApp.Pages
         [BindProperty]
         public string ReturnUrl { get; set; }
 
-        public JoininModel(AppDbContext context, ILogger<LoginModel> logger)
+        public JoininModel(IRepository repository, ILogger<LoginModel> logger)
         {
-            _repository = new(context);
+            Repository = repository;
             _logger = logger;
         }
 
@@ -40,7 +41,7 @@ namespace MediaCloud.WebApp.Pages
 
         public async Task<IActionResult> OnPostAsync()
         {
-            var actor = _repository.GetByInviteCode(InviteCode);
+            var actor = Repository.Actors.GetByInviteCode(InviteCode);
 
             if (actor == null)
             {
@@ -49,7 +50,7 @@ namespace MediaCloud.WebApp.Pages
                 return Page();
             }
 
-            if (_repository.IsNameFree(AuthData.Name) == false)
+            if (Repository.Actors.IsNameFree(AuthData.Name) == false)
             {
                 FailStatus = "name";
                 _logger.LogError($"Join attempt fail with next name: {AuthData.Name}");
@@ -66,7 +67,7 @@ namespace MediaCloud.WebApp.Pages
             actor.Name = AuthData.Name;
             actor.PasswordHash = SecureHash.Hash(AuthData.Password);
             actor.IsActivated = true;
-            _repository.Update(actor);
+            Repository.Actors.Update(actor);
 
             _logger.LogInformation($"Joined in actor with id: {actor.Id} and invite code: {InviteCode}");
             return Redirect("/Account/Login");
