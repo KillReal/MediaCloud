@@ -22,12 +22,10 @@ namespace MediaCloud.Pages.Actors
     {
         private Actor Actor;
         private IRepository Repository;
-        private IActorProvider ActorProvider;
 
-        public ListModel(IRepository repository, IActorProvider actorProvider)
+        public ListModel(IRepository repository)
         {
             Repository = repository;
-            ActorProvider = actorProvider;  
         }
 
         [BindProperty]
@@ -37,7 +35,7 @@ namespace MediaCloud.Pages.Actors
 
         public IActionResult OnGet(ListRequest request)
         {
-            Actor = ActorProvider.GetCurrent();
+            Actor = Repository.GetCurrentActor();
 
             if (Actor == null || Actor.IsAdmin == false)
             {

@@ -14,6 +14,7 @@ using MediaCloud.WebApp.Services;
 using MediaCloud.WebApp;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services.Repository;
+using Microsoft.Extensions.Logging;
 
 namespace MediaCloud.Pages.Actors
 {
@@ -21,6 +22,7 @@ namespace MediaCloud.Pages.Actors
     public class DetailModel : PageModel
     {
         private readonly IRepository Repository;
+        private readonly ILogger Logger;
 
         [BindProperty]
         public Actor Actor { get; set; }
@@ -28,13 +30,16 @@ namespace MediaCloud.Pages.Actors
         [BindProperty]
         public string ReturnUrl { get; set; }
 
-        public DetailModel(IRepository repository)
+        public DetailModel(IRepository repository, ILogger<DetailModel> logger)
         {
             Repository = repository;
+            Logger = logger;
         }
 
         public IActionResult OnGet(Guid id, string returnUrl = "/Tags/Index")
         {
+            Actor = Repository.GetCurrentActor();
+
             if (Actor.IsAdmin == false)
             {
                 return Redirect("/Account/Login");
@@ -49,6 +54,14 @@ namespace MediaCloud.Pages.Actors
 
         public IActionResult OnPost()
         {
+            Actor = Repository.GetCurrentActor();
+
+            if (Actor.IsAdmin == false)
+            {
+                Logger.LogError($"Fail attempt to access to Actor/Detail by: {Actor.Id}");
+                return Redirect("/Account/Login");
+            }
+
             var referenceActor = Repository.Actors.Get(Actor.Id);
 
             if (string.IsNullOrEmpty(Actor.PasswordHash) == false)
@@ -74,9 +87,12 @@ namespace MediaCloud.Pages.Actors
 
         public IActionResult OnPostDelete(Guid id)
         {
-            if (Repository.Actors.TryRemove(id) == false)
+            Actor = Repository.GetCurrentActor();
+
+            if (Actor.IsAdmin == false || Repository.Actors.TryRemove(id) == false)
             {
-                return Redirect("/Error");
+                Logger.LogError($"Fail attempt to access to Actor/Detail?action=Delete by: {Actor.Id}");
+                return Redirect("/Account/Login");
             }
 
             return Redirect(ReturnUrl.Replace("$", "&"));

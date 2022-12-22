@@ -1,4 +1,5 @@
-﻿using MediaCloud.Repositories;
+﻿using MediaCloud.Data.Models;
+using MediaCloud.Repositories;
 using MediaCloud.WebApp.Repositories.Base;
 
 namespace MediaCloud.WebApp.Services.Repository
@@ -16,5 +17,9 @@ namespace MediaCloud.WebApp.Services.Repository
         public TagRepository Tags { get; }
 
         public void SaveChanges();
+
+        public Actor GetCurrentActor();
+
+        public void SetCurrentActor(Actor actor);
     }
 }

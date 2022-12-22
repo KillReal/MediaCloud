@@ -1,4 +1,6 @@
 ﻿using MediaCloud.Data;
+using MediaCloud.Data.Models;
+using MediaCloud.WebApp.Services.Repository;
 
 namespace MediaCloud.MediaUploader.Tasks
 {
@@ -6,11 +8,11 @@ namespace MediaCloud.MediaUploader.Tasks
     {
         public Guid Id { get; set; }
 
-        public Guid ActorId { get; set; }
+        public Actor Actor { get; set; }
 
-        public Task(Guid actorId)
+        public Task(Actor actor)
         {
-            ActorId = actorId;
+            Actor = actor;
         }
 
         public virtual int GetWorkCount()

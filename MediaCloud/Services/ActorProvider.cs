@@ -8,6 +8,8 @@ namespace MediaCloud.WebApp.Services
     {
         private IHttpContextAccessor _contextAccessor;
         private AppDbContext _context;
+        private string CachedActorName;
+        private Actor CachedActor;
 
         public ActorProvider(AppDbContext context, IHttpContextAccessor httpContextAccessor)
         {
@@ -31,9 +33,15 @@ namespace MediaCloud.WebApp.Services
                 return null;
             }
 
-            var actorName = identity.Name;
+            if (identity.Name == CachedActorName)
+            {
+                return CachedActor;
+            }
 
-            return new ActorRepository(_context).Get(actorName);
+            CachedActorName = identity.Name;
+            CachedActor = new ActorRepository(_context).Get(CachedActorName) ?? new();
+
+            return CachedActor;
         }
     }
 }

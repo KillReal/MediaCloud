@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services;
+using MediaCloud.WebApp.Services.Repository;
 
 namespace MediaCloud.Pages.Medias
 {
@@ -32,9 +33,9 @@ namespace MediaCloud.Pages.Medias
         [BindProperty]
         public string ReturnUrl { get; set; }
 
-        public UploadModel(AppDbContext context, IUploader uploader, IActorProvider actorProvider)
+        public UploadModel(IRepository repository, IUploader uploader)
         {
-            Actor = actorProvider.GetCurrent();
+            Actor = repository.GetCurrentActor();
             Uploader = uploader;
         }
 
@@ -52,7 +53,7 @@ namespace MediaCloud.Pages.Medias
                 return Redirect("/Login");
             }
 
-            var task = new UploadTask(Files, Actor.Id, IsCollection, Tags);
+            var task = new UploadTask(Actor, Files, IsCollection, Tags);
             var taskId = Uploader.AddTask(task);
 
             return Redirect($"/Uploader/GetTaskStatus?id={taskId}");

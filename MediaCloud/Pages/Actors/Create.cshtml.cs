@@ -21,22 +21,20 @@ namespace MediaCloud.Pages.Actors
     public class CreateModel : PageModel
     {
         private IRepository Repository;
-        private IActorProvider ActorProvider;
         private ILogger Logger;
 
         [BindProperty]
         public Actor Actor { get; set; } = new();
 
-        public CreateModel(IRepository repository, IActorProvider actorProvider, ILogger<CreateModel> logger)
+        public CreateModel(IRepository repository, ILogger<CreateModel> logger)
         {
             Repository = repository;
-            ActorProvider = actorProvider;
             Logger = logger;
         }
 
         public IActionResult OnGet()
         {
-            var currentActor = ActorProvider.GetCurrent() ?? new();
+            var currentActor = Repository.GetCurrentActor();
 
             if (currentActor.IsAdmin == false)
             {
@@ -49,7 +47,7 @@ namespace MediaCloud.Pages.Actors
 
         public async Task<IActionResult> OnPostAsync()
         {
-            var currentActor = ActorProvider.GetCurrent() ?? new();
+            var currentActor = Repository.GetCurrentActor();
 
             if (currentActor.IsAdmin == false)
             {

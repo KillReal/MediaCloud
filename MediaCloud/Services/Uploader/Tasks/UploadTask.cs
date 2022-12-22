@@ -2,6 +2,7 @@
 using MediaCloud.Data.Models;
 using MediaCloud.Extensions;
 using MediaCloud.Repositories;
+using MediaCloud.WebApp.Services.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -32,8 +33,8 @@ namespace MediaCloud.MediaUploader.Tasks
 
         public string TagString { get; set; }
 
-        public UploadTask(List<IFormFile> content, Guid actorId, bool isCollection, string? tagString) 
-            : base(actorId)
+        public UploadTask(Actor actor, List<IFormFile> content, bool isCollection, string? tagString) 
+            : base(actor)
         {
             Id = Guid.NewGuid();
             var orderedContent = content.OrderByDescending(x => x.FileName, new FileNameComparer());
@@ -52,6 +53,7 @@ namespace MediaCloud.MediaUploader.Tasks
         public override void DoTheTask()
         {
             var repository = Scheduler.GetRepository();
+            repository.SetCurrentActor(Actor);
 
             var foundTags = repository.Tags.GetRangeByString(TagString);
             var medias = new List<Media>();

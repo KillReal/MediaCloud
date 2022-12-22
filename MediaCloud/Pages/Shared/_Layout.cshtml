@@ -12,6 +12,7 @@
 <body  bg-secondary class="mb-0" style="min-width: 450px">
     @inject IActorProvider actorProvider
     @{
+        var actor = actorProvider.GetCurrent();
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light box-shadow">
             <div class="container">
@@ -31,7 +32,7 @@
                         <li class="nav-item">
                             <a class="nav-link text-white" href="/Tags">Tags</a>
                         </li>
-                        @if (actorProvider.GetCurrent() != null && actorProvider.GetCurrent().IsAdmin)
+                            @if (actor != null && actor.IsAdmin)
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-white" href="/Actors">Actors</a>
@@ -49,11 +50,11 @@
                     </ul>
                 </div>
                     <div class="collapse navbar-collapse collapse d-sm-inline-flex justify-content-between text-right" id="myNavbar">
-                        @if (actorProvider.GetCurrent() != null)
+                        @if (actor != null)
                         {
                             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                                 <li class="nav-item">
-                                    <a class="nav-link text-white" href="/Account">Hello, @actorProvider.GetCurrent().Name!</a>
+                                    <a class="nav-link text-white" href="/Account">Hello, @actor.Name!</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="btn btn-danger" href="/Account/Logout" method="post" id="logoutForm" class="navbar-right">Logout</a>
