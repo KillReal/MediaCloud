@@ -7,13 +7,13 @@ namespace MediaCloud.WebApp.Services.Repository.Entities.Base
 {
     public class RepositoryContext
     {
-        public AppDbContext Context { get; set; }
+        public AppDbContext DbContext { get; set; }
         public virtual ILogger Logger { get; set; }
         public Actor? Actor { get; set; }
 
-        public RepositoryContext(AppDbContext context, ILogger<Repository> logger, Actor? actor)
+        public RepositoryContext(AppDbContext dbContext, ILogger<Repository> logger, Actor? actor)
         {
-            Context = context;
+            DbContext = dbContext;
             Logger = logger;
             Actor = actor;
         }

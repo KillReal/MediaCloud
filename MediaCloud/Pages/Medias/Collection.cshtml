@@ -29,7 +29,8 @@
                     <div class="picture-card shadow-1-strong col-md-2" draggable="true">
                             <div class="card list-clickable p-2 pb-4 d-flex flex-column align-items-center justify-content-between thumbnail" style="border-radius: 0.75rem">
                                 <img class="w-100 shadow-1-strong" style="border-radius: 0.5rem"
-                                src="data:image/png;base64,@Convert.ToBase64String(Model.Collection.Previews[i].Content)"/>
+                                     src="@Url.Action("Preview", "Gallery", new { id = Model.Collection.Previews[i].Id })"
+                                />
                                 <input class="order-val visually-hidden" asp-for=@(Model.Collection.Previews[i].Order)  class="form-control">
                             </div>
                     </div> 
@@ -42,7 +43,8 @@
                 <div class="picture-card picture shadow-1-strong col-md-4"
                      onclick="window.location='/Medias/Detail?id=@(Model.Collection.Previews[i].Id)&returnUrl=/Medias/Collection?id=@(Model.Collection.Id)'">
                         <img class="w-100 shadow-1-strong" style="border-radius: 0.5rem"
-                            src="data:image/png;base64,@Convert.ToBase64String(Model.Collection.Previews[i].Content)"/>
+                             src="@Url.Action("Preview", "Gallery", new { id = Model.Collection.Previews[i].Id })"
+                        />
                 </div> 
             }
         </div>

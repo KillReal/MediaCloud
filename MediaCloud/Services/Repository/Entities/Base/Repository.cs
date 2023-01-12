@@ -12,7 +12,7 @@ namespace MediaCloud.Repositories
 
         public Repository(RepositoryContext repositoryContext)
         {
-            _context = repositoryContext.Context;
+            _context = repositoryContext.DbContext;
             _logger = repositoryContext.Logger;
             _actorId = repositoryContext.Actor == null
                 ? Guid.Empty

@@ -6,16 +6,16 @@ namespace MediaCloud.Services
 {
     public class PictureService
     {
-        private static IConfiguration _configuration;
+        private static IConfiguration Configuration;
 
         public PictureService(IConfiguration configuration)
         {
-            _configuration = configuration;
+            Configuration = configuration;
         }
 
-        public static void LazyInit(IConfiguration configuration)
+        public static void Init(IConfiguration configuration)
         {
-            _configuration = configuration;
+            Configuration = configuration;
         }
 
         public static byte[] LowerResolutionToPreview(byte[] pictureBytes)

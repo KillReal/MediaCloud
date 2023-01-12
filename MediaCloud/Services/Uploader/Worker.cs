@@ -28,10 +28,13 @@ namespace MediaCloud.MediaUploader
         {
             IsRunning = false;
 
-            _workRoutine.Join();
+            if (_workRoutine != null)
+            {
+                _workRoutine.Join();
+            }
         }
 
-        public void WorkRoutine()
+        private void WorkRoutine()
         {
             while (IsRunning)
             {

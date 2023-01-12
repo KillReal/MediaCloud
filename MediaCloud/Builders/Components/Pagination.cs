@@ -27,6 +27,10 @@
             EndPageNumber = CurrentPageNumber + 1 + PageMaxCount / 2;
         }
 
+        /// <summary>
+        /// Set <see cref="TotalCount"/> and recalculate page numbers.
+        /// </summary>
+        /// <param name="totalCount">Total entities count in repository.</param>
         public void SetTotalCount(int totalCount)
         {
             TotalCount = totalCount;

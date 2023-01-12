@@ -33,6 +33,8 @@ namespace MediaCloud.MediaUploader.Tasks
 
         public string TagString { get; set; }
 
+        public override int GetWorkCount() => Content.Count;
+
         public UploadTask(Actor actor, List<IFormFile> content, bool isCollection, string? tagString) 
             : base(actor)
         {
@@ -43,11 +45,6 @@ namespace MediaCloud.MediaUploader.Tasks
                                                       .ToList();
             IsCollection = isCollection;
             TagString = tagString ?? "";
-        }
-
-        public override int GetWorkCount()
-        {
-            return Content.Count;
         }
 
         public override void DoTheTask()

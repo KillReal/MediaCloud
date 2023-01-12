@@ -1,25 +1,25 @@
 ﻿using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
+using Microsoft.CodeAnalysis;
 
 namespace MediaCloud.WebApp.Services
 {
     public class ActorProvider : IActorProvider
     {
-        private IHttpContextAccessor _contextAccessor;
-        private AppDbContext _context;
-        private string CachedActorName;
-        private Actor CachedActor;
+        private IHttpContextAccessor ContextAccessor;
+        private AppDbContext DbContext;
+        private Actor? CachedActor;
 
         public ActorProvider(AppDbContext context, IHttpContextAccessor httpContextAccessor)
         {
-            _context = context;
-            _contextAccessor = httpContextAccessor;
+            DbContext = context;
+            ContextAccessor = httpContextAccessor;
         }
 
         public Actor? GetCurrent()
         {
-            var httpContext = _contextAccessor.HttpContext;
+            var httpContext = ContextAccessor.HttpContext;
 
             if (httpContext == null)
             {
@@ -33,13 +33,12 @@ namespace MediaCloud.WebApp.Services
                 return null;
             }
 
-            if (identity.Name == CachedActorName)
+            if (identity.Name == CachedActor?.Name)
             {
                 return CachedActor;
             }
 
-            CachedActorName = identity.Name;
-            CachedActor = new ActorRepository(_context).Get(CachedActorName) ?? new();
+            CachedActor = new ActorRepository(DbContext).Get(identity.Name);
 
             return CachedActor;
         }

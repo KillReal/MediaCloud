@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using MediaCloud.WebApp.Services;
 using MediaCloud.WebApp.Services.Repository;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,8 +28,14 @@ builder.Logging.AddConsole();
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddDbContext<AppDbContext>(
-    options => options.UseSqlite(builder.Configuration.GetConnectionString("Database")));
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+});
+builder.Services.AddDbContext<AppDbContext>(options => 
+{
+    options.UseSqlite(builder.Configuration.GetConnectionString("Database"));
+});
 builder.Services.AddLogging();
 builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
 builder.Services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
@@ -53,9 +60,9 @@ builder.Services.Configure<KestrelServerOptions>(options =>
 var app = builder.Build();
 using var scope = app.Services.CreateScope();
 
-PictureService.LazyInit(scope.ServiceProvider.GetRequiredService<IConfiguration>());
-ConfigurationService.LazyInit(scope.ServiceProvider.GetRequiredService<IConfiguration>());
-Scheduler.LazyInit(scope.ServiceProvider.GetRequiredService<IRepository>(), scope.ServiceProvider.GetRequiredService<ILogger<Uploader>>());
+PictureService.Init(scope.ServiceProvider.GetRequiredService<IConfiguration>());
+ConfigurationService.Init(scope.ServiceProvider.GetRequiredService<IConfiguration>());
+Scheduler.Init(scope.ServiceProvider.GetRequiredService<IRepository>(), scope.ServiceProvider.GetRequiredService<ILogger<Uploader>>());
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -67,7 +74,7 @@ if (!app.Environment.IsDevelopment())
 
 //app.UseHttpsRedirection();
 app.UseStaticFiles();
-
+app.UseResponseCompression();
 app.UseRouting();
 
 app.MapControllerRoute(

@@ -14,13 +14,13 @@ namespace MediaCloud.WebApp.Services.Repository
         private PreviewRepository PreviewRepository { get; set; }
         private TagRepository TagRepository { get; set; }
 
-        private void SetContext(RepositoryContext context)
+        private void SetContext(RepositoryContext repositoryContext)
         {
-            ActorRepository = new(context.Context);
-            CollectionRepository = new(context);
-            MediaRepository = new(context);
-            PreviewRepository = new(context);
-            TagRepository = new(context);
+            ActorRepository = new(repositoryContext.DbContext);
+            CollectionRepository = new(repositoryContext);
+            MediaRepository = new(repositoryContext);
+            PreviewRepository = new(repositoryContext);
+            TagRepository = new(repositoryContext);
         }
 
         public Repository(AppDbContext context, ILogger<Repository> logger, IActorProvider actorProvider)
@@ -40,9 +40,9 @@ namespace MediaCloud.WebApp.Services.Repository
 
         public TagRepository Tags => TagRepository;
 
-        public void SaveChanges() => CollectionRepository.SaveChanges();
+        public void SaveChanges() => RepositoryContext.DbContext.SaveChanges();
 
-        public Actor GetCurrentActor() => RepositoryContext.Actor;
+        public Actor? GetCurrentActor() => RepositoryContext.Actor;
 
         public void SetCurrentActor(Actor actor)
         {

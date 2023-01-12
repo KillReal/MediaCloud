@@ -14,7 +14,7 @@ namespace MediaCloud.MediaUploader
 
         public static int WorkersActive => Workers.Count(x => x.IsRunning);
 
-        public static void LazyInit(IRepository repository, ILogger<Uploader> logger)
+        public static void Init(IRepository repository, ILogger<Uploader> logger)
         {
             Repository = repository;
             Logger = logger;
