@@ -29,8 +29,7 @@
                     <div class="picture-card shadow-1-strong col-md-2" draggable="true">
                             <div class="card list-clickable p-2 pb-4 d-flex flex-column align-items-center justify-content-between thumbnail" style="border-radius: 0.75rem">
                                 <img class="w-100 shadow-1-strong" style="border-radius: 0.5rem"
-                                     src="@Url.Action("Preview", "Gallery", new { id = Model.Collection.Previews[i].Id })"
-                                />
+                                    src="data:image/png;base64,@Convert.ToBase64String(Model.Collection.Previews[i].Content)" />
                                 <input class="order-val visually-hidden" asp-for=@(Model.Collection.Previews[i].Order)  class="form-control">
                             </div>
                     </div> 
@@ -43,9 +42,15 @@
                 <div class="picture-card picture shadow-1-strong col-md-4"
                      onclick="window.location='/Medias/Detail?id=@(Model.Collection.Previews[i].Id)&returnUrl=/Medias/Collection?id=@(Model.Collection.Id)'">
                         <img class="w-100 shadow-1-strong" style="border-radius: 0.5rem"
-                             src="@Url.Action("Preview", "Gallery", new { id = Model.Collection.Previews[i].Id })"
-                        />
+                            src="data:image/png;base64,@Convert.ToBase64String(Model.Collection.Previews[i].Content)" />
                 </div> 
+            }
+        </div>
+
+        <div class="d-flex justify-content-center">
+            @if (Model.Collection.Previews.Count() >= Model.ListRequest.Count)
+            {
+                <div class="spinner-border text-light" role="status" id="loadingSpinner" style="display: block; width:3rem; height:3rem"></div>
             }
         </div>
 
@@ -91,7 +96,7 @@
     
 </div>
 
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
 <script src="~/js/jquery.sortable.js"></script>
 
@@ -114,6 +119,49 @@
         document.getElementById('sortable-gallery').style.display = "flex";
         document.getElementById('gallery').style.display = "none";
     }
+
+    var currentOffset = @Model.ListRequest.Offset;
+    var nextOffset = @Model.ListRequest.Offset + @Model.ListRequest.Count;
+
+    window.onscroll = function (ev) {
+        if ((window.innerHeight + window.scrollY + 2000) >= document.body.offsetHeight) {
+            if (currentOffset == nextOffset || currentOffset > @Model.TotalCount) {
+                if (currentOffset > @Model.TotalCount) {
+                    document.getElementById('loadingSpinner').style = "display: none";
+                }
+                return;
+            }
+
+            currentOffset += @Model.ListRequest.Count;
+
+            var url = "/Collection/PreviewsBatch?id=" + '@Model.Collection.Id' + "&count=" + @Model.ListRequest.Count + "&offset=" + nextOffset;
+            fetch(url).then(function (response) {
+                return response.json();
+            }).then(function (data) {
+                var gallery = document.getElementById('gallery');
+                for (var i = 0; i < data.length; i++) {
+                    var cardDiv = document.createElement('div');
+                    cardDiv.className = "picture-card picture shadow-1-strong col-md-4";
+                    cardDiv.id = i;
+                    cardDiv.onclick = function (e) {
+                        var id = e.currentTarget.id;
+                        window.location = "Detail?id=" + data[id].id + "&returnUrl=/Medias/Collection?id=" + '@Model.Collection.Id';
+                    }
+
+                    var img = document.createElement('img');
+                    img.className = "w-100 shadow-1-strong";
+                    img.style = "border-radius: 0.5rem";
+                    img.src = "data:image/png;base64," + data[i].content;
+                    
+                    cardDiv.appendChild(img);
+                    gallery.appendChild(cardDiv);
+                }
+                nextOffset += @Model.ListRequest.Count;
+            }).catch(function (err) {
+                console.log('Fetch Error :-S', err);
+            });
+        }
+    };
 
 </script>
 

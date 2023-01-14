@@ -23,10 +23,51 @@ namespace MediaCloud.Repositories
                 return null;
             }
 
+            return collection;
+        }
+
+        public Collection? GetTopBatch(Guid id, int count = 42)
+        {
+            var collection = _context.Collections.Find(id);
+
+            if (collection == null || collection.Creator.Id != _actorId)
+            {
+                return null;
+            }
+
             collection.Previews = collection.Previews.OrderBy(x => x.Order)
+                                                     .Take(count)
                                                      .ToList();
 
             return collection;
+        }
+
+        public int GetListCount(Guid id)
+        {
+            var collection = _context.Collections.Find(id);
+
+            if (collection == null || collection.Creator.Id != _actorId)
+            {
+                return 0;
+            }
+
+            return collection.Count;
+        }
+
+        public List<Preview> GetList(Guid id, ListRequest listRequest)
+        {
+            var collection = _context.Collections.Find(id);
+
+            if (collection == null || collection.Creator.Id != _actorId)
+            {
+                return new();
+            }
+
+            return _context.Previews.Where(x => x.Collection == collection)
+                                    .OrderBy(x => x.Order)
+                                    .Skip(listRequest.Offset)
+                                    .Take(listRequest.Count)
+                                    .ToList();
         }
 
         public bool TryUpdateOrder(Guid id, List<int> orders)

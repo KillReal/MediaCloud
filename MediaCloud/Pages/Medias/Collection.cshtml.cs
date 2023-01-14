@@ -33,6 +33,10 @@ namespace MediaCloud.Pages.Medias
         public string TagsString { get; set; }
         [BindProperty]
         public bool IsOrderChanged { get; set; } = false;
+        [BindProperty]
+        public ListRequest ListRequest { get; set; } = new() { Count = 42};
+        [BindProperty]
+        public int TotalCount { get; set; }
 
         public CollectionModel(IRepository repository)
         {
@@ -41,7 +45,7 @@ namespace MediaCloud.Pages.Medias
 
         public IActionResult OnGet(Guid id, string returnUrl = "/Medias/Index")
         {
-            Collection = Repository.Collections.Get(id);
+            Collection = Repository.Collections.GetTopBatch(id);
 
             if (Collection == null)
             {
@@ -49,6 +53,7 @@ namespace MediaCloud.Pages.Medias
             }
 
             var preview = Collection.Previews.OrderBy(x => x.Order).First();
+            TotalCount = Repository.Collections.GetListCount(id);
 
             Tags = preview.Tags.OrderBy(x => x.Type).ToList();
             TagsString = string.Join(" ", Tags.Select(x => x.Name.ToLower()));
@@ -67,7 +72,7 @@ namespace MediaCloud.Pages.Medias
             if (IsOrderChanged)
             {
                 var orders = Collection.Previews.Select(x => x.Order)
-                                            .ToList();
+                                                .ToList();
 
                 if (Repository.Collections.TryUpdateOrder(Collection.Id, orders) == false)
                 {

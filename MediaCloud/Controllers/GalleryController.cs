@@ -14,8 +14,27 @@ namespace MediaCloud.WebApp.Controllers
             Repository = repository;
         }
 
-        public List<Preview> Index(ListRequest listRequest)
-            => new ListBuilder<Preview>(listRequest).Build(Repository.Previews);
+        public List<object> PreviewsBatch(ListRequest listRequest)
+        {
+            var previews = new ListBuilder<Preview>(listRequest).Build(Repository.Previews);
+
+            var jsonPreviews = new List<object>();
+            foreach (var preview in previews)
+            {
+                jsonPreviews.Add(new
+                {
+                    Id = preview.Id,
+                    Collection = new
+                    {
+                        Id = preview.Collection?.Id,
+                        Count = preview.Collection?.Count
+                    },
+                    Content = preview.Content,
+                });
+            }
+
+            return jsonPreviews;
+        }
 
         public Preview? Index(Guid id)
             => Repository.Previews.Get(id);

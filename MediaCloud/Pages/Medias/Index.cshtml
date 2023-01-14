@@ -59,50 +59,121 @@
 
     <hr style="margin-bottom: 2rem"/>
     <partial name="~/Pages/Shared/_Pagination.cshtml" />
-    <div class="row image-row gallery">
+    <div class="row image-row gallery" id="gallery">
+        @if (Model.Previews.Count == 0)
+        {
+            <h1 style="text-align: center">There is nothing here 😥</h1>
+        }
         @for (int c = 0; c < Model.ListBuilder.ColumnCount; c++)
         {
-            <div class="col-sm-@(12 / Model.ListBuilder.ColumnCount) image-column">
-            @for(int i = c; i < Model.Previews.Count; i += Model.ListBuilder.ColumnCount)
-            {
-                @if (Model.Previews[i].Collection != null)
+            <div class="col-sm-@(12 / Model.ListBuilder.ColumnCount) image-column" id="column-@c">
+                @for(int i = c; i < Model.Previews.Count; i += Model.ListBuilder.ColumnCount)
                 {
-                    <div class="w-100 shadow-1-strong picture mb-2 d-flex justify-content-end align-items-end" 
-                        onclick="window.location='/Medias/Collection?id=@(Model.Previews[i].Collection.Id)&returnUrl=/Medias?count=@(Model.ListBuilder.Count)$offset=@(Model.ListBuilder.Offset)$sort=@(Model.ListBuilder.Sort)$filter=@(Model.ListBuilder.Filter)'">
-                        <div class="bg-success rounded-circle" style="position: absolute; min-width: 2.25rem; text-align: center; margin-bottom: 1.85rem; margin-right: 0.25rem; font-size: 1.5rem"> @Model.Previews[i].Collection.Count</div>
-                        <img class="w-100 shadow-1-strong mb-4 picture-image bg-image"
-                        src="data:image/png;base64,@Convert.ToBase64String(Model.Previews[i].Content)"/>
+                    @if (Model.Previews[i].Collection != null)
+                    {
+                        <div class="w-100 shadow-1-strong picture mb-2 d-flex justify-content-end align-items-end" 
+                                onclick="window.location='/Medias/Collection?id=@(Model.Previews[i].Collection.Id)&returnUrl=/Medias?count=@(Model.ListBuilder.Count)$offset=@(Model.ListBuilder.Offset)$sort=@(Model.ListBuilder.Sort)$filter=@(Model.ListBuilder.Filter)'">
+                            <div class="bg-success rounded-circle" style="position: absolute; min-width: 2.25rem; text-align: center; margin-bottom: 1.85rem; margin-right: 0.25rem; font-size: 1.5rem"> @Model.Previews[i].Collection.Count</div>
+                            <img class="w-100 shadow-1-strong mb-4 picture-image bg-image"
+                                src="data:image/png;base64,@Convert.ToBase64String(Model.Previews[i].Content)"/>
                         </div>
+                    }
+                    else
+                    {
+                        <div class="w-100 shadow-1-strong picture mb-2 d-flex justify-content-end align-items-end" 
+                                onclick="window.location='/Medias/Detail?id=@(Model.Previews[i].Id)&returnUrl=/Medias?count=@(Model.ListBuilder.Count)$offset=@(Model.ListBuilder.Offset)$sort=@(Model.ListBuilder.Sort)$filter=@(Model.ListBuilder.Filter)'">
+                            <img class="w-100 shadow-1-strong mb-4 picture-image bg-image"
+                                src="data:image/png;base64,@Convert.ToBase64String(Model.Previews[i].Content)"/>
+                        </div>
+                    }
                 }
-                else
-                {
-                    <div class="w-100 shadow-1-strong picture mb-2 d-flex justify-content-end align-items-end" 
-                    onclick="window.location='/Medias/Detail?id=@(Model.Previews[i].Id)&returnUrl=/Medias?count=@(Model.ListBuilder.Count)$offset=@(Model.ListBuilder.Offset)$sort=@(Model.ListBuilder.Sort)$filter=@(Model.ListBuilder.Filter)'">
-                    <img class="w-100 shadow-1-strong mb-4 picture-image bg-image"
-                    src="data:image/png;base64,@Convert.ToBase64String(Model.Previews[i].Content)"/>
-                </div>
-                }
-
-            }
-        </div>
+            </div>
         }
     </div>
-    <partial name="~/Pages/Shared/_Pagination.cshtml" />
+    <div class="d-flex justify-content-center">
+        @if (Model.Previews.Count >= Model.ListBuilder.Count)
+        {
+            <div class="spinner-border text-light" role="status" id="loadingSpinner" style="display: block; width:3rem; height:3rem"></div>
+        }
+        <h1 style="text-align: center; display: none" id="loadingDone">Your are reached the end 😮</h1>
+    </div>
 </div>
 
 <script type="text/javascript">
-var elem = document.getElementById("filterGrab");
+    var elem = document.getElementById("filterGrab");
     elem.onkeyup = function(e){
         if(e.keyCode == 13){
-           filterClicked();
+            filterClicked();
         }
     }
 
-function filterClicked()
-{
-    var value = document.getElementById("filterGrab").value;
-    window.location.href = "/Medias?filter=" + value + "&sort=@(Model.ListBuilder.Sort)";
-}
+    var currentOffset = @Model.ListBuilder.Offset;
+    var nextOffset = @Model.ListBuilder.Offset + @Model.ListBuilder.Count;
+
+    window.onscroll = function (ev) {
+        if ((window.innerHeight + window.scrollY + 2000) >= document.body.offsetHeight) {
+
+            if (currentOffset == nextOffset || currentOffset > @Model.ListBuilder.TotalCount) {
+                if (currentOffset > @Model.ListBuilder.TotalCount) {
+                    document.getElementById('loadingSpinner').style = "display: none";
+                    document.getElementById('loadingDone').style = "text-align: center; display: block";
+                }
+                return;
+            }
+            currentOffset += @Model.ListBuilder.Count;
+
+            var url = "/Gallery/PreviewsBatch?count=" + @Model.ListBuilder.Count + "&offset=" + nextOffset + "&sort=" + '@(Model.ListBuilder.Sort)' + "&filter=" + '@(Model.ListBuilder.Filter)';
+            fetch(url).then(function(response) {
+                return response.json();
+            }).then(function(data) {
+                var gallery = document.getElementById('gallery');
+                for (var i = 0; i < data.length; i++) {
+                    var columnDiv = document.getElementById('column-' + (i % @Model.ListBuilder.ColumnCount));
+                    var cardDiv = document.createElement('div');
+                    cardDiv.className = "w-100 shadow-1-strong picture mb-2 d-flex justify-content-end align-items-end";
+                    cardDiv.id = i;
+
+                    if (data[i].collection.count != null) {
+                        cardDiv.onclick = function (e) {
+                            var id = e.currentTarget.id;
+                            window.location = "Medias/Collection?id=" + data[id].collection.id +
+                            "&returnUrl=/Medias?count=" + @Model.ListBuilder.Count + "$offset=" + @Model.ListBuilder.Offset +
+                            "$sort=" + '@Model.ListBuilder.Sort' + "$filter=" + '@Model.ListBuilder.Filter';
+                        }
+
+                        var circleDiv = document.createElement('div');
+                        circleDiv.className = "bg-success rounded-circle";
+                        circleDiv.style = "position: absolute; min-width: 2.25rem; text-align: center; margin-bottom: 1.85rem; margin-right: 0.25rem; font-size: 1.5rem";
+                        circleDiv.innerText = data[i].collection.count;
+                        cardDiv.appendChild(circleDiv);
+                    }
+                    else {
+                        cardDiv.onclick = function (e) {
+                            var id = e.currentTarget.id;
+                            window.location = "Medias/Detail?id=" + data[id].id +
+                                "&returnUrl=/Medias?count=" + @Model.ListBuilder.Count + "$offset=" + @Model.ListBuilder.Offset +
+                                "$sort=" + '@Model.ListBuilder.Sort' + "$filter=" + '@Model.ListBuilder.Filter';
+                        }
+                    }
+                    var img = document.createElement('img');
+                    img.className = "w-100 shadow-1-strong mb-4 picture-image bg-image";
+                    img.src = "data:image/png;base64," + data[i].content;
+                    cardDiv.appendChild(img);
+                    columnDiv.appendChild(cardDiv);
+                }
+                gallery.appendChild(columnDiv);
+                nextOffset += @Model.ListBuilder.Count;
+            }).catch(function(err) {
+                console.log('Fetch Error :-S', err);
+            });
+        }
+    };
+
+    function filterClicked()
+    {
+        var value = document.getElementById("filterGrab").value;
+        window.location.href = "/Medias?filter=" + value + "&sort=@(Model.ListBuilder.Sort)";
+    }
 </script>
 
 @section Scripts {
