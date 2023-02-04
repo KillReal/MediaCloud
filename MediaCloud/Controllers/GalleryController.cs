@@ -14,9 +14,9 @@ namespace MediaCloud.WebApp.Controllers
             Repository = repository;
         }
 
-        public List<object> PreviewsBatch(ListRequest listRequest)
+        public async Task<List<object>> PreviewsBatchAsync(ListRequest listRequest)
         {
-            var previews = new ListBuilder<Preview>(listRequest).Build(Repository.Previews);
+            var previews = await new ListBuilder<Preview>(listRequest).BuildAsync(Repository.Previews);
 
             var jsonPreviews = new List<object>();
             foreach (var preview in previews)

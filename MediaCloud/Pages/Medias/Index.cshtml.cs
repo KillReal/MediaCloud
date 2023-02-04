@@ -35,19 +35,19 @@ namespace MediaCloud.Pages.Medias
             Repository = repository;
         }
 
-        public IActionResult OnGet(ListRequest request)
+        public async Task<IActionResult> OnGetAsync(ListRequest request)
         {
             ListBuilder = new ListBuilder<Preview>(request);
-            Previews = ListBuilder.Build(Repository.Previews);
+            Previews = await ListBuilder.BuildAsync(Repository.Previews);
 
             var topTagNames = Repository.Tags.GetTopUsed(2).Select(x => x.Name.ToLower());
-            if (topTagNames.Any())
+            if (topTagNames.Count() > 1)
             {
                 ExampleFilter = $"{topTagNames.First()} !{topTagNames.Last()}";
             }
             else
             {
-                ExampleFilter = "Create new tags for filtering";
+                ExampleFilter = "Create more tags to filtering";
             }
 
             return Page();

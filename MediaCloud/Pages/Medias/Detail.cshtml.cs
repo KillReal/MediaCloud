@@ -31,6 +31,10 @@ namespace MediaCloud.Pages.Medias
         public string? TagsString { get; set; } = "";
         [BindProperty]
         public string ReturnUrl { get; set; }
+        [BindProperty]
+        public Guid? PrevPreviewId { get; set; } = null;
+        [BindProperty]
+        public Guid? NextPreviewId { get; set; } = null;
 
         public DetailModel(IRepository repository)
         {
@@ -48,6 +52,12 @@ namespace MediaCloud.Pages.Medias
 
             PreviewId = preview.Id;
             Media = preview.Media;
+
+            if (preview.Collection != null)
+            {
+                PrevPreviewId = preview.Collection.Previews.FirstOrDefault(x => x.Order == preview.Order - 1)?.Id;
+                NextPreviewId = preview.Collection.Previews.FirstOrDefault(x => x.Order == preview.Order + 1)?.Id;
+            }
 
             Tags = preview.Tags.OrderBy(x => x.Type)
                                .ToList();

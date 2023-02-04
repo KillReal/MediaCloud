@@ -23,7 +23,7 @@ namespace MediaCloud.Repositories
         {
             var entity = _context.Find<T>(id);
 
-            if (entity == null || entity.Creator.Id != _actorId)
+            if (entity == null || entity.CreatorId != _actorId)
             {
                 return null;
             }
@@ -35,7 +35,7 @@ namespace MediaCloud.Repositories
         {
             var entity = Get(id);
 
-            if (entity == null || entity.Creator.Id != _actorId)
+            if (entity == null || entity.CreatorId != _actorId)
             {
                 return false;
             }

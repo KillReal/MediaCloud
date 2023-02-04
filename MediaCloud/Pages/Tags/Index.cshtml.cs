@@ -31,10 +31,10 @@ namespace MediaCloud.Pages.Tags
         [BindProperty]
         public ListBuilder<Tag> ListBuilder { get; set; }
 
-        public IActionResult OnGet(ListRequest request)
+        public async Task<IActionResult> OnGetAsync(ListRequest request)
         {
             ListBuilder = new(request);
-            Tags = ListBuilder.Build(Repository.Tags);
+            Tags = await ListBuilder.BuildAsync(Repository.Tags);
 
             return Page();
         }

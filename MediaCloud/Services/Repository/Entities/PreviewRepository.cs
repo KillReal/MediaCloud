@@ -61,10 +61,11 @@ namespace MediaCloud.Repositories
 
         public async Task<int> GetListCountAsync(ListBuilder<Preview> listBuilder)
         {
+            await Task.Yield();
             var query = _context.Previews.AsNoTracking().Where(x => x.Order == 0);
             query = SetFilterToQuery(query, listBuilder.Filter);
 
-            return await query.Where(x => x.Creator.Id == _actorId)
+            return await query.Where(x => x.CreatorId == _actorId)
                               .CountAsync();
         }
 
@@ -82,7 +83,7 @@ namespace MediaCloud.Repositories
                                                       .ToList();
 
                 return query.Where(x => previewIdsList.Any(id => id == x.Id) 
-                                     && x.Creator.Id == _actorId)
+                                     && x.CreatorId == _actorId)
                             .Include(x => x.Collection)
                             .ToList()
                             .OrderBy(x => previewIdsList.IndexOf(x.Id))
@@ -92,7 +93,7 @@ namespace MediaCloud.Repositories
             }
 
             return query.Order(listBuilder.Order)
-                        .Where(x => x.Creator.Id == _actorId)
+                        .Where(x => x.CreatorId == _actorId)
                         .Skip(listBuilder.Offset)
                         .Take(listBuilder.Count)
                         .Include(x => x.Collection)

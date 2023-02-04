@@ -40,10 +40,10 @@ builder.Services.AddLogging();
 builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
 builder.Services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
 builder.Services.AddScoped<IActorProvider, ActorProvider>();
-builder.Services.AddScoped<IUploader, Uploader>();
+builder.Services.AddSingleton<IUploader, Uploader>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddTransient<IRepository, Repository>();
+builder.Services.AddScoped<IRepository, Repository>();
 
 builder.Services.Configure<FormOptions>(x =>
 {

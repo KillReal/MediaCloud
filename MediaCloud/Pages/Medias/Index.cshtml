@@ -134,7 +134,7 @@
                     cardDiv.id = i;
 
                     if (data[i].collection.count != null) {
-                        cardDiv.onclick = function (e) {
+                        cardDiv.onauxclick = function (e) {
                             var id = e.currentTarget.id;
                             window.location = "Medias/Collection?id=" + data[id].collection.id +
                             "&returnUrl=/Medias?count=" + @Model.ListBuilder.Count + "$offset=" + @Model.ListBuilder.Offset +

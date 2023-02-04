@@ -24,27 +24,10 @@
         <input type="hidden" asp-for=@(Model.IsOrderChanged) class="form-control" id="order-changed">
         <input type="hidden" asp-for=@(Model.Collection.Id) class="form-control">
         <div class="row thumbnail-sortable" id="sortable-gallery" style="display: none"> 
-            @for(int i = 0; i < Model.Collection.Previews.Count(); i++)
-                {
-                    <div class="picture-card shadow-1-strong col-md-2" draggable="true">
-                            <div class="card list-clickable p-2 pb-4 d-flex flex-column align-items-center justify-content-between thumbnail" style="border-radius: 0.75rem">
-                                <img class="w-100 shadow-1-strong" style="border-radius: 0.5rem"
-                                    src="data:image/png;base64,@Convert.ToBase64String(Model.Collection.Previews[i].Content)" />
-                                <input class="order-val visually-hidden" asp-for=@(Model.Collection.Previews[i].Order)  class="form-control">
-                            </div>
-                    </div> 
-                }
         </div>
 
         <div class="row gallery" id="gallery" style="display: flex"> 
-            @for(int i = 0; i < Model.Collection.Previews.Count; i++)
-            {
-                <div class="picture-card picture shadow-1-strong col-md-4"
-                     onclick="window.location='/Medias/Detail?id=@(Model.Collection.Previews[i].Id)&returnUrl=/Medias/Collection?id=@(Model.Collection.Id)'">
-                        <img class="w-100 shadow-1-strong" style="border-radius: 0.5rem"
-                            src="data:image/png;base64,@Convert.ToBase64String(Model.Collection.Previews[i].Content)" />
-                </div> 
-            }
+            
         </div>
 
         <div class="d-flex justify-content-center">
@@ -97,13 +80,25 @@
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-
-<script src="~/js/jquery.sortable.js"></script>
+<script src="~/js/html5sortable.js"></script>
 
 <script type="text/javascript">
-    $('.thumbnail-sortable').sortable({
+    /*$('.thumbnail-sortable').sortable({
         placeholderClass: 'col-md-2'
-    }).bind('sortupdate', function(e, ui) {
+    }).bind('sortupdate', function (e, ui) {
+        var row = document.getElementById('sortable-gallery');
+        var place = 0;
+        for (const child of row.children) {
+            var order = child.getElementsByClassName("order-val visually-hidden");
+            order[0].value = place;
+            place++;
+        }
+    });*/
+    sortable('.thumbnail-sortable', {
+        placeholderClass: 'col-md-2'
+    });
+
+    sortable('.thumbnail-sortable')[0].addEventListener('sortupdate', function (e) {
         var row = document.getElementById('sortable-gallery');
         var place = 0;
         for (const child of row.children) {
@@ -120,26 +115,49 @@
         document.getElementById('gallery').style.display = "none";
     }
 
-    var currentOffset = @Model.ListRequest.Offset;
-    var nextOffset = @Model.ListRequest.Offset + @Model.ListRequest.Count;
+    var currentOffset = -@Model.ListRequest.Count;
+    var nextOffset = 0;
 
     window.onscroll = function (ev) {
         if ((window.innerHeight + window.scrollY + 2000) >= document.body.offsetHeight) {
-            if (currentOffset == nextOffset || currentOffset > @Model.TotalCount) {
-                if (currentOffset > @Model.TotalCount) {
-                    document.getElementById('loadingSpinner').style = "display: none";
-                }
+            if (currentOffset == nextOffset) {
+                return;
+            }
+            
+            if (currentOffset > @Model.TotalCount) {
+                nextOffset = currentOffset;
+                document.getElementById('loadingSpinner').style = "display: none";
                 return;
             }
 
+            console.log("currentOffset=" + currentOffset + " nextOffset=" + nextOffset);
             currentOffset += @Model.ListRequest.Count;
+            
 
             var url = "/Collection/PreviewsBatch?id=" + '@Model.Collection.Id' + "&count=" + @Model.ListRequest.Count + "&offset=" + nextOffset;
             fetch(url).then(function (response) {
                 return response.json();
             }).then(function (data) {
                 var gallery = document.getElementById('gallery');
+                var sortableGallery = document.getElementById('sortable-gallery');
                 for (var i = 0; i < data.length; i++) {
+                    sortCardDiv = document.createElement('div');
+                    sortCardDiv.className = "picture-card shadow-1-strong col-md-2";
+                    sortCardDiv.draggable = true;
+                    sortCardInnerDiv = document.createElement('div');
+                    sortCardInnerDiv.className = "card list-clickable p-2 pb-4 d-flex flex-column align-items-center justify-content-between thumbnail";
+                    sortCardInnerDiv.style = "border-radius: 0.75rem";
+                    var sortImg = document.createElement('img');
+                    sortImg.className = "w-100 shadow-1-strong";
+                    sortImg.style = "border-radius: 0.5rem";
+                    sortImg.src = "data:image/png;base64," + data[i].content;
+                    var sortInput = document.createElement('input');
+                    sortInput.className = "order-val visually-hidden";
+                    sortInput.type = "number";
+                    sortInput.id = "Orders_" + (i + currentOffset);
+                    sortInput.name = "Orders[" + (i + currentOffset) + "]";
+                    sortInput.value = data[i].order;
+
                     var cardDiv = document.createElement('div');
                     cardDiv.className = "picture-card picture shadow-1-strong col-md-4";
                     cardDiv.id = i;
@@ -147,21 +165,28 @@
                         var id = e.currentTarget.id;
                         window.location = "Detail?id=" + data[id].id + "&returnUrl=/Medias/Collection?id=" + '@Model.Collection.Id';
                     }
-
                     var img = document.createElement('img');
                     img.className = "w-100 shadow-1-strong";
                     img.style = "border-radius: 0.5rem";
                     img.src = "data:image/png;base64," + data[i].content;
-                    
+
                     cardDiv.appendChild(img);
                     gallery.appendChild(cardDiv);
+
+                    sortCardInnerDiv.appendChild(sortImg);
+                    sortCardInnerDiv.appendChild(sortInput);
+                    sortCardDiv.appendChild(sortCardInnerDiv);
+                    sortableGallery.appendChild(sortCardDiv);
                 }
+                sortable('.thumbnail-sortable');
                 nextOffset += @Model.ListRequest.Count;
             }).catch(function (err) {
                 console.log('Fetch Error :-S', err);
             });
         }
     };
+
+    window.scrollTo(0, 1);
 
 </script>
 

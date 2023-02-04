@@ -33,7 +33,7 @@ namespace MediaCloud.Pages.Actors
         [BindProperty]
         public ListBuilder<Actor> ListBuilder { get; set; }
 
-        public IActionResult OnGet(ListRequest request)
+        public async Task<IActionResult> OnGetAsync(ListRequest request)
         {
             Actor = Repository.GetCurrentActor();
 
@@ -43,7 +43,7 @@ namespace MediaCloud.Pages.Actors
             }
 
             ListBuilder = new(request);
-            Actors = ListBuilder.Build(Repository.Actors);
+            Actors = await ListBuilder.BuildAsync(Repository.Actors);
 
             return Page();
         }

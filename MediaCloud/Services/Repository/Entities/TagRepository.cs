@@ -51,7 +51,7 @@ namespace MediaCloud.Repositories
             }
 
             return _context.Tags.Where(x => tagsString.ToLower().Contains(x.Name.ToLower())
-                                         && x.Creator.Id == _actorId)
+                                         && x.CreatorId == _actorId)
                                 .ToList();
         }
 
@@ -83,14 +83,14 @@ namespace MediaCloud.Repositories
         public List<Tag> GetList(ListBuilder<Tag> listBuilder)
         {
             return _context.Tags.AsNoTracking().Order(listBuilder.Order)
-                                               .Where(x => x.Creator.Id == _actorId)
+                                               .Where(x => x.CreatorId == _actorId)
                                                .Skip(listBuilder.Offset)
                                                .Take(listBuilder.Count)
                                                .ToList();
         }
 
         public async Task<int> GetListCountAsync(ListBuilder<Tag> listBuilder) 
-            => await _context.Tags.Where(x => x.Creator.Id == _actorId).AsNoTracking().CountAsync();
+            => await _context.Tags.Where(x => x.CreatorId == _actorId).AsNoTracking().CountAsync();
 
         /// <summary>
         /// Return list of tags ordered by PreviewsCount with specified count.
@@ -100,7 +100,7 @@ namespace MediaCloud.Repositories
         public List<Tag> GetTopUsed(int limit)
         {
             return _context.Tags.OrderByDescending(x => x.PreviewsCount)
-                                .Where(x => x.Creator.Id == _actorId)
+                                .Where(x => x.CreatorId == _actorId)
                                 .Take(limit)
                                 .ToList();
         }

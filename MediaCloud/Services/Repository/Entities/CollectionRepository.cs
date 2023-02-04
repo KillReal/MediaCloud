@@ -18,7 +18,7 @@ namespace MediaCloud.Repositories
         {
             var collection = _context.Collections.Find(id);
 
-            if (collection == null || collection.Creator.Id != _actorId)
+            if (collection == null || collection.CreatorId != _actorId)
             {
                 return null;
             }
@@ -26,27 +26,11 @@ namespace MediaCloud.Repositories
             return collection;
         }
 
-        public Collection? GetTopBatch(Guid id, int count = 42)
+        public async Task<int> GetListCount(Guid id)
         {
-            var collection = _context.Collections.Find(id);
+            var collection = await _context.Collections.FindAsync(id);
 
-            if (collection == null || collection.Creator.Id != _actorId)
-            {
-                return null;
-            }
-
-            collection.Previews = collection.Previews.OrderBy(x => x.Order)
-                                                     .Take(count)
-                                                     .ToList();
-
-            return collection;
-        }
-
-        public int GetListCount(Guid id)
-        {
-            var collection = _context.Collections.Find(id);
-
-            if (collection == null || collection.Creator.Id != _actorId)
+            if (collection == null || collection.CreatorId != _actorId)
             {
                 return 0;
             }
@@ -58,7 +42,7 @@ namespace MediaCloud.Repositories
         {
             var collection = _context.Collections.Find(id);
 
-            if (collection == null || collection.Creator.Id != _actorId)
+            if (collection == null || collection.CreatorId != _actorId)
             {
                 return new();
             }

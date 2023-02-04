@@ -25,6 +25,7 @@ namespace MediaCloud.WebApp.Controllers
                 {
                     Id = preview.Id,
                     Content = preview.Content,
+                    Order = preview.Order,
                 });
             }
 

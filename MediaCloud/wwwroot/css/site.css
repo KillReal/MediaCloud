@@ -109,3 +109,13 @@ body {
 .picture-card {
     margin-bottom: 1.5rem;
 }
+
+.img-container {
+    position:relative;
+    display: inline-block;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
