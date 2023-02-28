@@ -11,6 +11,18 @@ namespace MediaCloud.Repositories
 {
     public class TagRepository : Repository<Tag>, IListBuildable<Tag>
     {
+        private string DeduplicateTagString(string tagString)
+        {
+            var tags = tagString.Split(' ');
+
+            if (tags.Count() < 2)
+            {
+                return tagString;
+            }
+
+            return string.Join(' ', tags.Distinct());
+        }
+
         public TagRepository(RepositoryContext repositoryContext) : base(repositoryContext)
         {
         }
@@ -50,6 +62,7 @@ namespace MediaCloud.Repositories
                 return new();
             }
 
+            tagsString = DeduplicateTagString(tagsString);
             return _context.Tags.Where(x => tagsString.ToLower().Contains(x.Name.ToLower())
                                          && x.CreatorId == _actorId)
                                 .ToList();
@@ -57,6 +70,7 @@ namespace MediaCloud.Repositories
 
         public TagFilter<Preview> GetTagFilter(string tagsString)
         {
+            tagsString = DeduplicateTagString(tagsString);
             var tags = tagsString.ToLower().Split(' ');
             
             var positiveTags = new List<string>();
