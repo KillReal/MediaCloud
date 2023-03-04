@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using MediaCloud.WebApp.Services;
 using MediaCloud.WebApp.Services.Repository;
 using System.Reflection;
+using Microsoft.AspNetCore.ResponseCompression;
+using System.IO.Compression;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +33,10 @@ builder.Services.AddRazorPages();
 builder.Services.AddResponseCompression(options =>
 {
     options.EnableForHttps = true;
+});
+builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
+{
+    options.Level = CompressionLevel.Optimal;
 });
 builder.Services.AddDbContext<AppDbContext>(options => 
 {

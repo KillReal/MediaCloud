@@ -13,6 +13,7 @@ namespace MediaCloud.WebApp.Services.Repository
         private MediaRepository MediaRepository { get; set; }
         private PreviewRepository PreviewRepository { get; set; }
         private TagRepository TagRepository { get; set; }
+        private StatisticSnapshotRepository StatisticSnapshotRepository { get; set; }
 
         private void SetContext(RepositoryContext repositoryContext)
         {
@@ -39,6 +40,8 @@ namespace MediaCloud.WebApp.Services.Repository
         public PreviewRepository Previews => PreviewRepository;
 
         public TagRepository Tags => TagRepository;
+
+        StatisticSnapshotRepository IRepository.StatisticSnapshots => StatisticSnapshotRepository;
 
         public void SaveChanges() => RepositoryContext.DbContext.SaveChanges();
 

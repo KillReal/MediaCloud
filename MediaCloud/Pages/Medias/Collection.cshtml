@@ -83,17 +83,6 @@
 <script src="~/js/html5sortable.js"></script>
 
 <script type="text/javascript">
-    /*$('.thumbnail-sortable').sortable({
-        placeholderClass: 'col-md-2'
-    }).bind('sortupdate', function (e, ui) {
-        var row = document.getElementById('sortable-gallery');
-        var place = 0;
-        for (const child of row.children) {
-            var order = child.getElementsByClassName("order-val visually-hidden");
-            order[0].value = place;
-            place++;
-        }
-    });*/
     sortable('.thumbnail-sortable', {
         placeholderClass: 'col-md-2'
     });
@@ -118,7 +107,7 @@
     var currentOffset = -@Model.ListRequest.Count;
     var nextOffset = 0;
 
-    window.onscroll = function (ev) {
+    window.addEventListener("scroll", function (e) {
         if ((window.innerHeight + window.scrollY + 2000) >= document.body.offsetHeight) {
             if (currentOffset == nextOffset) {
                 return;
@@ -184,7 +173,7 @@
                 console.log('Fetch Error :-S', err);
             });
         }
-    };
+    });
 
     window.scrollTo(0, 1);
 

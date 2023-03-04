@@ -23,11 +23,9 @@ namespace MediaCloud.Data
 
         public override int SaveChanges()
         {
-            var entries = ChangeTracker
-                .Entries()
-                .Where(e => e.Entity is Record && (
-                        e.State == EntityState.Added
-                        || e.State == EntityState.Modified));
+            var entries = ChangeTracker.Entries().Where(e => e.Entity is Record && (
+                                                             e.State == EntityState.Added ||
+                                                             e.State == EntityState.Modified));
 
             foreach (var entityEntry in entries)
             {
@@ -47,5 +45,6 @@ namespace MediaCloud.Data
         public DbSet<Media> Medias { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Collection> Collections { get; set; }
+        public DbSet<StatisticSnapshot> StatisticSnapshots { get; set; }
     }
 }

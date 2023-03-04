@@ -110,7 +110,7 @@
     var currentOffset = @Model.ListBuilder.Offset;
     var nextOffset = @Model.ListBuilder.Offset + @Model.ListBuilder.Count;
 
-    window.onscroll = function (ev) {
+    window.addEventListener("scroll", function(e) {
         if ((window.innerHeight + window.scrollY + 2000) >= document.body.offsetHeight) {
 
             if (currentOffset == nextOffset || currentOffset > @Model.ListBuilder.TotalCount) {
@@ -134,7 +134,7 @@
                     cardDiv.id = i;
 
                     if (data[i].collection.count != null) {
-                        cardDiv.onauxclick = function (e) {
+                        cardDiv.onclick = function (e) {
                             var id = e.currentTarget.id;
                             window.location = "Medias/Collection?id=" + data[id].collection.id +
                             "&returnUrl=/Medias?count=" + @Model.ListBuilder.Count + "$offset=" + @Model.ListBuilder.Offset +
@@ -167,7 +167,7 @@
                 console.log('Fetch Error :-S', err);
             });
         }
-    };
+    });
 
     function filterClicked()
     {
