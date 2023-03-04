@@ -23,8 +23,7 @@ namespace MediaCloud.Repositories
                     return query.Where(x => x.Tags.Any() == false);
                 }
 
-                var tagFilter = TagRepository.GetTagFilter(filter);
-                return tagFilter.GetQuery(query);
+                return TagRepository.GetTagFilter(filter).GetQuery(query);
             }
 
             return query;
@@ -39,8 +38,7 @@ namespace MediaCloud.Repositories
         {
             if (preview.Collection != null)
             {
-                preview = preview.Collection.Previews.OrderBy(x => x.Order)
-                                                     .First();
+                preview = preview.Collection.Previews.OrderBy(x => x.Order).First();
             }
 
             var affectedTags = new List<Tag>(preview.Tags);
@@ -55,18 +53,14 @@ namespace MediaCloud.Repositories
             SaveChanges();
 
             _ = TagRepository.RecalculateCountsAsync(affectedTags.Distinct().ToList());
-
-            return;
         }
 
         public async Task<int> GetListCountAsync(ListBuilder<Preview> listBuilder)
         {
-            await Task.Yield();
             var query = _context.Previews.AsNoTracking().Where(x => x.Order == 0);
-            query = SetFilterToQuery(query, listBuilder.Filter);
 
-            return await query.Where(x => x.CreatorId == _actorId)
-                              .CountAsync();
+            return await SetFilterToQuery(query, listBuilder.Filter).Where(x => x.CreatorId == _actorId)
+                                                                    .CountAsync();
         }
 
         public List<Preview> GetList(ListBuilder<Preview> listBuilder)

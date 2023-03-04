@@ -9,23 +9,20 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
-<body  bg-secondary class="mb-0" style="min-width: 450px">
+<body  bg-secondary class="mb-0" style="min-width: 500px">
     @inject IActorProvider actorProvider
     @{
         var actor = actorProvider.GetCurrent();
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light box-shadow">
-            <div class="container">
-                <a class="navbar-brand text-white" asp-area="" asp-page="/Index">MediaCloud v@(Assembly.GetEntryAssembly().GetName().Version.ToString(3))</a>
+            <div class="container-fluid ps-5 pe-5">
+                <a class="ms-3 navbar-brand text-white" asp-area="" asp-page="/Index">MediaCloud v@(Assembly.GetEntryAssembly().GetName().Version.ToString(3))</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="/Index">Home</a>
-                        </li>
                         <li class="nav-item">
                             <a class="nav-link text-white" href="/Medias">Gallery</a>
                         </li>
@@ -37,9 +34,9 @@
                             <li class="nav-item">
                                 <a class="nav-link text-white" href="/Actors">Actors</a>
                             </li>
-                            <li class="nav-item">
+                            <!--<li class="nav-item">
                                 <a class="nav-link text-white" href="/Statistic">Statistic</a>
-                            </li>
+                            </li> --->
                         }
                         <li class="nav-item">
                             <a class="nav-link text-white" href="/Changelog">Changelog</a>
@@ -49,7 +46,7 @@
                         </li>
                     </ul>
                 </div>
-                    <div class="collapse navbar-collapse collapse d-sm-inline-flex justify-content-between text-right" id="myNavbar">
+                    <div class="me-3 collapse navbar-collapse collapse d-sm-inline-flex justify-content-between text-right" id="myNavbar">
                         @if (actor != null)
                         {
                             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
@@ -73,15 +70,21 @@
             </div>
         </nav>
     </header>
+        <button type="button"
+                class="btn btn-lg"
+                id="btn-back-to-top"
+                style="z-index: 1000; max-width: 5rem">
+            <img style="width:100%" src="~/img/up.png">
+        </button>
     }
-    <div class="gradient-main" style="min-height: 100vh">
-         <div class="container mb-4">
+    <div class="gradient-main" style="min-height: 140vh">
+         <div class="container-fluid mb-4 ps-5 pe-5">
             <main role="main" class="pb-3">
                 @RenderBody()
             </main>
         </div>
-        <footer class="footer text-white">
-            <div class="container m-2">
+        <footer class="footer text-white" style="min-width: 500px">
+            <div class="container mb-2 mt-2">
                 &copy; 2022 - MediaCloud - <a asp-area="" asp-page="/Privacy">Privacy</a>
             </div>
         </footer>
@@ -94,3 +97,30 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
+<script>
+    let mybutton = document.getElementById("btn-back-to-top");
+
+    // When the user scrolls down 20px from the top of the document, show the button
+    window.onscroll = function () {
+        scrollFunction();
+    };
+
+    function scrollFunction() {
+        if (
+            document.body.scrollTop > 20 ||
+            document.documentElement.scrollTop > 20
+        ) {
+            mybutton.style.display = "block";
+        } else {
+            mybutton.style.display = "none";
+        }
+    }
+    // When the user clicks on the button, scroll to the top of the document
+    mybutton.addEventListener("click", backToTop);
+
+    function backToTop() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+</script>

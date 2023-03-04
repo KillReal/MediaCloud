@@ -15,7 +15,7 @@ namespace MediaCloud.Repositories
         {
             var tags = tagString.Split(' ');
 
-            if (tags.Count() < 2)
+            if (tags.Length < 2)
             {
                 return tagString;
             }

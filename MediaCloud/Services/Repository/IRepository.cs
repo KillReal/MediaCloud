@@ -15,6 +15,7 @@ namespace MediaCloud.WebApp.Services.Repository
         public PreviewRepository Previews { get; }
 
         public TagRepository Tags { get; }
+        public StatisticSnapshotRepository StatisticSnapshots { get; }
 
         public void SaveChanges();
 

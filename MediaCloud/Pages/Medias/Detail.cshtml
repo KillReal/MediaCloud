@@ -22,7 +22,7 @@
     <div class="img-container">
         @if (Model.PrevPreviewId != null)
         {
-            <img src="/img/arrow-left.svg" style="cursor: pointer; position: absolute; left: 0; width: 2rem; background: deepskyblue; padding: 0.5rem; border-radius: 1rem" onclick="window.location='/Medias/Detail/?id=@(Model.PrevPreviewId)&returnUrl=@(Model.ReturnUrl)'" />
+            <img id="left-arrow" src="/img/arrow-left.svg" style="cursor: pointer; position: absolute; left: 0; width: 2rem; background: deepskyblue; padding: 0.5rem; border-radius: 1rem" onclick="window.location='/Medias/Detail/?id=@(Model.PrevPreviewId)&returnUrl=@(Model.ReturnUrl)'" />
 
         }
         
@@ -33,7 +33,7 @@
 
         @if (Model.NextPreviewId != null)
         {
-            <img src="/img/arrow-right.svg" style="cursor: pointer; position: absolute; right: 0; width: 2rem; background: deepskyblue; padding: 0.5rem; border-radius: 1rem" onclick="window.location='/Medias/Detail/?id=@(Model.NextPreviewId)&returnUrl=@(Model.ReturnUrl)'" />
+            <img id="right-arrow" src="/img/arrow-right.svg" style="cursor: pointer; position: absolute; right: 0; width: 2rem; background: deepskyblue; padding: 0.5rem; border-radius: 1rem" onclick="window.location='/Medias/Detail/?id=@(Model.NextPreviewId)&returnUrl=@(Model.ReturnUrl)'" />
         }
     </div>
 
@@ -103,11 +103,11 @@
 
 <script>
     document.addEventListener('keydown', (event) => {
-        if (@Model.PrevPreviewId != null && event.code == 'ArrowLeft') {
-            document.location.href = "/Medias/Detail/?id=@(Model.PrevPreviewId)&returnUrl=@(Model.ReturnUrl)";
+        if ( event.code == 'ArrowLeft') {
+            document.getElementById("left-arrow").click();
         }
-        if (@Model.NextPreviewId != null && event.code == 'ArrowRight') {
-            document.location.href = "/Medias/Detail/?id=@(Model.NextPreviewId)&returnUrl=@(Model.ReturnUrl)";
+        if (event.code == 'ArrowRight') {
+            document.getElementById("right-arrow").click();
         }
     }, false);
 </script>
