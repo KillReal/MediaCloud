@@ -2,6 +2,7 @@
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services.Repository.Entities.Base;
+using MediaCloud.WebApp.Services.Statistic;
 
 namespace MediaCloud.WebApp.Services.Repository
 {
@@ -24,9 +25,9 @@ namespace MediaCloud.WebApp.Services.Repository
             TagRepository = new(repositoryContext);
         }
 
-        public Repository(AppDbContext context, ILogger<Repository> logger, IActorProvider actorProvider)
+        public Repository(AppDbContext context, ILogger<Repository> logger, IActorProvider actorProvider, IStatisticService statisticService)
         {
-            RepositoryContext = new RepositoryContext(context, logger, actorProvider.GetCurrent());
+            RepositoryContext = new RepositoryContext(context, statisticService, logger, actorProvider.GetCurrent());
 
             SetContext(RepositoryContext);
         }

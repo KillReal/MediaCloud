@@ -11,7 +11,16 @@ namespace MediaCloud.Repositories
 
         public StatisticSnapshot? GetLast()
         {
-            return _context.StatisticSnapshots.OrderBy(x => x.CreatedAt).FirstOrDefault();
+            var lastSnapshot = _context.StatisticSnapshots.OrderBy(x => x.CreatedAt).FirstOrDefault();
+
+            if (lastSnapshot == null) 
+            { 
+                return null;
+            }
+
+            return (DateTime.Now - lastSnapshot.CreatedAt).TotalHours < 24
+                ? lastSnapshot
+                : null;
         }
 
         public void Append(StatisticSnapshot statisticSnapshot)

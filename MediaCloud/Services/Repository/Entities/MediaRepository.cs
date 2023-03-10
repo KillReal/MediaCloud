@@ -3,6 +3,7 @@ using MediaCloud.Builders.List;
 using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.WebApp.Services.Repository.Entities.Base;
+using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.EntityFrameworkCore;
 
 namespace MediaCloud.Repositories
@@ -25,6 +26,19 @@ namespace MediaCloud.Repositories
         {
         }
 
+        public override void Remove(Media entity)
+        {
+            base.Remove(entity);
+            _statisticService.NotifyMediasCountChanged(-1);
+        }
+
+        public override void Remove(List<Media> entities)
+        {
+            var count = entities.Count;
+            base.Remove(entities);
+            _statisticService.NotifyMediasCountChanged(count);
+        }
+
         public Media Create(byte[] file)
         {
             var media = FillMediaByFile(file);
@@ -32,6 +46,7 @@ namespace MediaCloud.Repositories
             SaveChanges();
 
             _logger.LogInformation($"Created new media with id: {media.Id} by: {_actorId}");
+            _statisticService.NotifyMediasCountChanged(1);
             return media;
         }
 
@@ -55,6 +70,7 @@ namespace MediaCloud.Repositories
             SaveChanges();
 
             _logger.LogInformation($"Created <{medias.Count}> new medias by: {_actorId}");
+            _statisticService.NotifyMediasCountChanged(medias.Count);
             return medias;
         }
 
@@ -84,8 +100,8 @@ namespace MediaCloud.Repositories
 
             _context.Previews.UpdateRange(previews);
             SaveChanges();
-
             _logger.LogInformation($"Created new collection with <{collection.Count}> previews and id: {collection.Id} by: {_actorId}");
+            
             return medias;
         }
     }

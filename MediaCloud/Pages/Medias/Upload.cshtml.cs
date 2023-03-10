@@ -15,6 +15,7 @@ using System.Security.Claims;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services;
 using MediaCloud.WebApp.Services.Repository;
+using MediaCloud.WebApp.Services.Statistic;
 
 namespace MediaCloud.Pages.Medias
 {
@@ -23,6 +24,7 @@ namespace MediaCloud.Pages.Medias
     {
         private Actor? Actor;
         private IUploader Uploader;
+        private IStatisticService StatisticService;
 
         [BindProperty]
         public List<IFormFile> Files { get; set; }
@@ -33,10 +35,11 @@ namespace MediaCloud.Pages.Medias
         [BindProperty]
         public string ReturnUrl { get; set; }
 
-        public UploadModel(IRepository repository, IUploader uploader)
+        public UploadModel(IRepository repository, IUploader uploader, IStatisticService statisticService)
         {
             Actor = repository.GetCurrentActor();
             Uploader = uploader;
+            StatisticService = statisticService;
         }
 
         public IActionResult OnGet(string returnUrl = "/Medias/Index")
@@ -55,6 +58,8 @@ namespace MediaCloud.Pages.Medias
 
             var task = new UploadTask(Actor, Files, IsCollection, Tags);
             var taskId = Uploader.AddTask(task);
+
+            StatisticService.NotifyActivityFactorRaised();
 
             return Redirect($"/Uploader/GetTaskStatus?id={taskId}");
         }

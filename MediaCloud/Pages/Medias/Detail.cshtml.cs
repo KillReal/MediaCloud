@@ -13,6 +13,7 @@ using MediaCloud.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using MediaCloud.WebApp.Services.Repository;
+using MediaCloud.WebApp.Services.Statistic;
 
 namespace MediaCloud.Pages.Medias
 {
@@ -20,6 +21,7 @@ namespace MediaCloud.Pages.Medias
     public class DetailModel : PageModel
     {
         private IRepository Repository;
+        private IStatisticService StatisticService;
 
         [BindProperty]
         public Guid PreviewId { get; set; }
@@ -36,9 +38,10 @@ namespace MediaCloud.Pages.Medias
         [BindProperty]
         public Guid? NextPreviewId { get; set; } = null;
 
-        public DetailModel(IRepository repository)
+        public DetailModel(IRepository repository, IStatisticService statisticService)
         {
             Repository = repository;
+            StatisticService = statisticService;
         }
 
         public IActionResult OnGet(Guid id, string returnUrl = "/Medias/Index")
@@ -64,6 +67,8 @@ namespace MediaCloud.Pages.Medias
 
             ReturnUrl = returnUrl.Replace("$", "&");
             TagsString = string.Join(" ", Tags.Select(x => x.Name.ToLower()));
+
+            StatisticService.NotifyActivityFactorRaised();
 
             return Page();
         }

@@ -18,6 +18,7 @@ using MediaCloud.WebApp.Services.Repository;
 using System.Reflection;
 using Microsoft.AspNetCore.ResponseCompression;
 using System.IO.Compression;
+using MediaCloud.WebApp.Services.Statistic;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,14 +31,6 @@ builder.Logging.AddConsole();
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddResponseCompression(options =>
-{
-    options.EnableForHttps = true;
-});
-builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
-{
-    options.Level = CompressionLevel.Optimal;
-});
 builder.Services.AddDbContext<AppDbContext>(options => 
 {
     options.UseSqlite(builder.Configuration.GetConnectionString("Database"));
@@ -47,6 +40,7 @@ builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
 builder.Services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
 builder.Services.AddScoped<IActorProvider, ActorProvider>();
 builder.Services.AddSingleton<IUploader, Uploader>();
+builder.Services.AddScoped<IStatisticService, StatisticService>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IRepository, Repository>();
@@ -80,7 +74,6 @@ if (!app.Environment.IsDevelopment())
 
 //app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UseResponseCompression();
 app.UseRouting();
 
 app.MapControllerRoute(

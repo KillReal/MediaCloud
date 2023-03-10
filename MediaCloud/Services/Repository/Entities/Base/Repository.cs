@@ -1,17 +1,20 @@
 ﻿using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.WebApp.Services.Repository.Entities.Base;
+using MediaCloud.WebApp.Services.Statistic;
 
 namespace MediaCloud.Repositories
 {
     public class Repository<T> where T : Entity
     {
+        protected IStatisticService _statisticService;
         protected AppDbContext _context;
         protected ILogger _logger;
         protected Guid _actorId;
 
         public Repository(RepositoryContext repositoryContext)
         {
+            _statisticService = repositoryContext.StatisticService;
             _context = repositoryContext.DbContext;
             _logger = repositoryContext.Logger;
             _actorId = repositoryContext.Actor == null

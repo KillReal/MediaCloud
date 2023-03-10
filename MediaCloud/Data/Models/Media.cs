@@ -15,13 +15,13 @@ namespace MediaCloud.Data.Models
 
         public int Rate { get; set; }
 
-        public int Size { get; set; }
+        public long Size { get; set; }
 
         [NotMapped]
         public string SizeInfo
         {
             get => PictureService.FormatSize(Size);
-            set => Size = int.Parse(value);
+            set => Size = long.Parse(value);
         }
 
         public Media(byte[] file)

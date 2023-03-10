@@ -1,4 +1,6 @@
-﻿namespace MediaCloud.WebApp.Services
+﻿using System.Globalization;
+
+namespace MediaCloud.WebApp.Services
 {
     public static class ConfigurationService
     {
@@ -26,6 +28,15 @@
         {
             public static int GetColumnCount()
                 => Convert.ToInt32(Configuration["GalleryColumnCount"]);
+        }
+
+        public static class Statistic
+        {
+            public static double GetSizeTargetError()
+                => double.Parse(Configuration["StatisticMediasSizeTargetError"], CultureInfo.InvariantCulture);
+
+            public static int GetActivityBacktrackDayCount()
+                => Convert.ToInt32(Configuration["StatisticActivityBacktrackDayCount"]);
         }
     }
 }

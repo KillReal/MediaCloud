@@ -27,6 +27,19 @@ namespace MediaCloud.Repositories
         {
         }
 
+        public override void Remove(Tag entity)
+        {
+            base.Remove(entity);
+            _statisticService.NotifyTagsCountChanged(-1);
+        }
+
+        public override void Remove(List<Tag> entities)
+        {
+            var count = entities.Count;
+            base.Remove(entities);
+            _statisticService.NotifyTagsCountChanged(count);
+        }
+
         public bool Create(Tag tag)
         {
             try
@@ -38,6 +51,7 @@ namespace MediaCloud.Repositories
                 SaveChanges();
 
                 _logger.LogInformation($"Created new tag with id:{tag.Id} by: {_actorId}");
+                _statisticService.NotifyTagsCountChanged(1);
                 return true;
             }
             catch (Exception ex)

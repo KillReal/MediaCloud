@@ -102,6 +102,13 @@ body {
     cursor: pointer;
 }
 
+.whiteback-bar {
+    background: white;
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    margin: 1rem;
+}
+
 .table-item-padding {
     padding: 0.75rem!important;
 }
