@@ -27,6 +27,7 @@ namespace MediaCloud.WebApp.Controllers
             var snapshot = StatisticService.GetCurrentStatistic();
             return new
             {
+                Status = StatisticService.GetStatus().GetDisplayName(),
                 ActorsCount = snapshot.ActorsCount,
                 TagsCount = snapshot.TagsCount,
                 MediasCount = snapshot.MediasCount,
@@ -38,11 +39,6 @@ namespace MediaCloud.WebApp.Controllers
         public void Recalculate()
         {
             StatisticService.ProceedRecalculaton();
-        }
-
-        public string GetStatus()
-        {
-            return StatisticService.GetStatus().GetDisplayName();
         }
     }
 }

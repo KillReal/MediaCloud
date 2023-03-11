@@ -1,4 +1,6 @@
-﻿namespace MediaCloud.Data.Models
+﻿using System.Security.AccessControl;
+
+namespace MediaCloud.Data.Models
 {
     public class StatisticSnapshot : Entity
     {
@@ -9,7 +11,7 @@
         public long ActivityFactor { get; set; }
         public DateTime TakenAt { get; set; }
 
-        public StatisticSnapshot AppendParameters(StatisticSnapshot snapshot)
+        public StatisticSnapshot Merge(StatisticSnapshot snapshot)
         {
             MediasCount += snapshot.MediasCount;
             TagsCount += snapshot.TagsCount;
@@ -17,6 +19,14 @@
             MediasSize += snapshot.MediasSize;
 
             return this;
+        }
+
+        public bool IsEmpty()
+        {
+            return (MediasCount == 0) &&
+                    (TagsCount == 0) &&
+                    (ActorsCount == 0) &&
+                    (MediasSize == 0);
         }
     }
 }

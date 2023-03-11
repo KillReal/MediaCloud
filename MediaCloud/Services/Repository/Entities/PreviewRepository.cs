@@ -119,7 +119,7 @@ namespace MediaCloud.Repositories
                         _context.Medias.Remove(preview.Media);
                         SaveChanges();
                         _logger.LogInformation($"Removed Media in Collection with id: {preview.Collection.Id} by: {_actorId}");
-                        _statisticService.NotifyMediasCountChanged(-1);
+                        _statisticService.MediasCountChanged.Invoke(-1);
 
                         return true;
                     }
@@ -130,7 +130,7 @@ namespace MediaCloud.Repositories
                     _context.Collections.Remove(preview.Collection);
                     SaveChanges();
                     _logger.LogInformation($"Removed Collection with id: {collectionId} by: {_actorId}");
-                    _statisticService.NotifyMediasCountChanged(-1);
+                    _statisticService.MediasCountChanged.Invoke(-1);
 
                     return true;
                 }
@@ -141,7 +141,7 @@ namespace MediaCloud.Repositories
             _context.Medias.Remove(preview.Media);
             SaveChanges();
             _logger.LogInformation($"Removed Media  with id: {mediaId} by: {_actorId}");
-            _statisticService.NotifyMediasCountChanged(-1);
+            _statisticService.MediasCountChanged.Invoke(-1);
 
             return true;
         }

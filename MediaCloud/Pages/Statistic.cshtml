@@ -29,6 +29,9 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+<script src="https://cdn.jsdelivr.net/npm/luxon"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
 
 <script type="text/javascript">
     var targetSizeError = @Model.SizeTargetError.ToString(System.Globalization.CultureInfo.InvariantCulture);
@@ -43,16 +46,22 @@
         const i = Math.floor(Math.log(bytes) / Math.log(k))
 
         return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
-    }
+    };
 
     new Chart(document.getElementById('SizeChart'), {
         type: 'line',
         data: {
-            labels: ['@(Html.Raw(string.Join("', '", Model.Snapshots.Select(x => x.TakenAt.ToString("MM.dd.yyyy")))))'],
             datasets: [{
-                label: 'Medias size',
-                data: [@(Html.Raw(string.Join(", ", Model.Snapshots.Select(x => x.MediasSize))))],
+                label: "Medias size",
+                data: [
+                    @foreach (var snapshot in Model.Snapshots)
+                    {
+                        @(Html.Raw("{x:'" + snapshot.TakenAt.Date.ToString("yyyy-MM-dd") + "',y:'" + snapshot.MediasSize + "'},"))
+                    }
+                ],
                 fill: true,
+                cubicInterpolationMode: 'monotone',
+                tension: 0.4
             }]
         },
         options: {
@@ -60,6 +69,7 @@
             interaction: {
                 mode: 'index',
                 intersect: false,
+                axis: 'x'
             },
             plugins: {
                 legend: {
@@ -67,7 +77,7 @@
                 },
                 title: {
                     display: true,
-                    text: 'Medias size total uploaded (' + targetSizeError * 100 + '% error)'
+                    text: 'Medias size total uploaded (' + targetSizeError * 100 + '% error)',
                 },
                 tooltip: {
                     callbacks: {
@@ -79,9 +89,24 @@
                 }
             },
             scales: {
+                x: {
+                    type: 'time',
+                    display: true,
+                    time: {
+                        tooltipFormat: 'DD T'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                },
                 y: {
                     beginAtZero: true,
                     type: "linear",
+                    title: {
+                        display: true,
+                        text: 'Data size'
+                    },
                     ticks: {
                         callback: function (value, index, ticks) {
                             return formatBytes(value + value * targetSizeError, 1);
@@ -95,21 +120,41 @@
     new Chart(document.getElementById('CountChart'), {
         type: 'line',
         data: {
-            labels: ['@(Html.Raw(string.Join("', '", Model.Snapshots.Select(x => x.TakenAt.ToString("MM.dd.yyyy")))))'],
             datasets: [{
                 label: 'Medias count',
-                data: [@(Html.Raw(string.Join(", ", Model.Snapshots.Select(x => x.MediasCount))))],
+                data: [
+                    @foreach (var snapshot in Model.Snapshots)
+                    {
+                        @(Html.Raw("{x:'" + snapshot.TakenAt.Date.ToString("yyyy-MM-dd") + "',y:'" + snapshot.MediasCount + "'},"))
+                    }
+                ],
                 fill: true,
+                cubicInterpolationMode: 'monotone',
+                tension: 0.4
             },
             {
                 label: 'Tags count',
-                data: [@(Html.Raw(string.Join(", ", Model.Snapshots.Select(x => x.TagsCount))))],
+                data: [
+                    @foreach (var snapshot in Model.Snapshots)
+                    {
+                        @(Html.Raw("{x:'" + snapshot.TakenAt.Date.ToString("yyyy-MM-dd") + "',y:'" + snapshot.TagsCount + "'},"))
+                    }
+                ],
                 fill: true,
+                cubicInterpolationMode: 'monotone',
+                tension: 0.4
             },
             {
                 label: 'Actors count',
-                data: [@(Html.Raw(string.Join(", ", Model.Snapshots.Select(x => x.ActorsCount))))],
+                data: [
+                    @foreach (var snapshot in Model.Snapshots)
+                    {
+                        @(Html.Raw("{x:'" + snapshot.TakenAt.Date.ToString("yyyy-MM-dd") + "',y:'" + snapshot.ActorsCount + "'},"))
+                    }
+                ],
                 fill: true,
+                cubicInterpolationMode: 'monotone',
+                tension: 0.4
             }]
         },
         options: {
@@ -128,8 +173,23 @@
                 }
             },
             scales: {
+                x: {
+                    type: 'time',
+                    display: true,
+                    time: {
+                        tooltipFormat: 'DD T'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                },
                 y: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Count'
+                    }
                 }
             }
         }
@@ -142,29 +202,55 @@
             datasets: [{
                 label: 'Medias count',
                 data: [@(Html.Raw(string.Join(", ", Model.Tags.Select(x => x.PreviewsCount))))],
+                borderWidth: 1,
             }]
         },
         options: {
             responsive: true,
             plugins: {
                 legend: {
-                    position: 'top',
+                    display: false,
                 },
                 title: {
                     display: true,
                     text: 'Tag popularity (top ' + @Model.Tags.Count() + ')'
-                }
+                },
+                datalabels: {
+                    clip: true,
+                    align: 'start',
+                    anchor: 'end',
+                    clamp: true,
+                    formatter: function (value, context) {
+                        return context.chart.data.labels[
+                            context.dataIndex
+                        ];
+                    },
+                    backgroundColor: function(context) {
+                        return context.dataset.backgroundColor;
+                    },
+                    color: 'white',
+                    font: {
+                        weight: 'bold'
+                    },
+                    borderRadius: 12,
+                    padding: 12
+                },
             }
-        }
+        },
+        plugins: [ChartDataLabels]
     });
 
     new Chart(document.getElementById('ActivityChart'), {
         type: 'bar',
         data: {
-            labels: ['@(Html.Raw(string.Join("', '", Model.Snapshots.OrderBy(x => x.TakenAt).TakeLast(Model.ActivityBacktrackDayCount).Select(x => x.TakenAt.ToString("MM.dd.yyyy")))))'],
             datasets: [{
                 label: 'Activity factor',
-                data: [@(Html.Raw(string.Join(", ", Model.Snapshots.OrderBy(x => x.TakenAt).TakeLast(Model.ActivityBacktrackDayCount).Select(x => x.ActivityFactor))))],
+                data: [
+                    @foreach (var snapshot in Model.Snapshots.Where(x => x.TakenAt >= DateTime.Now.Date.AddDays(-Model.ActivityBacktrackDayCount)).ToList())
+                    {
+                        @(Html.Raw("{x:'" + snapshot.TakenAt.Date.ToString("yyyy-MM-dd") + "',y:'" + snapshot.ActivityFactor + "'},"))
+                    }
+                ],
                 fill: true,
             }]
         },
@@ -175,15 +261,23 @@
                 intersect: false,
             },
             plugins: {
-                legend: {
-                    position: 'top',
-                },
                 title: {
                     display: true,
                     text: 'Activity of users (last ' + @Model.ActivityBacktrackDayCount + ' days)'
                 },
             },
             scales: {
+                x: {
+                    type: 'time',
+                    display: true,
+                    time: {
+                        tooltipFormat: 'DD T'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                },
                 y: {
                     beginAtZero: true,
                     stepSize: 1

@@ -4,14 +4,16 @@ namespace MediaCloud.WebApp.Services.Statistic
 {
     public interface IStatisticService
     {
-        public void NotifyMediasCountChanged(int affectedCount);
-        public void NotifyTagsCountChanged(int affectedCount);
-        public void NotifyActorsCountChanged(int affectedCount);
-        public void NotifyActivityFactorRaised();
+        public Action<int> MediasCountChanged { get; set; }
+        public Action<int> TagsCountChanged { get; set; }
+        public Action<int> ActorsCountChanged { get; set; }
+        public Action ActivityFactorRaised { get; set; }
+
         public StatisticSnapshot GetCurrentStatistic();
         public List<StatisticSnapshot> GetStatistic();
         public List<StatisticSnapshot> GetStatistic(DateTime startDate, DateTime endDate);
         public void ProceedRecalculaton();
+        public void ProceedRecalculaton(DateTime startDate);
         public StatisticServiceStatusType GetStatus();
     }
 }

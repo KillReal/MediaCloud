@@ -40,7 +40,7 @@ builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
 builder.Services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
 builder.Services.AddScoped<IActorProvider, ActorProvider>();
 builder.Services.AddSingleton<IUploader, Uploader>();
-builder.Services.AddScoped<IStatisticService, StatisticService>();
+builder.Services.AddSingleton<IStatisticService, StatisticService>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IRepository, Repository>();

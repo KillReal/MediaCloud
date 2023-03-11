@@ -35,8 +35,8 @@ namespace MediaCloud.WebApp.Controllers
                     Content = preview.Content,
                 });
             }
-
-            StatisticService.NotifyActivityFactorRaised();
+                
+            StatisticService.ActivityFactorRaised.Invoke();
 
             return jsonPreviews;
         }

@@ -2,6 +2,7 @@ using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services.Repository;
+using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +14,8 @@ namespace MediaCloud.WebApp.Pages
     public class LoginModel : PageModel
     {
         private IRepository Repository;
-        private ILogger _logger;
+        private ILogger Logger;
+        private IStatisticService StatisticService;
 
         [BindProperty]
         public bool IsFailed { get; set; } = false;
@@ -23,10 +25,11 @@ namespace MediaCloud.WebApp.Pages
         [BindProperty]
         public string ReturnUrl { get; set; }
 
-        public LoginModel(IRepository repository, ILogger<LoginModel> logger)
+        public LoginModel(IRepository repository, ILogger<LoginModel> logger, IStatisticService statisticService)
         {
             Repository = repository;
-            _logger = logger;
+            Logger = logger;
+            StatisticService = statisticService;
         }
 
         public IActionResult OnGet(string returnUrl = "/")
@@ -43,7 +46,7 @@ namespace MediaCloud.WebApp.Pages
 
             if (actor == null)
             {
-                _logger.LogError($"Failed sign attempt by name: {AuthData.Name}");
+                Logger.LogError($"Failed sign attempt by name: {AuthData.Name}");
                 IsFailed = true;
                 return Page();
             }
@@ -53,7 +56,9 @@ namespace MediaCloud.WebApp.Pages
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
             Repository.Actors.SetLastLoginAt(actor, DateTime.Now);
-            _logger.LogInformation($"Signed in actor with name: {AuthData.Name}");
+            Logger.LogInformation($"Signed in actor with name: {AuthData.Name}");
+
+            StatisticService.ActivityFactorRaised.Invoke();
 
             return Redirect(ReturnUrl);
         }

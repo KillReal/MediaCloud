@@ -8,11 +8,6 @@ namespace MediaCloud.Services
     {
         private static IConfiguration Configuration;
 
-        public PictureService(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
         public static void Init(IConfiguration configuration)
         {
             Configuration = configuration;

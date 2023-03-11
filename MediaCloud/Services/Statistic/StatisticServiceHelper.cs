@@ -2,6 +2,7 @@
 using MediaCloud.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using System;
 
 namespace MediaCloud.WebApp.Services.Statistic
 {
@@ -21,19 +22,29 @@ namespace MediaCloud.WebApp.Services.Statistic
 
         public StatisticSnapshot GetLastOrNew()
         {
-            var lastSnapshot = Context.StatisticSnapshots.OrderByDescending(x => x.TakenAt).FirstOrDefault();
+            var snapshot = Context.StatisticSnapshots.OrderByDescending(x => x.TakenAt).FirstOrDefault();
 
-            return DateTime.Now.Date == lastSnapshot?.TakenAt.Date
-                ? lastSnapshot
-                : new();
+            snapshot ??= new();  
+
+            if (DateTime.Now.Date != snapshot.TakenAt.Date)
+            {
+                snapshot = new StatisticSnapshot().Merge(snapshot);
+                snapshot.TakenAt = DateTime.Now.Date;
+                Context.StatisticSnapshots.Add(snapshot);
+                Context.SaveChanges();
+            }
+
+            return snapshot;
         }
 
         public List<StatisticSnapshot> GetList(DateTime startDate, DateTime endDate) 
         {
-            return Context.StatisticSnapshots.Where(x => x.TakenAt >= startDate && x.TakenAt.Date <= endDate).ToList();
+            return Context.StatisticSnapshots.Where(x => x.TakenAt.Date >= startDate.Date && x.TakenAt.Date <= endDate.Date)
+                                             .OrderBy(x => x.TakenAt.Date)
+                                             .ToList();
         }
 
-        public void AppendOrUpdate(StatisticSnapshot statisticSnapshot)
+        public void SaveOrUpdate(StatisticSnapshot statisticSnapshot)
         {
             var lastSnapshot = GetLastOrNew();
 
@@ -54,7 +65,7 @@ namespace MediaCloud.WebApp.Services.Statistic
             Context.SaveChanges();
         }
 
-        public void AppendOrUpdate(StatisticSnapshot statisticSnapshot, DateTime takenAt)
+        public void SaveOrUpdate(StatisticSnapshot statisticSnapshot, DateTime takenAt)
         {
             var snapshot = Get(takenAt);
 
@@ -90,7 +101,7 @@ namespace MediaCloud.WebApp.Services.Statistic
                 : minDate;
         }
 
-        public async Task<StatisticSnapshot> CalculateAsync(DateTime dateTime)
+        public async Task<StatisticSnapshot> TakeSnapshotAsync(DateTime dateTime)
         {
             return new()
             {

@@ -6,48 +6,26 @@ using System.Diagnostics;
 
 namespace MediaCloud.WebApp.Services.Statistic
 {
-    public class StatisticService : IStatisticService
+    public partial class StatisticService : IStatisticService
     {
         private StatisticServiceHelper ServiceHelper { get; set; }
         private ILogger Logger { get; set; }
         private StatisticSnapshot CurrentSnapshot { get; set; }
         private StatisticServiceStatusType Status { get; set; } = StatisticServiceStatusType.ListenForEvents;
 
-        public StatisticService(AppDbContext context, ILogger<StatisticService> logger) 
+        public StatisticService(IServiceProvider serviceProvider, ILogger<StatisticService> logger) 
         {
-            ServiceHelper = new(context);
+            ServiceHelper = new(serviceProvider.CreateScope().ServiceProvider.GetRequiredService<AppDbContext>());
             Logger = logger;
             CurrentSnapshot = ServiceHelper.GetLastOrNew();
 
-            if (CurrentSnapshot == null)
+            if (CurrentSnapshot == null)    
             {
                 CurrentSnapshot = new StatisticSnapshot();
-                ServiceHelper.AppendOrUpdate(CurrentSnapshot);
+                ServiceHelper.SaveOrUpdate(CurrentSnapshot);
             }
-        }
 
-        public void NotifyMediasCountChanged(int affectedCount)
-        {
-            CurrentSnapshot.MediasCount += affectedCount;
-            Logger.LogInformation($"Affected {affectedCount} medias");
-            ServiceHelper.AppendOrUpdate(CurrentSnapshot);
-        }
-
-        public void NotifyTagsCountChanged(int affectedCount)
-        {
-            CurrentSnapshot.TagsCount += affectedCount;
-            ServiceHelper.AppendOrUpdate(CurrentSnapshot);
-        }
-        public void NotifyActorsCountChanged(int affectedCount)
-        {
-            CurrentSnapshot.ActorsCount += affectedCount;
-            ServiceHelper.AppendOrUpdate(CurrentSnapshot);
-        }
-
-        public void NotifyActivityFactorRaised()
-        {
-            CurrentSnapshot.ActivityFactor += 1;
-            ServiceHelper.AppendOrUpdate(CurrentSnapshot);
+            InitListeners();
         }
 
         public StatisticSnapshot GetCurrentStatistic()
@@ -85,30 +63,37 @@ namespace MediaCloud.WebApp.Services.Statistic
             {
                 startDate = ServiceHelper.GetFirstOrNowDate();
             }
-            Console.WriteLine($"Statistic recalculation started");
+            Logger.LogInformation($"Statistic recalculation started");
 
             var totalDaysCalculated = 0;
+            var totalDaysInserted = 0;
             var prevSnapshot = new StatisticSnapshot();
             var date = startDate;
 
+            var stopwatchTotal = DateTime.Now;
             Task.Run(() =>
             {
                 do
                 {
                     var stopwatch = DateTime.Now;
-                    Console.WriteLine($"Calculating statistic for {date.Date}");
-                    var statisticSnapshot = ServiceHelper.CalculateAsync(date).Result;
-                    ServiceHelper.AppendOrUpdate(statisticSnapshot.AppendParameters(prevSnapshot), date);
+                    Logger.LogDebug($"Calculating statistic for {date.Date}");
+                    var snapshot = ServiceHelper.TakeSnapshotAsync(date).Result;
+                    
+                    if (snapshot.IsEmpty() == false)
+                    {
+                        ServiceHelper.SaveOrUpdate(snapshot.Merge(prevSnapshot), date);
+                        totalDaysInserted++;
+                        prevSnapshot = snapshot;
+                    }
 
-                    prevSnapshot = statisticSnapshot;
                     date = date.AddDays(1);
                     totalDaysCalculated++;
-                    Console.WriteLine($"Calculating done by {(DateTime.Now - stopwatch).TotalSeconds}");
-                } while (date.Date <= DateTime.Now);
+                    Logger.LogDebug($"Calculating done by {(DateTime.Now - stopwatch).TotalSeconds}");
+                } while (date.Date < DateTime.Now.Date);
             }).Wait();
 
             Status = StatisticServiceStatusType.ListenForEvents;
-            Console.WriteLine($"Statistic recalculation completed with {totalDaysCalculated} days");
+            Logger.LogInformation($"Statistic recalculation completed for {totalDaysCalculated} days ({totalDaysInserted} saved) by {(int)(DateTime.Now - stopwatchTotal).TotalSeconds} sec");
         }
 
         public StatisticServiceStatusType GetStatus() => Status;

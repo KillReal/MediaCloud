@@ -32,7 +32,7 @@ namespace MediaCloud.WebApp.Controllers
                 });
             }
 
-            StatisticService.NotifyActivityFactorRaised();
+            StatisticService.ActivityFactorRaised.Invoke();
 
             return jsonPreviews;
         }

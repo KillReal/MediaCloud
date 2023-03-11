@@ -9,9 +9,9 @@ namespace MediaCloud.Pages
 {
     public class StatisticModel : PageModel
     {
-        private readonly ILogger<PrivacyModel> _logger;
-        private readonly IStatisticService _statisticService;
-        private readonly IRepository _repository;
+        private readonly ILogger<PrivacyModel> Logger;
+        private readonly IStatisticService StatisticService;
+        private readonly IRepository Repository;
 
         [BindProperty]
         public double SizeTargetError { get; set; }
@@ -24,18 +24,17 @@ namespace MediaCloud.Pages
 
         public StatisticModel(ILogger<PrivacyModel> logger, IStatisticService statisticService, IRepository repository)
         {
-            _logger = logger;
-            _statisticService = statisticService;
-            _repository = repository;
+            Logger = logger;
+            StatisticService = statisticService;
+            Repository = repository;
         }
 
         public IActionResult OnGet()
         {
             SizeTargetError = ConfigurationService.Statistic.GetSizeTargetError();
             ActivityBacktrackDayCount = ConfigurationService.Statistic.GetActivityBacktrackDayCount();
-            Snapshots = _statisticService.GetStatistic();
-            Tags = _repository.Tags.GetTopUsed(15);
-            _logger.LogInformation($"Loaded {Snapshots.Count} snapshots");
+            Snapshots = StatisticService.GetStatistic();
+            Tags = Repository.Tags.GetTopUsed(15);
 
             return Page();
         }

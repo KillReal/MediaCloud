@@ -59,7 +59,7 @@ namespace MediaCloud.Pages.Medias
             var task = new UploadTask(Actor, Files, IsCollection, Tags);
             var taskId = Uploader.AddTask(task);
 
-            StatisticService.NotifyActivityFactorRaised();
+            StatisticService.ActivityFactorRaised.Invoke();
 
             return Redirect($"/Uploader/GetTaskStatus?id={taskId}");
         }
