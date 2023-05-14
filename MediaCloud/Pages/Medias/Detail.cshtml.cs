@@ -67,7 +67,10 @@ namespace MediaCloud.Pages.Medias
             ReturnUrl = returnUrl.Replace("$", "&");
             TagsString = string.Join(" ", Tags.Select(x => x.Name.ToLower()));
 
-            StatisticService.ActivityFactorRaised.Invoke();
+            if (preview.Order == 0)
+            {
+                StatisticService.ActivityFactorRaised.Invoke();
+            }
 
             return Page();
         }

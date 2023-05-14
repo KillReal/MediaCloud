@@ -28,15 +28,17 @@ namespace MediaCloud.Repositories
 
         public override void Remove(Media entity)
         {
+            var size = entity.Size;
             base.Remove(entity);
-            _statisticService.MediasCountChanged.Invoke(-1);
+            _statisticService.MediasCountChanged.Invoke(-1, -size);
         }
 
         public override void Remove(List<Media> entities)
         {
             var count = entities.Count;
+            var size = entities.Sum(x => x.Size);
             base.Remove(entities);
-            _statisticService.MediasCountChanged.Invoke(count);
+            _statisticService.MediasCountChanged.Invoke(-count, -size);
         }
 
         public Media Create(byte[] file)
@@ -46,7 +48,7 @@ namespace MediaCloud.Repositories
             SaveChanges();
 
             _logger.LogInformation($"Created new media with id: {media.Id} by: {_actorId}");
-            _statisticService.MediasCountChanged.Invoke(1);
+            _statisticService.MediasCountChanged.Invoke(1, media.Size);
             return media;
         }
 
@@ -65,12 +67,12 @@ namespace MediaCloud.Repositories
                 medias.Add(FillMediaByFile(file));
                 files.Remove(file);
             }
-
+            
             _context.AddRange(medias);
             SaveChanges();
 
             _logger.LogInformation($"Created <{medias.Count}> new medias by: {_actorId}");
-            _statisticService.MediasCountChanged.Invoke(medias.Count);
+            _statisticService.MediasCountChanged.Invoke(medias.Count, medias.Sum(x => x.Size));
             return medias;
         }
 

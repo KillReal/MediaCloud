@@ -32,11 +32,17 @@ namespace MediaCloud.WebApp.Services
 
         public static class Statistic
         {
-            public static double GetSizeTargetError()
-                => double.Parse(Configuration["StatisticMediasSizeTargetError"], CultureInfo.InvariantCulture);
-
             public static int GetActivityBacktrackDayCount()
                 => Convert.ToInt32(Configuration["StatisticActivityBacktrackDayCount"]);
+        }
+
+        public static class Database
+        {
+            public static string GetPath()
+            {
+                var test = Configuration["ConnectionStrings:Database"];
+                return test.Split(";").First().Split("=").Last();
+            }
         }
     }
 }

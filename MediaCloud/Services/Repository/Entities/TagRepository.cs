@@ -30,14 +30,14 @@ namespace MediaCloud.Repositories
         public override void Remove(Tag entity)
         {
             base.Remove(entity);
-            _statisticService.MediasCountChanged.Invoke(-1);
+            _statisticService.TagsCountChanged.Invoke(-1);
         }
 
         public override void Remove(List<Tag> entities)
         {
             var count = entities.Count;
             base.Remove(entities);
-            _statisticService.MediasCountChanged.Invoke(count);
+            _statisticService.TagsCountChanged.Invoke(count);
         }
 
         public bool Create(Tag tag)
@@ -51,7 +51,7 @@ namespace MediaCloud.Repositories
                 SaveChanges();
 
                 _logger.LogInformation($"Created new tag with id:{tag.Id} by: {_actorId}");
-                _statisticService.MediasCountChanged.Invoke(1);
+                _statisticService.TagsCountChanged.Invoke(1);
                 return true;
             }
             catch (Exception ex)

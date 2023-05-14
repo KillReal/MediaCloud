@@ -112,5 +112,11 @@ namespace MediaCloud.WebApp.Services.Statistic
                 MediasSize = Context.Medias.Where(x => x.CreatedAt.Date == dateTime.Date).Select(x => x.Size).ToList().Sum()
             };
         }
+
+        public void RemoveAllSnapshots(DateTime startDate)
+        {
+            Context.StatisticSnapshots.RemoveRange(Context.StatisticSnapshots.Where(x => x.TakenAt.Date >= startDate.Date));
+            Context.SaveChanges();
+        }
     }
 }

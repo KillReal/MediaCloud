@@ -8,7 +8,7 @@ namespace MediaCloud.WebApp.Services.Statistic
 {
     public partial class StatisticService : IStatisticService
     {
-        public Action<int> MediasCountChanged { get; set; }
+        public Action<int, long> MediasCountChanged { get; set; }
         public Action<int> TagsCountChanged { get; set; }
         public Action<int> ActorsCountChanged { get; set; }
         public Action ActivityFactorRaised { get; set; }
@@ -21,10 +21,11 @@ namespace MediaCloud.WebApp.Services.Statistic
             ActivityFactorRaised += ActivityFactorRaisedAction;
         }
 
-        private void MediasCountChangedAction(int affectedCount)
+        private void MediasCountChangedAction(int affectedCount, long affectedSize)
         {
             CurrentSnapshot.ActivityFactor += 1;
             CurrentSnapshot.MediasCount += affectedCount;
+            CurrentSnapshot.MediasSize += affectedSize;
             ServiceHelper.SaveOrUpdate(CurrentSnapshot);
         }
 

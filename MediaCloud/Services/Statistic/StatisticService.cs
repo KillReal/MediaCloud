@@ -50,6 +50,11 @@ namespace MediaCloud.WebApp.Services.Statistic
             ProceedRecalculaton(DateTime.MinValue);
         }
 
+        public void ProceedRecalculaton(int lastDaysCount)
+        {
+            ProceedRecalculaton(DateTime.Now.AddDays(-lastDaysCount));
+        }
+
         public void ProceedRecalculaton(DateTime startDate)
         {
             if (Status == StatisticServiceStatusType.Recalculating)
@@ -65,9 +70,12 @@ namespace MediaCloud.WebApp.Services.Statistic
             }
             Logger.LogInformation($"Statistic recalculation started");
 
+            ServiceHelper.RemoveAllSnapshots(startDate); 
+
             var totalDaysCalculated = 0;
             var totalDaysInserted = 0;
-            var prevSnapshot = new StatisticSnapshot();
+            var prevSnapshot = ServiceHelper.GetLastOrNew();
+            prevSnapshot.TakenAt = DateTime.MinValue;
             var date = startDate;
 
             var stopwatchTotal = DateTime.Now;

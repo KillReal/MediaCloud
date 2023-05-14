@@ -40,5 +40,10 @@ namespace MediaCloud.WebApp.Controllers
         {
             StatisticService.ProceedRecalculaton();
         }
+
+        public void RecalculateDays(int days)
+        {
+            StatisticService.ProceedRecalculaton(days);
+        }
     }
 }
