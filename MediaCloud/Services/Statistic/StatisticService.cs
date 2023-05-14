@@ -28,7 +28,7 @@ namespace MediaCloud.WebApp.Services.Statistic
             InitListeners();
         }
 
-        public StatisticSnapshot GetCurrentStatistic()
+        public StatisticSnapshot GetTodayStatistic()
         {
             return CurrentSnapshot;
         }

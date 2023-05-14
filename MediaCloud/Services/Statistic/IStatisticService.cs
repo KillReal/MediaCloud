@@ -9,7 +9,7 @@ namespace MediaCloud.WebApp.Services.Statistic
         public Action<int> ActorsCountChanged { get; set; }
         public Action ActivityFactorRaised { get; set; }
 
-        public StatisticSnapshot GetCurrentStatistic();
+        public StatisticSnapshot GetTodayStatistic();
         public List<StatisticSnapshot> GetStatistic();
         public List<StatisticSnapshot> GetStatistic(DateTime startDate, DateTime endDate);
         public void ProceedRecalculaton();

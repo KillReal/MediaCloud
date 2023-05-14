@@ -24,7 +24,7 @@ namespace MediaCloud.WebApp.Controllers
 
         public dynamic GetCurrent()
         {
-            var snapshot = StatisticService.GetCurrentStatistic();
+            var snapshot = StatisticService.GetTodayStatistic();
             return new
             {
                 Status = StatisticService.GetStatus().GetDisplayName(),

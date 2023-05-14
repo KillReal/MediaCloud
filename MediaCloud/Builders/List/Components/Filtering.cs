@@ -1,4 +1,4 @@
-﻿namespace MediaCloud.Builders.Components
+﻿namespace MediaCloud.WebApp.Builders.List.Components
 {
     public class Filtering
     {

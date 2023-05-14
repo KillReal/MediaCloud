@@ -40,12 +40,12 @@
 
             @if (@Model.ListBuilder.Sort.Contains("Random"))
             {
-                <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@($"Random-{new Random().Next(int.MaxValue)}")>Random</a>
+                <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@($"Random_{new Random().Next(int.MaxValue)}")>Random</a>
 
             }        
             else
             {
-                <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@($"Random-{new Random().Next(int.MaxValue)}")>Random</a>
+                <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@($"Random_{new Random().Next(int.MaxValue)}")>Random</a>
             }
 
             <div class="vr me-3 mt-3"></div>

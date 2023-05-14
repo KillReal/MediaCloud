@@ -26,7 +26,7 @@ namespace MediaCloud.Data.Models
         public Preview(Media media)
         {
             MediaType = MediaType.JPG;
-            Content = PictureService.LowerResolutionToPreview(media.Content);
+            Content = PictureService.LowerResolution(media.Content);
             Order = 0;
         }
 

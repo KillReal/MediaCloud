@@ -13,7 +13,7 @@ namespace MediaCloud.Services
             Configuration = configuration;
         }
 
-        public static byte[] LowerResolutionToPreview(byte[] pictureBytes)
+        public static byte[] LowerResolution(byte[] pictureBytes)
         {
             var maxSize = ConfigurationService.Preview.GetMaxHeight();
 

@@ -16,7 +16,7 @@
         public int Offset { get; set; }
 
         /// <summary>
-        /// Sort property, see <see cref="Components.Sorting"/> for propertyName formatting.
+        /// Sort property, see <see cref="WebApp.Builders.List.Components.Sorting"/> for propertyName formatting.
         /// </summary>
         public string Sort { get; set; }
 

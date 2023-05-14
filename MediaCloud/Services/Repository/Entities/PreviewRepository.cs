@@ -69,7 +69,7 @@ namespace MediaCloud.Repositories
             query = SetFilterToQuery(query, listBuilder.Filter);
 
             if (listBuilder.Sort.Contains("Random") &&
-                int.TryParse(listBuilder.Sort.Split('-').Last(), out int seed))
+                int.TryParse(listBuilder.Sort.Split('_').Last(), out int seed))
             {
                 var previewIdsList = _context.Previews.Where(x => x.Order == 0)
                                                       .Select(x => x.Id)
@@ -84,7 +84,7 @@ namespace MediaCloud.Repositories
                             .Skip(listBuilder.Offset)
                             .Take(listBuilder.Count)
                             .ToList();
-            }
+            }  
 
             return query.Order(listBuilder.Order)
                         .Where(x => x.CreatorId == _actorId)

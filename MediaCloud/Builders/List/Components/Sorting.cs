@@ -2,10 +2,10 @@
 using DynamicExpression.Interfaces;
 using System.Reflection;
 
-namespace MediaCloud.Builders.Components
+namespace MediaCloud.WebApp.Builders.List.Components
 {
     /// <summary>
-    /// Sort for <see cref="Builders.List.ListBuilder{T}"/>
+    /// Sort for <see cref="List.ListBuilder{T}"/>
     /// </summary>
     public class Sorting
     {
@@ -22,7 +22,7 @@ namespace MediaCloud.Builders.Components
         {
             PropertyName = propertyName;
         }
-         
+
         /// <summary>
         /// Return ordering for querying entities.
         /// </summary>
@@ -32,9 +32,9 @@ namespace MediaCloud.Builders.Components
             return new Ordering()
             {
                 By = PropertyName.Replace("Desc", string.Empty),
-                Direction = PropertyName.Contains("Desc") ? 
-                    DynamicExpression.Enums.OrderingDirection.Desc 
-                    : 
+                Direction = PropertyName.Contains("Desc") ?
+                    DynamicExpression.Enums.OrderingDirection.Desc
+                    :
                     DynamicExpression.Enums.OrderingDirection.Asc
             };
         }
