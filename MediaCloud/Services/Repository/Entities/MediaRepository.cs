@@ -10,7 +10,7 @@ namespace MediaCloud.Repositories
 {
     public class MediaRepository : Repository<Media>
     {
-        private Media FillMediaByFile(byte[] file)
+        private Media GetMediaFromFile(byte[] file)
         {
             var media = new Media(file);
             media.Preview = new Preview(media);
@@ -43,7 +43,7 @@ namespace MediaCloud.Repositories
 
         public Media Create(byte[] file)
         {
-            var media = FillMediaByFile(file);
+            var media = GetMediaFromFile(file);
             _context.Add(media);
             SaveChanges();
 
@@ -64,7 +64,7 @@ namespace MediaCloud.Repositories
             while (files.Count > 0)
             {
                 var file = files.Last();
-                medias.Add(FillMediaByFile(file));
+                medias.Add(GetMediaFromFile(file));
                 files.Remove(file);
             }
             
@@ -89,6 +89,9 @@ namespace MediaCloud.Repositories
             var previews = medias.Select(x => x.Preview).ToList();
 
             var collection = new Collection(previews);
+            collection.Creator = new ActorRepository(_context).Get(_actorId);
+            collection.Updator = collection.Creator;
+
             for (var i = 0; i < previews.Count; i++)
             {
                 if (i != 0)
