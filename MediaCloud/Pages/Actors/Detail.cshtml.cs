@@ -54,9 +54,9 @@ namespace MediaCloud.Pages.Actors
 
         public IActionResult OnPost()
         {
-            Actor = Repository.GetCurrentActor();
+            var currentActor = Repository.GetCurrentActor();
 
-            if (Actor.IsAdmin == false)
+            if (currentActor.IsAdmin == false)
             {
                 Logger.LogError($"Fail attempt to access to Actor/Detail by: {Actor.Id}");
                 return Redirect("/Account/Login");
