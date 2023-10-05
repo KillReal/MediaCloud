@@ -1,7 +1,7 @@
 ﻿using MediaCloud.Extensions;
 using MediaCloud.Services;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Drawing;
+using SixLabors.ImageSharp;
 
 namespace MediaCloud.Data.Models
 {
@@ -29,7 +29,7 @@ namespace MediaCloud.Data.Models
             Content = file;
 
             var stream = new MemoryStream(Content);
-            var picture = new Bitmap(stream);
+            var picture = Image.Load(stream);
 
             Resolution = $"{picture.Width}x{picture.Height}";
             Size = Content.Length;

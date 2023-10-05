@@ -1,6 +1,5 @@
 ﻿using MediaCloud.WebApp.Services;
-using System.Drawing;
-using System.Drawing.Imaging;
+using SixLabors.ImageSharp;
 
 namespace MediaCloud.Services
 {
@@ -18,7 +17,7 @@ namespace MediaCloud.Services
             var maxSize = ConfigurationService.Preview.GetMaxHeight();
 
             var stream = new MemoryStream(pictureBytes);
-            var image = new Bitmap(stream);
+            var image = Image.Load(stream);
             var size = image.Size;
             var width = maxSize;
             var height = maxSize;
@@ -27,9 +26,9 @@ namespace MediaCloud.Services
 
             if (maxDiv > 1.0)
             {
-                var bitmap = new Bitmap(image, new(Convert.ToInt32(size.Width / maxDiv), Convert.ToInt32(size.Height / maxDiv)));
+                image.Mutate(x => x.Resize(new Size(Convert.ToInt32(size.Width / maxDiv), Convert.ToInt32(size.Height / maxDiv))));
                 var ms = new MemoryStream();
-                bitmap.Save(ms, ImageFormat.Jpeg);
+                image.Save(ms, image.Metadata.DecodedImageFormat);
                 pictureBytes = ms.ToArray();
             }
 
