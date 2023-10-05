@@ -75,9 +75,9 @@ namespace MediaCloud.Repositories
             {
                 return new();
             }
-
-            tagsString = DeduplicateTagString(tagsString);
-            return _context.Tags.Where(x => tagsString.ToLower().Contains(x.Name.ToLower())
+            tagsString = DeduplicateTagString(tagsString).ToLower();
+            var tags = tagsString.ToLower().Split(' ');
+            return _context.Tags.Where(x => tags.Any(y => y == x.Name.ToLower())
                                          && x.CreatorId == _actorId)
                                 .ToList();
         }
@@ -100,9 +100,9 @@ namespace MediaCloud.Repositories
                 positiveTags.Add(tag);
             }
 
-            var positiveTagIds = _context.Tags.Where(x => positiveTags.Contains(x.Name.ToLower()))
+            var positiveTagIds = _context.Tags.Where(x => positiveTags.Any(y => y == x.Name.ToLower()))
                                               .Select(x => x.Id);
-            var negativeTagIds = _context.Tags.Where(x => negativeTags.Contains(x.Name.ToLower()))
+            var negativeTagIds = _context.Tags.Where(x => negativeTags.Any(y => y == x.Name.ToLower()))
                                               .Select(x => x.Id);
 
             return new(positiveTagIds.ToList(), negativeTagIds.ToList());
@@ -131,6 +131,12 @@ namespace MediaCloud.Repositories
                                 .Where(x => x.CreatorId == _actorId)
                                 .Take(limit)
                                 .ToList();
+        }
+
+        public List<string> GetSuggestionsByString(string searchString, int limit = 10)
+        {
+            return _context.Tags.Where(x => x.Name.ToLower().Contains(searchString.ToLower()) && x.CreatorId == _actorId)
+                                .Select(x => x.Name).ToList();
         }
     }
 }

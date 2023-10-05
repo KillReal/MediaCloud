@@ -17,6 +17,11 @@ namespace MediaCloud.WebApp.Controllers
             StatisticService = statisticService;
         }
 
+        public List<string> GetSuggestions(string searchString, int limit = 10)
+        {
+            return Repository.Tags.GetSuggestionsByString(searchString, limit);
+        }
+
         public async Task<List<object>> PreviewsBatchAsync(ListRequest listRequest)
         {
             var previews = await new ListBuilder<Preview>(listRequest).BuildAsync(Repository.Previews);

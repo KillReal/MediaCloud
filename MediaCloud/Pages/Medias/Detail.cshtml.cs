@@ -57,8 +57,9 @@ namespace MediaCloud.Pages.Medias
 
             if (preview.Collection != null)
             {
-                PrevPreviewId = preview.Collection.Previews.Last(x => x.Order < x.Order)?.Id;
-                NextPreviewId = preview.Collection.Previews.First(x => x.Order > x.Order)?.Id;
+                var collectionPreviews = preview.Collection.Previews.OrderBy(x => x.Order);
+                PrevPreviewId = collectionPreviews.LastOrDefault(x => x.Order < preview.Order)?.Id;
+                NextPreviewId = collectionPreviews.FirstOrDefault(x => x.Order > preview.Order)?.Id;
             }
 
             Tags = preview.Tags.OrderBy(x => x.Type)
