@@ -136,7 +136,10 @@ namespace MediaCloud.Repositories
         public List<string> GetSuggestionsByString(string searchString, int limit = 10)
         {
             return _context.Tags.Where(x => x.Name.ToLower().Contains(searchString.ToLower()) && x.CreatorId == _actorId)
-                                .Select(x => x.Name).ToList();
+                                .OrderBy(x => x.PreviewsCount)
+                                .Select(x => x.Name)
+                                .Take(limit)
+                                .ToList();
         }
     }
 }

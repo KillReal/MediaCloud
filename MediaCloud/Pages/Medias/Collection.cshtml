@@ -26,27 +26,17 @@
         <div class="row thumbnail-sortable" id="sortable-gallery" style="display: none"> 
         </div>
 
-        <div class="row gallery" id="gallery" style="display: flex"> 
-            
-        </div>
-
-        <div class="d-flex justify-content-center">
-            @if (Model.Collection.Previews.Count() >= Model.ListRequest.Count)
-            {
-                <div class="spinner-border text-light" role="status" id="loadingSpinner" style="display: block; width:3rem; height:3rem"></div>
-            }
-        </div>
-
         <div class="row">
             <div class="form-group mb-3 col-sm h-100">
                 <label class="col-form-label">Enter tags with spaces between</label>
-                <textarea asp-for="@Model.TagsString" class="form-control"></textarea>
+                <textarea asp-for="@Model.TagsString" class="form-control" style="height: 100%"></textarea>
             </div>
             <div class="col-sm">
                 <label class="col-form-label" style="visibility: hidden">List of existed tags</label>
                 <ul class="list-group">
-                    <li class="list-group-item h-100">Related tags: 
-                        @foreach(var tag in Model.Tags)
+                    <li class="list-group-item h-100">
+                        Related tags:
+                        @foreach (var tag in Model.Tags)
                         {
                             if (tag.Type == TagType.Character)
                             {
@@ -65,7 +55,7 @@
                                 <a class="btn btn-info btn-rounded me-1 mb-2" asp-page="/Tags/Detail" asp-route-id=@tag.Id>@tag.Name</a>
                             }
                         }
-                    </li>         
+                    </li>
                 </ul>
             </div>
         </div>
@@ -76,6 +66,18 @@
             <a class="btn btn-info btn-rounded text-nowrap" asp-page="Index" asp-route-filter=@(Model.TagsString) asp-route-sort=@("UpdatedAtDesc")>Show similar</a>
             <button class="btn btn-danger btn-rounded" asp-page-handler="Delete" asp-route-id=@(Model.Collection.Id)>Remove</button>
         </div>
+
+        <div class="row gallery" id="gallery" style="display: flex"> 
+            
+        </div>
+
+        <div class="d-flex justify-content-center">
+            @if (Model.Collection.Previews.Count() >= Model.ListRequest.Count)
+            {
+                <div class="spinner-border text-light" role="status" id="loadingSpinner" style="display: block; width:3rem; height:3rem"></div>
+            }
+        </div>
+
     </form>
     
 </div>
