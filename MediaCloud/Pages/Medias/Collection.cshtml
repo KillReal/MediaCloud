@@ -27,9 +27,9 @@
         </div>
 
         <div class="row">
-            <div class="form-group mb-3 col-sm h-100">
+            <div class="form-group mb-3 col-sm h-100 autocomplete-list autocomplete">
                 <label class="col-form-label">Enter tags with spaces between</label>
-                <textarea asp-for="@Model.TagsString" class="form-control" style="height: 100%"></textarea>
+                <textarea asp-for="@Model.TagsString" class="form-control" style="height: 100%" id="filterGrab"></textarea>
             </div>
             <div class="col-sm">
                 <label class="col-form-label" style="visibility: hidden">List of existed tags</label>
@@ -84,6 +84,7 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script src="~/js/html5sortable.js"></script>
+<script src="~/js/tagAutocompletion.js"></script>
 
 <script type="text/javascript">
     sortable('.thumbnail-sortable', {
@@ -178,7 +179,6 @@
     });
 
     window.scrollTo(0, 1);
-
 </script>
 
 @section Scripts {

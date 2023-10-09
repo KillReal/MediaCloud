@@ -18,9 +18,30 @@ namespace MediaCloud.Repositories
         {
             if (string.IsNullOrEmpty(filter) == false)
             {
+                // TODO: rework tag type to complete db model with TagTypeRepository.
+                // Rework TagType filtering
+
                 if (filter.Contains("notag"))
                 {
                     return query.Where(x => x.Tags.Any() == false);
+                }
+
+                if (filter.Contains("!character") || filter.Contains("!char"))
+                {
+                    query = query.Where(x => !x.Tags.Any(x => x.Type == Data.Types.TagType.Character));
+                }
+                else if (filter.Contains("character") || filter.Contains("char"))
+                {
+                    query = query.Where(x => x.Tags.Any(x => x.Type == Data.Types.TagType.Character));
+                }
+
+                if (filter.Contains("!series"))
+                {
+                    query = query.Where(x => !x.Tags.Any(x => x.Type == Data.Types.TagType.Series));
+                }
+                else if (filter.Contains("series"))
+                {
+                    query = query.Where(x => x.Tags.Any(x => x.Type == Data.Types.TagType.Series));
                 }
 
                 return TagRepository.GetTagFilter(filter).GetQuery(query);
