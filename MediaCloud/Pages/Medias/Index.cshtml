@@ -10,53 +10,53 @@
 
     <div class="button-panel d-flex flex-row flex-wrap align-items-center">
         <div class="form-group align-self-center d-flex flex-wrap">   
-            <a class="btn btn-success btn-rounded me-3 mt-3" asp-page="Upload" 
-                asp-route-returnUrl="/Medias?count=@(Model.ListBuilder.Count)$offset=@(Model.ListBuilder.Offset)$sort=@(Model.ListBuilder.Sort)$filter=@(Model.ListBuilder.Filter)$isAutoloadingEnabled=@(Model.IsAutoloadingEnabled)">Upload</a>      
+            <a class="btn btn-success btn-rounded me-3 mt-3" asp-page="Upload"
+               asp-route-returnUrl="/Medias?count=@(Model.ListBuilder.Count)$offset=@(Model.ListBuilder.Offset)$sort=@(Model.ListBuilder.Sort)$filter=@(Model.ListBuilder.Filter)$isUseAutoload=@(Model.IsAutoloadEnabled)">Upload</a>
             <div class="vr me-3 mt-3"></div>
-            <div class="align-self-center me-3 mt-3 text-white ">Sorting:</div>
+            <div class="align-self-center me-3 mt-3 text-white ">Sort:</div>
             @if (@Model.ListBuilder.Sort == "UpdatedAt")
             {
-                <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@("UpdatedAtDesc") asp-route-isAutoloadingEnabled=@(Model.IsAutoloadingEnabled)>Updated ↓</a>
+                <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@("UpdatedAtDesc") asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>Updated ↓</a>
             }
             else if (@Model.ListBuilder.Sort == "UpdatedAtDesc"){
-                <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@("UpdatedAt") asp-route-isAutoloadingEnabled=@(Model.IsAutoloadingEnabled)>Updated ↑</a>
+                <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@("UpdatedAt") asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>Updated ↑</a>
             }
             else
             {
-                <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@("UpdatedAtDesc") asp-route-isAutoloadingEnabled=@(Model.IsAutoloadingEnabled)>Updated</a>
+                <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@("UpdatedAtDesc") asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>Updated</a>
             }
 
             @if (@Model.ListBuilder.Sort == "CreatedAt")
             {
-                <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@("CreatedAtDesc") asp-route-isAutoloadingEnabled=@(Model.IsAutoloadingEnabled)>Created ↓</a>
+                <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@("CreatedAtDesc") asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>Created ↓</a>
             }
             else if (@Model.ListBuilder.Sort == "CreatedAtDesc"){
-                <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@("CreatedAt") asp-route-isAutoloadingEnabled=@(Model.IsAutoloadingEnabled)>Created ↑</a>
+                <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@("CreatedAt") asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>Created ↑</a>
             }
             else
             {
-                <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@("CreatedAtDesc") asp-route-isAutoloadingEnabled=@(Model.IsAutoloadingEnabled)>Created</a>
+                <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@("CreatedAtDesc") asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>Created</a>
             }
 
             @if (@Model.ListBuilder.Sort.Contains("Random"))
             {
-                <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@($"Random_{new Random().Next(int.MaxValue)}") asp-route-isAutoloadingEnabled=@(Model.IsAutoloadingEnabled)>Random</a>
+                <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@($"Random_{new Random().Next(int.MaxValue)}") asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>Random</a>
 
             }        
             else
             {
-                <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@($"Random_{new Random().Next(int.MaxValue)}") asp-route-isAutoloadingEnabled=@(Model.IsAutoloadingEnabled)>Random</a>
+                <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@($"Random_{new Random().Next(int.MaxValue)}") asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>Random</a>
             }
 
             <div class="vr me-3 mt-3"></div>
 
-            @if (@Model.IsAutoloadingEnabled)
+            @if (@Model.IsAutoloadEnabled)
             {
-                <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@(Model.ListBuilder.Sort) asp-route-isAutoloadingEnabled=@(false)>Autoload ✔️</a>
+                <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@(Model.ListBuilder.Sort) asp-route-isUseAutoload=@(false)>Autoload ✔️</a>
             }
             else
             {
-                <a class="btn btn-secondary btn-rounded me-3 mt-3 text-nowrap" style="border-color: darkgray" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@(Model.ListBuilder.Sort) asp-route-isAutoloadingEnabled=@(true)>Autoload ❌</a>
+                <a class="btn btn-secondary btn-rounded me-3 mt-3 text-nowrap" style="border-color: darkgray" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@(Model.ListBuilder.Sort) asp-route-isUseAutoload=@(true)>Autoload ❌</a>
             }
             <div class="vr me-3 mt-3"></div>
         </div>
@@ -65,7 +65,7 @@
             <div class="autocomplete-list autocomplete me-3 mt-3 flex-grow-1">
                 <input asp-for=@Model.ListBuilder.Filter class="form-control" id="filterGrab" placeholder="example: @Model.ExampleFilter" style="min-width: 20rem"/>
             </div>
-            <a class="btn btn-info btn-rounded me-3 mt-3" onclick="filterClicked()">Filter</a>
+            <a class="btn btn-info btn-rounded mt-3" onclick="filterClicked()">Filter</a>
         </div>
     </div>  
 
@@ -103,13 +103,13 @@
         }
     </div>
     <div class="d-flex justify-content-center">
-        @if (Model.Previews.Count >= Model.ListBuilder.Count && Model.IsAutoloadingEnabled)
+        @if (Model.Previews.Count >= Model.ListBuilder.Count && Model.IsAutoloadEnabled)
         {
             <div class="spinner-border text-light" role="status" id="loadingSpinner" style="display: block; width:3rem; height:3rem"></div>
         }
         <h1 style="text-align: center; display: none" id="loadingDone">Your are reached the end 😮</h1>
     </div>
-    @if (Model.IsAutoloadingEnabled == false)
+    @if (Model.IsAutoloadEnabled == false)
     {
         <partial name="~/Pages/Shared/_Pagination.cshtml" />
     }
@@ -118,7 +118,7 @@
 <script src="~/js/tagAutocompletion.js"></script>
 
 <script type="text/javascript">
-    var isAutoLoadingEnabled = @Model.IsAutoloadingEnabled.ToString().ToLower();
+    var isAutoLoadingEnabled = @Model.IsAutoloadEnabled.ToString().ToLower();
     var elem = document.getElementById("filterGrab");
     elem.onkeyup = function(e){
         if(e.keyCode == 13){
@@ -143,7 +143,7 @@
             "$offset=" + @Model.ListBuilder.Offset +
             "$sort=" + '@Model.ListBuilder.Sort' + 
             "$filter=" + '@Model.ListBuilder.Filter' + 
-            "$isAutoloadingEnabled=@Model.IsAutoloadingEnabled";
+            "$isUseAutoload=@Model.IsAutoloadEnabled";
     }
 
     var currentOffset = @Model.ListBuilder.Offset;
@@ -178,10 +178,9 @@
                     cardDiv.id = i;
 
                     if (data[i].collection.count != null) {
-                        cardDiv.onclick = function (e) {
-                            var id = e.currentTarget.id;
-                            window.location = GetPostUrl("Collection", data[id].collection.id);
-                        }
+                        var id = e.currentTarget.id;
+                        cardDiv.onclick = OnCardClick('Collection', data[id].collection.id);
+                        cardDiv.onauxclick = OnCardInNewWindowClick('Collection', data[id].collection.id);
 
                         var circleDiv = document.createElement('div');
                         circleDiv.className = "bg-success rounded-circle";
@@ -190,10 +189,9 @@
                         cardDiv.appendChild(circleDiv);
                     }
                     else {
-                        cardDiv.onclick = function (e) {
-                            var id = e.currentTarget.id;
-                            window.location = GetPostUrl("Detail", data[id].id);
-                        }
+                        var id = e.currentTarget.id;
+                        cardDiv.onclick = OnCardClick('Detail', data[id].id);
+                        cardDiv.onauxclick = OnCardInNewWindowClick('Detail', data[id].id);
                     }
                     var img = document.createElement('img');
                     img.className = "w-100 shadow-1-strong mb-4 picture-image bg-image";
@@ -212,7 +210,7 @@
     function filterClicked()
     {
         var filter = document.getElementById("filterGrab").value;
-        window.location.href = "/Medias?filter=" + filter + "&sort=@(Model.ListBuilder.Sort)&isAutoloadingEnabled=@(Model.IsAutoloadingEnabled)";
+        window.location.href = "/Medias?filter=" + filter + "&sort=@(Model.ListBuilder.Sort)&isUseAutoload=@(Model.IsAutoloadEnabled)";
     };
 
 </script>

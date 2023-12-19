@@ -30,6 +30,8 @@ namespace MediaCloud.Pages.Tags
         public List<Tag> Tags { get; set; }
         [BindProperty]
         public ListBuilder<Tag> ListBuilder { get; set; }
+        [BindProperty]
+        public bool IsAutoloadEnabled { get; set; } = false;
 
         public async Task<IActionResult> OnGetAsync(ListRequest request)
         {

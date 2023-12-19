@@ -24,5 +24,7 @@
         /// Filter for entities.
         /// </summary>
         public string Filter { get; set; }
+
+        public bool IsUseAutoload { get; set; } = true;
     }
 }

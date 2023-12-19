@@ -62,8 +62,8 @@
 
         <div class="form-group mt-3 mb-3 d-flex justify-content-between">
             <input type="submit" value="Edit" class="btn btn-success" />
-            <a class="btn btn-info btn-rounded me-1 ms-2 mb-2" onclick="startReorder();" id="reorder-button">Reorder</a>
-            <a class="btn btn-info btn-rounded text-nowrap" asp-page="Index" asp-route-filter=@(Model.TagsString) asp-route-sort=@("UpdatedAtDesc")>Show similar</a>
+            <a class="btn btn-info btn-rounded me-1 ms-2" onclick="startReorder();" id="reorder-button">Reorder</a>
+            <a class="btn btn-info btn-rounded me-1 ms-2 text-nowrap" asp-page="Index" asp-route-filter=@(Model.TagsString) asp-route-sort=@("UpdatedAtDesc")>Show similar</a>
             <button class="btn btn-danger btn-rounded" asp-page-handler="Delete" asp-route-id=@(Model.Collection.Id)>Remove</button>
         </div>
 

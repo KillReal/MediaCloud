@@ -71,6 +71,10 @@
             if (currentFocus > -1) {
                 if (x) x[currentFocus].click();
             }
+        } else if (e.keyCode == 9) {
+            e.preventDefault();
+            x[0].click();
+            this.focus();
         }
     });
 

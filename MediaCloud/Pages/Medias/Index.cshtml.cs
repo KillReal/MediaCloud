@@ -31,18 +31,18 @@ namespace MediaCloud.Pages.Medias
         public string ExampleFilter { get; set; }
 
         [BindProperty]
-        public bool IsAutoloadingEnabled { get; set; } = true;
+        public bool IsAutoloadEnabled { get; set; } = true;
 
         public ListModel(IRepository repository)
         {
             Repository = repository;
         }
 
-        public async Task<IActionResult> OnGetAsync(ListRequest request, bool isAutoloadingEnabled = true)
+        public async Task<IActionResult> OnGetAsync(ListRequest request)
         {
             ListBuilder = new ListBuilder<Preview>(request);
             Previews = await ListBuilder.BuildAsync(Repository.Previews);
-            IsAutoloadingEnabled = isAutoloadingEnabled;
+            IsAutoloadEnabled = request.IsUseAutoload;
 
             var topTagNames = Repository.Tags.GetTopUsed(2).Select(x => x.Name.ToLower());
             if (topTagNames.Count() > 1)
