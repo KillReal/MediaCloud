@@ -24,7 +24,7 @@ namespace MediaCloud.Services
 
             if (maxDiv > 1.0)
             {
-                image.Mutate(x => x.Resize(new Size(Convert.ToInt32(size.Width / maxDiv), Convert.ToInt32(size.Height / maxDiv))));
+                image.Mutate(x => x.Resize(new Size(Convert.ToInt32(size.Width / maxDiv), Convert.ToInt32(size.Height / maxDiv)), KnownResamplers.Lanczos3, true));
                 var ms = new MemoryStream();
                 image.Save(ms, image.Metadata.DecodedImageFormat);
                 return ms.ToArray();
