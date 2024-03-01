@@ -2,8 +2,6 @@
 using MediaCloud.Services;
 using MediaCloud.WebApp.Data.Models.Interfaces;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Drawing;
-using System.Drawing.Imaging;
 
 namespace MediaCloud.Data.Models
 {
@@ -22,6 +20,13 @@ namespace MediaCloud.Data.Models
         public virtual Collection? Collection { get; set; }
 
         public int Order { get; set; }
+
+        public Preview(Media media, Image convertedImage)
+        {
+            MediaType = MediaType.JPG;
+            Content = PictureService.LowerResolution(convertedImage, media.Content);
+            Order = 0;
+        }
 
         public Preview(Media media)
         {

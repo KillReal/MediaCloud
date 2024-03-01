@@ -2,9 +2,15 @@
 using MediaCloud.Builders.List;
 using MediaCloud.Data;
 using MediaCloud.Data.Models;
+using MediaCloud.WebApp.Extensions;
+using MediaCloud.WebApp.Services;
 using MediaCloud.WebApp.Services.Repository.Entities.Base;
 using MediaCloud.WebApp.Services.Statistic;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using System.Data;
+using System.IO;
 
 namespace MediaCloud.Repositories
 {
@@ -12,8 +18,10 @@ namespace MediaCloud.Repositories
     {
         private Media GetMediaFromFile(byte[] file)
         {
-            var media = new Media(file);
-            media.Preview = new Preview(media);
+            var stream = new MemoryStream(file);
+            var convertedImage = Image.Load(stream);
+            var media = new Media(file, convertedImage.Width, convertedImage.Height);
+            media.Preview = new Preview(media, convertedImage);
             media.Creator = new ActorRepository(_context).Get(_actorId);
             media.Updator = media.Creator;
             media.Preview.Creator = media.Creator;
@@ -121,10 +129,13 @@ namespace MediaCloud.Repositories
                 previews[i].Collection = collection;
             }
 
+            _context.ChangeTracker.AutoDetectChangesEnabled = false;        
             _context.Medias.AddRange(medias);
             SaveChanges();
+            _context.ChangeTracker.AutoDetectChangesEnabled = true;
+
             _logger.LogInformation($"Created new collection with <{collection.Count}> previews and id: {collection.Id} by: {_actorId}");
-            
+
             return medias;
         }
     }

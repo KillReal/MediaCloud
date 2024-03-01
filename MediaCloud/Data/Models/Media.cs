@@ -24,14 +24,15 @@ namespace MediaCloud.Data.Models
             set => Size = long.Parse(value);
         }
 
-        public Media(byte[] file)
+        public Media(byte[] file, int width, int height)
         {
             Content = file;
 
-            var stream = new MemoryStream(Content);
-            var picture = Image.Load(stream);
+            //var stream = new MemoryStream(Content);
+            //var picture = Image.Load(stream);
 
-            Resolution = $"{picture.Width}x{picture.Height}";
+            //Resolution = $"{picture.Width}x{picture.Height}";
+            Resolution = $"{width}x{height}";
             Size = Content.Length;
 
             Rate = 0;

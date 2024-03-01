@@ -12,12 +12,10 @@ namespace MediaCloud.Services
             Configuration = configuration;
         }
 
-        public static byte[] LowerResolution(byte[] pictureBytes)
+        public static byte[] LowerResolution(Image image, byte[] sourceBytes)
         {
             var maxSize = ConfigurationService.Preview.GetMaxHeight();
 
-            var stream = new MemoryStream(pictureBytes);
-            var image = Image.Load(stream);
             var size = image.Size;
             var width = maxSize;
             var height = maxSize;
@@ -29,10 +27,18 @@ namespace MediaCloud.Services
                 image.Mutate(x => x.Resize(new Size(Convert.ToInt32(size.Width / maxDiv), Convert.ToInt32(size.Height / maxDiv))));
                 var ms = new MemoryStream();
                 image.Save(ms, image.Metadata.DecodedImageFormat);
-                pictureBytes = ms.ToArray();
+                return ms.ToArray();
             }
 
-            return pictureBytes;
+            return sourceBytes;
+        }
+
+        public static byte[] LowerResolution(byte[] pictureBytes)
+        {
+            var stream = new MemoryStream(pictureBytes);
+            var image = Image.Load(stream);
+
+            return LowerResolution(image, pictureBytes);
         }
 
         public static string FormatSize(long bytes, bool useUnit = true)
