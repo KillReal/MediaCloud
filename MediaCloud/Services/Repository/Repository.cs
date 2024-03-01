@@ -63,7 +63,8 @@ namespace MediaCloud.WebApp.Services.Repository
         {
             using (var command = RepositoryContext.DbContext.Database.GetDbConnection().CreateCommand())
             {
-                command.CommandText = "SELECT pg_database_size('mediacloud');";
+                
+                command.CommandText = $"SELECT pg_database_size('{RepositoryContext.DbContext.Database.GetDbConnection().Database}');";
                 RepositoryContext.DbContext.Database.OpenConnection();
                 using (var reader = command.ExecuteReader())
                 {

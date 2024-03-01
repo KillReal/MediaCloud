@@ -18,6 +18,9 @@ namespace MediaCloud.Data.Models
             ActorsCount += snapshot.ActorsCount;
             MediasSize += snapshot.MediasSize;
 
+            Creator = snapshot.Creator;
+            Updator = snapshot.Updator;
+
             return this;
         }
 
