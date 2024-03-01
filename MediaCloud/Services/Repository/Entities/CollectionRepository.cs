@@ -100,7 +100,6 @@ namespace MediaCloud.Repositories
 
             _context.Previews.UpdateRange(previews);
             Update(collection);
-            SaveChanges();
 
             _logger.LogInformation($"Updated previews order for collection with id: {collection.Id} by: {_actorId}");
             return true;
@@ -124,7 +123,6 @@ namespace MediaCloud.Repositories
             _statisticService.MediasCountChanged(-count, -size);
 
             Remove(collection);
-            SaveChanges();
 
             return true;
         }
