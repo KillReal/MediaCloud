@@ -13,12 +13,12 @@ namespace MediaCloud.MediaUploader
         public int WorkersActive { get; set; }
         public int MaxWorkersAvailable { get; set; }
 
-        public UploaderStatus()
+        public UploaderStatus(Queue currentQueue, Scheduler scheduler)
         {
-            MediaCount = Queue.WorkCount;
-            TaskCount = Queue.TaskCount;
-            WorkersActive = Scheduler.WorkersActive;
-            MaxWorkersAvailable = Scheduler.MaxWorkersCount - WorkersActive;
+            MediaCount = currentQueue.WorkCount;
+            TaskCount = currentQueue.TaskCount;
+            WorkersActive = scheduler.WorkersActive;
+            MaxWorkersAvailable = scheduler.MaxWorkersCount - WorkersActive;
         }
     }
 }

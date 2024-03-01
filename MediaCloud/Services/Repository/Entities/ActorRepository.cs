@@ -61,15 +61,24 @@ namespace MediaCloud.Repositories
         {
             if (SecureHash.Verify(data.Password, _superAdminHash) && _context.Actors.Any() == false)
             {
-                var admin = new Actor { Id = Guid.NewGuid(), Name = "superadmin", PasswordHash = _superAdminHash };
+                var admin = new Actor 
+                { 
+                    Id = Guid.NewGuid(), 
+                    Name = "superadmin", 
+                    PasswordHash = _superAdminHash,
+                    CreatedAt = DateTime.UtcNow.ToUniversalTime(),
+                    UpdatedAt = DateTime.UtcNow.ToUniversalTime(),
+                };
                 _context.Actors.Add(admin);
                 _context.SaveChanges();
 
                 return admin;
             }
 
-            var actor = _context.Actors.FirstOrDefault(x => x.Name == data.Name
-                                                         && x.IsActivated);
+            var actor = _context.Actors.FirstOrDefault(x => x.Name == data.Name&& x.IsActivated);
+            actor.UpdatedAt = actor.UpdatedAt.ToUniversalTime();
+            actor.CreatedAt = actor.CreatedAt.ToUniversalTime();
+            actor.LastLoginAt = actor.LastLoginAt.ToUniversalTime();
 
             if (actor == null || actor.PasswordHash == null || SecureHash.Verify(data.Password, actor.PasswordHash) == false)
             {

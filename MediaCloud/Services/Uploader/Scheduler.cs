@@ -4,28 +4,28 @@ using MediaCloud.WebApp.Services.Repository;
 
 namespace MediaCloud.MediaUploader
 {
-    public static class Scheduler
+    public class Scheduler
     {
-        private static IRepository Repository;
-        private static ILogger Logger;
-        private static List<Worker> Workers = new();
+        private IRepository Repository;
+        private ILogger Logger;
+        private List<Worker> Workers = new();
 
-        public static int MaxWorkersCount = 1;
+        public int MaxWorkersCount = 1;
 
-        public static int WorkersActive => Workers.Count(x => x.IsRunning);
+        public int WorkersActive => Workers.Count(x => x.IsRunning);
 
-        public static void Init(IRepository repository, ILogger<Uploader> logger)
+        public Scheduler(IRepository repository, ILogger<Uploader> logger, Queue queue)
         {
             Repository = repository;
             Logger = logger;
             Workers = new List<Worker>();
             for (int i = 0; i < MaxWorkersCount; i++)
             {
-                Workers.Add(new Worker());
+                Workers.Add(new Worker(queue, this));
             }
         }
 
-        public static void Run()
+        public void Run()
         {
             if (Workers.Any() == false)
             {
@@ -35,9 +35,9 @@ namespace MediaCloud.MediaUploader
             Workers.Where(x => x.IsRunning == false).ToList().ForEach(x => x.Run());
         }
 
-        public static bool IsTaskInProgress(Guid id) => Workers.FirstOrDefault(x => x.CurrentTask == id) != null;
+        public bool IsTaskInProgress(Guid id) => Workers.FirstOrDefault(x => x.CurrentTask == id) != null;
 
-        public static IRepository GetRepository()
+        public IRepository GetRepository()
         {
             if (Repository == null)
             {
@@ -47,7 +47,7 @@ namespace MediaCloud.MediaUploader
             return Repository;
         }
 
-        public static ILogger GetLogger()
+        public ILogger GetLogger()
         {
             if (Logger == null)
             {

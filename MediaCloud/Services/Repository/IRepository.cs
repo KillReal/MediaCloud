@@ -22,5 +22,7 @@ namespace MediaCloud.WebApp.Services.Repository
         public Actor GetCurrentActor();
 
         public void SetCurrentActor(Actor actor);
+
+        public long GetDbSize();
     }
 }

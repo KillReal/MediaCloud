@@ -39,6 +39,8 @@ namespace MediaCloud.Pages.Medias
         public int TotalCount { get; set; }
         [BindProperty]
         public List<int> Orders { get; set; }
+        [BindProperty]
+        public string CollectionSizeInfo { get; set; }
 
         public CollectionModel(IRepository repository)
         {
@@ -55,6 +57,8 @@ namespace MediaCloud.Pages.Medias
             }
 
             var preview = Collection.Previews.OrderBy(x => x.Order).First();
+            var collectionSize = Repository.Collections.GetSize(id);
+            CollectionSizeInfo = PictureService.FormatSize(collectionSize);
             TotalCount = Repository.Collections.GetListCount(id).Result;
 
             Tags = preview.Tags.OrderBy(x => x.Type).ToList();

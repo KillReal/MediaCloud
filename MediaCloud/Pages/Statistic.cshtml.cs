@@ -35,8 +35,7 @@ namespace MediaCloud.Pages
             Snapshots = StatisticService.GetStatistic();
             Tags = Repository.Tags.GetTopUsed(15);
 
-            var path = ConfigurationService.Database.GetPath();
-            var actualSize = new FileInfo(path).Length;
+            var actualSize = Repository.GetDbSize();
             var aproximateSize = Snapshots.Last().MediasSize;
 
             SizeTargetError = Math.Round((double)((actualSize - aproximateSize) / (double)aproximateSize), 3);

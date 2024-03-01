@@ -35,7 +35,7 @@ namespace MediaCloud.WebApp.Services.Statistic
         public List<StatisticSnapshot> GetStatistic()
         {
             var startDate = ServiceHelper.GetFirstOrNowDate();
-            var endDate = DateTime.Now;
+            var endDate = DateTime.Now.ToUniversalTime();
 
             return ServiceHelper.GetList(startDate, endDate);
         }

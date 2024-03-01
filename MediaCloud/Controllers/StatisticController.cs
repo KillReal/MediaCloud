@@ -36,14 +36,20 @@ namespace MediaCloud.WebApp.Controllers
             };
         }
 
-        public void Recalculate()
+        public void Recalculate(int days = 0)
         {
+            if (days != 0)
+            {
+                StatisticService.ProceedRecalculaton(days);
+                return;
+            }
+
             StatisticService.ProceedRecalculaton();
         }
 
-        public void RecalculateDays(int days)
+        public string Status()
         {
-            StatisticService.ProceedRecalculaton(days);
+            return StatisticService.GetStatus().GetDisplayName();
         }
     }
 }

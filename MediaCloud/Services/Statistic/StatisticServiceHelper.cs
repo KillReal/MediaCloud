@@ -24,12 +24,20 @@ namespace MediaCloud.WebApp.Services.Statistic
         {
             var snapshot = Context.StatisticSnapshots.OrderByDescending(x => x.TakenAt).FirstOrDefault();
 
-            snapshot ??= new();  
+            snapshot ??= new();
 
             if (DateTime.Now.Date != snapshot.TakenAt.Date)
             {
                 snapshot = new StatisticSnapshot().Merge(snapshot);
+
                 snapshot.TakenAt = DateTime.Now.Date;
+                snapshot.UpdatedAt = DateTime.Now.Date;
+                snapshot.CreatedAt = DateTime.Now.Date;
+
+                var rootAdmin = Context.Actors.Where(x => x.IsAdmin).OrderBy(y => y.CreatedAt).First();
+                snapshot.Creator = rootAdmin;
+                snapshot.Updator = rootAdmin;
+
                 Context.StatisticSnapshots.Add(snapshot);
                 Context.SaveChanges();
             }
@@ -94,11 +102,11 @@ namespace MediaCloud.WebApp.Services.Statistic
                 Context.Previews.OrderBy(x => x.CreatedAt).FirstOrDefault()?.CreatedAt
             };
 
-            DateTime minDate = dates.Where(x => x != DateTime.MinValue).Min() ?? DateTime.MinValue;
+            DateTime minDate = dates.Where(x => x != DateTime.MinValue.ToUniversalTime()).Min() ?? DateTime.MinValue.ToUniversalTime();
 
-            return (minDate == DateTime.MinValue) 
-                ? DateTime.Now
-                : minDate;
+            return (minDate == DateTime.MinValue.ToUniversalTime()) 
+                ? DateTime.Now.ToUniversalTime()
+                : minDate.ToUniversalTime();
         }
 
         public async Task<StatisticSnapshot> TakeSnapshotAsync(DateTime dateTime)

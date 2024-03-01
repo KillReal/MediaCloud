@@ -52,22 +52,16 @@ namespace MediaCloud.Repositories
             return media;
         }
 
-        public List<Media> CreateRange(List<byte[]> files)
+
+        public List<Media> CreateRange(List<byte[]> files, List<Tag> tags)
         {
-            if (files.Count == 1)
+            var medias = GetMediasRange(files);
+
+            if (tags.Any())
             {
-                return new() { Create(files[0]) };
+                medias.ForEach(x => x.Preview.Tags = tags);
             }
 
-            var medias = new List<Media>();
-            
-            while (files.Count > 0)
-            {
-                var file = files.Last();
-                medias.Add(GetMediaFromFile(file));
-                files.Remove(file);
-            }
-            
             _context.AddRange(medias);
             SaveChanges();
 
@@ -76,15 +70,39 @@ namespace MediaCloud.Repositories
             return medias;
         }
 
-        public List<Media> CreateCollection(List<byte[]> files)
+        private List<Media> GetMediasRange(List<byte[]> files)
         {
             if (files.Count == 1)
             {
                 return new() { Create(files[0]) };
             }
 
-            var medias = CreateRange(files);
-            SaveChanges();
+            var medias = new List<Media>();
+
+            while (files.Count > 0)
+            {
+                var file = files.Last();
+                medias.Add(GetMediaFromFile(file));
+                files.Remove(file);
+            }
+
+            return medias;
+        }
+
+        public List<Media> CreateCollection(List<byte[]> files, List<Tag> tags)
+        {
+            if (files.Count == 1)
+            {
+                return new() { Create(files[0]) };
+            }
+
+            var medias = GetMediasRange(files);
+
+            if (tags.Any())
+            {
+                medias.First().Preview.Tags = tags;
+            }
+            //SaveChanges();
 
             var previews = medias.Select(x => x.Preview).ToList();
 
@@ -103,7 +121,8 @@ namespace MediaCloud.Repositories
                 previews[i].Collection = collection;
             }
 
-            _context.Previews.UpdateRange(previews);
+            _context.Medias.AddRange(medias);
+            //_context.Previews.UpdateRange(previews);
             SaveChanges();
             _logger.LogInformation($"Created new collection with <{collection.Count}> previews and id: {collection.Id} by: {_actorId}");
             

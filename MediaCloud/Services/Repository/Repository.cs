@@ -3,11 +3,14 @@ using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services.Repository.Entities.Base;
 using MediaCloud.WebApp.Services.Statistic;
+using Microsoft.EntityFrameworkCore;
 
 namespace MediaCloud.WebApp.Services.Repository
 {
     public class Repository : IRepository
     {
+        private IServiceScope ServiceScope;
+
         private RepositoryContext RepositoryContext { get; set; }
         private ActorRepository ActorRepository { get; set; }
         private CollectionRepository CollectionRepository { get; set; }
@@ -25,8 +28,10 @@ namespace MediaCloud.WebApp.Services.Repository
             TagRepository = new(repositoryContext);
         }
 
-        public Repository(AppDbContext context, ILogger<Repository> logger, IActorProvider actorProvider, IStatisticService statisticService)
+        public Repository(IServiceScopeFactory scopeFactory, ILogger<Repository> logger, IActorProvider actorProvider, IStatisticService statisticService)
         {
+            ServiceScope = scopeFactory.CreateScope();
+            var context = ServiceScope.ServiceProvider.GetRequiredService<AppDbContext>();
             RepositoryContext = new RepositoryContext(context, statisticService, logger, actorProvider.GetCurrent());
 
             SetContext(RepositoryContext);
@@ -52,6 +57,20 @@ namespace MediaCloud.WebApp.Services.Repository
         {
             RepositoryContext.Actor = actor;
             SetContext(RepositoryContext);
+        }
+
+        public long GetDbSize()
+        {
+            using (var command = RepositoryContext.DbContext.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = "SELECT pg_database_size('mediacloud');";
+                RepositoryContext.DbContext.Database.OpenConnection();
+                using (var reader = command.ExecuteReader())
+                {
+                    reader.Read();
+                    return reader.GetInt64(0);
+                }
+            }
         }
     }
 }

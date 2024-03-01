@@ -13,8 +13,17 @@ namespace MediaCloud.MediaUploader
     {
         private Thread _workRoutine;
 
+        private Queue Queue;
+        private Scheduler Scheduler;
+
         public Guid CurrentTask = Guid.Empty;
         public bool IsRunning { get; set; } = false;
+
+        public Worker(Queue queue, Scheduler scheduler) 
+        {
+            Queue = queue;
+            Scheduler = scheduler;
+        }
 
         public void Run()
         {
@@ -51,7 +60,7 @@ namespace MediaCloud.MediaUploader
                 
                 try
                 {
-                    task.DoTheTask();
+                    task.DoTheTask(Scheduler.GetRepository());
                 }
                 catch (Exception ex)
                 {

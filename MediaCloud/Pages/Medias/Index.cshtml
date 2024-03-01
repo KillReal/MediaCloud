@@ -171,6 +171,7 @@
                 return response.json();
             }).then(function(data) {
                 var gallery = document.getElementById('gallery');
+
                 for (var i = 0; i < data.length; i++) {
                     var columnDiv = document.getElementById('column-' + (i % @Model.ListBuilder.ColumnCount));
                     var cardDiv = document.createElement('div');
@@ -178,9 +179,8 @@
                     cardDiv.id = i;
 
                     if (data[i].collection.count != null) {
-                        var id = e.currentTarget.id;
-                        cardDiv.onclick = OnCardClick('Collection', data[id].collection.id);
-                        cardDiv.onauxclick = OnCardInNewWindowClick('Collection', data[id].collection.id);
+                        cardDiv.onclick = function (e) { OnCardClick('Collection', data[e.currentTarget.id].collection.id) };
+                        cardDiv.onauxclick = function (e) { OnCardInNewWindowClick('Collection', data[e.currentTarget.id].collection.id) };
 
                         var circleDiv = document.createElement('div');
                         circleDiv.className = "bg-success rounded-circle";
@@ -189,9 +189,8 @@
                         cardDiv.appendChild(circleDiv);
                     }
                     else {
-                        var id = e.currentTarget.id;
-                        cardDiv.onclick = OnCardClick('Detail', data[id].id);
-                        cardDiv.onauxclick = OnCardInNewWindowClick('Detail', data[id].id);
+                        cardDiv.onclick = function (e) { OnCardClick('Detail', data[e.currentTarget.id].id) };
+                        cardDiv.onauxclick = function (e) { OnCardInNewWindowClick('Detail', data[e.currentTarget.id].id) };
                     }
                     var img = document.createElement('img');
                     img.className = "w-100 shadow-1-strong mb-4 picture-image bg-image";

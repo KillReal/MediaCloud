@@ -58,5 +58,15 @@ namespace MediaCloud.WebApp.Controllers
 
             return new FileContentResult(System.IO.File.ReadAllBytes("wwwroot/noimg.jpg"), "image/jpeg");
         }
+
+        public FileContentResult Source(Guid id)
+        {
+            var preview = Index(id);
+
+            if (preview != null)
+                return new FileContentResult(preview.Media.Content, "image/jpeg");
+
+            return new FileContentResult(System.IO.File.ReadAllBytes("wwwroot/noimg.jpg"), "image/jpeg");
+        }
     }
 }

@@ -5,6 +5,7 @@ using MediaCloud.Data.Models;
 using MediaCloud.Extensions;
 using MediaCloud.WebApp.Services.Repository.Entities.Base;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace MediaCloud.Repositories
 {
@@ -52,6 +53,19 @@ namespace MediaCloud.Repositories
                                     .Skip(listRequest.Offset)
                                     .Take(listRequest.Count)
                                     .ToList();
+        }
+
+        public long GetSize(Guid id)
+        {
+            var collection = _context.Collections.Find(id);
+
+            if (collection == null || collection.CreatorId != _actorId)
+            {
+                return 0;
+            }
+
+            //return _context.Medias.Where(x => collection.Previews.Contains(x.Preview)).Sum(x => x.Size);
+            return _context.Medias.Where(x => collection.Previews.Contains(x.Preview)).Sum(x => x.Size);
         }
 
         public bool TryUpdateOrder(Guid id, List<int> orders)
@@ -103,8 +117,12 @@ namespace MediaCloud.Repositories
 
             var collectionId = collection.Id;
             var medias = collection.Previews.Select(x => x.Media).ToList();
+            var count = medias.Count;
+            var size = medias.Sum(x => x.Size);
 
             _context.Medias.RemoveRange(medias);
+            _statisticService.MediasCountChanged(-count, -size);
+
             Remove(collection);
             SaveChanges();
 

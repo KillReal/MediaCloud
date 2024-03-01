@@ -20,7 +20,7 @@ namespace MediaCloud.MediaUploader.Tasks
             throw new NotImplementedException();
         }
 
-        public virtual void DoTheTask()
+        public virtual void DoTheTask(IRepository repository)
         {
             throw new NotImplementedException();
         }

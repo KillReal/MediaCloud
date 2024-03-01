@@ -1,4 +1,5 @@
 ﻿using MediaCloud.Data.Models;
+using MediaCloud.WebApp;
 using Microsoft.EntityFrameworkCore;
 
 namespace MediaCloud.Data
@@ -8,12 +9,19 @@ namespace MediaCloud.Data
         public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
         {
-            Database.EnsureCreated();
-        }
+            if (Database.EnsureCreated())
+            {
+                var admin = new Actor()
+                {
+                    Name = "Admin",
+                    PasswordHash = SecureHash.Hash("superadmin"),
+                    IsActivated = true,
+                    IsAdmin = true
+                };
 
-        public AppDbContext()
-        {
-            Database.EnsureCreated();
+                Actors.Add(admin);
+                SaveChangesAsync();
+            }
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -29,11 +37,11 @@ namespace MediaCloud.Data
 
             foreach (var entityEntry in entries)
             {
-                ((Record)entityEntry.Entity).UpdatedAt = DateTime.Now;
+                ((Record)entityEntry.Entity).UpdatedAt = DateTime.Now.ToUniversalTime();
 
                 if (entityEntry.State == EntityState.Added)
                 {
-                    ((Record)entityEntry.Entity).CreatedAt = DateTime.Now;
+                    ((Record)entityEntry.Entity).CreatedAt = DateTime.Now.ToUniversalTime();
                 }
             }
 

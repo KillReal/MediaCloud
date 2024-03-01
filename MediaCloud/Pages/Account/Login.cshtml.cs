@@ -55,7 +55,7 @@ namespace MediaCloud.WebApp.Pages
             var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
-            Repository.Actors.SetLastLoginAt(actor, DateTime.Now);
+            Repository.Actors.SetLastLoginAt(actor, DateTime.Now.ToUniversalTime());
             Logger.LogInformation($"Signed in actor with name: {AuthData.Name}");
 
             StatisticService.ActivityFactorRaised.Invoke();

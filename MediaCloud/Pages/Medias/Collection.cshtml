@@ -25,6 +25,26 @@
         <input type="hidden" asp-for=@(Model.Collection.Id) class="form-control">
         <div class="row thumbnail-sortable" id="sortable-gallery" style="display: none"> 
         </div>
+        
+        <div class="row">
+            <div class="col-sm pt-3" style="margin-right: -1rem">
+                <ul class="list-group">
+                    <li class="list-group-item">Id: @Model.Collection.Id</li>
+                    <li class="list-group-item">Medias Size: @Model.CollectionSizeInfo</li>
+                    <li class="list-group-item">Medias count: @Model.TotalCount</li>
+                    <li class="list-group-item">Tags count: @Model.Tags.Count</li>
+                    
+                </ul>
+            </div>
+            <div class="col-sm pt-3" style="margin-left: -1rem">
+                <ul class="list-group">
+                    <li class="list-group-item">Creator: @Model.Collection.Creator.Name</li>
+                    <li class="list-group-item">Updator: @Model.Collection.Updator.Name</li>
+                    <li class="list-group-item">Time of create: @Model.Collection.CreatedAt</li>
+                    <li class="list-group-item">Time of update: @Model.Collection.UpdatedAt</li>
+                </ul>
+            </div>
+        </div>
 
         <div class="row">
             <div class="form-group mb-3 col-sm h-100 autocomplete-list autocomplete">

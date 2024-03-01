@@ -17,7 +17,7 @@ namespace MediaCloud.WebApp.Controllers
             Uploader = uploader;
         }
 
-        public UploaderTaskStatus GetTaskStatus(Guid id)
+        public MediaUploader.TaskStatus GetTaskStatus(Guid id)
         {
             return Uploader.GetStatus(id);
         }

@@ -1,19 +1,23 @@
 ﻿using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
+using MediaCloud.WebApp.Services.Repository.Entities.Base;
+using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace MediaCloud.WebApp.Services
 {
     public class ActorProvider : IActorProvider
     {
         private IHttpContextAccessor ContextAccessor;
-        private AppDbContext DbContext;
+        private IServiceScopeFactory ScopeFactory;
         private Actor? CachedActor;
 
-        public ActorProvider(AppDbContext context, IHttpContextAccessor httpContextAccessor)
+        public ActorProvider(IServiceScopeFactory scopeFactory, IHttpContextAccessor httpContextAccessor)
         {
-            DbContext = context;
+            ScopeFactory = scopeFactory;
             ContextAccessor = httpContextAccessor;
         }
 
@@ -38,7 +42,10 @@ namespace MediaCloud.WebApp.Services
                 return CachedActor;
             }
 
-            CachedActor = new ActorRepository(DbContext).Get(identity.Name);
+            using var scope = ScopeFactory.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            CachedActor = new ActorRepository(dbContext).Get(identity.Name);
 
             return CachedActor;
         }

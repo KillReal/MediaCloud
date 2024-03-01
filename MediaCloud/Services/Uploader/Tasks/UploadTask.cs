@@ -71,26 +71,20 @@ namespace MediaCloud.MediaUploader.Tasks
             TagString = tagString ?? "";
         }
 
-        public override void DoTheTask()
+        public override void DoTheTask(IRepository repository)
         {
-            var repository = Scheduler.GetRepository();
-            repository.SetCurrentActor(Actor);
+            //repository.SetCurrentActor(Actor);
 
             var foundTags = repository.Tags.GetRangeByString(TagString);
-            var medias = new List<Media>();
 
             if (IsCollection)
             {
-                medias = repository.Medias.CreateCollection(Content);
-                medias.First(x => x.Preview.Order == 0).Preview.Tags = foundTags;
+                repository.Medias.CreateCollection(Content, foundTags);
             }
             else
             {
-                medias = repository.Medias.CreateRange(Content);
-                medias.ForEach(x => x.Preview.Tags = foundTags);
+                repository.Medias.CreateRange(Content, foundTags);
             }
-
-            repository.Medias.Update(medias);
         }
     }
 }

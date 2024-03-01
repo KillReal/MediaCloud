@@ -117,7 +117,6 @@
                 .then((response) => response.json())
                 .then(function(data){
                         updateModalLoadBody(data);
-
                         if (data.queuePosition > 1){
                             setModalTitle('Waiting for queue');
                         }
@@ -125,7 +124,7 @@
                         {
                             setModalTitle('Media uploading...');
                         }
-                        else if (data.workCount == 0 && data.isInProcess == false) {
+                        else if (data.workCount == 0 && data.isInProgress == false) {
                             setModalTitle('Media successfully uploaded!');
                             hideModalBody();
                             hideLoadSpinner();

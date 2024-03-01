@@ -1,4 +1,3 @@
-using BenchmarkDotNet.Running;
 using MediaCloud.Data;
 using MediaCloud.Repositories;
 using MediaCloud.Services;
@@ -33,12 +32,14 @@ builder.Logging.AddConsole();
 builder.Services.AddRazorPages();
 builder.Services.AddDbContext<AppDbContext>(options => 
 {
-    options.UseSqlite(builder.Configuration.GetConnectionString("Database"));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Database"));
 });
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 builder.Services.AddLogging();
 builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
 builder.Services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
-builder.Services.AddScoped<IActorProvider, ActorProvider>();
+builder.Services.AddSingleton<IActorProvider, ActorProvider>();
 builder.Services.AddSingleton<IUploader, Uploader>();
 builder.Services.AddSingleton<IStatisticService, StatisticService>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -62,7 +63,6 @@ using var scope = app.Services.CreateScope();
 
 PictureService.Init(scope.ServiceProvider.GetRequiredService<IConfiguration>());
 ConfigurationService.Init(scope.ServiceProvider.GetRequiredService<IConfiguration>());
-Scheduler.Init(scope.ServiceProvider.GetRequiredService<IRepository>(), scope.ServiceProvider.GetRequiredService<ILogger<Uploader>>());
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
