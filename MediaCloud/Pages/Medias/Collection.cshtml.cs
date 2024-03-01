@@ -30,7 +30,7 @@ namespace MediaCloud.Pages.Medias
         [BindProperty]
         public List<Tag> Tags { get; set; }
         [BindProperty]
-        public string TagsString { get; set; }
+        public string? TagsString { get; set; }
         [BindProperty]
         public bool IsOrderChanged { get; set; } = false;
         [BindProperty]

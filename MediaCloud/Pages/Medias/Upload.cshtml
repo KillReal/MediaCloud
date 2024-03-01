@@ -49,10 +49,10 @@
       </div>
       <div class="modal-body" id="modalBody">
         <div class="mb-1">
-                <label class="col-form-label" id="orderPos">Your position in order: </label>
+                    <label class="col-form-label" id="orderPos">Your position in order: updating...</label>
         </div>
         <div class="mb-1">
-                <label class="col-form-label" id="mediasCount">Medias count: </label>
+                    <label class="col-form-label" id="mediasCount">Medias count: updating...</label>
         </div>
       </div>
       <div class="modal-footer">
@@ -75,20 +75,27 @@
     var modalBody = document.getElementById("modalBody");
     var loadSpinner = document.getElementById("loadingSpinner");
     
-    function updateModalLoadBody(data)
-    {
-        orderPosElem.innerHTML = 'Your position in order: ' + data.queuePosition;
-        mediaCountElem.innerHTML = 'Medias count: ' + data.workCount;
+    function updateModalLoadBody(data) {
+        if (data == undefined) {
+            orderPosElem.innerHTML = 'Your position in order: updating...';
+            mediaCountElem.innerHTML = 'Medias count: updating...';
+        }
+        else {
+            orderPosElem.innerHTML = 'Your position in order: ' + data.queuePosition;
+            mediaCountElem.innerHTML = 'Medias count: ' + data.workCount;
+        }
     }
 
-    function setModalTitle(title)
-    {
+    function setModalTitle(title) {
         modalTitle.innerHTML = title;
     }
 
-    function hideModalBody()
-    {
+    function hideModalBody() {
         modalBody.style.display = "none";
+    }
+
+    function showModalBody() {
+        modalBody.style.display = "block";
     }
 
     function showLoadSpinner()
@@ -106,29 +113,33 @@
         var request = new XMLHttpRequest();
         request.open('POST', url, true);
         request.onload = function() { // request successful
-            $('#loadingModal').modal('show')
+            console.log('ShowModal');
+            setModalTitle('Waiting for queue');
+            showModalBody();
+            updateModalLoadBody();
+            $('#loadingModal').modal('show');
             var data = JSON.parse(request.response);
-            updateModalLoadBody(data);
 
             var url = "/Uploader/GetTaskStatus?id=" + data.id;
             
-            var loadingUpdateInterval = setInterval(function() {
-                 fetch(url)
-                .then((response) => response.json())
-                .then(function(data){
+            console.log('Goes to update status');
+
+            const updator = function () {
+                fetch(url)
+                    .then((response) => response.json())
+                    .then(function (data) {
                         updateModalLoadBody(data);
-                        if (data.queuePosition > 1){
+                        if (data.queuePosition > 1) {
                             setModalTitle('Waiting for queue');
                         }
-                        else if (data.queuePosition = 0 && data.workCount > 0)
-                        {
+                        else if (data.queuePosition = 0 && data.workCount > 0) {
                             setModalTitle('Media uploading...');
                         }
                         else if (data.workCount == 0 && data.isInProgress == false) {
                             setModalTitle('Media successfully uploaded!');
                             hideModalBody();
                             hideLoadSpinner();
-                            
+
                             clearInterval(loadingUpdateInterval);
                         }
                         else if (data.workCount == 0) {
@@ -136,7 +147,10 @@
                             showLoadSpinner();
                         }
                     })
-            }, 1500, 500);
+            }
+
+            updator();
+            var loadingUpdateInterval = setInterval(updator, 1500);
         };
 
         request.onerror = function() {

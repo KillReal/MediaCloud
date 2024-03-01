@@ -41,9 +41,10 @@ namespace MediaCloud.Repositories
             _statisticService.MediasCountChanged.Invoke(-count, -size);
         }
 
-        public Media Create(byte[] file)
+        public Media Create(byte[] file, List<Tag> tags)
         {
             var media = GetMediaFromFile(file);
+            media.Preview.Tags = tags;
             _context.Add(media);
             SaveChanges();
 
@@ -55,6 +56,11 @@ namespace MediaCloud.Repositories
 
         public List<Media> CreateRange(List<byte[]> files, List<Tag> tags)
         {
+            if (files.Count == 1)
+            {
+                return new() { Create(files[0], tags) };
+            }
+
             var medias = GetMediasRange(files);
 
             if (tags.Any())
@@ -72,11 +78,6 @@ namespace MediaCloud.Repositories
 
         private List<Media> GetMediasRange(List<byte[]> files)
         {
-            if (files.Count == 1)
-            {
-                return new() { Create(files[0]) };
-            }
-
             var medias = new List<Media>();
 
             while (files.Count > 0)
@@ -93,7 +94,7 @@ namespace MediaCloud.Repositories
         {
             if (files.Count == 1)
             {
-                return new() { Create(files[0]) };
+                return new() { Create(files[0], tags) };
             }
 
             var medias = GetMediasRange(files);
