@@ -34,7 +34,7 @@ namespace MediaCloud.Pages.Tags
         public IActionResult OnGet(Guid id, string returnUrl = "/Tags/Index")
         {
             ReturnUrl = returnUrl.Replace("$", "&");  
-            Tag = Repository.Tags.Get(id) as Tag ?? new();
+            Tag = Repository.Tags.Get(id) ?? new();
 
             return Page();
         }   

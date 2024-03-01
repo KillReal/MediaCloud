@@ -102,7 +102,6 @@ namespace MediaCloud.Repositories
             {
                 medias.First().Preview.Tags = tags;
             }
-            //SaveChanges();
 
             var previews = medias.Select(x => x.Preview).ToList();
 
@@ -122,7 +121,6 @@ namespace MediaCloud.Repositories
             }
 
             _context.Medias.AddRange(medias);
-            //_context.Previews.UpdateRange(previews);
             SaveChanges();
             _logger.LogInformation($"Created new collection with <{collection.Count}> previews and id: {collection.Id} by: {_actorId}");
             

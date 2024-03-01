@@ -73,8 +73,6 @@ namespace MediaCloud.MediaUploader.Tasks
 
         public override void DoTheTask(IRepository repository)
         {
-            //repository.SetCurrentActor(Actor);
-
             var foundTags = repository.Tags.GetRangeByString(TagString);
 
             if (IsCollection)

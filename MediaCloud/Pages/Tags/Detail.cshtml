@@ -19,9 +19,10 @@
     <div class="col-md-4 text-white">
         <form enctype="multipart/form-data" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for=@(Model.Tag.Id) class="form-control"></input>
-            <input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control"></input>
-            <input type="hidden" asp-for=@(Model.Tag.PreviewsCount) class="form-control"></input>
+            <input type="hidden" asp-for=@(Model.Tag.Id) class="form-control">
+            <input type="hidden" asp-for=@(Model.Tag.CreatorId) class="form-control">
+            <input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control">
+            <input type="hidden" asp-for=@(Model.Tag.PreviewsCount) class="form-control">
             <div class="form-group mb-3">
                 <label class="col-form-label">Enter tag name</label>
                 <input asp-for="@Model.Tag.Name" class="form-control" />
