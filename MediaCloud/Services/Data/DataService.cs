@@ -12,65 +12,48 @@ namespace MediaCloud.WebApp.Services.DataService
     {
         private readonly IServiceScope _serviceScope;
 
-        private readonly DataServiceContext _dataServiceContext;
-        private ActorDataService _actorDataService;
-        private CollectionDataService _collectionDataService;
-        private MediaDataService _mediaDataService;
-        private PreviewDataService _previewDataService;
-        private TagDataService _tagDataService;
-        private StatisticSnapshotDataService _statisticSnapshotDataService;
-
-        private void SetContext(DataServiceContext dataServiceContext)
-        {
-            _actorDataService = new(dataServiceContext.DbContext);
-            _collectionDataService = new(dataServiceContext);
-            _mediaDataService = new(dataServiceContext);
-            _previewDataService = new(dataServiceContext);
-            _tagDataService = new(dataServiceContext);
-            _statisticSnapshotDataService = new(dataServiceContext);
-        }
+        private readonly RepositoriesContext _repositoriesContext;
 
         public DataService(IServiceScopeFactory scopeFactory, ILogger<DataService> logger, IActorProvider actorProvider, IStatisticService statisticService)
         {
             _serviceScope = scopeFactory.CreateScope();
-            var context = _serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
-            _dataServiceContext = new DataServiceContext(context, statisticService, logger, actorProvider.GetCurrent());
+            var dbContext = _serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
+            _repositoriesContext = new RepositoriesContext(dbContext, statisticService, logger, actorProvider.GetCurrent(dbContext));
 
-            _actorDataService = new(_dataServiceContext.DbContext);
-            _collectionDataService = new(_dataServiceContext);
-            _mediaDataService = new(_dataServiceContext);
-            _previewDataService = new(_dataServiceContext);
-            _tagDataService = new(_dataServiceContext);
-            _statisticSnapshotDataService = new(_dataServiceContext);
+            Actors = new(_repositoriesContext.DbContext);
+            Collections = new(_repositoriesContext);
+            Medias = new(_repositoriesContext);
+            Previews = new(_repositoriesContext);
+            Tags = new(_repositoriesContext);
+            StatisticSnapshots = new(_repositoriesContext);
         }
 
-        public ActorDataService Actors => _actorDataService;
+        public ActorRepository Actors { get; init; }
 
-        public CollectionDataService Collections => _collectionDataService;
+        public CollectionRepository Collections { get; init; }
 
-        public MediaDataService Medias => _mediaDataService;
+        public MediaRepository Medias { get; init; }
 
-        public PreviewDataService Previews => _previewDataService;
+        public PreviewRepository Previews { get; init; }
 
-        public TagDataService Tags => _tagDataService;
+        public TagRepository Tags { get; init; }
 
-        StatisticSnapshotDataService IDataService.StatisticSnapshots => _statisticSnapshotDataService;
+        public StatisticSnapshotRepository StatisticSnapshots { get; init; }
 
-        public void SaveChanges() => _dataServiceContext.DbContext.SaveChanges();
+        public void SaveChanges() => _repositoriesContext.DbContext.SaveChanges();
 
-        public Actor GetCurrentActor() => _dataServiceContext.Actor ?? new();
+        public Actor GetCurrentActor() => _repositoriesContext.Actor ?? new();
 
         public void SetCurrentActor(Actor actor)
         {
-            _dataServiceContext.Actor = actor;
-            SetContext(_dataServiceContext);
+            _repositoriesContext.Actor = actor;
         }
 
         public long GetDbSize()
         {
-            using var command = _dataServiceContext.DbContext.Database.GetDbConnection().CreateCommand();
-            command.CommandText = $"SELECT pg_database_size('{_dataServiceContext.DbContext.Database.GetDbConnection().Database}');";
-            _dataServiceContext.DbContext.Database.OpenConnection();
+            using var command = _repositoriesContext.DbContext.Database.GetDbConnection().CreateCommand();
+            command.CommandText = $"SELECT pg_database_size('{_repositoriesContext.DbContext.Database.GetDbConnection().Database}');";
+            _repositoriesContext.DbContext.Database.OpenConnection();
 
             using var reader = command.ExecuteReader();
             reader.Read();

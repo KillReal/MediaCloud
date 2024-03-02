@@ -23,6 +23,12 @@ namespace MediaCloud.WebApp.Services.ActorProvider
 
         public Actor? GetCurrent()
         {
+            var newContext = _scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            return GetCurrent(newContext);
+        }
+
+        public Actor? GetCurrent(AppDbContext context)
+        {
             var httpContext = _contextAccessor.HttpContext;
 
             if (httpContext == null)
@@ -42,9 +48,7 @@ namespace MediaCloud.WebApp.Services.ActorProvider
                 return _cachedActor;
             }
 
-            var dbContext = _scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-            _cachedActor = new ActorDataService(dbContext).Get(identity.Name);
+            _cachedActor = new ActorRepository(context).Get(identity.Name);
 
             return _cachedActor;
         }

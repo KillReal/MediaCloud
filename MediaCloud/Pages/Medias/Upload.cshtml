@@ -109,12 +109,15 @@
     }
     
     function formSubmit(event) {
+        setModalTitle('Sending to server...');
+        showModalBody();
+        updateModalLoadBody();
+
         var url = "/Medias/Upload";
         var request = new XMLHttpRequest();
         request.open('POST', url, true);
         request.onload = function() { // request successful
-            console.log('ShowModal');
-            setModalTitle('Waiting for queue');
+            setModalTitle('Waiting queue for processing...');
             showModalBody();
             updateModalLoadBody();
             $('#loadingModal').modal('show');
@@ -130,10 +133,10 @@
                     .then(function (data) {
                         updateModalLoadBody(data);
                         if (data.queuePosition > 1) {
-                            setModalTitle('Waiting for queue');
+                            setModalTitle('Waiting queue for processing...');
                         }
                         else if (data.queuePosition = 0 && data.workCount > 0) {
-                            setModalTitle('Media uploading...');
+                            setModalTitle('Server processing...');
                         }
                         else if (data.workCount == 0 && data.isInProgress == false) {
                             setModalTitle('Media successfully uploaded!');

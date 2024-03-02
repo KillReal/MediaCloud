@@ -18,7 +18,7 @@
         /// <summary>
         /// Sort property, see <see cref="WebApp.Builders.List.Components.Sorting"/> for propertyName formatting.
         /// </summary>
-        public string Sort { get; set; } = "UpdateAt";
+        public string Sort { get; set; } = "UpdatedAtDesc";
 
         /// <summary>
         /// Filter for entities.

@@ -7,7 +7,7 @@ namespace MediaCloud.Data.Models
 {
     public class Media : Entity
     {
-        public virtual Preview Preview { get; set; } = new();
+        public virtual Preview Preview { get; set; } = null!;
 
         public byte[] Content { get; set; } = Array.Empty<byte>();
 

@@ -92,7 +92,7 @@ namespace MediaCloud.Builders.List
         }
 
         /// <summary>
-        /// Build the entity list by <see cref="DataService{T}"/> querying from db.
+        /// Build the entity list by <see cref="BaseRepository{T}"/> querying from db.
         /// </summary>
         /// <param name="DataService">DataService instance of entities.</param>
         /// <returns>List of selected entities.</returns>

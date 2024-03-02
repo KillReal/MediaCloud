@@ -8,11 +8,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MediaCloud.Repositories
 {
-    public class ActorDataService : IListBuildable<Actor>
+    public class ActorRepository : IListBuildable<Actor>
     {
         private readonly AppDbContext _context;
 
-        public ActorDataService(AppDbContext context)
+        public ActorRepository(AppDbContext context)
         {
             _context = context;
         }

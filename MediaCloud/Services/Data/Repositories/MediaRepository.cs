@@ -13,7 +13,7 @@ using System.IO;
 
 namespace MediaCloud.Repositories
 {
-    public class MediaDataService : DataService<Media>
+    public class MediaRepository : BaseRepository<Media>
     {
         private Media GetMediaFromFile(byte[] file)
         {
@@ -21,7 +21,7 @@ namespace MediaCloud.Repositories
             var convertedImage = Image.Load(stream);
             var media = new Media(file, convertedImage.Width, convertedImage.Height);
             media.Preview = new Preview(media, convertedImage);
-            media.Creator = new ActorDataService(_context).Get(_actorId);
+            media.Creator = new ActorRepository(_context).Get(_actorId);
             media.Updator = media.Creator;
             media.Preview.Creator = media.Creator;
             media.Preview.Updator = media.Creator;
@@ -29,7 +29,7 @@ namespace MediaCloud.Repositories
             return media;
         }
 
-        public MediaDataService(DataServiceContext dataServiceContext) : base(dataServiceContext)
+        public MediaRepository(RepositoriesContext context) : base(context)
         {
         }
 
@@ -115,7 +115,7 @@ namespace MediaCloud.Repositories
 
             var collection = new Collection(previews)
             {
-                Creator = new ActorDataService(_context).Get(_actorId)
+                Creator = new ActorRepository(_context).Get(_actorId)
             };
             collection.Updator = collection.Creator;
 
@@ -137,6 +137,7 @@ namespace MediaCloud.Repositories
 
             _logger.LogInformation("Created new collection with <{collection.Count}> previews and id: {collection.Id} by: {_actorId}",
                 collection.Count, collection.Id, _actorId);
+            _statisticService.MediasCountChanged.Invoke(medias.Count, medias.Sum(x => x.Size));
 
             return medias;
         }

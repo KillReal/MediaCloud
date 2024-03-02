@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MediaCloud.Repositories
 {
-    public class TagDataService : DataService<Tag>, IListBuildable<Tag>
+    public class TagRepository : BaseRepository<Tag>, IListBuildable<Tag>
     {
         private static string DeduplicateTagString(string tagString)
         {
@@ -23,7 +23,7 @@ namespace MediaCloud.Repositories
             return string.Join(' ', tags.Distinct());
         }
 
-        public TagDataService(DataServiceContext dataServiceContext) : base(dataServiceContext)
+        public TagRepository(RepositoriesContext context) : base(context)
         {
         }
 
@@ -44,7 +44,7 @@ namespace MediaCloud.Repositories
         {
             try
             {
-                tag.Creator = new ActorDataService(_context).Get(_actorId);
+                tag.Creator = new ActorRepository(_context).Get(_actorId);
                 tag.Updator = tag.Creator;
 
                 _context.Tags.Add(tag);

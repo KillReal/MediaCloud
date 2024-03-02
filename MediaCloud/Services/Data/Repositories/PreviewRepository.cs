@@ -8,9 +8,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MediaCloud.Repositories
 {
-    public class PreviewDataService : DataService<Preview>, IListBuildable<Preview>
+    public class PreviewRepository : BaseRepository<Preview>, IListBuildable<Preview>
     {
-        private readonly TagDataService _tagDataService;
+        private readonly TagRepository _tagDataService;
 
         private IQueryable<Preview> SetFilterToQuery(IQueryable<Preview> query, string filter)
         {
@@ -48,9 +48,9 @@ namespace MediaCloud.Repositories
             return query;
         }
 
-        public PreviewDataService(DataServiceContext dataServiceContext) : base(dataServiceContext)
+        public PreviewRepository(RepositoriesContext context) : base(context)
         {
-            _tagDataService = new(dataServiceContext);
+            _tagDataService = new(context);
         }
 
         public void SetPreviewTags(Preview preview, List<Tag>? tags)

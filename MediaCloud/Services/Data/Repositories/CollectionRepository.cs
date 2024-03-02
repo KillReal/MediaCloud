@@ -9,9 +9,9 @@ using Microsoft.Extensions.Caching.Distributed;
 
 namespace MediaCloud.Repositories
 {
-    public class CollectionDataService : DataService<Collection>
+    public class CollectionRepository : BaseRepository<Collection>
     {
-        public CollectionDataService(DataServiceContext dataServiceContext) : base(dataServiceContext)
+        public CollectionRepository(RepositoriesContext context) : base(context)
         {
         }
 

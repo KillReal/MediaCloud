@@ -6,16 +6,16 @@ namespace MediaCloud.WebApp.Services.DataService
 {
     public interface IDataService
     {
-        public ActorDataService Actors { get; }
+        public ActorRepository Actors { get; init; }
 
-        public CollectionDataService Collections { get; }
+        public CollectionRepository Collections { get; init; }
 
-        public MediaDataService Medias { get; }
+        public MediaRepository Medias { get; init; }
 
-        public PreviewDataService Previews { get; }
+        public PreviewRepository Previews { get; init; }
 
-        public TagDataService Tags { get; }
-        public StatisticSnapshotDataService StatisticSnapshots { get; }
+        public TagRepository Tags { get; init; }
+        public StatisticSnapshotRepository StatisticSnapshots { get; init; }
 
         public void SaveChanges();
 
