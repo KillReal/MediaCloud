@@ -4,7 +4,7 @@ using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.WebApp.Extensions;
 using MediaCloud.WebApp.Services;
-using MediaCloud.WebApp.Services.Repository.Entities.Base;
+using MediaCloud.WebApp.Services.DataService.Entities.Base;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +14,7 @@ using System.IO;
 
 namespace MediaCloud.Repositories
 {
-    public class MediaRepository : Repository<Media>
+    public class MediaDataService : DataService<Media>
     {
         private Media GetMediaFromFile(byte[] file)
         {
@@ -22,7 +22,7 @@ namespace MediaCloud.Repositories
             var convertedImage = Image.Load(stream);
             var media = new Media(file, convertedImage.Width, convertedImage.Height);
             media.Preview = new Preview(media, convertedImage);
-            media.Creator = new ActorRepository(_context).Get(_actorId);
+            media.Creator = new ActorDataService(_context).Get(_actorId);
             media.Updator = media.Creator;
             media.Preview.Creator = media.Creator;
             media.Preview.Updator = media.Creator;
@@ -30,7 +30,7 @@ namespace MediaCloud.Repositories
             return media;
         }
 
-        public MediaRepository(RepositoryContext repositoryContext) : base(repositoryContext)
+        public MediaDataService(DataServiceContext DataServiceContext) : base(DataServiceContext)
         {
         }
 
@@ -115,7 +115,7 @@ namespace MediaCloud.Repositories
             var previews = medias.Select(x => x.Preview).ToList();
 
             var collection = new Collection(previews);
-            collection.Creator = new ActorRepository(_context).Get(_actorId);
+            collection.Creator = new ActorDataService(_context).Get(_actorId);
             collection.Updator = collection.Creator;
 
             for (var i = 0; i < previews.Count; i++)

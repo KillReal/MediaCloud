@@ -3,15 +3,15 @@ using MediaCloud.Builders.List;
 using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.Extensions;
-using MediaCloud.WebApp.Services.Repository.Entities.Base;
+using MediaCloud.WebApp.Services.DataService.Entities.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 
 namespace MediaCloud.Repositories
 {
-    public class CollectionRepository : Repository<Collection>
+    public class CollectionDataService : DataService<Collection>
     {
-        public CollectionRepository(RepositoryContext repositoryContext) : base(repositoryContext)
+        public CollectionDataService(DataServiceContext DataServiceContext) : base(DataServiceContext)
         {
         }
 

@@ -4,12 +4,12 @@ using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.Data.Types;
 using MediaCloud.WebApp.Repositories.Base;
-using MediaCloud.WebApp.Services.Repository.Entities.Base;
+using MediaCloud.WebApp.Services.DataService.Entities.Base;
 using Microsoft.EntityFrameworkCore;
 
 namespace MediaCloud.Repositories
 {
-    public class TagRepository : Repository<Tag>, IListBuildable<Tag>
+    public class TagDataService : DataService<Tag>, IListBuildable<Tag>
     {
         private string DeduplicateTagString(string tagString)
         {
@@ -23,7 +23,7 @@ namespace MediaCloud.Repositories
             return string.Join(' ', tags.Distinct());
         }
 
-        public TagRepository(RepositoryContext repositoryContext) : base(repositoryContext)
+        public TagDataService(DataServiceContext DataServiceContext) : base(DataServiceContext)
         {
         }
 
@@ -44,7 +44,7 @@ namespace MediaCloud.Repositories
         {
             try
             {
-                tag.Creator = new ActorRepository(_context).Get(_actorId);
+                tag.Creator = new ActorDataService(_context).Get(_actorId);
                 tag.Updator = tag.Creator;
 
                 _context.Tags.Add(tag);
@@ -61,12 +61,16 @@ namespace MediaCloud.Repositories
             }
         }
 
-        public async Task RecalculateCountsAsync(List<Tag> tags)
+        public void RecalculateCounts(List<Tag> tags)
         {
-            tags.ForEach(x => x.PreviewsCount = (_context.Tags.Find(x.Id) ?? new()).Previews.Count);
+            tags.ForEach(x =>
+            {
+                var tag = _context.Tags.Find(x.Id) ?? new();
+                x.PreviewsCount = tag.Previews.Count;
+            });
             _context.Tags.UpdateRange(tags);
 
-            _logger.LogInformation($"Recalculated <{tags.Count}> tags usage count by: {_actorId}");
+            _logger.LogInformation("Recalculated <{tags.Count}> tags usage count by: {_actorId}", tags.Count, _actorId);
         }
 
         public List<Tag> GetRangeByString(string? tagsString)

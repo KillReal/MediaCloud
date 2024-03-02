@@ -21,7 +21,7 @@ namespace MediaCloud.WebApp
         public static string HashMD5(string data)
         {
             byte[] hash = Encoding.ASCII.GetBytes(data);
-            MD5 md5 = new MD5CryptoServiceProvider();
+            MD5 md5 = MD5.Create();
             byte[] hashenc = md5.ComputeHash(hash);
             string result = "";
             foreach (var b in hashenc)
@@ -41,7 +41,15 @@ namespace MediaCloud.WebApp
         public static string Hash(string password, int iterations)
         {
             byte[] salt;
-            new RNGCryptoServiceProvider().GetBytes(salt = new byte[SaltSize]);
+            string refreshToken;
+
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(salt = new byte[SaltSize]);
+                refreshToken = Convert.ToBase64String(salt = new byte[SaltSize]);
+            }
+
+            //new RNGCryptoServiceProvider().GetBytes(salt = new byte[SaltSize]);
 
             var pbkdf2 = new Rfc2898DeriveBytes(password, salt, iterations);
             var hash = pbkdf2.GetBytes(HashSize);

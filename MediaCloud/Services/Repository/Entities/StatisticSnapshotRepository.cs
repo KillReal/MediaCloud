@@ -1,11 +1,11 @@
 ﻿using MediaCloud.Data.Models;
-using MediaCloud.WebApp.Services.Repository.Entities.Base;
+using MediaCloud.WebApp.Services.DataService.Entities.Base;
 
 namespace MediaCloud.Repositories
 {
-    public class StatisticSnapshotRepository : Repository<StatisticSnapshot>
+    public class StatisticSnapshotDataService : DataService<StatisticSnapshot>
     {
-        public StatisticSnapshotRepository(RepositoryContext repositoryContext) : base(repositoryContext)
+        public StatisticSnapshotDataService(DataServiceContext DataServiceContext) : base(DataServiceContext)
         {
         }
 

@@ -3,20 +3,20 @@ using MediaCloud.Builders.List;
 using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.Extensions;
-using MediaCloud.WebApp.Services.Repository.Entities.Base;
+using MediaCloud.WebApp.Services.DataService.Entities.Base;
 using Microsoft.EntityFrameworkCore;
 
 namespace MediaCloud.Repositories
 {
-    public class PreviewRepository : Repository<Preview>, IListBuildable<Preview>
+    public class PreviewDataService : DataService<Preview>, IListBuildable<Preview>
     {
-        private TagRepository TagRepository;
+        private readonly TagDataService _tagDataService;
 
         private IQueryable<Preview> SetFilterToQuery(IQueryable<Preview> query, string filter)
         {
             if (string.IsNullOrEmpty(filter) == false)
             {
-                // TODO: rework tag type to complete db model with TagTypeRepository.
+                // TODO: rework tag type to complete db model with TagTypeDataService.
                 // Rework TagType filtering
 
                 if (filter.Contains("notag"))
@@ -42,15 +42,15 @@ namespace MediaCloud.Repositories
                     query = query.Where(x => x.Tags.Any(x => x.Type == Data.Types.TagType.Series));
                 }
 
-                return TagRepository.GetTagFilter(filter).GetQuery(query);
+                return _tagDataService.GetTagFilter(filter).GetQuery(query);
             }
 
             return query;
         }
 
-        public PreviewRepository(RepositoryContext repositoryContext) : base(repositoryContext)
+        public PreviewDataService(DataServiceContext DataServiceContext) : base(DataServiceContext)
         {
-            TagRepository = new(repositoryContext);
+            _tagDataService = new(DataServiceContext);
         }
 
         public void SetPreviewTags(Preview preview, List<Tag>? tags)
@@ -71,7 +71,7 @@ namespace MediaCloud.Repositories
             _context.Previews.Update(preview);
             SaveChanges();
 
-            _ = TagRepository.RecalculateCountsAsync(affectedTags.Distinct().ToList());
+            _tagDataService.RecalculateCounts(affectedTags.Distinct().ToList());
         }
 
         public async Task<int> GetListCountAsync(ListBuilder<Preview> listBuilder)

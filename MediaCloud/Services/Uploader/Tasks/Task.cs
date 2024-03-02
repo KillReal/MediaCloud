@@ -1,6 +1,6 @@
 ﻿using MediaCloud.Data;
 using MediaCloud.Data.Models;
-using MediaCloud.WebApp.Services.Repository;
+using MediaCloud.WebApp.Services.DataService;
 
 namespace MediaCloud.MediaUploader.Tasks
 {
@@ -20,7 +20,7 @@ namespace MediaCloud.MediaUploader.Tasks
             throw new NotImplementedException();
         }
 
-        public virtual void DoTheTask(IRepository repository)
+        public virtual void DoTheTask(IDataService DataService)
         {
             throw new NotImplementedException();
         }

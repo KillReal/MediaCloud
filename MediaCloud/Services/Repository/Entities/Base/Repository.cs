@@ -1,25 +1,25 @@
 ﻿using MediaCloud.Data;
 using MediaCloud.Data.Models;
-using MediaCloud.WebApp.Services.Repository.Entities.Base;
+using MediaCloud.WebApp.Services.DataService.Entities.Base;
 using MediaCloud.WebApp.Services.Statistic;
 
 namespace MediaCloud.Repositories
 {
-    public class Repository<T> where T : Entity
+    public class DataService<T> where T : Entity
     {
         protected IStatisticService _statisticService;
         protected AppDbContext _context;
         protected ILogger _logger;
         protected Guid _actorId;
 
-        public Repository(RepositoryContext repositoryContext)
+        public DataService(DataServiceContext DataServiceContext)
         {
-            _statisticService = repositoryContext.StatisticService;
-            _context = repositoryContext.DbContext;
-            _logger = repositoryContext.Logger;
-            _actorId = repositoryContext.Actor == null
+            _statisticService = DataServiceContext.StatisticService;
+            _context = DataServiceContext.DbContext;
+            _logger = DataServiceContext.Logger;
+            _actorId = DataServiceContext.Actor == null
                 ? Guid.Empty
-                : repositoryContext.Actor.Id;
+                : DataServiceContext.Actor.Id;
         }
 
         public virtual T? Get(Guid id)

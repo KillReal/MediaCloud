@@ -1,6 +1,6 @@
 ﻿using MediaCloud.Data;
 using MediaCloud.Repositories;
-using MediaCloud.WebApp.Services.Repository;
+using MediaCloud.WebApp.Services.DataService;
 using Microsoft.Extensions.DependencyInjection;
 using Task = MediaCloud.MediaUploader.Tasks.Task;
 
@@ -15,9 +15,9 @@ namespace MediaCloud.MediaUploader
         public Uploader(IServiceScopeFactory scopeFactory, ILogger<Uploader> logger) 
         {
             ServiceScope = scopeFactory.CreateScope();
-            var repository = ServiceScope.ServiceProvider.GetRequiredService<IRepository>();
+            var DataService = ServiceScope.ServiceProvider.GetRequiredService<IDataService>();
             Queue = new Queue();
-            Scheduler = new Scheduler(repository, logger, Queue);
+            Scheduler = new Scheduler(DataService, logger, Queue);
         }
 
         public Guid AddTask(Task task)

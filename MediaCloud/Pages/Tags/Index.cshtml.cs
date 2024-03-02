@@ -12,31 +12,31 @@ using MediaCloud.Services;
 using MediaCloud.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using MediaCloud.WebApp.Services.Repository;
+using MediaCloud.WebApp.Services.DataService;
 
 namespace MediaCloud.Pages.Tags
 {
     [Authorize]
     public class ListModel : PageModel
     {
-        private IRepository Repository;
+        private readonly IDataService _dataService;
 
-        public ListModel(IRepository repository)
+        public ListModel(IDataService dataService)
         {
-            Repository = repository;
+            _dataService = dataService;
         }
 
         [BindProperty]
-        public List<Tag> Tags { get; set; }
+        public List<Tag> Tags { get; set; } = new();
         [BindProperty]
-        public ListBuilder<Tag> ListBuilder { get; set; }
+        public ListBuilder<Tag>? ListBuilder { get; set; }
         [BindProperty]
         public bool IsAutoloadEnabled { get; set; } = false;
 
         public async Task<IActionResult> OnGetAsync(ListRequest request)
         {
             ListBuilder = new(request);
-            Tags = await ListBuilder.BuildAsync(Repository.Tags);
+            Tags = await ListBuilder.BuildAsync(_dataService.Tags);
 
             return Page();
         }

@@ -6,6 +6,8 @@ namespace MediaCloud.Data
 {
     public class AppDbContext : DbContext
     {
+        private readonly string _superAdminHash = "h5KPDjrv8910000$jy3+sU1D7rHyYTPdyM+UTifqHFdzTBe3zkZQugE6JhvSRpBW";
+
         public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
         {
@@ -14,7 +16,7 @@ namespace MediaCloud.Data
                 var admin = new Actor()
                 {
                     Name = "Admin",
-                    PasswordHash = SecureHash.Hash("superadmin"),
+                    PasswordHash = _superAdminHash,
                     IsActivated = true,
                     IsAdmin = true
                 };
@@ -48,11 +50,11 @@ namespace MediaCloud.Data
             return base.SaveChanges();
         }
 
-        public DbSet<Actor> Actors { get; set; }
-        public DbSet<Preview> Previews { get; set; }
-        public DbSet<Media> Medias { get; set; }
-        public DbSet<Tag> Tags { get; set; }
-        public DbSet<Collection> Collections { get; set; }
-        public DbSet<StatisticSnapshot> StatisticSnapshots { get; set; }
+        public DbSet<Actor> Actors { get; set; } = null!;
+        public DbSet<Preview> Previews { get; set; } = null!;
+        public DbSet<Media> Medias { get; set; } = null!;
+        public DbSet<Tag> Tags { get; set; } = null!;
+        public DbSet<Collection> Collections { get; set; } = null!;
+        public DbSet<StatisticSnapshot> StatisticSnapshots { get; set; } = null!;
     }
 }

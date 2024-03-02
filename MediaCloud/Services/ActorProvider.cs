@@ -1,7 +1,7 @@
 ﻿using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
-using MediaCloud.WebApp.Services.Repository.Entities.Base;
+using MediaCloud.WebApp.Services.DataService.Entities.Base;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
@@ -45,7 +45,7 @@ namespace MediaCloud.WebApp.Services
             using var scope = ScopeFactory.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-            CachedActor = new ActorRepository(dbContext).Get(identity.Name);
+            CachedActor = new ActorDataService(dbContext).Get(identity.Name);
 
             return CachedActor;
         }

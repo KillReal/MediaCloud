@@ -13,37 +13,36 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using MediaCloud.WebApp.Services;
 using MediaCloud.Repositories;
-using MediaCloud.WebApp.Services.Repository;
+using MediaCloud.WebApp.Services.DataService;
 
 namespace MediaCloud.Pages.Actors
 {
     [Authorize]
     public class ListModel : PageModel
     {
-        private Actor Actor;
-        private IRepository Repository;
+        private readonly Actor _actor;
+        private readonly IDataService _dataService;
 
-        public ListModel(IRepository repository)
+        public ListModel(IDataService dataService)
         {
-            Repository = repository;
+            _dataService = dataService;
+            _actor = _dataService.GetCurrentActor();
         }
 
         [BindProperty]
-        public List<Actor> Actors { get; set; }
+        public List<Actor>? Actors { get; set; }
         [BindProperty]
-        public ListBuilder<Actor> ListBuilder { get; set; }
+        public ListBuilder<Actor>? ListBuilder { get; set; }
 
         public async Task<IActionResult> OnGetAsync(ListRequest request)
         {
-            Actor = Repository.GetCurrentActor();
-
-            if (Actor == null || Actor.IsAdmin == false)
+            if (_actor == null || _actor.IsAdmin == false)
             {
                 return Redirect("/Account/Login");
             }
 
             ListBuilder = new(request);
-            Actors = await ListBuilder.BuildAsync(Repository.Actors);
+            Actors = await ListBuilder.BuildAsync(_dataService.Actors);
 
             return Page();
         }

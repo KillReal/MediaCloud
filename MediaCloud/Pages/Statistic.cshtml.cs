@@ -1,6 +1,6 @@
 ﻿using MediaCloud.Data.Models;
 using MediaCloud.WebApp.Services;
-using MediaCloud.WebApp.Services.Repository;
+using MediaCloud.WebApp.Services.DataService;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -9,33 +9,31 @@ namespace MediaCloud.Pages
 {
     public class StatisticModel : PageModel
     {
-        private readonly ILogger<PrivacyModel> Logger;
-        private readonly IStatisticService StatisticService;
-        private readonly IRepository Repository;
+        private readonly IStatisticService _statisticService;
+        private readonly IDataService _dataService;
 
         [BindProperty]
         public double SizeTargetError { get; set; }
         [BindProperty]
         public int ActivityBacktrackDayCount { get; set; }
         [BindProperty]
-        public List<StatisticSnapshot> Snapshots { get; set; }
+        public List<StatisticSnapshot> Snapshots { get; set; } = new();
         [BindProperty]
-        public List<Tag> Tags { get; set; } 
+        public List<Tag> Tags { get; set; } = new();
 
-        public StatisticModel(ILogger<PrivacyModel> logger, IStatisticService statisticService, IRepository repository)
+        public StatisticModel(IStatisticService statisticService, IDataService dataService)
         {
-            Logger = logger;
-            StatisticService = statisticService;
-            Repository = repository;
+            _statisticService = statisticService;
+            _dataService = dataService;
         }
 
         public IActionResult OnGet()
         {
             ActivityBacktrackDayCount = ConfigurationService.Statistic.GetActivityBacktrackDayCount();
-            Snapshots = StatisticService.GetStatistic();
-            Tags = Repository.Tags.GetTopUsed(15);
+            Snapshots = _statisticService.GetStatistic();
+            Tags = _dataService.Tags.GetTopUsed(15).Where(x => x.PreviewsCount > 0).ToList();
 
-            var actualSize = Repository.GetDbSize();
+            var actualSize = _dataService.GetDbSize();
             var aproximateSize = Snapshots.Last().MediasSize;
 
             SizeTargetError = Math.Round((double)((actualSize - aproximateSize) / (double)aproximateSize), 3);

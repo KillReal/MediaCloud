@@ -8,21 +8,21 @@ namespace MediaCloud.WebApp.Services.Statistic
 {
     public class StatisticServiceHelper
     {
-        private AppDbContext Context { get; set; }
+        private readonly AppDbContext _context;
 
         public StatisticServiceHelper(AppDbContext context) 
         {
-            Context = context; 
+            _context = context; 
         }
 
         public StatisticSnapshot? Get(DateTime dateTime)
         {
-            return Context.StatisticSnapshots.Where(x => x.TakenAt.Date == dateTime.Date).FirstOrDefault();
+            return _context.StatisticSnapshots.Where(x => x.TakenAt.Date == dateTime.Date).FirstOrDefault();
         }
 
         public StatisticSnapshot GetLastOrNew()
         {
-            var snapshot = Context.StatisticSnapshots.OrderByDescending(x => x.TakenAt).FirstOrDefault();
+            var snapshot = _context.StatisticSnapshots.OrderByDescending(x => x.TakenAt).FirstOrDefault();
 
             snapshot ??= new();
 
@@ -34,12 +34,12 @@ namespace MediaCloud.WebApp.Services.Statistic
                 snapshot.UpdatedAt = DateTime.Now.Date;
                 snapshot.CreatedAt = DateTime.Now.Date;
 
-                var rootAdmin = Context.Actors.Where(x => x.IsAdmin).OrderBy(y => y.CreatedAt).First();
+                var rootAdmin = _context.Actors.Where(x => x.IsAdmin).OrderBy(y => y.CreatedAt).First();
                 snapshot.Creator = rootAdmin;
                 snapshot.Updator = rootAdmin;
 
-                Context.StatisticSnapshots.Add(snapshot);
-                Context.SaveChanges();
+                _context.StatisticSnapshots.Add(snapshot);
+                _context.SaveChanges();
             }
 
             return snapshot;
@@ -47,7 +47,7 @@ namespace MediaCloud.WebApp.Services.Statistic
 
         public List<StatisticSnapshot> GetList(DateTime startDate, DateTime endDate) 
         {
-            return Context.StatisticSnapshots.Where(x => x.TakenAt.Date >= startDate.Date && x.TakenAt.Date <= endDate.Date)
+            return _context.StatisticSnapshots.Where(x => x.TakenAt.Date >= startDate.Date && x.TakenAt.Date <= endDate.Date)
                                              .OrderBy(x => x.TakenAt.Date)
                                              .ToList();
         }
@@ -63,14 +63,14 @@ namespace MediaCloud.WebApp.Services.Statistic
                 lastSnapshot.MediasCount = statisticSnapshot.MediasCount;
                 lastSnapshot.MediasSize = statisticSnapshot.MediasSize;
                 lastSnapshot.ActivityFactor = statisticSnapshot.ActivityFactor;
-                Context.StatisticSnapshots.Update(lastSnapshot);
-                Context.SaveChanges();
+                _context.StatisticSnapshots.Update(lastSnapshot);
+                _context.SaveChanges();
 
                 return;
             }
 
-            Context.StatisticSnapshots.Add(statisticSnapshot);
-            Context.SaveChanges();
+            _context.StatisticSnapshots.Add(statisticSnapshot);
+            _context.SaveChanges();
         }
 
         public void SaveOrUpdate(StatisticSnapshot statisticSnapshot, DateTime takenAt)
@@ -83,23 +83,23 @@ namespace MediaCloud.WebApp.Services.Statistic
                 snapshot.TagsCount = statisticSnapshot.TagsCount;
                 snapshot.MediasCount = statisticSnapshot.MediasCount;
                 snapshot.MediasSize = statisticSnapshot.MediasSize;
-                Context.StatisticSnapshots.Update(snapshot);
-                Context.SaveChanges();
+                _context.StatisticSnapshots.Update(snapshot);
+                _context.SaveChanges();
 
                 return;
             }
 
-            Context.StatisticSnapshots.Add(statisticSnapshot);
-            Context.SaveChanges();
+            _context.StatisticSnapshots.Add(statisticSnapshot);
+            _context.SaveChanges();
         }
 
         public DateTime GetFirstOrNowDate()
         {
             var dates = new List<DateTime?>
             {
-                Context.Actors.OrderBy(x => x.CreatedAt).FirstOrDefault()?.CreatedAt,
-                Context.Tags.OrderBy(x => x.CreatedAt).FirstOrDefault()?.CreatedAt,
-                Context.Previews.OrderBy(x => x.CreatedAt).FirstOrDefault()?.CreatedAt
+                _context.Actors.OrderBy(x => x.CreatedAt).FirstOrDefault()?.CreatedAt,
+                _context.Tags.OrderBy(x => x.CreatedAt).FirstOrDefault()?.CreatedAt,
+                _context.Previews.OrderBy(x => x.CreatedAt).FirstOrDefault()?.CreatedAt
             };
 
             DateTime minDate = dates.Where(x => x != DateTime.MinValue.ToUniversalTime()).Min() ?? DateTime.MinValue.ToUniversalTime();
@@ -114,17 +114,17 @@ namespace MediaCloud.WebApp.Services.Statistic
             return new()
             {
                 TakenAt = dateTime,
-                ActorsCount = await Context.Actors.Where(x => x.CreatedAt.Date == dateTime.Date).CountAsync(),
-                TagsCount = await Context.Tags.Where(x => x.CreatedAt.Date == dateTime.Date).CountAsync(),
-                MediasCount = await Context.Previews.Where(x => x.CreatedAt.Date == dateTime.Date).CountAsync(),
-                MediasSize = Context.Medias.Where(x => x.CreatedAt.Date == dateTime.Date).Select(x => x.Size).ToList().Sum()
+                ActorsCount = await _context.Actors.Where(x => x.CreatedAt.Date == dateTime.Date).CountAsync(),
+                TagsCount = await _context.Tags.Where(x => x.CreatedAt.Date == dateTime.Date).CountAsync(),
+                MediasCount = await _context.Previews.Where(x => x.CreatedAt.Date == dateTime.Date).CountAsync(),
+                MediasSize = _context.Medias.Where(x => x.CreatedAt.Date == dateTime.Date).Select(x => x.Size).ToList().Sum()
             };
         }
 
         public void RemoveAllSnapshots(DateTime startDate)
         {
-            Context.StatisticSnapshots.RemoveRange(Context.StatisticSnapshots.Where(x => x.TakenAt.Date >= startDate.Date));
-            Context.SaveChanges();
+            _context.StatisticSnapshots.RemoveRange(_context.StatisticSnapshots.Where(x => x.TakenAt.Date >= startDate.Date));
+            _context.SaveChanges();
         }
     }
 }

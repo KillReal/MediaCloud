@@ -1,5 +1,5 @@
 ﻿using MediaCloud.Data;
-using MediaCloud.WebApp.Services.Repository;
+using MediaCloud.WebApp.Services.DataService;
 
 namespace MediaCloud.MediaUploader.Tasks
 {
@@ -7,6 +7,6 @@ namespace MediaCloud.MediaUploader.Tasks
     {
         public int GetWorkCount();
 
-        public void DoTheTask(IRepository repository);
+        public void DoTheTask(IDataService DataService);
     }
 }

@@ -13,7 +13,7 @@ using MediaCloud.WebApp;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using MediaCloud.WebApp.Services;
-using MediaCloud.WebApp.Services.Repository;
+using MediaCloud.WebApp.Services.DataService;
 using System.Reflection;
 using Microsoft.AspNetCore.ResponseCompression;
 using System.IO.Compression;
@@ -44,7 +44,7 @@ builder.Services.AddSingleton<IUploader, Uploader>();
 builder.Services.AddSingleton<IStatisticService, StatisticService>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<IRepository, Repository>();
+builder.Services.AddScoped<IDataService, DataService>();
 
 builder.Services.Configure<FormOptions>(x =>
 {

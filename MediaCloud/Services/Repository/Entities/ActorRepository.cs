@@ -8,12 +8,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MediaCloud.Repositories
 {
-    public class ActorRepository : IListBuildable<Actor>
+    public class ActorDataService : IListBuildable<Actor>
     {
-        private string _superAdminHash = "h5KPDjrv8910000$jy3+sU1D7rHyYTPdyM+UTifqHFdzTBe3zkZQugE6JhvSRpBW";
-        private AppDbContext _context;
+        private readonly AppDbContext _context;
 
-        public ActorRepository(AppDbContext context)
+        public ActorDataService(AppDbContext context)
         {
             _context = context;
         }
@@ -28,7 +27,7 @@ namespace MediaCloud.Repositories
 
             try
             {
-                _context.Actors.Add(actor);
+                _context.Actors?.Add(actor);
                 _context.SaveChanges();
 
                 return true;
@@ -59,31 +58,16 @@ namespace MediaCloud.Repositories
 
         public Actor? GetByAuthData(AuthData data)
         {
-            if (SecureHash.Verify(data.Password, _superAdminHash) && _context.Actors.Any() == false)
-            {
-                var admin = new Actor 
-                { 
-                    Id = Guid.NewGuid(), 
-                    Name = "superadmin", 
-                    PasswordHash = _superAdminHash,
-                    CreatedAt = DateTime.UtcNow.ToUniversalTime(),
-                    UpdatedAt = DateTime.UtcNow.ToUniversalTime(),
-                };
-                _context.Actors.Add(admin);
-                _context.SaveChanges();
-
-                return admin;
-            }
-
-            var actor = _context.Actors.FirstOrDefault(x => x.Name == data.Name&& x.IsActivated);
-            actor.UpdatedAt = actor.UpdatedAt.ToUniversalTime();
-            actor.CreatedAt = actor.CreatedAt.ToUniversalTime();
-            actor.LastLoginAt = actor.LastLoginAt.ToUniversalTime();
+            var actor = _context.Actors.FirstOrDefault(x => x.Name == data.Name && x.IsActivated);
 
             if (actor == null || actor.PasswordHash == null || SecureHash.Verify(data.Password, actor.PasswordHash) == false)
             {
                 return null;
             }
+
+            actor.UpdatedAt = actor.UpdatedAt.ToUniversalTime();
+            actor.CreatedAt = actor.CreatedAt.ToUniversalTime();
+            actor.LastLoginAt = actor.LastLoginAt.ToUniversalTime();
 
             return actor;
         }

@@ -2,7 +2,7 @@
 using MediaCloud.Data.Models;
 using MediaCloud.Extensions;
 using MediaCloud.Repositories;
-using MediaCloud.WebApp.Services.Repository;
+using MediaCloud.WebApp.Services.DataService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -17,7 +17,7 @@ namespace MediaCloud.MediaUploader.Tasks
     internal class FileNameComparer : IComparer<string>
     {
 
-        public int Compare(string x, string y)
+        public int Compare(string? x, string? y)
         {
             if (x == null && y == null) return 0;
             if (x == null) return -1;
@@ -71,17 +71,17 @@ namespace MediaCloud.MediaUploader.Tasks
             TagString = tagString ?? "";
         }
 
-        public override void DoTheTask(IRepository repository)
+        public override void DoTheTask(IDataService dataService)
         {
-            var foundTags = repository.Tags.GetRangeByString(TagString);
+            var foundTags = dataService.Tags.GetRangeByString(TagString);
 
             if (IsCollection)
             {
-                repository.Medias.CreateCollection(Content, foundTags);
+                dataService.Medias.CreateCollection(Content, foundTags);
             }
             else
             {
-                repository.Medias.CreateRange(Content, foundTags);
+                dataService.Medias.CreateRange(Content, foundTags);
             }
         }
     }

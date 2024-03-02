@@ -11,21 +11,21 @@ using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using MediaCloud.WebApp.Services.Repository;
+using MediaCloud.WebApp.Services.DataService;
 
 namespace MediaCloud.Pages.Tags
 {
     [Authorize]
     public class CreateModel : PageModel
     {
-        private IRepository Repository;
+        private readonly IDataService _dataService;
 
         [BindProperty]
         public Tag Tag { get; set; } = new();
 
-        public CreateModel(IRepository repository)
+        public CreateModel(IDataService dataService)
         {
-            Repository = repository;
+            _dataService = dataService;
         }
 
         public IActionResult OnGet()
@@ -33,11 +33,11 @@ namespace MediaCloud.Pages.Tags
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public IActionResult OnPost()
         {
-            Repository.Tags.Create(Tag);
+            _dataService.Tags.Create(Tag);
 
-            return RedirectToPage("/Tags/Index");
+            return RedirectToPage("/Tags");
         }
     }
 }

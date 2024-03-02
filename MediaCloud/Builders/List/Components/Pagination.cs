@@ -30,7 +30,7 @@
         /// <summary>
         /// Set <see cref="TotalCount"/> and recalculate page numbers.
         /// </summary>
-        /// <param name="totalCount">Total entities count in repository.</param>
+        /// <param name="totalCount">Total entities count in DataService.</param>
         public void SetTotalCount(int totalCount)
         {
             TotalCount = totalCount;

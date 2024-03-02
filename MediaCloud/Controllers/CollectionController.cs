@@ -1,6 +1,6 @@
 ﻿using MediaCloud.Builders.List;
 using MediaCloud.Data.Models;
-using MediaCloud.WebApp.Services.Repository;
+using MediaCloud.WebApp.Services.DataService;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,31 +8,31 @@ namespace MediaCloud.WebApp.Controllers
 {
     public class CollectionController : Controller
     {
-        private IRepository Repository { get; set; }
-        private IStatisticService StatisticService { get; set; }
+        private readonly IDataService _dataService;
+        private readonly IStatisticService _statisticService;
 
-        public CollectionController(IRepository repository, IStatisticService statisticService)
+        public CollectionController(IDataService dataService, IStatisticService statisticService)
         {
-            Repository = repository;
-            StatisticService = statisticService;
+            _dataService = dataService;
+            _statisticService = statisticService;
         }
 
         public List<object> PreviewsBatch(Guid id, ListRequest listRequest)
         {
-            var previews = Repository.Collections.GetList(id, listRequest);
+            var previews = _dataService.Collections.GetList(id, listRequest);
 
             var jsonPreviews = new List<object>();
             foreach (var preview in previews)
             {
                 jsonPreviews.Add(new
                 {
-                    Id = preview.Id,
-                    Content = preview.Content,
-                    Order = preview.Order,
+                    preview.Id,
+                    preview.Content,
+                    preview.Order,
                 });
             }
 
-            StatisticService.ActivityFactorRaised.Invoke();
+            _statisticService.ActivityFactorRaised.Invoke();
 
             return jsonPreviews;
         }
