@@ -1,6 +1,6 @@
 ﻿using MediaCloud.Data.Models;
 
-namespace MediaCloud.WebApp.Services
+namespace MediaCloud.WebApp.Services.ActorProvider
 {
     public interface IActorProvider
     {

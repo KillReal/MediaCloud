@@ -18,6 +18,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.ResponseCompression;
 using System.IO.Compression;
 using MediaCloud.WebApp.Services.Statistic;
+using MediaCloud.WebApp.Services.ActorProvider;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -61,7 +62,6 @@ builder.Services.Configure<KestrelServerOptions>(options =>
 var app = builder.Build();
 using var scope = app.Services.CreateScope();
 
-PictureService.Init(scope.ServiceProvider.GetRequiredService<IConfiguration>());
 ConfigurationService.Init(scope.ServiceProvider.GetRequiredService<IConfiguration>());
 
 // Configure the HTTP request pipeline.

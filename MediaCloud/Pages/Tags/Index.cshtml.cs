@@ -24,12 +24,13 @@ namespace MediaCloud.Pages.Tags
         public ListModel(IDataService dataService)
         {
             _dataService = dataService;
+            ListBuilder = new(new());
         }
 
         [BindProperty]
         public List<Tag> Tags { get; set; } = new();
         [BindProperty]
-        public ListBuilder<Tag>? ListBuilder { get; set; }
+        public ListBuilder<Tag> ListBuilder { get; set; }
         [BindProperty]
         public bool IsAutoloadEnabled { get; set; } = false;
 

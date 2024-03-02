@@ -27,12 +27,13 @@ namespace MediaCloud.Pages.Actors
         {
             _dataService = dataService;
             _actor = _dataService.GetCurrentActor();
+            ListBuilder = new(new());
         }
 
         [BindProperty]
-        public List<Actor>? Actors { get; set; }
+        public List<Actor> Actors { get; set; } = new();
         [BindProperty]
-        public ListBuilder<Actor>? ListBuilder { get; set; }
+        public ListBuilder<Actor> ListBuilder { get; set; }
 
         public async Task<IActionResult> OnGetAsync(ListRequest request)
         {

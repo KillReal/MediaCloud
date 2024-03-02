@@ -1,5 +1,5 @@
 ﻿using MediaCloud.Data;
-using MediaCloud.WebApp.Services;
+using MediaCloud.WebApp.Services.ActorProvider;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace MediaCloud.Repositories

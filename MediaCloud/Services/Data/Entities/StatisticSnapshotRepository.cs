@@ -5,7 +5,7 @@ namespace MediaCloud.Repositories
 {
     public class StatisticSnapshotDataService : DataService<StatisticSnapshot>
     {
-        public StatisticSnapshotDataService(DataServiceContext DataServiceContext) : base(DataServiceContext)
+        public StatisticSnapshotDataService(DataServiceContext dataServiceContext) : base(dataServiceContext)
         {
         }
 

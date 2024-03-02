@@ -11,7 +11,7 @@ namespace MediaCloud.Repositories
 {
     public class CollectionDataService : DataService<Collection>
     {
-        public CollectionDataService(DataServiceContext DataServiceContext) : base(DataServiceContext)
+        public CollectionDataService(DataServiceContext dataServiceContext) : base(dataServiceContext)
         {
         }
 
@@ -64,7 +64,6 @@ namespace MediaCloud.Repositories
                 return 0;
             }
 
-            //return _context.Medias.Where(x => collection.Previews.Contains(x.Preview)).Sum(x => x.Size);
             return _context.Medias.Where(x => collection.Previews.Contains(x.Preview)).Sum(x => x.Size);
         }
 
@@ -101,7 +100,8 @@ namespace MediaCloud.Repositories
             _context.Previews.UpdateRange(previews);
             Update(collection);
 
-            _logger.LogInformation($"Updated previews order for collection with id: {collection.Id} by: {_actorId}");
+            _logger.LogInformation("Updated previews order for collection with id: {collection.Id} by: {_actorId}",
+                collection.Id, _actorId);
             return true;
         }
 

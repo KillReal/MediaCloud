@@ -21,10 +21,10 @@ namespace MediaCloud.Pages.Medias
     [Authorize]
     public class CollectionModel : PageModel
     {
-        private IDataService _dataService;
+        private readonly IDataService _dataService;
 
         [BindProperty]
-        public Collection? Collection { get; set; }
+        public Collection Collection { get; set; }
         [BindProperty]
         public string ReturnUrl { get; set; } = "/Medias";
         [BindProperty]
@@ -45,11 +45,12 @@ namespace MediaCloud.Pages.Medias
         public CollectionModel(IDataService dataService)
         {
             _dataService = dataService;
+            Collection = new();
         }
 
         public IActionResult OnGet(Guid id, string returnUrl = "/Medias")
         {
-            Collection = _dataService.Collections.Get(id);
+            Collection = _dataService.Collections.Get(id) ?? new();
 
             if (Collection == null)
             {

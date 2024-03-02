@@ -87,7 +87,7 @@ namespace MediaCloud.WebApp.Services.Statistic
                 do
                 {
                     var stopwatch = DateTime.Now;
-                    _logger.LogDebug($"Calculating statistic for {date.Date}");
+                    _logger.LogDebug("Calculating statistic for {date.Date}", date.Date);
                     var snapshot = _serviceHelper.TakeSnapshotAsync(date).Result;
                     
                     if (snapshot.IsEmpty() == false)

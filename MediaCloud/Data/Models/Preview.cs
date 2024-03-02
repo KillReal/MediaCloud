@@ -14,7 +14,7 @@ namespace MediaCloud.Data.Models
 
         public byte[] Content { get; set; }
 
-        public virtual List<Tag> Tags { get; set; }
+        public virtual List<Tag> Tags { get; set; } = new();
 
         [ForeignKey("CollectionId")]
         public virtual Collection? Collection { get; set; }
@@ -23,6 +23,7 @@ namespace MediaCloud.Data.Models
 
         public Preview(Media media, Image convertedImage)
         {
+            Media = media;
             MediaType = MediaType.JPG;
             Content = PictureService.LowerResolution(convertedImage, media.Content);
             Order = 0;
@@ -30,6 +31,7 @@ namespace MediaCloud.Data.Models
 
         public Preview(Media media)
         {
+            Media = media;
             MediaType = MediaType.JPG;
             Content = PictureService.LowerResolution(media.Content);
             Order = 0;
@@ -37,7 +39,8 @@ namespace MediaCloud.Data.Models
 
         public Preview()
         {
-
+            Media = new();
+            Content = Array.Empty<byte>();
         }
     }
 }

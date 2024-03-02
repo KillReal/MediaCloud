@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Security.Claims;
 using MediaCloud.WebApp.Services.DataService;
+using Azure.Core;
 
 namespace MediaCloud.Pages.Medias
 {
@@ -25,7 +26,7 @@ namespace MediaCloud.Pages.Medias
         public List<Preview> Previews { get; set; } = new();
 
         [BindProperty]
-        public ListBuilder<Preview>? ListBuilder { get; set; }
+        public ListBuilder<Preview> ListBuilder { get; set; }
 
         [BindProperty]
         public string ExampleFilter { get; set; }
@@ -46,6 +47,8 @@ namespace MediaCloud.Pages.Medias
             {
                 ExampleFilter = "Create more tags to filtering";
             }
+
+            ListBuilder = new ListBuilder<Preview>(new());
         }
 
         public async Task<IActionResult> OnGetAsync(ListRequest request)

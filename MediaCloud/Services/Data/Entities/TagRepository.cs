@@ -11,7 +11,7 @@ namespace MediaCloud.Repositories
 {
     public class TagDataService : DataService<Tag>, IListBuildable<Tag>
     {
-        private string DeduplicateTagString(string tagString)
+        private static string DeduplicateTagString(string tagString)
         {
             var tags = tagString.Split(' ');
 
@@ -23,7 +23,7 @@ namespace MediaCloud.Repositories
             return string.Join(' ', tags.Distinct());
         }
 
-        public TagDataService(DataServiceContext DataServiceContext) : base(DataServiceContext)
+        public TagDataService(DataServiceContext dataServiceContext) : base(dataServiceContext)
         {
         }
 
@@ -50,13 +50,13 @@ namespace MediaCloud.Repositories
                 _context.Tags.Add(tag);
                 SaveChanges();
 
-                _logger.LogInformation($"Created new tag with id:{tag.Id} by: {_actorId}");
+                _logger.LogInformation("Created new tag with id:{tag.Id} by: {_actorId}", tag.Id, _actorId);
                 _statisticService.TagsCountChanged.Invoke(1);
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error on creating new tag with id:{tag.Id} exception: {ex}");
+                _logger.LogError("Error on creating new tag with id:{tag.Id} exception: {ex}", tag.Id, ex);
                 return false;
             }
         }

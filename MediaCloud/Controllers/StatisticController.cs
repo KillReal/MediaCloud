@@ -10,7 +10,7 @@ namespace MediaCloud.WebApp.Controllers
 {
     public class StatisticController : Controller
     {
-        private IStatisticService StatisticService;
+        private readonly IStatisticService _statisticService;
 
         public IActionResult Index()
         {
@@ -19,20 +19,20 @@ namespace MediaCloud.WebApp.Controllers
 
         public StatisticController(IStatisticService statisticService)
         {
-            StatisticService = statisticService;
+            _statisticService = statisticService;
         }
 
         public dynamic GetCurrent()
         {
-            var snapshot = StatisticService.GetTodayStatistic();
+            var snapshot = _statisticService.GetTodayStatistic();
             return new
             {
-                Status = StatisticService.GetStatus().GetDisplayName(),
-                ActorsCount = snapshot.ActorsCount,
-                TagsCount = snapshot.TagsCount,
-                MediasCount = snapshot.MediasCount,
+                Status = _statisticService.GetStatus().GetDisplayName(),
+                snapshot.ActorsCount,
+                snapshot.TagsCount,
+                snapshot.MediasCount,
                 MediasSize = PictureService.FormatSize(snapshot.MediasSize),
-                ActivityFactor = snapshot.ActivityFactor
+                snapshot.ActivityFactor
             };
         }
 
@@ -40,16 +40,16 @@ namespace MediaCloud.WebApp.Controllers
         {
             if (days != 0)
             {
-                StatisticService.ProceedRecalculaton(days);
+                _statisticService.ProceedRecalculaton(days);
                 return;
             }
 
-            StatisticService.ProceedRecalculaton();
+            _statisticService.ProceedRecalculaton();
         }
 
         public string Status()
         {
-            return StatisticService.GetStatus().GetDisplayName();
+            return _statisticService.GetStatus().GetDisplayName();
         }
     }
 }

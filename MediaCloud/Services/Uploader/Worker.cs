@@ -11,10 +11,10 @@ namespace MediaCloud.MediaUploader
 {
     public class Worker
     {
-        private Thread _workRoutine;
+        private readonly Thread _workRoutine;
 
-        private Queue _queue;
-        private Scheduler _scheduler;
+        private readonly Queue _queue;
+        private readonly Scheduler _scheduler;
 
         public Guid CurrentTask = Guid.Empty;
         public bool IsRunning { get; set; } = false;

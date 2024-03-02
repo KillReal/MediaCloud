@@ -1,17 +1,12 @@
 ﻿using MediaCloud.WebApp.Services;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.Formats.Jpeg;
 
 namespace MediaCloud.Services
 {
     public class PictureService
     {
-        private static IConfiguration Configuration;
-
-        public static void Init(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
         public static byte[] LowerResolution(Image image, byte[] sourceBytes)
         {
             var maxSize = ConfigurationService.Preview.GetMaxHeight();
@@ -28,7 +23,16 @@ namespace MediaCloud.Services
                 image.Mutate(x => x.Resize(targetSize, KnownResamplers.Lanczos3, true)) ;
 
                 var ms = new MemoryStream();
-                image.Save(ms, image.Metadata.DecodedImageFormat);
+
+                var encoder = image.Metadata.DecodedImageFormat;
+                if (encoder != null)
+                {
+                    image.Save(ms, encoder);
+                }
+                else
+                {
+                    image.Save(ms, new JpegEncoder());
+                }
 
                 return ms.ToArray();
             }

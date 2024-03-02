@@ -7,23 +7,23 @@ using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace MediaCloud.WebApp.Services
+namespace MediaCloud.WebApp.Services.ActorProvider
 {
     public class ActorProvider : IActorProvider
     {
-        private IHttpContextAccessor ContextAccessor;
-        private IServiceScopeFactory ScopeFactory;
-        private Actor? CachedActor;
+        private readonly IHttpContextAccessor _contextAccessor;
+        private readonly IServiceScope _scope;
+        private Actor? _cachedActor;
 
         public ActorProvider(IServiceScopeFactory scopeFactory, IHttpContextAccessor httpContextAccessor)
         {
-            ScopeFactory = scopeFactory;
-            ContextAccessor = httpContextAccessor;
+            _scope = scopeFactory.CreateScope();
+            _contextAccessor = httpContextAccessor;
         }
 
         public Actor? GetCurrent()
         {
-            var httpContext = ContextAccessor.HttpContext;
+            var httpContext = _contextAccessor.HttpContext;
 
             if (httpContext == null)
             {
@@ -37,17 +37,16 @@ namespace MediaCloud.WebApp.Services
                 return null;
             }
 
-            if (identity.Name == CachedActor?.Name)
+            if (identity.Name == _cachedActor?.Name)
             {
-                return CachedActor;
+                return _cachedActor;
             }
 
-            using var scope = ScopeFactory.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var dbContext = _scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-            CachedActor = new ActorDataService(dbContext).Get(identity.Name);
+            _cachedActor = new ActorDataService(dbContext).Get(identity.Name);
 
-            return CachedActor;
+            return _cachedActor;
         }
     }
 }

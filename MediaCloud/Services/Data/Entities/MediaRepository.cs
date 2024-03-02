@@ -2,7 +2,6 @@
 using MediaCloud.Builders.List;
 using MediaCloud.Data;
 using MediaCloud.Data.Models;
-using MediaCloud.WebApp.Extensions;
 using MediaCloud.WebApp.Services;
 using MediaCloud.WebApp.Services.DataService.Entities.Base;
 using MediaCloud.WebApp.Services.Statistic;
@@ -30,7 +29,7 @@ namespace MediaCloud.Repositories
             return media;
         }
 
-        public MediaDataService(DataServiceContext DataServiceContext) : base(DataServiceContext)
+        public MediaDataService(DataServiceContext dataServiceContext) : base(dataServiceContext)
         {
         }
 
@@ -56,7 +55,7 @@ namespace MediaCloud.Repositories
             _context.Add(media);
             SaveChanges();
 
-            _logger.LogInformation($"Created new media with id: {media.Id} by: {_actorId}");
+            _logger.LogInformation("Created new media with id: {media.Id} by: {_actorId}", media.Id, _actorId);
             _statisticService.MediasCountChanged.Invoke(1, media.Size);
             return media;
         }
@@ -79,7 +78,7 @@ namespace MediaCloud.Repositories
             _context.AddRange(medias);
             SaveChanges();
 
-            _logger.LogInformation($"Created <{medias.Count}> new medias by: {_actorId}");
+            _logger.LogInformation("Created <{medias.Count}> new medias by: {_actorId}", medias.Count, _actorId);
             _statisticService.MediasCountChanged.Invoke(medias.Count, medias.Sum(x => x.Size));
             return medias;
         }
@@ -114,8 +113,10 @@ namespace MediaCloud.Repositories
 
             var previews = medias.Select(x => x.Preview).ToList();
 
-            var collection = new Collection(previews);
-            collection.Creator = new ActorDataService(_context).Get(_actorId);
+            var collection = new Collection(previews)
+            {
+                Creator = new ActorDataService(_context).Get(_actorId)
+            };
             collection.Updator = collection.Creator;
 
             for (var i = 0; i < previews.Count; i++)
@@ -134,7 +135,8 @@ namespace MediaCloud.Repositories
             SaveChanges();
             _context.ChangeTracker.AutoDetectChangesEnabled = true;
 
-            _logger.LogInformation($"Created new collection with <{collection.Count}> previews and id: {collection.Id} by: {_actorId}");
+            _logger.LogInformation("Created new collection with <{collection.Count}> previews and id: {collection.Id} by: {_actorId}",
+                collection.Count, collection.Id, _actorId);
 
             return medias;
         }

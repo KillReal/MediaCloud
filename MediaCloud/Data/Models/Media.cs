@@ -7,11 +7,11 @@ namespace MediaCloud.Data.Models
 {
     public class Media : Entity
     {
-        public virtual Preview Preview { get; set; }
+        public virtual Preview Preview { get; set; } = new();
 
-        public byte[] Content { get; set; }
+        public byte[] Content { get; set; } = Array.Empty<byte>();
 
-        public string Resolution { get; set; }
+        public string Resolution { get; set; } = "0x0";
 
         public int Rate { get; set; }
 
@@ -27,14 +27,8 @@ namespace MediaCloud.Data.Models
         public Media(byte[] file, int width, int height)
         {
             Content = file;
-
-            //var stream = new MemoryStream(Content);
-            //var picture = Image.Load(stream);
-
-            //Resolution = $"{picture.Width}x{picture.Height}";
             Resolution = $"{width}x{height}";
             Size = Content.Length;
-
             Rate = 0;
         }
 
