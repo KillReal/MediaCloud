@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using NLog;
 using System.Security.Claims;
+using ILogger = NLog.ILogger;
 
 namespace MediaCloud.WebApp.Pages
 {
@@ -25,10 +27,10 @@ namespace MediaCloud.WebApp.Pages
         [BindProperty]
         public string ReturnUrl { get; set; } = "";
 
-        public JoininModel(IDataService dataService, ILogger<LoginModel> logger)
+        public JoininModel(IDataService dataService)
         {
             _dataService = dataService;
-            _logger = logger;
+            _logger = LogManager.GetLogger("Actor.Joinin");
         }
 
         public IActionResult OnGet(string returnUrl = "/")
@@ -45,21 +47,21 @@ namespace MediaCloud.WebApp.Pages
             if (actor == null)
             {
                 FailStatus = "invite code";
-                _logger.LogError("Join attempt fail with next invite code: {InviteCode}", InviteCode);
+                _logger.Error("Join attempt fail with next invite code: {InviteCode}", InviteCode);
                 return Page();
             }
 
             if (_dataService.Actors.IsNameFree(AuthData.Name) == false)
             {
                 FailStatus = "name";
-                _logger.LogError("Join attempt fail with next name: {AuthData.Name}", AuthData.Name);
+                _logger.Error("Join attempt fail with next name: {AuthData.Name}", AuthData.Name);
                 return Page();
             }
 
             if (AuthData.Password.Length < 6)
             {
                 FailStatus = "password";
-                _logger.LogError("Join attempt fail with next name: {AuthData.Name}", AuthData.Name);
+                _logger.Error("Join attempt fail with next name: {AuthData.Name}", AuthData.Name);
                 return Page();
             }
 
@@ -68,7 +70,7 @@ namespace MediaCloud.WebApp.Pages
             actor.IsActivated = true;
             _dataService.Actors.Update(actor);
 
-            _logger.LogInformation("Joined in actor with id: {actor.Id} and invite code: {InviteCode}", actor.Id, InviteCode);
+            _logger.Info("Joined in actor with id: {actor.Id} and invite code: {InviteCode}", actor.Id, InviteCode);
             return Redirect("/Account/Login");
         }
     }

@@ -15,6 +15,8 @@ using MediaCloud.WebApp;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services.DataService;
 using Microsoft.Extensions.Logging;
+using NLog;
+using ILogger = NLog.ILogger;
 
 namespace MediaCloud.Pages.Actors
 {
@@ -30,10 +32,10 @@ namespace MediaCloud.Pages.Actors
         [BindProperty]
         public string ReturnUrl { get; set; } = "/Actors";
 
-        public DetailModel(IDataService dataService, ILogger<DetailModel> logger)
+        public DetailModel(IDataService dataService)
         {
             _dataService = dataService;
-            _logger = logger;
+            _logger = LogManager.GetLogger("Actor.Detail");
 
             Actor = _dataService.GetCurrentActor();
         }
@@ -58,7 +60,7 @@ namespace MediaCloud.Pages.Actors
 
             if (currentActor.IsAdmin == false)
             {
-                _logger.LogError("Fail attempt to access to Actor/Detail by: {Actor.Id}", Actor.Id);
+                _logger.Error("Fail attempt to access to Actor/Detail by: {Actor.Id}", Actor.Id);
                 return Redirect("/Account/Login");
             }
 
@@ -91,7 +93,7 @@ namespace MediaCloud.Pages.Actors
 
             if (Actor.IsAdmin == false || _dataService.Actors.TryRemove(id) == false)
             {
-                _logger.LogError("Fail attempt to access to Actor/Detail?action=Delete by: {Actor.Id}", Actor.Id);
+                _logger.Error("Fail attempt to access to Actor/Detail?action=Delete by: {Actor.Id}", Actor.Id);
                 return Redirect("/Account/Login");
             }
 

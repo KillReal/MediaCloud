@@ -19,6 +19,11 @@ using Microsoft.AspNetCore.ResponseCompression;
 using System.IO.Compression;
 using MediaCloud.WebApp.Services.Statistic;
 using MediaCloud.WebApp.Services.ActorProvider;
+using NLog.Web;
+using NLog;
+
+var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
+logger.Debug("Early NLog initialization");
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,7 +32,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddAuthorization();
 
 builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
+//builder.Logging.AddNLogWeb();
+builder.Host.UseNLog();
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -86,6 +92,7 @@ app.UseAuthorization();
 app.MapGet("/Account/Logout", async (HttpContext context) =>
 {
     await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    LogManager.GetLogger("Actor.Logout").Info("Logout actor with name: {AuthData.Name}", context.User.Identity?.Name);
     return Results.Redirect("/");
 });
 

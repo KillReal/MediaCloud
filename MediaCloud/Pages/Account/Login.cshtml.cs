@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using NLog;
 using System.Security.Claims;
+using ILogger = NLog.ILogger;
 
 namespace MediaCloud.WebApp.Pages
 {
@@ -25,10 +27,10 @@ namespace MediaCloud.WebApp.Pages
         [BindProperty]
         public string ReturnUrl { get; set; } = "/";
 
-        public LoginModel(IDataService dataService, ILogger<LoginModel> logger, IStatisticService statisticService)
+        public LoginModel(IDataService dataService, IStatisticService statisticService)
         {
             _dataService = dataService;
-            _logger = logger;
+            _logger = LogManager.GetLogger("Actor.Login");
             _statisticService = statisticService;
         }
 
@@ -45,7 +47,7 @@ namespace MediaCloud.WebApp.Pages
 
             if (actor == null)
             {
-                _logger.LogError("Failed sign attempt by name: {AuthData.Name}", AuthData.Name);
+                _logger.Error("Failed sign attempt by name: {AuthData.Name}", AuthData.Name);
                 IsFailed = true;
                 return Page();
             }
@@ -59,7 +61,7 @@ namespace MediaCloud.WebApp.Pages
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
             _dataService.Actors.SetLastLoginAt(actor, DateTime.Now.ToUniversalTime());
-            _logger.LogInformation("Signed in actor with name: {AuthData.Name}", AuthData.Name);
+            _logger.Info("Signed in actor with name: {AuthData.Name}", AuthData.Name);
 
             _statisticService.ActivityFactorRaised.Invoke();
 

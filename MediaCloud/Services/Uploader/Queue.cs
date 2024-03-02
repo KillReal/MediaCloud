@@ -9,7 +9,14 @@ namespace MediaCloud.MediaUploader
 {
     public class Queue
     {
-        private List<Task> _tasks = new();
+        private readonly List<Task> _tasks = new();
+
+        public Action<Guid> OnTaskComplete;
+
+        public Queue() 
+        {
+            OnTaskComplete += RemoveTask;
+        }
 
         public bool IsEmpty => _tasks.Count == 0;
 
@@ -20,6 +27,7 @@ namespace MediaCloud.MediaUploader
         public void AddTask(Task task) => _tasks.Add(task);
 
         public void RemoveTask(Task task) => _tasks.Remove(task);
+        public void RemoveTask(Guid id) => RemoveTask(_tasks.First(x => x.Id == id));
 
         public Task GetTask() => _tasks.First();
 

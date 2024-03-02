@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Security.Claims;
 using MediaCloud.WebApp.Services.DataService;
-using Azure.Core;
 
 namespace MediaCloud.Pages.Medias
 {

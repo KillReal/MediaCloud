@@ -14,6 +14,8 @@ using MediaCloud.WebApp.Services;
 using MediaCloud.WebApp;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services.DataService;
+using NLog;
+using ILogger = NLog.ILogger;
 
 namespace MediaCloud.Pages.Actors
 {
@@ -26,10 +28,10 @@ namespace MediaCloud.Pages.Actors
         [BindProperty]
         public Actor Actor { get; set; } = new();
 
-        public CreateModel(IDataService dataService, ILogger<CreateModel> logger)
+        public CreateModel(IDataService dataService)
         {
             _dataService = dataService;
-            _logger = logger;
+            _logger = LogManager.GetLogger("Actors.Create");
         }
 
         public IActionResult OnGet()
@@ -38,7 +40,7 @@ namespace MediaCloud.Pages.Actors
 
             if (currentActor.IsAdmin == false)
             {
-                _logger.LogError("Fail attempt to access to Actor/Create by: {currentActor.Id}", currentActor.Id);
+                _logger.Error("Fail attempt to access to Actor/Create by: {currentActor.Id}", currentActor.Id);
                 return Redirect("/Account/Login");
             }
 
@@ -51,7 +53,7 @@ namespace MediaCloud.Pages.Actors
 
             if (currentActor.IsAdmin == false)
             {
-                _logger.LogError("Fail attempt to access to Actor/Create by: {currentActor.Id}", currentActor.Id);
+                _logger.Error("Fail attempt to access to Actor/Create by: {currentActor.Id}", currentActor.Id);
                 return Redirect("/Account/Login");
             }
 

@@ -50,13 +50,13 @@ namespace MediaCloud.Repositories
                 _context.Tags.Add(tag);
                 SaveChanges();
 
-                _logger.LogInformation("Created new tag with id:{tag.Id} by: {_actorId}", tag.Id, _actorId);
+                _logger.Info("Created new tag with id:{tag.Id} by: {_actorId}", tag.Id, _actorId);
                 _statisticService.TagsCountChanged.Invoke(1);
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error on creating new tag with id:{tag.Id} exception: {ex}", tag.Id, ex);
+                _logger.Error("Error on creating new tag with id:{tag.Id} exception: {ex}", tag.Id, ex);
                 return false;
             }
         }
@@ -70,7 +70,7 @@ namespace MediaCloud.Repositories
             });
             _context.Tags.UpdateRange(tags);
 
-            _logger.LogInformation("Recalculated <{tags.Count}> tags usage count by: {_actorId}", tags.Count, _actorId);
+            _logger.Info("Recalculated <{tags.Count}> tags usage count by: {_actorId}", tags.Count, _actorId);
         }
 
         public List<Tag> GetRangeByString(string? tagsString)

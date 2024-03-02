@@ -5,6 +5,7 @@ using MediaCloud.WebApp.Services.ActorProvider;
 using MediaCloud.WebApp.Services.DataService.Entities.Base;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.EntityFrameworkCore;
+using NLog;
 
 namespace MediaCloud.WebApp.Services.DataService
 {
@@ -14,11 +15,11 @@ namespace MediaCloud.WebApp.Services.DataService
 
         private readonly RepositoriesContext _repositoriesContext;
 
-        public DataService(IServiceScopeFactory scopeFactory, ILogger<DataService> logger, IActorProvider actorProvider, IStatisticService statisticService)
+        public DataService(IServiceScopeFactory scopeFactory, IActorProvider actorProvider, IStatisticService statisticService)
         {
             _serviceScope = scopeFactory.CreateScope();
             var dbContext = _serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
-            _repositoriesContext = new RepositoriesContext(dbContext, statisticService, logger, actorProvider.GetCurrent(dbContext));
+            _repositoriesContext = new RepositoriesContext(dbContext, statisticService, LogManager.GetLogger("DataService"), actorProvider.GetCurrent(dbContext));
 
             Actors = new(_repositoriesContext.DbContext);
             Collections = new(_repositoriesContext);

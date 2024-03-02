@@ -2,6 +2,8 @@
 using MediaCloud.Data.Models;
 using MediaCloud.WebApp.Services.DataService.Entities.Base;
 using MediaCloud.WebApp.Services.Statistic;
+using NLog;
+using ILogger = NLog.ILogger;
 
 namespace MediaCloud.Repositories
 {
@@ -49,7 +51,7 @@ namespace MediaCloud.Repositories
                 var entityName = entity.GetType().Name.ToLower();
 
                 Remove(entity);
-                _logger.LogInformation("Removed {entityName} with id: {entityId} by: {_actorId}",
+                _logger.Info("Removed {entityName} with id: {entityId} by: {_actorId}",
                     entityName, entityId, _actorId);
                 return true;
             }
@@ -65,7 +67,7 @@ namespace MediaCloud.Repositories
             _context.Update(entity);
             SaveChanges();
 
-            _logger.LogInformation("Updated {entityName} with id: {entityId} by: {_actorId}",
+            _logger.Info("Updated {entityName} with id: {entityId} by: {_actorId}",
                 entityName, entityId, _actorId);
         }
 
@@ -77,7 +79,7 @@ namespace MediaCloud.Repositories
             _context.UpdateRange(entities);
             SaveChanges();
 
-            _logger.LogInformation("Updated <{entityCount}> {entityName} by: {_actorId}",
+            _logger.Info("Updated <{entityCount}> {entityName} by: {_actorId}",
                 entityCount, entityName, _actorId);
         }
 
@@ -88,7 +90,7 @@ namespace MediaCloud.Repositories
 
             _context.Remove(entity);
             SaveChanges();
-            _logger.LogInformation("Removed {entityName} with id: {entityId} by: {_actorId}",
+            _logger.Info("Removed {entityName} with id: {entityId} by: {_actorId}",
                 entityName, entityId, _actorId);
         }
 
@@ -99,7 +101,7 @@ namespace MediaCloud.Repositories
 
             _context.RemoveRange(entities);
             SaveChanges();
-            _logger.LogInformation("Removed <{entityCount}> {entityName} by: {_actorId}",
+            _logger.Info("Removed <{entityCount}> {entityName} by: {_actorId}",
                 entityCount, entityName, _actorId);
         }
 

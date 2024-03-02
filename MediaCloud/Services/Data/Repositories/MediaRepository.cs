@@ -5,7 +5,6 @@ using MediaCloud.Data.Models;
 using MediaCloud.WebApp.Services;
 using MediaCloud.WebApp.Services.DataService.Entities.Base;
 using MediaCloud.WebApp.Services.Statistic;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Data;
@@ -55,7 +54,7 @@ namespace MediaCloud.Repositories
             _context.Add(media);
             SaveChanges();
 
-            _logger.LogInformation("Created new media with id: {media.Id} by: {_actorId}", media.Id, _actorId);
+            _logger.Info("Created new media with id: {media.Id} by: {_actorId}", media.Id, _actorId);
             _statisticService.MediasCountChanged.Invoke(1, media.Size);
             return media;
         }
@@ -78,7 +77,7 @@ namespace MediaCloud.Repositories
             _context.AddRange(medias);
             SaveChanges();
 
-            _logger.LogInformation("Created <{medias.Count}> new medias by: {_actorId}", medias.Count, _actorId);
+            _logger.Info("Created <{medias.Count}> new medias by: {_actorId}", medias.Count, _actorId);
             _statisticService.MediasCountChanged.Invoke(medias.Count, medias.Sum(x => x.Size));
             return medias;
         }
@@ -135,7 +134,7 @@ namespace MediaCloud.Repositories
             SaveChanges();
             _context.ChangeTracker.AutoDetectChangesEnabled = true;
 
-            _logger.LogInformation("Created new collection with <{collection.Count}> previews and id: {collection.Id} by: {_actorId}",
+            _logger.Info("Created new collection with <{collection.Count}> previews and id: {collection.Id} by: {_actorId}",
                 collection.Count, collection.Id, _actorId);
             _statisticService.MediasCountChanged.Invoke(medias.Count, medias.Sum(x => x.Size));
 

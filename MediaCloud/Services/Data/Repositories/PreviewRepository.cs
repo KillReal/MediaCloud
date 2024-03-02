@@ -139,7 +139,7 @@ namespace MediaCloud.Repositories
                         _context.Collections.Update(preview.Collection);
                         _context.Medias.Remove(preview.Media);
                         SaveChanges();
-                        _logger.LogInformation("Removed Media in Collection with id: {preview.Collection.Id} by: {_actorId}", 
+                        _logger.Info("Removed Media in Collection with id: {preview.Collection.Id} by: {_actorId}", 
                             preview.Collection.Id, _actorId);
                         _statisticService.MediasCountChanged.Invoke(-1, -size);
 
@@ -151,7 +151,7 @@ namespace MediaCloud.Repositories
                     _context.Medias.Remove(preview.Media);
                     _context.Collections.Remove(preview.Collection);
                     SaveChanges();
-                    _logger.LogInformation("Removed Collection with id: {collectionId} by: {_actorId}", collectionId, _actorId);
+                    _logger.Info("Removed Collection with id: {collectionId} by: {_actorId}", collectionId, _actorId);
                     _statisticService.MediasCountChanged.Invoke(-1, -size);
 
                     return true;
@@ -162,7 +162,7 @@ namespace MediaCloud.Repositories
 
             _context.Medias.Remove(preview.Media);
             SaveChanges();
-            _logger.LogInformation("Removed Media  with id: {mediaId} by: {_actorId}", mediaId, _actorId);
+            _logger.Info("Removed Media  with id: {mediaId} by: {_actorId}", mediaId, _actorId);
             _statisticService.MediasCountChanged.Invoke(-1, -size);
 
             return true;

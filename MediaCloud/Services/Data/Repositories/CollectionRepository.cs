@@ -100,7 +100,7 @@ namespace MediaCloud.Repositories
             _context.Previews.UpdateRange(previews);
             Update(collection);
 
-            _logger.LogInformation("Updated previews order for collection with id: {collection.Id} by: {_actorId}",
+            _logger.Info("Updated previews order for collection with id: {collection.Id} by: {_actorId}",
                 collection.Id, _actorId);
             return true;
         }

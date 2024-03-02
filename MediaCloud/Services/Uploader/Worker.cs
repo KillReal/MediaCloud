@@ -1,37 +1,64 @@
 ﻿using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.MediaUploader.Tasks;
+using MediaCloud.WebApp.Services.DataService;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using Task = MediaCloud.MediaUploader.Tasks.Task;
 
 namespace MediaCloud.MediaUploader
 {
+    /// <summary>
+    /// Worker which do task processing.
+    /// </summary>
     public class Worker
     {
         private readonly Thread _workRoutine;
-
         private readonly Queue _queue;
         private readonly Scheduler _scheduler;
+        private readonly IDataService _dataService;
 
-        public Guid CurrentTask = Guid.Empty;
+        /// <summary>
+        /// Current task. Return's null if no task currently taken.
+        /// </summary>
+        public Task? Task;
+        /// <summary>
+        /// Worker taken task and do processing now.
+        /// </summary>
         public bool IsRunning { get; set; } = false;
 
-        public Worker(Queue queue, Scheduler scheduler) 
+        /// <summary>
+        /// Initilize worker instance.
+        /// </summary>
+        /// <param name="queue"> Current <see cref="Queue"/>. </param>
+        /// <param name="scheduler"> Current <see cref="Scheduler"/>. </param>
+        /// <param name="dataService"> Current data service <seealso cref="IDataService"/>. </param>
+        public Worker(Queue queue, Scheduler scheduler, IDataService dataService) 
         {
             _queue = queue;
             _scheduler = scheduler;
             _workRoutine = new(WorkRoutine);
+            _dataService = dataService;
         }
 
+        /// <summary>
+        /// Worker take first <see cref="ITask"/> from <see cref="Queue"/> and begin it's processing in new <see cref="Thread"/>.
+        /// </summary>
         public void Run()
         {
             IsRunning = true;
+            Task = _queue.GetTask();
             _workRoutine.Start();
         }
 
+        /// <summary>
+        /// Waiting to worker thread completion or stop. Usually used for wait to thread completion.
+        /// </summary>
         public void Stop()
         {
             IsRunning = false;
@@ -40,36 +67,28 @@ namespace MediaCloud.MediaUploader
 
         private void WorkRoutine()
         {
-            while (IsRunning)
+            if (Task == null)
             {
-                if (_queue.IsEmpty)
-                {
-                    IsRunning = false;
-                    return;
-                }
-
-                var task = _queue.GetTask();
-                CurrentTask = task.Id;
-
-                var logger = _scheduler.GetLogger();
-                logger.LogInformation("Worker ({_scheduler.WorkersActive}/{_scheduler.MaxWorkersCount}) running with task: {CurrentTask}",
-                    _scheduler.WorkersActive, _scheduler.MaxWorkersCount, CurrentTask);
-                
-                try
-                {
-                    task.DoTheTask(_scheduler.GetDataService());
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError("Worker failed Media[{task.GetWorkCount}] creation with task: {CurrentTask} exception: {ex}",
-                        task.GetWorkCount(), CurrentTask, ex);
-                }
-
-                _queue.RemoveTask(task);
-                logger.LogInformation("Worker ({_scheduler.WorkersActive - 1}/{_scheduler.MaxWorkersCount}) done task: {CurrentTask}",
-                    _scheduler.WorkersActive - 1, _scheduler.MaxWorkersCount, CurrentTask);
-                CurrentTask = Guid.Empty;
+                return;
             }
+
+            IsRunning = true;
+            _scheduler.OnTaskStarted.Invoke(Task.Id);
+
+            try
+            {
+                Task.DoTheTask(_dataService);
+            }
+            catch (Exception ex)
+            {
+                _scheduler.OnTaskErrorOccured.Invoke(Task.Id, ex);
+            }
+
+            _scheduler.OnTaskCompleted.Invoke(Task.Id);
+            Task = null;
+            IsRunning = false;
+
+            return;
         }
     }
 }
