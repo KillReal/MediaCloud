@@ -7,7 +7,7 @@
 
 <h1 class="pt-3 text-white">Statistic</h1>
 
-<hr />
+<hr style="color: white"/>
 
 <div>
     <div class="row" style="justify-content: space-around;">
@@ -19,10 +19,10 @@
         </div>
     </div>
     <div class="row" style="justify-content: space-around;">
-        <div class="col-4 whiteback-bar">
+        <div class="col whiteback-bar" style="max-width: 45rem">
             <canvas id="TagsChart"></canvas>
         </div>
-        <div class="col-7 whiteback-bar">
+        <div class="col whiteback-bar">
             <canvas id="ActivityChart"></canvas>
         </div>
     </div>
@@ -35,6 +35,7 @@
 
 <script type="text/javascript">
     var targetSizeError = @Model.SizeTargetError.ToString(System.Globalization.CultureInfo.InvariantCulture);
+    var dayDisplayFormat = 'DD'
 
     function formatBytes(bytes, decimals = 2) {
         if (!+bytes) return '0 Bytes'
@@ -77,7 +78,7 @@
                 },
                 title: {
                     display: true,
-                    text: 'Medias size total uploaded (' + targetSizeError * 100 + '% error)',
+                    text: 'Medias size total uploaded (' + (100 - targetSizeError * 100).toFixed(1) + '% of database)',
                 },
                 tooltip: {
                     callbacks: {
@@ -93,7 +94,12 @@
                     type: 'time',
                     display: true,
                     time: {
-                        tooltipFormat: 'DD T'
+                        unit: 'day',
+                        unitStepSize: 1,
+                        tooltipFormat: 'DD',
+                        displayFormats: {
+                            'day': dayDisplayFormat,
+                        }
                     },
                     title: {
                         display: true,
@@ -130,7 +136,8 @@
                 ],
                 fill: true,
                 cubicInterpolationMode: 'monotone',
-                tension: 0.4
+                tension: 0.4,
+                order: 3
             },
             {
                 label: 'Tags count',
@@ -142,7 +149,8 @@
                 ],
                 fill: true,
                 cubicInterpolationMode: 'monotone',
-                tension: 0.4
+                tension: 0.4,
+                order: 2
             },
             {
                 label: 'Actors count',
@@ -154,7 +162,8 @@
                 ],
                 fill: true,
                 cubicInterpolationMode: 'monotone',
-                tension: 0.4
+                tension: 0.4,
+                order: 1
             }]
         },
         options: {
@@ -177,7 +186,12 @@
                     type: 'time',
                     display: true,
                     time: {
-                        tooltipFormat: 'DD T'
+                        unit: 'day',
+                        unitStepSize: 1,
+                        tooltipFormat: 'DD',
+                        displayFormats: {
+                            'day': dayDisplayFormat,
+                        }
                     },
                     title: {
                         display: true,
@@ -213,7 +227,7 @@
                 },
                 title: {
                     display: true,
-                    text: 'Tag popularity (top ' + @Model.Tags.Count() + ')'
+                    text: 'Tag popularity (top ' + @Model.Tags.Count() + ' of ' + @Model.Tags.Count + ' total)'
                 },
                 datalabels: {
                     clip: true,
@@ -271,7 +285,12 @@
                     type: 'time',
                     display: true,
                     time: {
-                        tooltipFormat: 'DD T'
+                        unit: 'day',
+                        unitStepSize: 1,
+                        tooltipFormat: 'DD',
+                        displayFormats: {
+                            'day': dayDisplayFormat,
+                        }
                     },
                     title: {
                         display: true,

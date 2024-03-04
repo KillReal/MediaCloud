@@ -18,7 +18,9 @@ namespace MediaCloud.Data
                     Name = "Admin",
                     PasswordHash = _superAdminHash,
                     IsActivated = true,
-                    IsAdmin = true
+                    IsAdmin = true,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow,
                 };
 
                 Actors.Add(admin);

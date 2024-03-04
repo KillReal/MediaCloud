@@ -36,7 +36,7 @@ namespace MediaCloud.Pages
             var actualSize = _dataService.GetDbSize();
             var aproximateSize = Snapshots.Last().MediasSize;
 
-            SizeTargetError = Math.Round((double)((actualSize - aproximateSize) / (double)aproximateSize), 3);
+            SizeTargetError = (actualSize - aproximateSize) / (double)aproximateSize;
 
             return Page();
         }
