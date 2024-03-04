@@ -21,6 +21,7 @@ using MediaCloud.WebApp.Services.Statistic;
 using MediaCloud.WebApp.Services.ActorProvider;
 using NLog.Web;
 using NLog;
+using Microsoft.AspNetCore.Mvc.TagHelpers;
 
 var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 logger.Debug("Early NLog initialization");
@@ -28,7 +29,11 @@ logger.Debug("Early NLog initialization");
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options => options.LoginPath = "/Account/Login");
+    .AddCookie(options => 
+    {
+        options.LoginPath = "/Account/Login";
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(ConfigurationService.Auth.GetCookieExpireTime());
+    });
 builder.Services.AddAuthorization();
 
 builder.Logging.ClearProviders();

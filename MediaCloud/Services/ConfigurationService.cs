@@ -9,6 +9,12 @@ namespace MediaCloud.WebApp.Services
         public static void Init(IConfiguration configuration)
             => Configuration = configuration;
 
+        public static class Auth
+        {
+            public static int GetCookieExpireTime()
+                => Convert.ToInt32(Configuration?["CookieExpireTime"]);
+        }
+
         public static class Preview
         {
             public static int GetMaxHeight()
@@ -42,6 +48,14 @@ namespace MediaCloud.WebApp.Services
             {
                 var test = Configuration?["ConnectionStrings:Database"];
                 return test?.Split(";").First().Split("=").Last() ?? "";
+            }
+        }
+
+        public static class Uploader
+        {
+            public static int GetWorkersCount()
+            {
+                return Convert.ToInt32(Configuration?["UploadWorkersCount"]);
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using MediaCloud.Data;
 using MediaCloud.Repositories;
+using MediaCloud.WebApp.Services;
 using MediaCloud.WebApp.Services.DataService;
 using NLog;
 using ILogger = NLog.ILogger;
@@ -19,7 +20,7 @@ namespace MediaCloud.MediaUploader
         /// <summary>
         /// Total available workers.
         /// </summary>
-        public int MaxWorkersCount { get; } = 1;
+        public int MaxWorkersCount { get; } = ConfigurationService.Uploader.GetWorkersCount();
 
         /// <summary>
         /// Logging task start event.
