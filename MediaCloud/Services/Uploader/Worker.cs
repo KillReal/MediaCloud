@@ -18,7 +18,6 @@ namespace MediaCloud.MediaUploader
     /// </summary>
     public class Worker
     {
-        private readonly Thread _workRoutine;
         private readonly Queue _queue;
         private readonly Scheduler _scheduler;
         private readonly IDataService _dataService;
@@ -28,9 +27,9 @@ namespace MediaCloud.MediaUploader
         /// </summary>
         public Task? Task;
         /// <summary>
-        /// Worker taken task and do processing now.
+        /// State of Worker that it ready to take next <see cref="ITask"/>.
         /// </summary>
-        public bool IsRunning { get; set; } = false;
+        public bool IsReady { get; private set; } = true;
 
         /// <summary>
         /// Initilize worker instance.
@@ -42,7 +41,6 @@ namespace MediaCloud.MediaUploader
         {
             _queue = queue;
             _scheduler = scheduler;
-            _workRoutine = new(WorkRoutine);
             _dataService = dataService;
         }
 
@@ -51,9 +49,8 @@ namespace MediaCloud.MediaUploader
         /// </summary>
         public void Run()
         {
-            IsRunning = true;
-            Task = _queue.GetTask();
-            _workRoutine.Start();
+            Task = _queue.GetNextTask();
+            ThreadPool.QueueUserWorkItem(WorkRoutine);
         }
 
         /// <summary>
@@ -61,18 +58,18 @@ namespace MediaCloud.MediaUploader
         /// </summary>
         public void Stop()
         {
-            IsRunning = false;
-            _workRoutine?.Join();
+            
         }
 
-        private void WorkRoutine()
+        private void WorkRoutine(object? state)
         {
+            IsReady = false;
+
             if (Task == null)
             {
                 return;
             }
 
-            IsRunning = true;
             _scheduler.OnTaskStarted.Invoke(Task.Id);
 
             try
@@ -86,7 +83,7 @@ namespace MediaCloud.MediaUploader
 
             _scheduler.OnTaskCompleted.Invoke(Task.Id);
             Task = null;
-            IsRunning = false;
+            IsReady = true;
 
             return;
         }

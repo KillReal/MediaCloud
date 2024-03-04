@@ -34,7 +34,7 @@ namespace MediaCloud.MediaUploader
         /// </summary>
         public Action<Guid, Exception> OnTaskErrorOccured { get; set; }
 
-        public int WorkersActive => _workers.Count(x => x.IsRunning);
+        public int WorkersActive => _workers.Count(x => x.IsReady == false);
 
         private void WorkerStartTask(Guid id)
         {
@@ -92,7 +92,7 @@ namespace MediaCloud.MediaUploader
                 return;
             }
 
-            var worker = _workers.Where(x => x.IsRunning == false).FirstOrDefault();
+            var worker = _workers.Where(x => x.IsReady).FirstOrDefault();
             worker?.Run();
         }
 

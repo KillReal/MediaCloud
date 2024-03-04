@@ -29,7 +29,7 @@ namespace MediaCloud.MediaUploader
         public void RemoveTask(Task task) => _tasks.Remove(task);
         public void RemoveTask(Guid id) => RemoveTask(_tasks.First(x => x.Id == id));
 
-        public Task GetTask() => _tasks.First();
+        public Task GetNextTask() => _tasks.First();
 
         public Task? GetTask(Guid id) => _tasks.FirstOrDefault(x => x.Id == id);
 
