@@ -7,11 +7,13 @@ namespace MediaCloud.Extensions
     {
         public static string GetDisplayName(this Enum enumValue)
         {
-            return enumValue.GetType()
-                            .GetMember(enumValue.ToString())
-                            .First()
-                            .GetCustomAttribute<DisplayAttribute>()
-                            .GetName();
+            var attribute = enumValue.GetType().GetMember(enumValue.ToString())
+                                        .First()
+                                        .GetCustomAttribute<DisplayAttribute>();
+
+            return attribute == null 
+                ? "" 
+                : attribute.GetName() ?? "";
         }
     }
 }

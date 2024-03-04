@@ -1,0 +1,307 @@
+﻿@page
+@model StatisticModel
+@{
+    ViewData["Title"] = "Statistic";
+}
+@using MediaCloud.Services;
+
+<h1 class="pt-3 text-white">Statistic</h1>
+
+<hr style="color: white"/>
+
+<div>
+    <div class="row" style="justify-content: space-around;">
+        <div class="col whiteback-bar">
+            <canvas id="CountChart"></canvas>
+        </div>
+        <div class="col whiteback-bar">
+            <canvas id="SizeChart"></canvas>
+        </div>
+    </div>
+    <div class="row" style="justify-content: space-around;">
+        <div class="col whiteback-bar" style="max-width: 45rem">
+            <canvas id="TagsChart"></canvas>
+        </div>
+        <div class="col whiteback-bar">
+            <canvas id="ActivityChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+<script src="https://cdn.jsdelivr.net/npm/luxon"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
+
+<script type="text/javascript">
+    var targetSizeError = @Model.SizeTargetError.ToString(System.Globalization.CultureInfo.InvariantCulture);
+    var dayDisplayFormat = 'DD'
+
+    function formatBytes(bytes, decimals = 2) {
+        if (!+bytes) return '0 Bytes'
+
+        const k = 1024
+        const dm = decimals < 0 ? 0 : decimals
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+
+        const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
+    };
+
+    new Chart(document.getElementById('SizeChart'), {
+        type: 'line',
+        data: {
+            datasets: [{
+                label: "Medias size",
+                data: [
+                    @foreach (var snapshot in Model.Snapshots)
+                    {
+                        @(Html.Raw("{x:'" + snapshot.TakenAt.Date.ToString("yyyy-MM-dd") + "',y:'" + snapshot.MediasSize + "'},"))
+                    }
+                ],
+                fill: true,
+                cubicInterpolationMode: 'monotone',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+                axis: 'x'
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Medias size total uploaded (' + (100 - targetSizeError * 100).toFixed(1) + '% of database)',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            let label = context.dataset.label || '';
+                            return formatBytes(context.parsed.y + context.parsed.y * targetSizeError, 1);
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    type: 'time',
+                    display: true,
+                    time: {
+                        unit: 'day',
+                        unitStepSize: 1,
+                        tooltipFormat: 'DD',
+                        displayFormats: {
+                            'day': dayDisplayFormat,
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    type: "linear",
+                    title: {
+                        display: true,
+                        text: 'Data size'
+                    },
+                    ticks: {
+                        callback: function (value, index, ticks) {
+                            return formatBytes(value + value * targetSizeError, 1);
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('CountChart'), {
+        type: 'line',
+        data: {
+            datasets: [{
+                label: 'Medias count',
+                data: [
+                    @foreach (var snapshot in Model.Snapshots)
+                    {
+                        @(Html.Raw("{x:'" + snapshot.TakenAt.Date.ToString("yyyy-MM-dd") + "',y:'" + snapshot.MediasCount + "'},"))
+                    }
+                ],
+                fill: true,
+                cubicInterpolationMode: 'monotone',
+                tension: 0.4,
+                order: 3
+            },
+            {
+                label: 'Tags count',
+                data: [
+                    @foreach (var snapshot in Model.Snapshots)
+                    {
+                        @(Html.Raw("{x:'" + snapshot.TakenAt.Date.ToString("yyyy-MM-dd") + "',y:'" + snapshot.TagsCount + "'},"))
+                    }
+                ],
+                fill: true,
+                cubicInterpolationMode: 'monotone',
+                tension: 0.4,
+                order: 2
+            },
+            {
+                label: 'Actors count',
+                data: [
+                    @foreach (var snapshot in Model.Snapshots)
+                    {
+                        @(Html.Raw("{x:'" + snapshot.TakenAt.Date.ToString("yyyy-MM-dd") + "',y:'" + snapshot.ActorsCount + "'},"))
+                    }
+                ],
+                fill: true,
+                cubicInterpolationMode: 'monotone',
+                tension: 0.4,
+                order: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Entities count'
+                }
+            },
+            scales: {
+                x: {
+                    type: 'time',
+                    display: true,
+                    time: {
+                        unit: 'day',
+                        unitStepSize: 1,
+                        tooltipFormat: 'DD',
+                        displayFormats: {
+                            'day': dayDisplayFormat,
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Count'
+                    }
+                }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('TagsChart'), {
+        type: 'pie',
+        data: {
+            labels: ['@(Html.Raw(string.Join("', '", Model.Tags.Select(x => x.Name))))'],
+            datasets: [{
+                label: 'Medias count',
+                data: [@(Html.Raw(string.Join(", ", Model.Tags.Select(x => x.PreviewsCount))))],
+                borderWidth: 1,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false,
+                },
+                title: {
+                    display: true,
+                    text: 'Tag popularity (top ' + @Model.Tags.Count() + ' of ' + @Model.Tags.Count + ' total)'
+                },
+                datalabels: {
+                    clip: true,
+                    align: 'start',
+                    anchor: 'end',
+                    clamp: true,
+                    formatter: function (value, context) {
+                        return context.chart.data.labels[
+                            context.dataIndex
+                        ];
+                    },
+                    backgroundColor: function(context) {
+                        return context.dataset.backgroundColor;
+                    },
+                    color: 'white',
+                    font: {
+                        weight: 'bold'
+                    },
+                    borderRadius: 12,
+                    padding: 12
+                },
+            }
+        },
+        plugins: [ChartDataLabels]
+    });
+
+    new Chart(document.getElementById('ActivityChart'), {
+        type: 'bar',
+        data: {
+            datasets: [{
+                label: 'Activity factor',
+                data: [
+                    @foreach (var snapshot in Model.Snapshots.Where(x => x.TakenAt >= DateTime.Now.Date.AddDays(-Model.ActivityBacktrackDayCount)).ToList())
+                    {
+                        @(Html.Raw("{x:'" + snapshot.TakenAt.Date.ToString("yyyy-MM-dd") + "',y:'" + snapshot.ActivityFactor + "'},"))
+                    }
+                ],
+                fill: true,
+            }]
+        },
+        options: {
+            responsive: true,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Activity of users (last ' + @Model.ActivityBacktrackDayCount + ' days)'
+                },
+            },
+            scales: {
+                x: {
+                    type: 'time',
+                    display: true,
+                    time: {
+                        unit: 'day',
+                        unitStepSize: 1,
+                        tooltipFormat: 'DD',
+                        displayFormats: {
+                            'day': dayDisplayFormat,
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    stepSize: 1
+                }
+            }
+        }
+    });
+</script>

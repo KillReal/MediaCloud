@@ -8,6 +8,6 @@ namespace MediaCloud.MediaUploader
 
         public UploaderStatus GetStatus();
 
-        public UploaderTaskStatus GetStatus(Guid taskId);
+        public TaskStatus GetStatus(Guid taskId);
     }
 }

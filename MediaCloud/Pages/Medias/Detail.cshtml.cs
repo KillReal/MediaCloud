@@ -8,42 +8,45 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using MediaCloud.Data.Models;
 using MediaCloud.Data;
 using MediaCloud.Services;
-using MediaCloud.Builders.Components;
 using MediaCloud.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using MediaCloud.WebApp.Services.Repository;
+using MediaCloud.WebApp.Services.DataService;
+using MediaCloud.WebApp.Services.Statistic;
 
 namespace MediaCloud.Pages.Medias
 {
     [Authorize]
     public class DetailModel : PageModel
     {
-        private IRepository Repository;
+        private readonly IDataService _dataService;
+        private readonly IStatisticService _statisticService;
 
         [BindProperty]
         public Guid PreviewId { get; set; }
         [BindProperty]
         public Media Media { get; set; }
         [BindProperty]
-        public List<Tag> Tags { get; set; }
+        public List<Tag> Tags { get; set; } = new();
         [BindProperty]
         public string? TagsString { get; set; } = "";
         [BindProperty]
-        public string ReturnUrl { get; set; }
+        public string ReturnUrl { get; set; } = "/";
         [BindProperty]
         public Guid? PrevPreviewId { get; set; } = null;
         [BindProperty]
         public Guid? NextPreviewId { get; set; } = null;
 
-        public DetailModel(IRepository repository)
+        public DetailModel(IDataService dataService, IStatisticService statisticService)
         {
-            Repository = repository;
+            _dataService = dataService;
+            _statisticService = statisticService;
+            Media = new();
         }
 
-        public IActionResult OnGet(Guid id, string returnUrl = "/Medias/Index")
+        public IActionResult OnGet(Guid id, string returnUrl = "/Medias")
         {
-            var preview = Repository.Previews.Get(id);
+            var preview = _dataService.Previews.Get(id);
 
             if (preview == null)
             {
@@ -55,41 +58,46 @@ namespace MediaCloud.Pages.Medias
 
             if (preview.Collection != null)
             {
-                PrevPreviewId = preview.Collection.Previews.FirstOrDefault(x => x.Order == preview.Order - 1)?.Id;
-                NextPreviewId = preview.Collection.Previews.FirstOrDefault(x => x.Order == preview.Order + 1)?.Id;
+                var collectionPreviews = preview.Collection.Previews.OrderBy(x => x.Order);
+                PrevPreviewId = collectionPreviews.LastOrDefault(x => x.Order < preview.Order)?.Id;
+                NextPreviewId = collectionPreviews.FirstOrDefault(x => x.Order > preview.Order)?.Id;
             }
 
-            Tags = preview.Tags.OrderBy(x => x.Type)
-                               .ToList();
+            Tags = preview.Tags.OrderBy(x => x.Type).ToList();
 
             ReturnUrl = returnUrl.Replace("$", "&");
             TagsString = string.Join(" ", Tags.Select(x => x.Name.ToLower()));
+
+            if (preview.Order == 0)
+            {
+                _statisticService.ActivityFactorRaised.Invoke();
+            }
 
             return Page();
         }
 
         public IActionResult OnPost()
         {
-            var preview = Repository.Previews.Get(PreviewId);
+            var preview = _dataService.Previews.Get(PreviewId);
 
-            if (preview == null)
+            if (preview == null || Media == null)
             {
                 return Redirect("/Error");
             }
 
-            var tags = Repository.Tags.GetRangeByString(TagsString);
-            Repository.Previews.SetPreviewTags(preview, tags);
+            var tags = _dataService.Tags.GetRangeByString(TagsString);
+            _dataService.Previews.SetPreviewTags(preview, tags);
             
             var media = preview.Media;
             media.Rate = Media.Rate;
-            Repository.Medias.Update(media);
+            _dataService.Medias.Update(media);
 
             return Redirect(ReturnUrl.Replace("$", "&"));
         }
 
         public IActionResult OnPostDelete(Guid id)
         {
-            if (Repository.Previews.TryRemove(id) == false)
+            if (_dataService.Previews.TryRemove(id) == false)
             {
                 return Redirect("/Error");
             }

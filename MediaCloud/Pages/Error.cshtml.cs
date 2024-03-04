@@ -19,8 +19,10 @@ namespace MediaCloud.Pages
             _logger = logger;
         }
 
-        public void OnGet()
+        public void OnGet(string message = "Unknown error")
         {
+            _logger.LogInformation("Error occured during request: {HttpContext.Request.Path} by {HttpContext.User.Identity.Name} message: {message}", 
+                HttpContext.Request.Path, HttpContext.User.Identity?.Name, message);
             RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
         }
     }

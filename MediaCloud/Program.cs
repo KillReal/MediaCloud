@@ -1,4 +1,3 @@
-using BenchmarkDotNet.Running;
 using MediaCloud.Data;
 using MediaCloud.Repositories;
 using MediaCloud.Services;
@@ -14,10 +13,17 @@ using MediaCloud.WebApp;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using MediaCloud.WebApp.Services;
-using MediaCloud.WebApp.Services.Repository;
+using MediaCloud.WebApp.Services.DataService;
 using System.Reflection;
 using Microsoft.AspNetCore.ResponseCompression;
 using System.IO.Compression;
+using MediaCloud.WebApp.Services.Statistic;
+using MediaCloud.WebApp.Services.ActorProvider;
+using NLog.Web;
+using NLog;
+
+var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
+logger.Debug("Early NLog initialization");
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,30 +32,26 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddAuthorization();
 
 builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
+//builder.Logging.AddNLogWeb();
+builder.Host.UseNLog();
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddResponseCompression(options =>
-{
-    options.EnableForHttps = true;
-});
-builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
-{
-    options.Level = CompressionLevel.Optimal;
-});
 builder.Services.AddDbContext<AppDbContext>(options => 
 {
-    options.UseSqlite(builder.Configuration.GetConnectionString("Database"));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Database"));
 });
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 builder.Services.AddLogging();
 builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
 builder.Services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
-builder.Services.AddScoped<IActorProvider, ActorProvider>();
+builder.Services.AddSingleton<IActorProvider, ActorProvider>();
 builder.Services.AddSingleton<IUploader, Uploader>();
+builder.Services.AddSingleton<IStatisticService, StatisticService>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<IRepository, Repository>();
+builder.Services.AddScoped<IDataService, DataService>();
 
 builder.Services.Configure<FormOptions>(x =>
 {
@@ -66,9 +68,7 @@ builder.Services.Configure<KestrelServerOptions>(options =>
 var app = builder.Build();
 using var scope = app.Services.CreateScope();
 
-PictureService.Init(scope.ServiceProvider.GetRequiredService<IConfiguration>());
 ConfigurationService.Init(scope.ServiceProvider.GetRequiredService<IConfiguration>());
-Scheduler.Init(scope.ServiceProvider.GetRequiredService<IRepository>(), scope.ServiceProvider.GetRequiredService<ILogger<Uploader>>());
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -80,7 +80,6 @@ if (!app.Environment.IsDevelopment())
 
 //app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UseResponseCompression();
 app.UseRouting();
 
 app.MapControllerRoute(
@@ -93,6 +92,7 @@ app.UseAuthorization();
 app.MapGet("/Account/Logout", async (HttpContext context) =>
 {
     await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    LogManager.GetLogger("Actor.Logout").Info("Logout actor with name: {AuthData.Name}", context.User.Identity?.Name);
     return Results.Redirect("/");
 });
 

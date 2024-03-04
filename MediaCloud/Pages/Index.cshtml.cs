@@ -1,4 +1,7 @@
-﻿using MediaCloud.WebApp.Services;
+﻿using MediaCloud.Data;
+using MediaCloud.Data.Models;
+using MediaCloud.WebApp.Services;
+using MediaCloud.WebApp.Services.DataService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -6,20 +9,16 @@ namespace MediaCloud.Pages
 {
     public class IndexModel : PageModel
     {
-        private readonly ILogger<IndexModel> Logger;
-        private readonly IActorProvider ActorProvider;
+        private readonly Actor _currentActor;
 
-        public IndexModel(IActorProvider actorProvider, ILogger<IndexModel> logger)
+        public IndexModel(IDataService dataService)
         {
-            Logger = logger;
-            ActorProvider = actorProvider;
+            _currentActor = dataService.GetCurrentActor() ?? new();
         }
 
         public IActionResult OnGet()
         {
-            var currentActor = ActorProvider.GetCurrent() ?? new();
-
-            if (currentActor.IsAdmin)
+            if (_currentActor.IsAdmin)
             {
                 return Redirect("/Medias");
             }

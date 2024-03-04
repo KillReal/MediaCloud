@@ -7,25 +7,33 @@ using Task = MediaCloud.MediaUploader.Tasks.Task;
 
 namespace MediaCloud.MediaUploader
 {
-    public static class Queue
+    public class Queue
     {
-        private static List<Task> _tasks = new();
+        private readonly List<Task> _tasks = new();
 
-        public static bool IsEmpty => _tasks.Count == 0;
+        public Action<Guid> OnTaskComplete;
 
-        public static int TaskCount => _tasks.Count;
+        public Queue() 
+        {
+            OnTaskComplete += RemoveTask;
+        }
 
-        public static int WorkCount => _tasks.Sum(x => x.GetWorkCount());
+        public bool IsEmpty => _tasks.Count == 0;
 
-        public static void AddTask(Task task) => _tasks.Add(task);
+        public int TaskCount => _tasks.Count;
 
-        public static void RemoveTask(Task task) => _tasks.Remove(task);
+        public int WorkCount => _tasks.Sum(x => x.GetWorkCount());
 
-        public static Task GetTask() => _tasks.First();
+        public void AddTask(Task task) => _tasks.Add(task);
 
-        public static Task? GetTask(Guid id) => _tasks.FirstOrDefault(x => x.Id == id);
+        public void RemoveTask(Task task) => _tasks.Remove(task);
+        public void RemoveTask(Guid id) => RemoveTask(_tasks.First(x => x.Id == id));
 
-        public static int GetTaskPosition(Guid id)
+        public Task GetNextTask() => _tasks.First();
+
+        public Task? GetTask(Guid id) => _tasks.FirstOrDefault(x => x.Id == id);
+
+        public int GetTaskPosition(Guid id)
         {
             var task = GetTask(id);
 

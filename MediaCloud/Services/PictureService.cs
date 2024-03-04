@@ -1,29 +1,16 @@
 ﻿using MediaCloud.WebApp.Services;
-using System.Drawing;
-using System.Drawing.Imaging;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.Formats.Jpeg;
 
 namespace MediaCloud.Services
 {
     public class PictureService
     {
-        private static IConfiguration Configuration;
-
-        public PictureService(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
-        public static void Init(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
-        public static byte[] LowerResolutionToPreview(byte[] pictureBytes)
+        public static byte[] LowerResolution(Image image, byte[] sourceBytes)
         {
             var maxSize = ConfigurationService.Preview.GetMaxHeight();
 
-            var stream = new MemoryStream(pictureBytes);
-            var image = new Bitmap(stream);
             var size = image.Size;
             var width = maxSize;
             var height = maxSize;
@@ -32,13 +19,33 @@ namespace MediaCloud.Services
 
             if (maxDiv > 1.0)
             {
-                var bitmap = new Bitmap(image, new(Convert.ToInt32(size.Width / maxDiv), Convert.ToInt32(size.Height / maxDiv)));
+                var targetSize = new Size(Convert.ToInt32(size.Width / maxDiv), Convert.ToInt32(size.Height / maxDiv));
+                image.Mutate(x => x.Resize(targetSize, KnownResamplers.Lanczos3, true)) ;
+
                 var ms = new MemoryStream();
-                bitmap.Save(ms, ImageFormat.Jpeg);
-                pictureBytes = ms.ToArray();
+
+                var encoder = image.Metadata.DecodedImageFormat;
+                if (encoder != null)
+                {
+                    image.Save(ms, encoder);
+                }
+                else
+                {
+                    image.Save(ms, new JpegEncoder());
+                }
+
+                return ms.ToArray();
             }
 
-            return pictureBytes;
+            return sourceBytes;
+        }
+
+        public static byte[] LowerResolution(byte[] pictureBytes)
+        {
+            var stream = new MemoryStream(pictureBytes);
+            var image = Image.Load(stream);
+
+            return LowerResolution(image, pictureBytes);
         }
 
         public static string FormatSize(long bytes, bool useUnit = true)

@@ -13,45 +13,47 @@ using System.Security.Claims;
 using MediaCloud.WebApp.Services;
 using MediaCloud.WebApp;
 using MediaCloud.Repositories;
-using MediaCloud.WebApp.Services.Repository;
+using MediaCloud.WebApp.Services.DataService;
+using NLog;
+using ILogger = NLog.ILogger;
 
 namespace MediaCloud.Pages.Actors
 {
     [Authorize]
     public class CreateModel : PageModel
     {
-        private IRepository Repository;
-        private ILogger Logger;
+        private readonly IDataService _dataService;
+        private readonly ILogger _logger;
 
         [BindProperty]
         public Actor Actor { get; set; } = new();
 
-        public CreateModel(IRepository repository, ILogger<CreateModel> logger)
+        public CreateModel(IDataService dataService)
         {
-            Repository = repository;
-            Logger = logger;
+            _dataService = dataService;
+            _logger = LogManager.GetLogger("Actors.Create");
         }
 
         public IActionResult OnGet()
         {
-            var currentActor = Repository.GetCurrentActor();
+            var currentActor = _dataService.GetCurrentActor();
 
             if (currentActor.IsAdmin == false)
             {
-                Logger.LogError($"Fail attempt to access to Actor/Create by: {currentActor.Id}");
+                _logger.Error("Fail attempt to access to Actor/Create by: {currentActor.Id}", currentActor.Id);
                 return Redirect("/Account/Login");
             }
 
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public IActionResult OnPost()
         {
-            var currentActor = Repository.GetCurrentActor();
+            var currentActor = _dataService.GetCurrentActor();
 
             if (currentActor.IsAdmin == false)
             {
-                Logger.LogError($"Fail attempt to access to Actor/Create by: {currentActor.Id}");
+                _logger.Error("Fail attempt to access to Actor/Create by: {currentActor.Id}", currentActor.Id);
                 return Redirect("/Account/Login");
             }
 
@@ -65,7 +67,7 @@ namespace MediaCloud.Pages.Actors
                 Actor.InviteCode = SecureHash.HashMD5(Actor.InviteCode);
             }
 
-            Repository.Actors.Create(Actor);
+            _dataService.Actors.Create(Actor);
 
             return RedirectToPage("/Actors/Index");
         }

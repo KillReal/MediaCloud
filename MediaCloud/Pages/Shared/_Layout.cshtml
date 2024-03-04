@@ -1,11 +1,11 @@
 ﻿@using System.Reflection
-@using MediaCloud.WebApp.Services
+@using MediaCloud.WebApp.Services.ActorProvider;
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, shrink-to-fit=yes" />
-    <title>@ViewData["Title"] - MediaCloud v@(Assembly.GetEntryAssembly().GetName().Version.ToString(3))</title>
+    <title>@ViewData["Title"] - MediaCloud v@(Assembly.GetEntryAssembly()?.GetName().Version?.ToString(3))</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
@@ -16,7 +16,8 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light box-shadow">
             <div class="container-fluid ps-5 pe-5">
-                <a class="ms-3 navbar-brand text-white" asp-area="" asp-page="/Index">MediaCloud v@(Assembly.GetEntryAssembly().GetName().Version.ToString(3))</a>
+                <img src="/favicon.ico" style="max-width: 2rem">
+                <a class="ms-3 navbar-brand text-white" asp-area="" asp-page="/Index">MediaCloud v@(Assembly.GetEntryAssembly()?.GetName().Version?.ToString(3))</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -34,10 +35,10 @@
                             <li class="nav-item">
                                 <a class="nav-link text-white" href="/Actors">Actors</a>
                             </li>
-                            <!--<li class="nav-item">
-                                <a class="nav-link text-white" href="/Statistic">Statistic</a>
-                            </li> --->
                         }
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/Statistic">Statistic</a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link text-white" href="/Changelog">Changelog</a>
                         </li>
@@ -54,7 +55,7 @@
                                     <a class="nav-link text-white" href="/Account">Hello, @actor.Name!</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="btn btn-danger" href="/Account/Logout" method="post" id="logoutForm" class="navbar-right">Logout</a>
+                                    <a class="btn btn-danger navbar-right" href="/Account/Logout" method="post" id="logoutForm">Logout</a>
                                 </li>
                             </ul>
                         }

@@ -25,28 +25,38 @@
         <input type="hidden" asp-for=@(Model.Collection.Id) class="form-control">
         <div class="row thumbnail-sortable" id="sortable-gallery" style="display: none"> 
         </div>
-
-        <div class="row gallery" id="gallery" style="display: flex"> 
-            
-        </div>
-
-        <div class="d-flex justify-content-center">
-            @if (Model.Collection.Previews.Count() >= Model.ListRequest.Count)
-            {
-                <div class="spinner-border text-light" role="status" id="loadingSpinner" style="display: block; width:3rem; height:3rem"></div>
-            }
+        
+        <div class="row">
+            <div class="col-sm pt-3" style="margin-right: -1rem">
+                <ul class="list-group">
+                    <li class="list-group-item">Id: @Model.Collection.Id</li>
+                    <li class="list-group-item">Medias Size: @Model.CollectionSizeInfo</li>
+                    <li class="list-group-item">Medias count: @Model.TotalCount</li>
+                    <li class="list-group-item">Tags count: @Model.Tags.Count</li>
+                    
+                </ul>
+            </div>
+            <div class="col-sm pt-3" style="margin-left: -1rem">
+                <ul class="list-group">
+                    <li class="list-group-item">Creator: @Model.Collection.Creator.Name</li>
+                    <li class="list-group-item">Updator: @Model.Collection.Updator.Name</li>
+                    <li class="list-group-item">Time of create: @Model.Collection.CreatedAt</li>
+                    <li class="list-group-item">Time of update: @Model.Collection.UpdatedAt</li>
+                </ul>
+            </div>
         </div>
 
         <div class="row">
-            <div class="form-group mb-3 col-sm h-100">
+            <div class="form-group mb-3 col-sm h-100 autocomplete-list autocomplete">
                 <label class="col-form-label">Enter tags with spaces between</label>
-                <textarea asp-for="@Model.TagsString" class="form-control"></textarea>
+                <textarea asp-for="@Model.TagsString" class="form-control" style="height: 100%" id="filterGrab"></textarea>
             </div>
             <div class="col-sm">
                 <label class="col-form-label" style="visibility: hidden">List of existed tags</label>
                 <ul class="list-group">
-                    <li class="list-group-item h-100">Related tags: 
-                        @foreach(var tag in Model.Tags)
+                    <li class="list-group-item h-100">
+                        Related tags:
+                        @foreach (var tag in Model.Tags)
                         {
                             if (tag.Type == TagType.Character)
                             {
@@ -65,22 +75,36 @@
                                 <a class="btn btn-info btn-rounded me-1 mb-2" asp-page="/Tags/Detail" asp-route-id=@tag.Id>@tag.Name</a>
                             }
                         }
-                    </li>         
+                    </li>
                 </ul>
             </div>
         </div>
 
         <div class="form-group mt-3 mb-3 d-flex justify-content-between">
             <input type="submit" value="Edit" class="btn btn-success" />
-            <a class="btn btn-info btn-rounded me-1 ms-2 mb-2" onclick="startReorder();" id="reorder-button">Reorder</a>
+            <a class="btn btn-info btn-rounded me-1 ms-2" onclick="startReorder();" id="reorder-button">Reorder</a>
+            <a class="btn btn-info btn-rounded me-1 ms-2 text-nowrap" asp-page="Index" asp-route-filter=@(Model.TagsString) asp-route-sort=@("UpdatedAtDesc")>Show similar</a>
             <button class="btn btn-danger btn-rounded" asp-page-handler="Delete" asp-route-id=@(Model.Collection.Id)>Remove</button>
         </div>
+
+        <div class="row gallery" id="gallery" style="display: flex"> 
+            
+        </div>
+
+        <div class="d-flex justify-content-center">
+            @if (Model.Collection.Previews.Count() >= Model.ListRequest.Count)
+            {
+                <div class="spinner-border text-light" role="status" id="loadingSpinner" style="display: block; width:3rem; height:3rem"></div>
+            }
+        </div>
+
     </form>
     
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script src="~/js/html5sortable.js"></script>
+<script src="~/js/tagAutocompletion.js"></script>
 
 <script type="text/javascript">
     sortable('.thumbnail-sortable', {
@@ -119,7 +143,6 @@
                 return;
             }
 
-            console.log("currentOffset=" + currentOffset + " nextOffset=" + nextOffset);
             currentOffset += @Model.ListRequest.Count;
             
 
@@ -176,7 +199,6 @@
     });
 
     window.scrollTo(0, 1);
-
 </script>
 
 @section Scripts {

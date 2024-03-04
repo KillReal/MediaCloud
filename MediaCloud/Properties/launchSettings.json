@@ -1,12 +1,4 @@
 {
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:5366",
-      "sslPort": 44306
-    }
-  },
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
@@ -23,7 +15,7 @@
     },
     "Developer": {
       "commandName": "Project",
-      "workingDirectory": "D:\\Проекты\\MediaCloud\\MediaCloud",
+      "workingDirectory": "D:\\Development\\MediaCloud\\MediaCloud",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
@@ -32,12 +24,20 @@
     },
     "Production": {
       "commandName": "Project",
-      "workingDirectory": "D:\\Проекты\\MediaCloud\\MediaCloud",
+      "workingDirectory": "D:\\Development\\MediaCloud\\MediaCloud",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Production"
       },
       "hotReloadEnabled": false,
       "applicationUrl": "http://localhost:5020"
+    }
+  },
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:5366",
+      "sslPort": 44306
     }
   }
 }

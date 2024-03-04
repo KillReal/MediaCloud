@@ -1,39 +1,34 @@
 ﻿using MediaCloud.Extensions;
 using MediaCloud.Services;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Drawing;
+using SixLabors.ImageSharp;
 
 namespace MediaCloud.Data.Models
 {
     public class Media : Entity
     {
-        public virtual Preview Preview { get; set; }
+        public virtual Preview Preview { get; set; } = null!;
 
-        public byte[] Content { get; set; }
+        public byte[] Content { get; set; } = Array.Empty<byte>();
 
-        public string Resolution { get; set; }
+        public string Resolution { get; set; } = "0x0";
 
         public int Rate { get; set; }
 
-        public int Size { get; set; }
+        public long Size { get; set; }
 
         [NotMapped]
         public string SizeInfo
         {
             get => PictureService.FormatSize(Size);
-            set => Size = int.Parse(value);
+            set => Size = long.Parse(value);
         }
 
-        public Media(byte[] file)
+        public Media(byte[] file, int width, int height)
         {
             Content = file;
-
-            var stream = new MemoryStream(Content);
-            var picture = new Bitmap(stream);
-
-            Resolution = $"{picture.Width}x{picture.Height}";
+            Resolution = $"{width}x{height}";
             Size = Content.Length;
-
             Rate = 0;
         }
 

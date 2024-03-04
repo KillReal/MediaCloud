@@ -1,11 +1,12 @@
 ﻿using DynamicExpression.Entities;
 using DynamicExpression.Extensions;
 using DynamicExpression.Interfaces;
-using MediaCloud.Builders.Components;
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
 using MediaCloud.Services;
+using MediaCloud.WebApp.Builders.List.Components;
 using MediaCloud.WebApp.Services;
+using Pagination = MediaCloud.WebApp.Builders.List.Components.Pagination;
 
 namespace MediaCloud.Builders.List
 {
@@ -19,7 +20,7 @@ namespace MediaCloud.Builders.List
 
         private Filtering Filtering { get; set; }
 
-        private Components.Pagination Pagination { get; set; }
+        private Pagination Pagination { get; set; }
 
         /// <summary>
         /// Column count for list. Default value is <see cref="ConfigurationService.Gallery.GetColumnCount"/>
@@ -81,7 +82,7 @@ namespace MediaCloud.Builders.List
 
             Filtering = new Filtering((request.Filter ?? "").ToLower());
 
-            Pagination = new Components.Pagination(request.Count == 0 
+            Pagination = new Pagination(request.Count == 0 
                 ? ConfigurationService.List.GetEntityMaxCount()
                 : request.Count, 
                 request.Offset,
@@ -91,15 +92,15 @@ namespace MediaCloud.Builders.List
         }
 
         /// <summary>
-        /// Build the entity list by <see cref="Repository{T}"/> querying from db.
+        /// Build the entity list by <see cref="BaseRepository{T}"/> querying from db.
         /// </summary>
-        /// <param name="repository">Repository instance of entities.</param>
+        /// <param name="DataService">DataService instance of entities.</param>
         /// <returns>List of selected entities.</returns>
-        public async Task<List<T>> BuildAsync(IListBuildable<T> repository)
+        public async Task<List<T>> BuildAsync(IListBuildable<T> DataService)
         {
-            Pagination.SetTotalCount(await repository.GetListCountAsync(this));
+            Pagination.SetTotalCount(await DataService.GetListCountAsync(this));
 
-            return repository.GetList(this);
+            return DataService.GetList(this);
         }
     }
 }

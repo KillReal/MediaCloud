@@ -14,32 +14,35 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services;
-using MediaCloud.WebApp.Services.Repository;
+using MediaCloud.WebApp.Services.DataService;
+using MediaCloud.WebApp.Services.Statistic;
 
 namespace MediaCloud.Pages.Medias
 {
     [Authorize]
     public class UploadModel : PageModel
     {
-        private Actor? Actor;
-        private IUploader Uploader;
+        private readonly Actor? _actor;
+        private readonly IUploader _uploader;
+        private readonly IStatisticService _statisticService;
 
         [BindProperty]
-        public List<IFormFile> Files { get; set; }
+        public List<IFormFile> Files { get; set; } = new();
         [BindProperty]
         public string? Tags { get; set; }
         [BindProperty]
         public bool IsCollection { get; set; }
         [BindProperty]
-        public string ReturnUrl { get; set; }
+        public string ReturnUrl { get; set; } = "/Medias";
 
-        public UploadModel(IRepository repository, IUploader uploader)
+        public UploadModel(IDataService dataService, IUploader uploader, IStatisticService statisticService)
         {
-            Actor = repository.GetCurrentActor();
-            Uploader = uploader;
+            _actor = dataService.GetCurrentActor();
+            _uploader = uploader;
+            _statisticService = statisticService;
         }
 
-        public IActionResult OnGet(string returnUrl = "/Medias/Index")
+        public IActionResult OnGet(string returnUrl = "/Medias")
         {
             ReturnUrl = returnUrl.Replace("$", "&");
 
@@ -48,13 +51,15 @@ namespace MediaCloud.Pages.Medias
 
         public IActionResult OnPost()
         {
-            if (Actor == null)
+            if (_actor == null)
             {
                 return Redirect("/Login");
             }
 
-            var task = new UploadTask(Actor, Files, IsCollection, Tags);
-            var taskId = Uploader.AddTask(task);
+            var task = new UploadTask(_actor, Files, IsCollection, Tags);
+            var taskId = _uploader.AddTask(task);
+
+            _statisticService.ActivityFactorRaised.Invoke();
 
             return Redirect($"/Uploader/GetTaskStatus?id={taskId}");
         }

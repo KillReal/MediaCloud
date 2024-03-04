@@ -2,7 +2,7 @@
 using MediaCloud.Data.Models;
 using MediaCloud.Extensions;
 using MediaCloud.Repositories;
-using MediaCloud.WebApp.Services.Repository;
+using MediaCloud.WebApp.Services.DataService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -16,12 +16,36 @@ namespace MediaCloud.MediaUploader.Tasks
 {
     internal class FileNameComparer : IComparer<string>
     {
-        [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
-        public static extern int StrCmpLogicalW(string psz1, string psz2);
 
-        public int Compare(string a, string b)
+        public int Compare(string? x, string? y)
         {
-            return StrCmpLogicalW(a, b);
+            if (x == null && y == null) return 0;
+            if (x == null) return -1;
+            if (y == null) return 1;
+
+            int lx = x.Length, ly = y.Length;
+
+            for (int mx = 0, my = 0; mx < lx && my < ly; mx++, my++)
+            {
+                if (char.IsDigit(x[mx]) && char.IsDigit(y[my]))
+                {
+                    long vx = 0, vy = 0;
+
+                    for (; mx < lx && char.IsDigit(x[mx]); mx++)
+                        vx = vx * 10 + x[mx] - '0';
+
+                    for (; my < ly && char.IsDigit(y[my]); my++)
+                        vy = vy * 10 + y[my] - '0';
+
+                    if (vx != vy)
+                        return vx > vy ? 1 : -1;
+                }
+
+                if (mx < lx && my < ly && x[mx] != y[my])
+                    return x[mx] > y[my] ? 1 : -1;
+            }
+
+            return lx - ly;
         }
     }
 
@@ -47,26 +71,18 @@ namespace MediaCloud.MediaUploader.Tasks
             TagString = tagString ?? "";
         }
 
-        public override void DoTheTask()
+        public override void DoTheTask(IDataService dataService)
         {
-            var repository = Scheduler.GetRepository();
-            repository.SetCurrentActor(Actor);
-
-            var foundTags = repository.Tags.GetRangeByString(TagString);
-            var medias = new List<Media>();
+            var foundTags = dataService.Tags.GetRangeByString(TagString);
 
             if (IsCollection)
             {
-                medias = repository.Medias.CreateCollection(Content);
-                medias.First(x => x.Preview.Order == 0).Preview.Tags = foundTags;
+                dataService.Medias.CreateCollection(Content, foundTags);
             }
             else
             {
-                medias = repository.Medias.CreateRange(Content);
-                medias.ForEach(x => x.Preview.Tags = foundTags);
+                dataService.Medias.CreateRange(Content, foundTags);
             }
-
-            repository.Medias.Update(medias);
         }
     }
 }

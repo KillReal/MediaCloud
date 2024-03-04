@@ -25,6 +25,7 @@ _UpgradeReport_Files/
 bin/
 obj/
 TestResults/
+.vs/
 ###################
 # Web publish log #
 ###################
@@ -76,3 +77,4 @@ _[Ss]cripts
 *.ncrunchsolution
 *.dot[Cc]over
 *.db*
+*.vsidx

@@ -27,7 +27,7 @@
         }
         
         <div class="w-100 shadow-1-strong mb-4" style="max-height: 85vmin;">
-            <img class="w-100 h-100 shadow-1-strong mb-2 me-3 rounded" style="object-fit: contain; max-height: 85vmin;"
+            <img class="w-100 h-100 shadow-1-strong mb-2 me-3 rounded" style="object-fit: contain; max-height: 80vmin;"
                  src="data:image/png;base64,@Convert.ToBase64String(Model.Media.Content)" />
         </div>
 
@@ -48,13 +48,14 @@
             <input type="hidden" asp-for=@(Model.Media.Id) class="form-control">
             <input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control">
             <div class="row">
-                <div class="form-group mb-3 col">
+                <div class="form-group autocomplete-list autocomplete mb-3 col">
                     <label class="col-form-label">Enter tags with spaces between</label>
-                    <textarea asp-for="@Model.TagsString" class="form-control"></textarea>
+                    <textarea asp-for="@Model.TagsString" class="form-control" id="filterGrab"></textarea>
                 </div>
             </div>
             <div class="form-group mb-3 d-flex justify-content-between">
                 <input type="submit" value="Edit" class="btn btn-success" />
+                <a class="btn btn-info btn-rounded text-nowrap" asp-page="Index" asp-route-filter=@(Model.TagsString) asp-route-sort=@("UpdatedAtDesc")>Show similar</a>
                 <button class="btn btn-danger btn-rounded" asp-page-handler="Delete" asp-route-id=@(Model.PreviewId)>Remove</button>
             </div>
         </form>
@@ -100,6 +101,8 @@
     </div>
 
 </div>
+
+<script src="~/js/tagAutocompletion.js"></script>
 
 <script>
     document.addEventListener('keydown', (event) => {
