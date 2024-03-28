@@ -13,13 +13,13 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using MediaCloud.WebApp.Services.DataService;
 using MediaCloud.WebApp.Services.Statistic;
+using MediaCloud.WebApp.Pages;
 
 namespace MediaCloud.Pages.Medias
 {
     [Authorize]
-    public class DetailModel : PageModel
+    public class MediaDetailModel : BasePageModel
     {
-        private readonly IDataService _dataService;
         private readonly IStatisticService _statisticService;
 
         [BindProperty]
@@ -37,9 +37,8 @@ namespace MediaCloud.Pages.Medias
         [BindProperty]
         public Guid? NextPreviewId { get; set; } = null;
 
-        public DetailModel(IDataService dataService, IStatisticService statisticService)
+        public MediaDetailModel(IDataService dataService, IStatisticService statisticService) : base(dataService)
         {
-            _dataService = dataService;
             _statisticService = statisticService;
             Media = new();
         }

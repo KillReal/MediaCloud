@@ -70,7 +70,7 @@ namespace MediaCloud.MediaUploader
                 return;
             }
 
-            _scheduler.OnTaskStarted.Invoke(Task.Id);
+            _scheduler.OnTaskStarted.Invoke(Task);
 
             try
             {
@@ -78,10 +78,10 @@ namespace MediaCloud.MediaUploader
             }
             catch (Exception ex)
             {
-                _scheduler.OnTaskErrorOccured.Invoke(Task.Id, ex);
+                _scheduler.OnTaskErrorOccured.Invoke(Task, ex);
             }
 
-            _scheduler.OnTaskCompleted.Invoke(Task.Id);
+            _scheduler.OnTaskCompleted.Invoke(Task);
             Task = null;
             IsReady = true;
 

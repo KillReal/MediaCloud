@@ -17,24 +17,21 @@ using MediaCloud.WebApp.Services.DataService;
 using Microsoft.Extensions.Logging;
 using NLog;
 using ILogger = NLog.ILogger;
+using MediaCloud.WebApp.Pages;
 
 namespace MediaCloud.Pages.Actors
 {
     [Authorize]
-    public class DetailModel : PageModel
+    public class ActorDetailModel : BasePageModel
     {
-        private readonly IDataService _dataService;
-        private readonly ILogger _logger;
-
         [BindProperty]
         public Actor Actor { get; set; }
 
         [BindProperty]
         public string ReturnUrl { get; set; } = "/Actors";
 
-        public DetailModel(IDataService dataService)
+        public ActorDetailModel(IDataService dataService) : base(dataService)
         {
-            _dataService = dataService;
             _logger = LogManager.GetLogger("Actor.Detail");
 
             Actor = _dataService.GetCurrentActor();

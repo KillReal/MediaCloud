@@ -5,23 +5,14 @@ using MediaCloud.MediaUploader;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using MediaCloud.WebApp;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using MediaCloud.WebApp.Services;
 using MediaCloud.WebApp.Services.DataService;
-using System.Reflection;
-using Microsoft.AspNetCore.ResponseCompression;
-using System.IO.Compression;
 using MediaCloud.WebApp.Services.Statistic;
 using MediaCloud.WebApp.Services.ActorProvider;
 using NLog.Web;
 using NLog;
-using Microsoft.AspNetCore.Mvc.TagHelpers;
 
 var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 logger.Debug("Early NLog initialization");
@@ -37,7 +28,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddAuthorization();
 
 builder.Logging.ClearProviders();
-//builder.Logging.AddNLogWeb();
+builder.Logging.AddNLogWeb();
 builder.Host.UseNLog();
 
 // Add services to the container.
@@ -48,9 +39,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-builder.Services.AddLogging();
-builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
-builder.Services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
 builder.Services.AddSingleton<IActorProvider, ActorProvider>();
 builder.Services.AddSingleton<IUploader, Uploader>();
 builder.Services.AddSingleton<IStatisticService, StatisticService>();
@@ -102,5 +90,4 @@ app.MapGet("/Account/Logout", async (HttpContext context) =>
 });
 
 app.MapRazorPages();
-
 app.Run();

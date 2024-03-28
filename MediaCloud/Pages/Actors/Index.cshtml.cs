@@ -14,18 +14,17 @@ using System.Security.Claims;
 using MediaCloud.WebApp.Services;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services.DataService;
+using MediaCloud.WebApp.Pages;
 
 namespace MediaCloud.Pages.Actors
 {
     [Authorize]
-    public class ListModel : PageModel
+    public class ActorListModel : BasePageModel
     {
         private readonly Actor _actor;
-        private readonly IDataService _dataService;
 
-        public ListModel(IDataService dataService)
+        public ActorListModel(IDataService dataService) : base(dataService)
         {
-            _dataService = dataService;
             _actor = _dataService.GetCurrentActor();
             ListBuilder = new(new());
         }

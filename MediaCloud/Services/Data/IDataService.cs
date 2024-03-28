@@ -6,22 +6,18 @@ namespace MediaCloud.WebApp.Services.DataService
 {
     public interface IDataService
     {
-        public ActorRepository Actors { get; init; }
+        public ActorRepository Actors { get;  }
 
-        public CollectionRepository Collections { get; init; }
+        public CollectionRepository Collections { get; }
 
-        public MediaRepository Medias { get; init; }
+        public MediaRepository Medias { get; }
 
-        public PreviewRepository Previews { get; init; }
+        public PreviewRepository Previews { get; }
 
-        public TagRepository Tags { get; init; }
-        public StatisticSnapshotRepository StatisticSnapshots { get; init; }
-
-        public void SaveChanges();
+        public TagRepository Tags { get; }
+        public StatisticSnapshotRepository StatisticSnapshots { get; }
 
         public Actor GetCurrentActor();
-
-        public void SetCurrentActor(Actor actor);
 
         public long GetDbSize();
     }

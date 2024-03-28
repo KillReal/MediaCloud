@@ -13,10 +13,8 @@ using ILogger = NLog.ILogger;
 
 namespace MediaCloud.WebApp.Pages
 {
-    public class LoginModel : PageModel
+    public class LoginModel : BasePageModel
     {
-        private readonly IDataService _dataService;
-        private readonly ILogger _logger;
         private readonly IStatisticService _statisticService;
 
         [BindProperty]
@@ -27,9 +25,8 @@ namespace MediaCloud.WebApp.Pages
         [BindProperty]
         public string ReturnUrl { get; set; } = "/";
 
-        public LoginModel(IDataService dataService, IStatisticService statisticService)
+        public LoginModel(IDataService dataService, IStatisticService statisticService): base(dataService)
         {
-            _dataService = dataService;
             _logger = LogManager.GetLogger("Actor.Login");
             _statisticService = statisticService;
         }

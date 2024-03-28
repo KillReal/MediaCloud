@@ -12,23 +12,21 @@ using MediaCloud.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using MediaCloud.WebApp.Services.DataService;
+using MediaCloud.WebApp.Pages;
 
 namespace MediaCloud.Pages.Tags
 {
     [Authorize]
-    public class DetailModel : PageModel
+    public class TagDetailModel : BasePageModel
     {
-        private readonly IDataService _dataService;
-
         [BindProperty]
         public Tag Tag { get; set; }
 
         [BindProperty]
         public string ReturnUrl { get; set; } = "/Tags";
 
-        public DetailModel(IDataService dataService)
+        public TagDetailModel(IDataService dataService) : base(dataService)
         {
-            _dataService = dataService;
             Tag = new();
         }
 

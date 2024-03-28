@@ -15,14 +15,13 @@ using MediaCloud.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using MediaCloud.WebApp.Services.DataService;
+using MediaCloud.WebApp.Pages;
 
 namespace MediaCloud.Pages.Medias
 {
     [Authorize]
-    public class CollectionModel : PageModel
+    public class CollectionModel : BasePageModel
     {
-        private readonly IDataService _dataService;
-
         [BindProperty]
         public Collection Collection { get; set; }
         [BindProperty]
@@ -42,9 +41,8 @@ namespace MediaCloud.Pages.Medias
         [BindProperty]
         public string? CollectionSizeInfo { get; set; }
 
-        public CollectionModel(IDataService dataService)
+        public CollectionModel(IDataService dataService) : base(dataService)
         {
-            _dataService = dataService;
             Collection = new();
         }
 
@@ -108,8 +106,6 @@ namespace MediaCloud.Pages.Medias
             {
                 return Redirect("/Error");
             }
-
-            _dataService.SaveChanges();
 
             return Redirect(ReturnUrl.Replace("$", "&"));
         }

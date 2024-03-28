@@ -14,7 +14,7 @@ namespace MediaCloud.Repositories
         protected ILogger _logger;
         protected Guid _actorId;
 
-        public BaseRepository(RepositoriesContext repositoriesContext)
+        public BaseRepository(RepositoryContext repositoriesContext)
         {
             _statisticService = repositoriesContext.StatisticService;
             _context = repositoriesContext.DbContext;

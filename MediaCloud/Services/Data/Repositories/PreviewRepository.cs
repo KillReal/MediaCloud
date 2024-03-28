@@ -3,6 +3,7 @@ using MediaCloud.Builders.List;
 using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.Extensions;
+using MediaCloud.WebApp.Services.Data.Repositories.Interfaces;
 using MediaCloud.WebApp.Services.DataService.Entities.Base;
 using Microsoft.EntityFrameworkCore;
 
@@ -48,7 +49,7 @@ namespace MediaCloud.Repositories
             return query;
         }
 
-        public PreviewRepository(RepositoriesContext context) : base(context)
+        public PreviewRepository(RepositoryContext context) : base(context)
         {
             _tagDataService = new(context);
         }

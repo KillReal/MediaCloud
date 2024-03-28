@@ -5,7 +5,7 @@ namespace MediaCloud.Repositories
 {
     public class StatisticSnapshotRepository : BaseRepository<StatisticSnapshot>
     {
-        public StatisticSnapshotRepository(RepositoriesContext context) : base(context)
+        public StatisticSnapshotRepository(RepositoryContext context) : base(context)
         {
         }
 

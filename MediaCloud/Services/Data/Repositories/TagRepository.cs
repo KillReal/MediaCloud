@@ -4,6 +4,7 @@ using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.Data.Types;
 using MediaCloud.WebApp.Repositories.Base;
+using MediaCloud.WebApp.Services.Data.Repositories.Interfaces;
 using MediaCloud.WebApp.Services.DataService.Entities.Base;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,7 +24,7 @@ namespace MediaCloud.Repositories
             return string.Join(' ', tags.Distinct());
         }
 
-        public TagRepository(RepositoriesContext context) : base(context)
+        public TagRepository(RepositoryContext context) : base(context)
         {
         }
 
@@ -44,7 +45,7 @@ namespace MediaCloud.Repositories
         {
             try
             {
-                tag.Creator = new ActorRepository(_context).Get(_actorId);
+                tag.Creator = _context.Actors.First(x => x.Id == _actorId);
                 tag.Updator = tag.Creator;
 
                 _context.Tags.Add(tag);

@@ -7,6 +7,7 @@ using MediaCloud.WebApp.Services.DataService.Entities.Base;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using SixLabors.ImageSharp;
 using System.Data;
 using System.IO;
 
@@ -14,13 +15,13 @@ namespace MediaCloud.Repositories
 {
     public class MediaRepository : BaseRepository<Media>
     {
-        private Media GetMediaFromFile(byte[] file)
+        private Media CreateMediaFromFile(byte[] file)
         {
             var stream = new MemoryStream(file);
             var convertedImage = Image.Load(stream);
             var media = new Media(file, convertedImage.Width, convertedImage.Height);
             media.Preview = new Preview(media, convertedImage);
-            media.Creator = new ActorRepository(_context).Get(_actorId);
+            media.Creator = _context.Actors.First(x => x.Id == _actorId);
             media.Updator = media.Creator;
             media.Preview.Creator = media.Creator;
             media.Preview.Updator = media.Creator;
@@ -28,7 +29,7 @@ namespace MediaCloud.Repositories
             return media;
         }
 
-        public MediaRepository(RepositoriesContext context) : base(context)
+        public MediaRepository(RepositoryContext context) : base(context)
         {
         }
 
@@ -49,7 +50,7 @@ namespace MediaCloud.Repositories
 
         public Media Create(byte[] file, List<Tag> tags)
         {
-            var media = GetMediaFromFile(file);
+            var media = CreateMediaFromFile(file);
             media.Preview.Tags = tags;
             _context.Add(media);
             SaveChanges();
@@ -89,7 +90,7 @@ namespace MediaCloud.Repositories
             while (files.Count > 0)
             {
                 var file = files.Last();
-                medias.Add(GetMediaFromFile(file));
+                medias.Add(CreateMediaFromFile(file));
                 files.Remove(file);
             }
 
@@ -114,7 +115,7 @@ namespace MediaCloud.Repositories
 
             var collection = new Collection(previews)
             {
-                Creator = new ActorRepository(_context).Get(_actorId)
+                Creator = _context.Actors.First(x => x.Id == _actorId)
             };
             collection.Updator = collection.Creator;
 

@@ -1,6 +1,7 @@
 ﻿using MediaCloud.Data.Types;
 using MediaCloud.Services;
 using MediaCloud.WebApp.Data.Models.Interfaces;
+using SixLabors.ImageSharp;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MediaCloud.Data.Models

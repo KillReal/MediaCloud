@@ -1,9 +1,11 @@
 ﻿using MediaCloud.Data;
+using MediaCloud.MediaUploader.Tasks;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services;
 using MediaCloud.WebApp.Services.DataService;
 using NLog;
 using ILogger = NLog.ILogger;
+using Task = MediaCloud.MediaUploader.Tasks.Task;
 
 namespace MediaCloud.MediaUploader
 {
@@ -25,39 +27,39 @@ namespace MediaCloud.MediaUploader
         /// <summary>
         /// Logging task start event.
         /// </summary>
-        public Action<Guid> OnTaskStarted { get; set; }
+        public Action<Task> OnTaskStarted { get; set; }
         /// <summary>
         /// Logging task completion event. Notify <see cref="Queue"/> about task completion and if <see cref="Queue"/> is not empty, tries to run free <see cref="Worker"/>.
         /// </summary>
-        public Action<Guid> OnTaskCompleted { get; set; }
+        public Action<Task> OnTaskCompleted { get; set; }
         /// <summary>
         /// Task error occured event.
         /// </summary>
-        public Action<Guid, Exception> OnTaskErrorOccured { get; set; }
+        public Action<Task, Exception> OnTaskErrorOccured { get; set; }
 
         public int WorkersActive => _workers.Count(x => x.IsReady == false);
 
-        private void WorkerStartTask(Guid id)
+        private void WorkerStartTask(Task task)
         {
-            _logger.Info("Worker ({WorkersActive}/{MaxWorkersCount}) processing the task: {id}",
-                WorkersActive, MaxWorkersCount, id);
+            _logger.Info("Worker ({WorkersActive}/{MaxWorkersCount}) processing the task: {task.Id} author: {task.Actor.Name}",
+                WorkersActive, MaxWorkersCount, task.Id, task.Actor.Name);
         }
 
-        private void WorkerCompleteTask(Guid id)
+        private void WorkerCompleteTask(Task task)
         {
-            _logger.Info("Worker ({WorkersActive - 1}/{MaxWorkersCount}) completed the task: {id}",
-                WorkersActive - 1, MaxWorkersCount, id);
+            _logger.Info("Worker ({WorkersActive - 1}/{MaxWorkersCount}) completed the task: {id} author: {task.Actor.Name}",
+                WorkersActive - 1, MaxWorkersCount, task.Id, task.Actor.Name);
 
-            _queue.OnTaskComplete.Invoke(id);
+            _queue.OnTaskComplete.Invoke(task);
             if (_queue.IsEmpty == false)
             {
                 Run();
             }
         }
 
-        private void WorkerFacedErrorWithTask(Guid id, Exception ex)
+        private void WorkerFacedErrorWithTask(Task task, Exception ex)
         {
-            _logger.Error("Worker faced error during processing of task: {id} exception: {ex}", id, ex);
+            _logger.Error("Worker faced error during processing of task: {id} author: {task.Actor.Name} exception: {ex}", task.Id, task.Actor.Name, ex);
         }
 
         /// <summary>

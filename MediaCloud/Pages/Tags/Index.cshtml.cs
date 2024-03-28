@@ -13,17 +13,15 @@ using MediaCloud.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using MediaCloud.WebApp.Services.DataService;
+using MediaCloud.WebApp.Pages;
 
 namespace MediaCloud.Pages.Tags
 {
     [Authorize]
-    public class ListModel : PageModel
+    public class TagListModel : BasePageModel
     {
-        private readonly IDataService _dataService;
-
-        public ListModel(IDataService dataService)
+        public TagListModel(IDataService dataService) : base(dataService)
         {
-            _dataService = dataService;
             ListBuilder = new(new());
         }
 

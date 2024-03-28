@@ -13,48 +13,41 @@ namespace MediaCloud.WebApp.Services.DataService
     {
         private readonly IServiceScope _serviceScope;
 
-        private readonly RepositoriesContext _repositoriesContext;
+        private readonly RepositoryContext _repositoryContext;
 
         public DataService(IServiceScopeFactory scopeFactory, IActorProvider actorProvider, IStatisticService statisticService)
         {
             _serviceScope = scopeFactory.CreateScope();
+
+            var logger = LogManager.GetLogger("DataService");
             var dbContext = _serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
-            _repositoriesContext = new RepositoriesContext(dbContext, statisticService, LogManager.GetLogger("DataService"), actorProvider.GetCurrent(dbContext));
+            var currentActor = actorProvider.GetCurrent(dbContext);
+            _repositoryContext = new RepositoryContext(dbContext, statisticService, logger, currentActor);
 
-            Actors = new(_repositoriesContext.DbContext);
-            Collections = new(_repositoriesContext);
-            Medias = new(_repositoriesContext);
-            Previews = new(_repositoriesContext);
-            Tags = new(_repositoriesContext);
-            StatisticSnapshots = new(_repositoriesContext);
+            Actors = new(_repositoryContext.DbContext);
+            Collections = new(_repositoryContext);
+            Medias = new(_repositoryContext);
+            Previews = new(_repositoryContext);
+            Tags = new(_repositoryContext);
+            StatisticSnapshots = new(_repositoryContext);
+
+            logger.Debug("Initialized DataService instance by {currentActor.Name}", currentActor?.Name);
         }
 
-        public ActorRepository Actors { get; init; }
+        public ActorRepository Actors { get; } 
+        public CollectionRepository Collections { get; }
+        public MediaRepository Medias { get; }
+        public PreviewRepository Previews { get; }
+        public TagRepository Tags { get; }
+        public StatisticSnapshotRepository StatisticSnapshots { get; }  
 
-        public CollectionRepository Collections { get; init; }
-
-        public MediaRepository Medias { get; init; }
-
-        public PreviewRepository Previews { get; init; }
-
-        public TagRepository Tags { get; init; }
-
-        public StatisticSnapshotRepository StatisticSnapshots { get; init; }
-
-        public void SaveChanges() => _repositoriesContext.DbContext.SaveChanges();
-
-        public Actor GetCurrentActor() => _repositoriesContext.Actor ?? new();
-
-        public void SetCurrentActor(Actor actor)
-        {
-            _repositoriesContext.Actor = actor;
-        }
+        public Actor GetCurrentActor() => _repositoryContext.Actor ?? new();
 
         public long GetDbSize()
         {
-            using var command = _repositoriesContext.DbContext.Database.GetDbConnection().CreateCommand();
-            command.CommandText = $"SELECT pg_database_size('{_repositoriesContext.DbContext.Database.GetDbConnection().Database}');";
-            _repositoriesContext.DbContext.Database.OpenConnection();
+            using var command = _repositoryContext.DbContext.Database.GetDbConnection().CreateCommand();
+            command.CommandText = $"SELECT pg_database_size('{_repositoryContext.DbContext.Database.GetDbConnection().Database}');";
+            _repositoryContext.DbContext.Database.OpenConnection();
 
             using var reader = command.ExecuteReader();
             reader.Read();

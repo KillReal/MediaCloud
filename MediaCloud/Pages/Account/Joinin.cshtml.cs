@@ -8,15 +8,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using NLog;
 using System.Security.Claims;
-using ILogger = NLog.ILogger;
 
 namespace MediaCloud.WebApp.Pages
 {
-    public class JoininModel : PageModel
+    public class JoininModel : BasePageModel
     {
-        private readonly IDataService _dataService;
-        private readonly ILogger _logger;
-
         [BindProperty]
         public string FailStatus { get; set; } = "";
         [BindProperty]
@@ -27,9 +23,8 @@ namespace MediaCloud.WebApp.Pages
         [BindProperty]
         public string ReturnUrl { get; set; } = "";
 
-        public JoininModel(IDataService dataService)
+        public JoininModel(IDataService dataService) : base(dataService)
         {
-            _dataService = dataService;
             _logger = LogManager.GetLogger("Actor.Joinin");
         }
 

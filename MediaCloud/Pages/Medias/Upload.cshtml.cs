@@ -16,11 +16,12 @@ using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services;
 using MediaCloud.WebApp.Services.DataService;
 using MediaCloud.WebApp.Services.Statistic;
+using MediaCloud.WebApp.Pages;
 
 namespace MediaCloud.Pages.Medias
 {
     [Authorize]
-    public class UploadModel : PageModel
+    public class MediaUploadModel : BasePageModel
     {
         private readonly Actor? _actor;
         private readonly IUploader _uploader;
@@ -35,7 +36,7 @@ namespace MediaCloud.Pages.Medias
         [BindProperty]
         public string ReturnUrl { get; set; } = "/Medias";
 
-        public UploadModel(IDataService dataService, IUploader uploader, IStatisticService statisticService)
+        public MediaUploadModel(IDataService dataService, IUploader uploader, IStatisticService statisticService) : base(dataService)
         {
             _actor = dataService.GetCurrentActor();
             _uploader = uploader;

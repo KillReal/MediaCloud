@@ -11,7 +11,7 @@ namespace MediaCloud.Repositories
 {
     public class CollectionRepository : BaseRepository<Collection>
     {
-        public CollectionRepository(RepositoriesContext context) : base(context)
+        public CollectionRepository(RepositoryContext context) : base(context)
         {
         }
 

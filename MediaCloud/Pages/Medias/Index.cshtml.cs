@@ -13,14 +13,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Security.Claims;
 using MediaCloud.WebApp.Services.DataService;
+using MediaCloud.WebApp.Pages;
 
 namespace MediaCloud.Pages.Medias
 {
     [Authorize]
-    public class ListModel : PageModel
+    public class MediaListModel : BasePageModel
     {
-        private readonly IDataService _dataService;
-
         [BindProperty]
         public List<Preview> Previews { get; set; } = new();
 
@@ -33,10 +32,8 @@ namespace MediaCloud.Pages.Medias
         [BindProperty]
         public bool IsAutoloadEnabled { get; set; } = true;
 
-        public ListModel(IDataService dataService)
+        public MediaListModel(IDataService dataService) : base(dataService)
         {
-            _dataService = dataService;
-
             var topTagNames = _dataService.Tags.GetTopUsed(2).Select(x => x.Name.ToLower());
             if (topTagNames.Count() > 1)
             {

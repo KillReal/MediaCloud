@@ -16,21 +16,18 @@ using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services.DataService;
 using NLog;
 using ILogger = NLog.ILogger;
+using MediaCloud.WebApp.Pages;
 
 namespace MediaCloud.Pages.Actors
 {
     [Authorize]
-    public class CreateModel : PageModel
+    public class ActorCreateModel : BasePageModel
     {
-        private readonly IDataService _dataService;
-        private readonly ILogger _logger;
-
         [BindProperty]
         public Actor Actor { get; set; } = new();
 
-        public CreateModel(IDataService dataService)
+        public ActorCreateModel(IDataService dataService) : base(dataService)
         {
-            _dataService = dataService;
             _logger = LogManager.GetLogger("Actors.Create");
         }
 

@@ -1,7 +1,7 @@
 ﻿using MediaCloud.Builders.List;
 using MediaCloud.Data.Models;
 
-namespace MediaCloud.Repositories
+namespace MediaCloud.WebApp.Services.Data.Repositories.Interfaces
 {
     public interface IListBuildable<T> where T : Record
     {
