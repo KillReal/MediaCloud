@@ -4,10 +4,12 @@ using MediaCloud.MediaUploader;
 using MediaCloud.Pages.Actors;
 using MediaCloud.Services;
 using MediaCloud.WebApp.Services.Statistic;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MediaCloud.WebApp.Controllers
 {
+    [Authorize]
     public class StatisticController : Controller
     {
         private readonly IStatisticService _statisticService;

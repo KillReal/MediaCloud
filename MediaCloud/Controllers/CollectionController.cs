@@ -2,10 +2,12 @@
 using MediaCloud.Data.Models;
 using MediaCloud.WebApp.Services.DataService;
 using MediaCloud.WebApp.Services.Statistic;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MediaCloud.WebApp.Controllers
 {
+    [Authorize]
     public class CollectionController : Controller
     {
         private readonly IDataService _dataService;

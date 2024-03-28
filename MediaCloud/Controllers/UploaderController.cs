@@ -1,8 +1,10 @@
 ﻿using MediaCloud.MediaUploader;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MediaCloud.WebApp.Controllers
 {
+    [Authorize]
     public class UploaderController : Controller
     {
         private IUploader Uploader;
