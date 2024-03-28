@@ -95,13 +95,13 @@ namespace MediaCloud.Builders.List
         /// <summary>
         /// Build the entity list by <see cref="BaseRepository{T}"/> querying from db.
         /// </summary>
-        /// <param name="DataService">DataService instance of entities.</param>
+        /// <param name="repository">DataService instance of entities.</param>
         /// <returns>List of selected entities.</returns>
-        public async Task<List<T>> BuildAsync(IListBuildable<T> DataService)
+        public async Task<List<T>> BuildAsync(IListBuildable<T> repository)
         {
-            Pagination.SetTotalCount(await DataService.GetListCountAsync(this));
+            Pagination.SetTotalCount(await repository.GetListCountAsync(this));
 
-            return DataService.GetList(this);
+            return repository.GetList(this);
         }
     }
 }

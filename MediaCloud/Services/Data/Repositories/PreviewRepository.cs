@@ -3,6 +3,7 @@ using MediaCloud.Builders.List;
 using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.Extensions;
+using MediaCloud.WebApp.Repositories.Base;
 using MediaCloud.WebApp.Services.Data.Repositories.Interfaces;
 using MediaCloud.WebApp.Services.DataService.Entities.Base;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +12,55 @@ namespace MediaCloud.Repositories
 {
     public class PreviewRepository : BaseRepository<Preview>, IListBuildable<Preview>
     {
-        private readonly TagRepository _tagDataService;
+        private static string DeduplicateTagString(string tagString)
+        {
+            var tags = tagString.Split(' ');
+
+            if (tags.Length < 2)
+            {
+                return tagString;
+            }
+
+            return string.Join(' ', tags.Distinct());
+        }
+
+        public void RecalculateCounts(List<Tag> tags)
+        {
+            tags.ForEach(x =>
+            {
+                var tag = _context.Tags.Find(x.Id) ?? new();
+                x.PreviewsCount = tag.Previews.Count;
+            });
+            _context.Tags.UpdateRange(tags);
+
+            _logger.Info("Recalculated <{tags.Count}> tags usage count by: {_actorId}", tags.Count, _actorId);
+        }
+
+        private TagFilter<Preview> GetTagFilter(string tagsString)
+        {
+            tagsString = DeduplicateTagString(tagsString);
+            var tags = tagsString.ToLower().Split(' ');
+
+            var positiveTags = new List<string>();
+            var negativeTags = new List<string>();
+            foreach (var tag in tags)
+            {
+                if (tag.Contains('!'))
+                {
+                    negativeTags.Add(tag.Remove(0, 1));
+                    continue;
+                }
+
+                positiveTags.Add(tag);
+            }
+
+            var positiveTagIds = _context.Tags.Where(x => positiveTags.Any(y => y == x.Name.ToLower()))
+                                              .Select(x => x.Id);
+            var negativeTagIds = _context.Tags.Where(x => negativeTags.Any(y => y == x.Name.ToLower()))
+                                              .Select(x => x.Id);
+
+            return new(positiveTagIds.ToList(), negativeTagIds.ToList());
+        }
 
         private IQueryable<Preview> SetFilterToQuery(IQueryable<Preview> query, string filter)
         {
@@ -43,7 +92,7 @@ namespace MediaCloud.Repositories
                     query = query.Where(x => x.Tags.Any(x => x.Type == Data.Types.TagType.Series));
                 }
 
-                return _tagDataService.GetTagFilter(filter).GetQuery(query);
+                return GetTagFilter(filter).GetQuery(query);
             }
 
             return query;
@@ -51,7 +100,18 @@ namespace MediaCloud.Repositories
 
         public PreviewRepository(RepositoryContext context) : base(context)
         {
-            _tagDataService = new(context);
+        }
+
+        public override Preview? Get(Guid id)
+        {
+            var preview = base.Get(id);
+
+            if (preview?.Order == 0)
+            {
+                _statisticService.ActivityFactorRaised.Invoke();
+            }
+
+            return preview;
         }
 
         public void SetPreviewTags(Preview preview, List<Tag>? tags)
@@ -72,7 +132,7 @@ namespace MediaCloud.Repositories
             _context.Previews.Update(preview);
             SaveChanges();
 
-            _tagDataService.RecalculateCounts(affectedTags.Distinct().ToList());
+            RecalculateCounts(affectedTags.Distinct().ToList());
         }
 
         public async Task<int> GetListCountAsync(ListBuilder<Preview> listBuilder)
@@ -87,6 +147,8 @@ namespace MediaCloud.Repositories
         {
             var query = _context.Previews.AsNoTracking().Where(x => x.Order == 0);
             query = SetFilterToQuery(query, listBuilder.Filter);
+
+            _statisticService.ActivityFactorRaised.Invoke();
 
             if (listBuilder.Sort.Contains("Random") &&
                 int.TryParse(listBuilder.Sort.Split('_').Last(), out int seed))

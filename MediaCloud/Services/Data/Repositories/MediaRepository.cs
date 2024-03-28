@@ -63,6 +63,8 @@ namespace MediaCloud.Repositories
 
         public List<Media> CreateRange(List<byte[]> files, List<Tag> tags)
         {
+            _statisticService.ActivityFactorRaised.Invoke();
+
             if (files.Count == 1)
             {
                 return new() { Create(files[0], tags) };
@@ -99,6 +101,8 @@ namespace MediaCloud.Repositories
 
         public List<Media> CreateCollection(List<byte[]> files, List<Tag> tags)
         {
+            _statisticService.ActivityFactorRaised.Invoke();
+
             if (files.Count == 1)
             {
                 return new() { Create(files[0], tags) };

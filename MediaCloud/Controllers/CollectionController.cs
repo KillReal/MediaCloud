@@ -11,12 +11,10 @@ namespace MediaCloud.WebApp.Controllers
     public class CollectionController : Controller
     {
         private readonly IDataService _dataService;
-        private readonly IStatisticService _statisticService;
 
-        public CollectionController(IDataService dataService, IStatisticService statisticService)
+        public CollectionController(IDataService dataService)
         {
             _dataService = dataService;
-            _statisticService = statisticService;
         }
 
         public List<object> PreviewsBatch(Guid id, ListRequest listRequest)
@@ -33,8 +31,6 @@ namespace MediaCloud.WebApp.Controllers
                     preview.Order,
                 });
             }
-
-            _statisticService.ActivityFactorRaised.Invoke();
 
             return jsonPreviews;
         }

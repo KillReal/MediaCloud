@@ -62,18 +62,6 @@ namespace MediaCloud.Repositories
             }
         }
 
-        public void RecalculateCounts(List<Tag> tags)
-        {
-            tags.ForEach(x =>
-            {
-                var tag = _context.Tags.Find(x.Id) ?? new();
-                x.PreviewsCount = tag.Previews.Count;
-            });
-            _context.Tags.UpdateRange(tags);
-
-            _logger.Info("Recalculated <{tags.Count}> tags usage count by: {_actorId}", tags.Count, _actorId);
-        }
-
         public List<Tag> GetRangeByString(string? tagsString)
         {
             if (string.IsNullOrEmpty(tagsString))
@@ -85,32 +73,6 @@ namespace MediaCloud.Repositories
             return _context.Tags.Where(x => tags.Any(y => y == x.Name.ToLower())
                                          && x.CreatorId == _actorId)
                                 .ToList();
-        }
-
-        public TagFilter<Preview> GetTagFilter(string tagsString)
-        {
-            tagsString = DeduplicateTagString(tagsString);
-            var tags = tagsString.ToLower().Split(' ');
-            
-            var positiveTags = new List<string>();
-            var negativeTags = new List<string>();
-            foreach (var tag in tags)
-            {
-                if (tag.Contains('!'))
-                {
-                    negativeTags.Add(tag.Remove(0, 1));
-                    continue;
-                }
-
-                positiveTags.Add(tag);
-            }
-
-            var positiveTagIds = _context.Tags.Where(x => positiveTags.Any(y => y == x.Name.ToLower()))
-                                              .Select(x => x.Id);
-            var negativeTagIds = _context.Tags.Where(x => negativeTags.Any(y => y == x.Name.ToLower()))
-                                              .Select(x => x.Id);
-
-            return new(positiveTagIds.ToList(), negativeTagIds.ToList());
         }
 
         public List<Tag> GetList(ListBuilder<Tag> listBuilder)

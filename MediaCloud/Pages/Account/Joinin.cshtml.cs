@@ -63,6 +63,7 @@ namespace MediaCloud.WebApp.Pages
             actor.Name = AuthData.Name;
             actor.PasswordHash = SecureHash.Hash(AuthData.Password);
             actor.IsActivated = true;
+
             _dataService.Actors.Update(actor);
 
             _logger.Info("Joined in actor with id: {actor.Id} and invite code: {InviteCode}", actor.Id, InviteCode);

@@ -105,5 +105,3 @@
         closeAllLists(e.target);
     });
 }
-
-autocomplete(document.getElementById("filterGrab"));

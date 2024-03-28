@@ -11,12 +11,10 @@ namespace MediaCloud.WebApp.Controllers
     public class GalleryController : Controller
     {
         private readonly IDataService _dataService;
-        private readonly IStatisticService _statisticService;
 
-        public GalleryController(IDataService dataService, IStatisticService statisticService)
+        public GalleryController(IDataService dataService)
         {
             _dataService = dataService;
-            _statisticService = statisticService;
         }
 
         public List<string> GetSuggestions(string searchString, int limit = 10)
@@ -42,8 +40,6 @@ namespace MediaCloud.WebApp.Controllers
                     preview.Content,
                 });
             }
-                
-            _statisticService.ActivityFactorRaised.Invoke();
 
             return jsonPreviews;
         }

@@ -7,7 +7,7 @@ namespace MediaCloud.WebApp.Controllers
     [Authorize]
     public class UploaderController : Controller
     {
-        private IUploader Uploader;
+        private IUploader _uploader;
 
         public IActionResult Index()
         {
@@ -16,17 +16,17 @@ namespace MediaCloud.WebApp.Controllers
 
         public UploaderController(IUploader uploader)
         {
-            Uploader = uploader;
+            _uploader = uploader;
         }
 
         public MediaUploader.TaskStatus GetTaskStatus(Guid id)
         {
-            return Uploader.GetStatus(id);
+            return _uploader.GetStatus(id);
         }
 
         public UploaderStatus GetStatus()
         {
-            return Uploader.GetStatus();
+            return _uploader.GetStatus();
         }
     }
 }

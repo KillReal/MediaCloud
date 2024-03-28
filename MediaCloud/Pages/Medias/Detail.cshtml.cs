@@ -20,8 +20,6 @@ namespace MediaCloud.Pages.Medias
     [Authorize]
     public class MediaDetailModel : BasePageModel
     {
-        private readonly IStatisticService _statisticService;
-
         [BindProperty]
         public Guid PreviewId { get; set; }
         [BindProperty]
@@ -37,9 +35,8 @@ namespace MediaCloud.Pages.Medias
         [BindProperty]
         public Guid? NextPreviewId { get; set; } = null;
 
-        public MediaDetailModel(IDataService dataService, IStatisticService statisticService) : base(dataService)
+        public MediaDetailModel(IDataService dataService) : base(dataService)
         {
-            _statisticService = statisticService;
             Media = new();
         }
 
@@ -66,11 +63,6 @@ namespace MediaCloud.Pages.Medias
 
             ReturnUrl = returnUrl.Replace("$", "&");
             TagsString = string.Join(" ", Tags.Select(x => x.Name.ToLower()));
-
-            if (preview.Order == 0)
-            {
-                _statisticService.ActivityFactorRaised.Invoke();
-            }
 
             return Page();
         }

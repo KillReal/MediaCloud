@@ -25,7 +25,6 @@ namespace MediaCloud.Pages.Medias
     {
         private readonly Actor? _actor;
         private readonly IUploader _uploader;
-        private readonly IStatisticService _statisticService;
 
         [BindProperty]
         public List<IFormFile> Files { get; set; } = new();
@@ -36,11 +35,10 @@ namespace MediaCloud.Pages.Medias
         [BindProperty]
         public string ReturnUrl { get; set; } = "/Medias";
 
-        public MediaUploadModel(IDataService dataService, IUploader uploader, IStatisticService statisticService) : base(dataService)
+        public MediaUploadModel(IDataService dataService, IUploader uploader) : base(dataService)
         {
             _actor = dataService.GetCurrentActor();
             _uploader = uploader;
-            _statisticService = statisticService;
         }
 
         public IActionResult OnGet(string returnUrl = "/Medias")
@@ -59,8 +57,6 @@ namespace MediaCloud.Pages.Medias
 
             var task = new UploadTask(_actor, Files, IsCollection, Tags);
             var taskId = _uploader.AddTask(task);
-
-            _statisticService.ActivityFactorRaised.Invoke();
 
             return Redirect($"/Uploader/GetTaskStatus?id={taskId}");
         }

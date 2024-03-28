@@ -48,6 +48,8 @@ namespace MediaCloud.Repositories
                 return new();
             }
 
+            _statisticService.ActivityFactorRaised.Invoke();
+
             return _context.Previews.Where(x => x.Collection == collection)
                                     .OrderBy(x => x.Order)
                                     .Skip(listRequest.Offset)

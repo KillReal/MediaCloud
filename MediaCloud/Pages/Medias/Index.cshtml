@@ -10,62 +10,127 @@
 
     <div class="button-panel d-flex flex-row flex-wrap align-items-center">
         <div class="form-group align-self-center d-flex flex-wrap">   
-            <a class="btn btn-success btn-rounded me-3 mt-3" asp-page="Upload"
-               asp-route-returnUrl="/Medias?count=@(Model.ListBuilder.Count)$offset=@(Model.ListBuilder.Offset)$sort=@(Model.ListBuilder.Sort)$filter=@(Model.ListBuilder.Filter)$isUseAutoload=@(Model.IsAutoloadEnabled)">Upload</a>
+            <a class="btn btn-success btn-rounded me-3 mt-3" 
+                asp-page="Upload"
+                asp-route-returnUrl="/Medias?count=@(Model.ListBuilder.Count)$offset=@(Model.ListBuilder.Offset)$sort=@(Model.ListBuilder.Sort)$filter=@(Model.ListBuilder.Filter)$isUseAutoload=@(Model.IsAutoloadEnabled)">Upload</a>
             <div class="vr me-3 mt-3"></div>
             <div class="align-self-center me-3 mt-3 text-white ">Sort:</div>
             @if (@Model.ListBuilder.Sort == "UpdatedAt")
             {
-                <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@("UpdatedAtDesc") asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>Updated ↓</a>
+                <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" 
+                    asp-page="Index" 
+                    asp-route-filter=@(Model.ListBuilder.Filter) 
+                    asp-route-sort=@("UpdatedAtDesc") 
+                    asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>
+                        Updated ↓
+                </a>
             }
             else if (@Model.ListBuilder.Sort == "UpdatedAtDesc"){
-                <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@("UpdatedAt") asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>Updated ↑</a>
+                <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" 
+                    asp-page="Index" 
+                    asp-route-filter=@(Model.ListBuilder.Filter) 
+                    asp-route-sort=@("UpdatedAt") 
+                    asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>
+                        Updated ↑
+                </a>
             }
             else
             {
-                <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@("UpdatedAtDesc") asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>Updated</a>
+                <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" 
+                    asp-page="Index" 
+                    asp-route-filter=@(Model.ListBuilder.Filter) 
+                    asp-route-sort=@("UpdatedAtDesc") 
+                    asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>
+                        Updated
+                </a>
             }
 
             @if (@Model.ListBuilder.Sort == "CreatedAt")
             {
-                <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@("CreatedAtDesc") asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>Created ↓</a>
+                <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" 
+                    asp-page="Index" 
+                    asp-route-filter=@(Model.ListBuilder.Filter) 
+                    asp-route-sort=@("CreatedAtDesc") 
+                    asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>
+                        Created ↓
+                </a>
             }
             else if (@Model.ListBuilder.Sort == "CreatedAtDesc"){
-                <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@("CreatedAt") asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>Created ↑</a>
+                <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" 
+                    asp-page="Index" 
+                    asp-route-filter=@(Model.ListBuilder.Filter) 
+                    asp-route-sort=@("CreatedAt") 
+                    asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>
+                        Created ↑
+                </a>
             }
             else
             {
-                <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@("CreatedAtDesc") asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>Created</a>
+                <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" 
+                    asp-page="Index" 
+                    asp-route-filter=@(Model.ListBuilder.Filter) 
+                    asp-route-sort=@("CreatedAtDesc") 
+                    asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>
+                        Created
+                </a>
             }
 
             @if (@Model.ListBuilder.Sort.Contains("Random"))
             {
-                <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@($"Random_{new Random().Next(int.MaxValue)}") asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>Random</a>
+                <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" 
+                    asp-page="Index" 
+                    asp-route-filter=@(Model.ListBuilder.Filter) 
+                    asp-route-sort=@($"Random_{new Random().Next(int.MaxValue)}") 
+                    asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>
+                        Random
+                </a>
 
             }        
             else
             {
-                <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@($"Random_{new Random().Next(int.MaxValue)}") asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>Random</a>
+                <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" 
+                    asp-page="Index" 
+                    asp-route-filter=@(Model.ListBuilder.Filter) 
+                    asp-route-sort=@($"Random_{new Random().Next(int.MaxValue)}") 
+                    asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>
+                        Random
+                </a>
             }
 
             <div class="vr me-3 mt-3"></div>
 
             @if (@Model.IsAutoloadEnabled)
             {
-                <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@(Model.ListBuilder.Sort) asp-route-isUseAutoload=@(false)>Autoload ✔️</a>
+                <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" 
+                    asp-page="Index" 
+                    asp-route-filter=@(Model.ListBuilder.Filter) 
+                    asp-route-sort=@(Model.ListBuilder.Sort) 
+                    asp-route-isUseAutoload=@(false)>
+                        Autoload ✔️
+                </a>
             }
             else
             {
-                <a class="btn btn-secondary btn-rounded me-3 mt-3 text-nowrap" style="border-color: darkgray" asp-page="Index" asp-route-filter=@(Model.ListBuilder.Filter) asp-route-sort=@(Model.ListBuilder.Sort) asp-route-isUseAutoload=@(true)>Autoload ❌</a>
+                <a class="btn btn-secondary btn-rounded me-3 mt-3 text-nowrap" style="border-color: darkgray" 
+                    asp-page="Index" 
+                    asp-route-filter=@(Model.ListBuilder.Filter) 
+                    asp-route-sort=@(Model.ListBuilder.Sort) 
+                    asp-route-isUseAutoload=@(true)>
+                        Autoload ❌
+                </a>
             }
             <div class="vr me-3 mt-3"></div>
         </div>
         <div class="form-group align-self-center d-flex flex-grow-1">
-            <div class="align-self-center me-3 mt-3" style="white-space: nowrap;">Tag filter:</div>
+            <div class="align-self-center me-3 mt-3" style="white-space: nowrap;">
+                Tag filter:
+            </div>
             <div class="autocomplete-list autocomplete me-3 mt-3 flex-grow-1">
                 <input asp-for=@Model.ListBuilder.Filter class="form-control" id="filterGrab" placeholder="example: @Model.ExampleFilter" style="min-width: 20rem"/>
             </div>
-            <a class="btn btn-info btn-rounded mt-3" onclick="filterClicked()">Filter</a>
+            <a class="btn btn-info btn-rounded mt-3" onclick="filterClicked()">
+                Filter
+            </a>
         </div>
     </div>  
 
@@ -74,7 +139,9 @@
     <div class="row image-row gallery" id="gallery">
         @if (Model.Previews.Count == 0)
         {
-            <h1 style="text-align: center">There is nothing here 😥</h1>
+            <h1 style="text-align: center">
+                There is nothing here 😥
+            </h1>
         }
         @for (int c = 0; c < Model.ListBuilder.ColumnCount; c++)
         {
@@ -84,7 +151,8 @@
                     @if (Model.Previews[i].Collection != null)
                     {
                         <div class="w-100 shadow-1-strong picture mb-2 d-flex justify-content-end align-items-end"
-                             onclick="OnCardClick('Collection', '@(Model.Previews[i].Collection?.Id)')" onauxclick="OnCardInNewWindowClick('Collection', '@(Model.Previews[i].Collection?.Id)')">
+                             onclick="OnCardClick('Collection', '@(Model.Previews[i].Collection?.Id)')" 
+                             onauxclick="OnCardInNewWindowClick('Collection', '@(Model.Previews[i].Collection?.Id)')">
                             <div class="bg-success rounded-circle" style="position: absolute; min-width: 2.25rem; text-align: center; margin-bottom: 1.85rem; margin-right: 0.25rem; font-size: 1.5rem"> @Model.Previews[i].Collection?.Count</div>
                             <img class="w-100 shadow-1-strong mb-4 picture-image bg-image"
                                 src="data:image/png;base64,@Convert.ToBase64String(Model.Previews[i].Content)"/>
@@ -93,7 +161,8 @@
                     else
                     {
                         <div class="w-100 shadow-1-strong picture mb-2 d-flex justify-content-end align-items-end"
-                             onclick="OnCardClick('Detail', '@(Model.Previews[i].Id)')" onauxclick="OnCardInNewWindowClick('Detail', '@(Model.Previews[i].Id)')">
+                             onclick="OnCardClick('Detail', '@(Model.Previews[i].Id)')" 
+                             onauxclick="OnCardInNewWindowClick('Detail', '@(Model.Previews[i].Id)')">
                             <img class="w-100 shadow-1-strong mb-4 picture-image bg-image"
                                 src="data:image/png;base64,@Convert.ToBase64String(Model.Previews[i].Content)"/>
                         </div>
@@ -105,9 +174,13 @@
     <div class="d-flex justify-content-center">
         @if (Model.Previews.Count >= Model.ListBuilder.Count && Model.IsAutoloadEnabled)
         {
-            <div class="spinner-border text-light" role="status" id="loadingSpinner" style="display: block; width:3rem; height:3rem"></div>
+            <div class="spinner-border text-light" role="status" id="loadingSpinner" style="display: block; width:3rem; height:3rem">
+
+            </div>
         }
-        <h1 style="text-align: center; display: none" id="loadingDone">Your are reached the end 😮</h1>
+        <h1 style="text-align: center; display: none" id="loadingDone">
+            Your are reached the end 😮
+        </h1>
     </div>
     @if (Model.IsAutoloadEnabled == false)
     {
@@ -118,6 +191,8 @@
 <script src="~/js/tagAutocompletion.js"></script>
 
 <script type="text/javascript">
+    autocomplete(document.getElementById("filterGrab"));
+    
     var isAutoLoadingEnabled = @Model.IsAutoloadEnabled.ToString().ToLower();
     var elem = document.getElementById("filterGrab");
     elem.onkeyup = function(e){
