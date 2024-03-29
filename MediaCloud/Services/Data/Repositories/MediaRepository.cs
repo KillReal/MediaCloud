@@ -21,7 +21,7 @@ namespace MediaCloud.Repositories
             var convertedImage = Image.Load(stream);
             var media = new Media(file, convertedImage.Width, convertedImage.Height);
             media.Preview = new Preview(media, convertedImage);
-            media.Creator = _context.Actors.First(x => x.Id == _actorId);
+            media.Creator = _context.Actors.First(x => x.Id == _actor.Id);
             media.Updator = media.Creator;
             media.Preview.Creator = media.Creator;
             media.Preview.Updator = media.Creator;
@@ -48,39 +48,33 @@ namespace MediaCloud.Repositories
             _statisticService.MediasCountChanged.Invoke(-count, -size);
         }
 
-        public Media Create(byte[] file, List<Tag> tags)
+        public Media Create(byte[] file)
         {
             var media = CreateMediaFromFile(file);
-            media.Preview.Tags = tags;
             _context.Add(media);
             SaveChanges();
 
-            _logger.Info("Created new media with id: {media.Id} by: {_actorId}", media.Id, _actorId);
+            _logger.Info("Created new media with id: {media.Id} by: {_actor.Name}", media.Id, _actor.Name);
             _statisticService.MediasCountChanged.Invoke(1, media.Size);
             return media;
         }
 
 
-        public List<Media> CreateRange(List<byte[]> files, List<Tag> tags)
+        public List<Media> CreateRange(List<byte[]> files)
         {
             _statisticService.ActivityFactorRaised.Invoke();
 
             if (files.Count == 1)
             {
-                return new() { Create(files[0], tags) };
+                return new() { Create(files[0]) };
             }
 
             var medias = GetMediasRange(files);
 
-            if (tags.Any())
-            {
-                medias.ForEach(x => x.Preview.Tags = tags);
-            }
-
             _context.AddRange(medias);
             SaveChanges();
 
-            _logger.Info("Created <{medias.Count}> new medias by: {_actorId}", medias.Count, _actorId);
+            _logger.Info("Created <{medias.Count}> new medias by: {_actor.Name}", medias.Count, _actor.Name);
             _statisticService.MediasCountChanged.Invoke(medias.Count, medias.Sum(x => x.Size));
             return medias;
         }
@@ -99,27 +93,20 @@ namespace MediaCloud.Repositories
             return medias;
         }
 
-        public List<Media> CreateCollection(List<byte[]> files, List<Tag> tags)
+        public List<Media> CreateCollection(List<byte[]> files)
         {
             _statisticService.ActivityFactorRaised.Invoke();
 
             if (files.Count == 1)
             {
-                return new() { Create(files[0], tags) };
+                return new() { Create(files[0]) };
             }
 
             var medias = GetMediasRange(files);
-
-            if (tags.Any())
-            {
-                medias.First().Preview.Tags = tags;
-            }
-
             var previews = medias.Select(x => x.Preview).ToList();
-
             var collection = new Collection(previews)
             {
-                Creator = _context.Actors.First(x => x.Id == _actorId)
+                Creator = _context.Actors.First(x => x.Id == _actor.Id)
             };
             collection.Updator = collection.Creator;
 
@@ -139,8 +126,8 @@ namespace MediaCloud.Repositories
             SaveChanges();
             _context.ChangeTracker.AutoDetectChangesEnabled = true;
 
-            _logger.Info("Created new collection with <{collection.Count}> previews and id: {collection.Id} by: {_actorId}",
-                collection.Count, collection.Id, _actorId);
+            _logger.Info("Created new collection with <{collection.Count}> previews and id: {collection.Id} by: {_actor.Name}",
+                collection.Count, collection.Id, _actor.Name);
             _statisticService.MediasCountChanged.Invoke(medias.Count, medias.Sum(x => x.Size));
 
             return medias;

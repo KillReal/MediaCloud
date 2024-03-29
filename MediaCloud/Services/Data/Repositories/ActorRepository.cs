@@ -38,12 +38,6 @@ namespace MediaCloud.Repositories
             }
         }
 
-        public void SetLastLoginAt(Actor actor, DateTime dateTime)
-        {
-            actor.LastLoginAt = dateTime;
-            Update(actor);
-        }
-
         public Actor? Get(string? actorName) 
             => _context.Actors.FirstOrDefault(x => x.Name == actorName);
 
@@ -55,22 +49,6 @@ namespace MediaCloud.Repositories
 
         public bool IsNameFree(string actorName)
             => _context.Actors.Any(x => x.Name == actorName) == false;
-
-        public Actor? GetByAuthData(AuthData data)
-        {
-            var actor = _context.Actors.FirstOrDefault(x => x.Name == data.Name && x.IsActivated);
-
-            if (actor == null || actor.PasswordHash == null || SecureHash.Verify(data.Password, actor.PasswordHash) == false)
-            {
-                return null;
-            }
-
-            actor.UpdatedAt = actor.UpdatedAt.ToUniversalTime();
-            actor.CreatedAt = actor.CreatedAt.ToUniversalTime();
-            actor.LastLoginAt = actor.LastLoginAt.ToUniversalTime();
-
-            return actor;
-        }
 
         public void Update(Actor actor)
         {

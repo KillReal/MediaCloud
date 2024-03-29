@@ -74,15 +74,19 @@ namespace MediaCloud.MediaUploader.Tasks
         public override void DoTheTask(IDataService dataService)
         {
             var foundTags = dataService.Tags.GetRangeByString(TagString);
+            var medias = new List<Media>();
 
             if (IsCollection)
             {
-                dataService.Medias.CreateCollection(Content, foundTags);
+                medias = dataService.Medias.CreateCollection(Content);
             }
             else
             {
-                dataService.Medias.CreateRange(Content, foundTags);
+                medias = dataService.Medias.CreateRange(Content);
             }
+
+            var preview = medias.Select(x => x.Preview).Where(x => x.Order == 0).First();
+            dataService.Tags.UpdatePreviewLinks(foundTags, preview);
         }
     }
 }

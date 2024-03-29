@@ -90,7 +90,7 @@ namespace MediaCloud.Pages.Medias
 
             var preview = collection.Previews.OrderBy(x => x.Order).First();
             var tags = _dataService.Tags.GetRangeByString(TagsString);
-            _dataService.Previews.SetPreviewTags(preview, tags);
+            _dataService.Tags.UpdatePreviewLinks(tags, preview);
 
             if (IsOrderChanged)
             {

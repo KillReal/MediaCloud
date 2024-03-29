@@ -17,9 +17,9 @@ namespace MediaCloud.WebApp.Services.DataService
 
         public DataService(IServiceScopeFactory scopeFactory, IActorProvider actorProvider, IStatisticService statisticService)
         {
-            _serviceScope = scopeFactory.CreateScope();
-
             var logger = LogManager.GetLogger("DataService");
+
+            _serviceScope = scopeFactory.CreateScope();
             var dbContext = _serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
             var currentActor = actorProvider.GetCurrent(dbContext);
             _repositoryContext = new RepositoryContext(dbContext, statisticService, logger, currentActor);

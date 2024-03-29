@@ -1,6 +1,7 @@
 using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
+using MediaCloud.WebApp.Services.ActorProvider;
 using MediaCloud.WebApp.Services.DataService;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.AspNetCore.Authentication;
@@ -13,9 +14,11 @@ using ILogger = NLog.ILogger;
 
 namespace MediaCloud.WebApp.Pages
 {
-    public class LoginModel : BasePageModel
+    public class LoginModel : PageModel
     {
+        private readonly IActorProvider _actorProvider;
         private readonly IStatisticService _statisticService;
+        private readonly ILogger _logger;
 
         [BindProperty]
         public bool IsFailed { get; set; } = false;
@@ -25,8 +28,9 @@ namespace MediaCloud.WebApp.Pages
         [BindProperty]
         public string ReturnUrl { get; set; } = "/";
 
-        public LoginModel(IDataService dataService, IStatisticService statisticService): base(dataService)
+        public LoginModel(IActorProvider actorProvider, IStatisticService statisticService)
         {
+            _actorProvider = actorProvider;
             _logger = LogManager.GetLogger("Actor.Login");
             _statisticService = statisticService;
         }
@@ -38,29 +42,18 @@ namespace MediaCloud.WebApp.Pages
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public IActionResult OnPost()
         {
-            var actor = _dataService.Actors.GetByAuthData(AuthData);
+            var result = _actorProvider.AuthorizeByAuthData(AuthData, HttpContext);
 
-            if (actor == null)
+            if (result == false)
             {
                 _logger.Error("Failed sign attempt by name: {AuthData.Name}", AuthData.Name);
                 IsFailed = true;
                 return Page();
             }
 
-            var claims = new List<Claim> 
-            { 
-                new Claim(ClaimTypes.Name, AuthData.Name) 
-            
-            };
-            var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
-
-            _dataService.Actors.SetLastLoginAt(actor, DateTime.Now.ToUniversalTime());
             _logger.Info("Signed in actor with name: {AuthData.Name}", AuthData.Name);
-
-            _statisticService.ActivityFactorRaised.Invoke();
 
             return Redirect(ReturnUrl);
         }

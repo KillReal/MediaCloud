@@ -19,7 +19,7 @@ namespace MediaCloud.Repositories
         {
             var collection = _context.Collections.Find(id);
 
-            if (collection == null || collection.CreatorId != _actorId)
+            if (collection == null || collection.CreatorId != _actor.Id)
             {
                 return null;
             }
@@ -31,7 +31,7 @@ namespace MediaCloud.Repositories
         {
             var collection = await _context.Collections.FindAsync(id);
 
-            if (collection == null || collection.CreatorId != _actorId)
+            if (collection == null || collection.CreatorId != _actor.Id)
             {
                 return 0;
             }
@@ -43,7 +43,7 @@ namespace MediaCloud.Repositories
         {
             var collection = _context.Collections.Find(id);
 
-            if (collection == null || collection.CreatorId != _actorId)
+            if (collection == null || collection.CreatorId != _actor.Id)
             {
                 return new();
             }
@@ -61,7 +61,7 @@ namespace MediaCloud.Repositories
         {
             var collection = _context.Collections.Find(id);
 
-            if (collection == null || collection.CreatorId != _actorId)
+            if (collection == null || collection.CreatorId != _actor.Id)
             {
                 return 0;
             }
@@ -102,8 +102,8 @@ namespace MediaCloud.Repositories
             _context.Previews.UpdateRange(previews);
             Update(collection);
 
-            _logger.Info("Updated previews order for collection with id: {collection.Id} by: {_actorId}",
-                collection.Id, _actorId);
+            _logger.Info("Updated previews order for collection with id: {collection.Id} by: {_actor.Name}",
+                collection.Id, _actor.Name);
             return true;
         }
 

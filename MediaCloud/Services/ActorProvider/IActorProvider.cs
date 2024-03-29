@@ -7,5 +7,6 @@ namespace MediaCloud.WebApp.Services.ActorProvider
     {
         public Actor? GetCurrent();
         public Actor? GetCurrent(AppDbContext context);
+        public bool AuthorizeByAuthData(AuthData data, HttpContext httpContext);
     }
 }

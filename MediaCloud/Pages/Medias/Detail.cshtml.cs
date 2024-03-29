@@ -77,7 +77,7 @@ namespace MediaCloud.Pages.Medias
             }
 
             var tags = _dataService.Tags.GetRangeByString(TagsString);
-            _dataService.Previews.SetPreviewTags(preview, tags);
+            _dataService.Tags.UpdatePreviewLinks(tags, preview);
             
             var media = preview.Media;
             media.Rate = Media.Rate;

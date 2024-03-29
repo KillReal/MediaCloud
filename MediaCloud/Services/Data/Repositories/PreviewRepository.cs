@@ -24,19 +24,7 @@ namespace MediaCloud.Repositories
             return string.Join(' ', tags.Distinct());
         }
 
-        public void RecalculateCounts(List<Tag> tags)
-        {
-            tags.ForEach(x =>
-            {
-                var tag = _context.Tags.Find(x.Id) ?? new();
-                x.PreviewsCount = tag.Previews.Count;
-            });
-            _context.Tags.UpdateRange(tags);
-
-            _logger.Info("Recalculated <{tags.Count}> tags usage count by: {_actorId}", tags.Count, _actorId);
-        }
-
-        private TagFilter<Preview> GetTagFilter(string tagsString)
+        private TagFilter<Preview> GetFilterQueryByTags(string tagsString)
         {
             tagsString = DeduplicateTagString(tagsString);
             var tags = tagsString.ToLower().Split(' ');
@@ -92,7 +80,7 @@ namespace MediaCloud.Repositories
                     query = query.Where(x => x.Tags.Any(x => x.Type == Data.Types.TagType.Series));
                 }
 
-                return GetTagFilter(filter).GetQuery(query);
+                return GetFilterQueryByTags(filter).GetQuery(query);
             }
 
             return query;
@@ -114,32 +102,11 @@ namespace MediaCloud.Repositories
             return preview;
         }
 
-        public void SetPreviewTags(Preview preview, List<Tag>? tags)
-        {
-            if (preview.Collection != null)
-            {
-                preview = preview.Collection.Previews.OrderBy(x => x.Order).First();
-            }
-
-            var affectedTags = new List<Tag>(preview.Tags);
-            preview.Tags.Clear();
-            if (tags != null)
-            {
-                affectedTags.AddRange(tags);
-                preview.Tags.AddRange(tags);
-            }
-
-            _context.Previews.Update(preview);
-            SaveChanges();
-
-            RecalculateCounts(affectedTags.Distinct().ToList());
-        }
-
         public async Task<int> GetListCountAsync(ListBuilder<Preview> listBuilder)
         {
             var query = _context.Previews.AsNoTracking().Where(x => x.Order == 0);
 
-            return await SetFilterToQuery(query, listBuilder.Filter).Where(x => x.CreatorId == _actorId)
+            return await SetFilterToQuery(query, listBuilder.Filter).Where(x => x.CreatorId == _actor.Id)
                                                                     .CountAsync();
         }
 
@@ -159,7 +126,7 @@ namespace MediaCloud.Repositories
                                                       .ToList();
 
                 return query.Where(x => previewIdsList.Any(id => id == x.Id) 
-                                     && x.CreatorId == _actorId)
+                                     && x.CreatorId == _actor.Id)
                             .Include(x => x.Collection)
                             .ToList()
                             .OrderBy(x => previewIdsList.IndexOf(x.Id))
@@ -169,7 +136,7 @@ namespace MediaCloud.Repositories
             }  
 
             return query.Order(listBuilder.Order)
-                        .Where(x => x.CreatorId == _actorId)
+                        .Where(x => x.CreatorId == _actor.Id)
                         .Skip(listBuilder.Offset)
                         .Take(listBuilder.Count)
                         .Include(x => x.Collection)
@@ -202,8 +169,8 @@ namespace MediaCloud.Repositories
                         _context.Collections.Update(preview.Collection);
                         _context.Medias.Remove(preview.Media);
                         SaveChanges();
-                        _logger.Info("Removed Media in Collection with id: {preview.Collection.Id} by: {_actorId}", 
-                            preview.Collection.Id, _actorId);
+                        _logger.Info("Removed Media in Collection with id: {preview.Collection.Id} by: {_actor.Name}", 
+                            preview.Collection.Id, _actor.Name);
                         _statisticService.MediasCountChanged.Invoke(-1, -size);
 
                         return true;
@@ -214,7 +181,7 @@ namespace MediaCloud.Repositories
                     _context.Medias.Remove(preview.Media);
                     _context.Collections.Remove(preview.Collection);
                     SaveChanges();
-                    _logger.Info("Removed Collection with id: {collectionId} by: {_actorId}", collectionId, _actorId);
+                    _logger.Info("Removed Collection with id: {collectionId} by: {_actor.Name}", collectionId, _actor.Name);
                     _statisticService.MediasCountChanged.Invoke(-1, -size);
 
                     return true;
@@ -225,7 +192,7 @@ namespace MediaCloud.Repositories
 
             _context.Medias.Remove(preview.Media);
             SaveChanges();
-            _logger.Info("Removed Media  with id: {mediaId} by: {_actorId}", mediaId, _actorId);
+            _logger.Info("Removed Media  with id: {mediaId} by: {_actor.Name}", mediaId, _actor.Name);
             _statisticService.MediasCountChanged.Invoke(-1, -size);
 
             return true;
