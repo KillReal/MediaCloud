@@ -44,12 +44,6 @@ namespace MediaCloud.Repositories
         public Actor Get(Guid id) 
             => _context.Actors.Find(id) ?? new();
 
-        public Actor? GetByInviteCode(string inviteCode)
-            => _context.Actors.FirstOrDefault(x => x.InviteCode == inviteCode && x.IsActivated == false);
-
-        public bool IsNameFree(string actorName)
-            => _context.Actors.Any(x => x.Name == actorName) == false;
-
         public void Update(Actor actor)
         {
             _context.Update(actor);

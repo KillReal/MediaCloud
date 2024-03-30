@@ -10,14 +10,15 @@ namespace MediaCloud.WebApp.Services.DataService.Entities.Base
 {
     public class RepositoryContext
     {
-        public IStatisticService StatisticService { get; set; }
+        public StatisticProvider StatisticProvider { get; set; }
         public AppDbContext DbContext { get; set; }
         public virtual ILogger Logger { get; set; }
         public Actor? Actor { get; set; }
 
-        public RepositoryContext(AppDbContext dbContext, IStatisticService statisticService, ILogger logger, Actor? actor)
+        public RepositoryContext(AppDbContext dbContext, StatisticProvider statisticProvider, ILogger logger, 
+            Actor? actor)
         {
-            StatisticService = statisticService;
+            StatisticProvider = statisticProvider;
             DbContext = dbContext;
             Logger = logger;
             Actor = actor;

@@ -35,13 +35,13 @@ builder.Host.UseNLog();
 builder.Services.AddRazorPages();
 builder.Services.AddDbContext<AppDbContext>(options => 
 {
+    options.EnableSensitiveDataLogging();
     options.UseNpgsql(builder.Configuration.GetConnectionString("Database"));
 });
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 builder.Services.AddSingleton<IActorProvider, ActorProvider>();
 builder.Services.AddSingleton<IUploader, Uploader>();
-builder.Services.AddSingleton<IStatisticService, StatisticService>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IDataService, DataService>();

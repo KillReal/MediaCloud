@@ -17,8 +17,7 @@ using MediaCloud.WebApp.Pages;
 
 namespace MediaCloud.Pages.Medias
 {
-    [Authorize]
-    public class MediaListModel : BasePageModel
+    public class MediaListModel : AuthorizedPageModel
     {
         [BindProperty]
         public List<Preview> Previews { get; set; } = new();

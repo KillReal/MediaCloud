@@ -37,7 +37,7 @@ namespace MediaCloud.Repositories
         {
             var size = entity.Size;
             base.Remove(entity);
-            _statisticService.MediasCountChanged.Invoke(-1, -size);
+            _statisticProvider.MediasCountChanged.Invoke(-1, -size);
         }
 
         public override void Remove(List<Media> entities)
@@ -45,7 +45,7 @@ namespace MediaCloud.Repositories
             var count = entities.Count;
             var size = entities.Sum(x => x.Size);
             base.Remove(entities);
-            _statisticService.MediasCountChanged.Invoke(-count, -size);
+            _statisticProvider.MediasCountChanged.Invoke(-count, -size);
         }
 
         public Media Create(byte[] file)
@@ -55,14 +55,14 @@ namespace MediaCloud.Repositories
             SaveChanges();
 
             _logger.Info("Created new media with id: {media.Id} by: {_actor.Name}", media.Id, _actor.Name);
-            _statisticService.MediasCountChanged.Invoke(1, media.Size);
+            _statisticProvider.MediasCountChanged.Invoke(1, media.Size);
             return media;
         }
 
 
         public List<Media> CreateRange(List<byte[]> files)
         {
-            _statisticService.ActivityFactorRaised.Invoke();
+            _statisticProvider.ActivityFactorRaised.Invoke();
 
             if (files.Count == 1)
             {
@@ -75,7 +75,7 @@ namespace MediaCloud.Repositories
             SaveChanges();
 
             _logger.Info("Created <{medias.Count}> new medias by: {_actor.Name}", medias.Count, _actor.Name);
-            _statisticService.MediasCountChanged.Invoke(medias.Count, medias.Sum(x => x.Size));
+            _statisticProvider.MediasCountChanged.Invoke(medias.Count, medias.Sum(x => x.Size));
             return medias;
         }
 
@@ -95,7 +95,7 @@ namespace MediaCloud.Repositories
 
         public List<Media> CreateCollection(List<byte[]> files)
         {
-            _statisticService.ActivityFactorRaised.Invoke();
+            _statisticProvider.ActivityFactorRaised.Invoke();
 
             if (files.Count == 1)
             {
@@ -128,7 +128,7 @@ namespace MediaCloud.Repositories
 
             _logger.Info("Created new collection with <{collection.Count}> previews and id: {collection.Id} by: {_actor.Name}",
                 collection.Count, collection.Id, _actor.Name);
-            _statisticService.MediasCountChanged.Invoke(medias.Count, medias.Sum(x => x.Size));
+            _statisticProvider.MediasCountChanged.Invoke(medias.Count, medias.Sum(x => x.Size));
 
             return medias;
         }

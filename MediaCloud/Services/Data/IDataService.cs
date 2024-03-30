@@ -1,6 +1,7 @@
 ﻿using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Repositories.Base;
+using MediaCloud.WebApp.Services.Statistic;
 
 namespace MediaCloud.WebApp.Services.DataService
 {
@@ -15,7 +16,8 @@ namespace MediaCloud.WebApp.Services.DataService
         public PreviewRepository Previews { get; }
 
         public TagRepository Tags { get; }
-        public StatisticSnapshotRepository StatisticSnapshots { get; }
+
+        public StatisticProvider StatisticProvider { get; }
 
         public Actor GetCurrentActor();
 

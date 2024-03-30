@@ -1,5 +1,7 @@
 ﻿@using System.Reflection
+@using MediaCloud.WebApp.Pages;
 @using MediaCloud.WebApp.Services.ActorProvider;
+@using MediaCloud.WebApp.Services.DataService;
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,9 +12,6 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body  bg-secondary class="mb-0" style="min-width: 500px">
-    @inject IActorProvider actorProvider
-    @{
-        var actor = actorProvider.GetCurrent();
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light box-shadow">
             <div class="container-fluid ps-5 pe-5">
@@ -30,7 +29,7 @@
                         <li class="nav-item">
                             <a class="nav-link text-white" href="/Tags">Tags</a>
                         </li>
-                            @if (actor != null && actor.IsAdmin)
+                        @if (Model.GetType().IsSubclassOf(typeof(AuthorizedPageModel)) && Model.CurrentActor != null && Model.CurrentActor.IsAdmin)
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-white" href="/Actors">Actors</a>
@@ -48,11 +47,11 @@
                     </ul>
                 </div>
                     <div class="me-3 collapse navbar-collapse collapse d-sm-inline-flex justify-content-between text-right" id="myNavbar">
-                        @if (actor != null)
+                    @if (Model.GetType().IsSubclassOf(typeof(AuthorizedPageModel)) && Model.CurrentActor != null)
                         {
                             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                                 <li class="nav-item">
-                                    <a class="nav-link text-white" href="/Account">Hello, @actor.Name!</a>
+                                <a class="nav-link text-white" href="/Account">Hello, @Model.CurrentActor.Name!</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="btn btn-danger navbar-right" href="/Account/Logout" method="post" id="logoutForm">Logout</a>
@@ -77,7 +76,6 @@
                 style="z-index: 1000; max-width: 5rem">
             <img style="width:100%" src="~/img/up.png">
         </button>
-    }
     <div class="gradient-main" style="min-height: 140vh">
          <div class="container-fluid mb-4 ps-5 pe-5">
             <main role="main" class="pb-3">

@@ -16,23 +16,11 @@
 
               <h2 class="fw-bold mb-4">Join In 😋</h2>
 
-              @if(Model.FailStatus == "invite code")
+              @if(Model.Result.IsSuccess == false)
               {
                     <div class="alert alert-danger mt-2" role="alert">
-                        Join in failed due to incorrect invite code.
+                        @Model.Result.Message
                     </div>
-              }
-              else if (Model.FailStatus == "name")
-              {
-                    <div class="alert alert-danger mt-2" role="alert">
-                        Join in failed due to choosen name is already taken.
-                    </div>                 
-              }
-              else if (Model.FailStatus == "password")
-              {
-                    <div class="alert alert-danger mt-2" role="alert">
-                        Join in failed due to too short password (need 6 or more length).
-                    </div>                 
               }
 
               <input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control">

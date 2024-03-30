@@ -19,8 +19,8 @@
     <div class="col-md-4 text-white">
         <form enctype="multipart/form-data" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for=@(Model.Actor.Id) class="form-control"></input>
-            <input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control"></input>
+            <input type="hidden" asp-for=@(Model.Actor.Id) class="form-control">
+            <input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control">
             <div class="form-group mb-3">
                 <label class="col-form-label">Enter name</label>
                 <input asp-for="@Model.Actor.Name" class="form-control" />

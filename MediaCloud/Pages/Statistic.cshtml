@@ -7,6 +7,12 @@
 
 <h1 class="pt-3 text-white">Statistic</h1>
 
+<div class="button-panel d-flex flex-row align-items-center mt-3">
+    <div>
+        <a id="recalculateButton" class="btn btn-info">Recalculate</a>
+    </div>
+</div>
+
 <hr style="color: white"/>
 
 <div>
@@ -24,6 +30,29 @@
         </div>
         <div class="col whiteback-bar">
             <canvas id="ActivityChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="loadingModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Media uploading...</h5>
+                <div class="spinner-border text-primary" role="status" id="loadingSpinner" style="display: block">
+                </div>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <div class="mb-1">
+                    <label class="col-form-label" id="orderPos">Your position in order: updating...</label>
+                </div>
+                <div class="mb-1">
+                    <label class="col-form-label" id="mediasCount">Medias count: updating...</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="/Statistic" class="btn btn-primary">Close</a>
+            </div>
         </div>
     </div>
 </div>
@@ -57,7 +86,8 @@
                 data: [
                     @foreach (var snapshot in Model.Snapshots)
                     {
-                        @(Html.Raw("{x:'" + snapshot.TakenAt.Date.ToString("yyyy-MM-dd") + "',y:'" + snapshot.MediasSize + "'},"))
+                        @(Html.Raw("{x:'" + snapshot.TakenAt.Date.ToString("yyyy-MM-dd") + "',y:'" 
+                            + snapshot.MediasSize + "'},"))
                     }
                 ],
                 fill: true,
@@ -78,7 +108,8 @@
                 },
                 title: {
                     display: true,
-                    text: 'Medias size total uploaded (' + (100 - targetSizeError * 100).toFixed(1) + '% of database)',
+                    text: 'Medias size total uploaded (' + (100 - targetSizeError * 100).toFixed(1) 
+                        + '% of database)',
                 },
                 tooltip: {
                     callbacks: {
@@ -131,7 +162,8 @@
                 data: [
                     @foreach (var snapshot in Model.Snapshots)
                     {
-                        @(Html.Raw("{x:'" + snapshot.TakenAt.Date.ToString("yyyy-MM-dd") + "',y:'" + snapshot.MediasCount + "'},"))
+                        @(Html.Raw("{x:'" + snapshot.TakenAt.Date.ToString("yyyy-MM-dd") + "',y:'" 
+                            + snapshot.MediasCount + "'},"))
                     }
                 ],
                 fill: true,
@@ -144,7 +176,8 @@
                 data: [
                     @foreach (var snapshot in Model.Snapshots)
                     {
-                        @(Html.Raw("{x:'" + snapshot.TakenAt.Date.ToString("yyyy-MM-dd") + "',y:'" + snapshot.TagsCount + "'},"))
+                        @(Html.Raw("{x:'" + snapshot.TakenAt.Date.ToString("yyyy-MM-dd") + "',y:'" 
+                            + snapshot.TagsCount + "'},"))
                     }
                 ],
                 fill: true,
@@ -157,7 +190,8 @@
                 data: [
                     @foreach (var snapshot in Model.Snapshots)
                     {
-                        @(Html.Raw("{x:'" + snapshot.TakenAt.Date.ToString("yyyy-MM-dd") + "',y:'" + snapshot.ActorsCount + "'},"))
+                        @(Html.Raw("{x:'" + snapshot.TakenAt.Date.ToString("yyyy-MM-dd") + "',y:'" 
+                            + snapshot.ActorsCount + "'},"))
                     }
                 ],
                 fill: true,
@@ -260,9 +294,11 @@
             datasets: [{
                 label: 'Activity factor',
                 data: [
-                    @foreach (var snapshot in Model.Snapshots.Where(x => x.TakenAt >= DateTime.Now.Date.AddDays(-Model.ActivityBacktrackDayCount)).ToList())
+                    @foreach (var snapshot in Model.Snapshots.Where(x => 
+                        x.TakenAt >= DateTime.Now.Date.AddDays(-Model.ActivityBacktrackDayCount)).ToList())
                     {
-                        @(Html.Raw("{x:'" + snapshot.TakenAt.Date.ToString("yyyy-MM-dd") + "',y:'" + snapshot.ActivityFactor + "'},"))
+                        @(Html.Raw("{x:'" + snapshot.TakenAt.Date.ToString("yyyy-MM-dd") + "',y:'" + 
+                            snapshot.ActivityFactor + "'},"))
                     }
                 ],
                 fill: true,
@@ -304,4 +340,104 @@
             }
         }
     });
+
+    var orderPosElem = document.getElementById('orderPos');
+    var mediaCountElem = document.getElementById('mediasCount');
+    var modalTitle = document.getElementById('modalTitle');
+    var modalBody = document.getElementById("modalBody");
+    var loadSpinner = document.getElementById("loadingSpinner");
+
+    function updateModalLoadBody(data) {
+        if (data == undefined) {
+            orderPosElem.innerHTML = 'Your position in order: updating...';
+            mediaCountElem.innerHTML = 'Snapshots count: updating...';
+        }
+        else {
+            orderPosElem.innerHTML = 'Your position in order: ' + data.queuePosition;
+            mediaCountElem.innerHTML = 'Snapshots count: ' + data.workCount;
+        }
+    }
+
+    function setModalTitle(title) {
+        modalTitle.innerHTML = title;
+    }
+
+    function hideModalBody() {
+        modalBody.style.display = "none";
+    }
+
+    function showModalBody() {
+        modalBody.style.display = "block";
+    }
+
+    function showLoadSpinner() {
+        loadSpinner.style.display = "block";
+    }
+
+    function hideLoadSpinner() {
+        loadSpinner.style.display = "none";
+    }
+
+    function formSubmit(event) {
+        setModalTitle('Sending to server...');
+        showModalBody();
+        updateModalLoadBody();
+
+        var url = "/Statistic/Recalculate";
+        var request = new XMLHttpRequest();
+        request.open('POST', url, true);
+        request.onload = function () { // request successful
+            setModalTitle('Waiting queue for processing...');
+            showModalBody();
+            updateModalLoadBody();
+            $('#loadingModal').modal('show');
+            var data = JSON.parse(request.response);
+
+            var url = "/Uploader/GetTaskStatus?id=" + data.id;
+
+            console.log('Goes to update status');
+
+            const updator = function () {
+                fetch(url)
+                    .then((response) => response.json())
+                    .then(function (data) {
+                        updateModalLoadBody(data);
+                        if (data.queuePosition > 1) {
+                            setModalTitle('Waiting queue for processing...');
+                        }
+                        else if (data.queuePosition = 0 && data.workCount > 0) {
+                            setModalTitle('Server processing...');
+                        }
+                        else if (data.workCount == 0 && data.isInProgress == false) {
+                            setModalTitle('Recalculation successfully uploaded!');
+                            hideModalBody();
+                            hideLoadSpinner();
+
+                            clearInterval(loadingUpdateInterval);
+                        }
+                        else if (data.workCount == 0) {
+                            setModalTitle('Saving in database...');
+                            showLoadSpinner();
+                        }
+                    })
+            }
+
+            updator();
+            var loadingUpdateInterval = setInterval(updator, 1500);
+        };
+
+        request.onerror = function () {
+            // request failed
+        };
+
+        request.send(); // create FormData from form that triggered event
+        event.preventDefault();
+    }
+
+    // and you can attach form submit event like this for example
+    function attachEvent(elementId) {
+        document.getElementById(elementId).addEventListener("click", formSubmit);
+    }
+
+    attachEvent('recalculateButton');
 </script>

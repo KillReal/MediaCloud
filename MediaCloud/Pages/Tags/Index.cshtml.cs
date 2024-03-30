@@ -17,8 +17,7 @@ using MediaCloud.WebApp.Pages;
 
 namespace MediaCloud.Pages.Tags
 {
-    [Authorize]
-    public class TagListModel : BasePageModel
+    public class TagListModel : AuthorizedPageModel
     {
         public TagListModel(IDataService dataService) : base(dataService)
         {

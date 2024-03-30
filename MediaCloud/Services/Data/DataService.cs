@@ -11,25 +11,23 @@ namespace MediaCloud.WebApp.Services.DataService
 {
     public class DataService : IDataService
     {
-        private readonly IServiceScope _serviceScope;
-
         private readonly RepositoryContext _repositoryContext;
 
-        public DataService(IServiceScopeFactory scopeFactory, IActorProvider actorProvider, IStatisticService statisticService)
+        public DataService(IServiceScopeFactory scopeFactory, IActorProvider actorProvider)
         {
             var logger = LogManager.GetLogger("DataService");
 
-            _serviceScope = scopeFactory.CreateScope();
-            var dbContext = _serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var serviceScope = scopeFactory.CreateScope();
+            var dbContext = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
             var currentActor = actorProvider.GetCurrent(dbContext);
-            _repositoryContext = new RepositoryContext(dbContext, statisticService, logger, currentActor);
+            StatisticProvider = new StatisticProvider(dbContext, currentActor);
+            _repositoryContext = new RepositoryContext(dbContext, StatisticProvider, logger, currentActor);
 
             Actors = new(_repositoryContext.DbContext);
             Collections = new(_repositoryContext);
             Medias = new(_repositoryContext);
             Previews = new(_repositoryContext);
             Tags = new(_repositoryContext);
-            StatisticSnapshots = new(_repositoryContext);
 
             logger.Debug("Initialized DataService instance by {currentActor.Name}", currentActor?.Name);
         }
@@ -39,14 +37,18 @@ namespace MediaCloud.WebApp.Services.DataService
         public MediaRepository Medias { get; }
         public PreviewRepository Previews { get; }
         public TagRepository Tags { get; }
-        public StatisticSnapshotRepository StatisticSnapshots { get; }  
 
-        public Actor GetCurrentActor() => _repositoryContext.Actor ?? new();
+        public StatisticProvider StatisticProvider { get; }
+
+        public Actor GetCurrentActor() => _repositoryContext.Actor 
+            ?? throw new NullReferenceException("Cannot get unknown actor");
 
         public long GetDbSize()
         {
             using var command = _repositoryContext.DbContext.Database.GetDbConnection().CreateCommand();
-            command.CommandText = $"SELECT pg_database_size('{_repositoryContext.DbContext.Database.GetDbConnection().Database}');";
+            var databaseSize = _repositoryContext.DbContext.Database.GetDbConnection().Database;
+
+            command.CommandText = $"SELECT pg_database_size('{databaseSize}');";
             _repositoryContext.DbContext.Database.OpenConnection();
 
             using var reader = command.ExecuteReader();

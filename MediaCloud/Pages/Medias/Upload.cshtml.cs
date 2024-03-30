@@ -20,8 +20,7 @@ using MediaCloud.WebApp.Pages;
 
 namespace MediaCloud.Pages.Medias
 {
-    [Authorize]
-    public class MediaUploadModel : BasePageModel
+    public class MediaUploadModel : AuthorizedPageModel
     {
         private readonly Actor? _actor;
         private readonly IUploader _uploader;

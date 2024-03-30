@@ -17,8 +17,7 @@ using MediaCloud.WebApp.Pages;
 
 namespace MediaCloud.Pages.Medias
 {
-    [Authorize]
-    public class MediaDetailModel : BasePageModel
+    public class MediaDetailModel : AuthorizedPageModel
     {
         [BindProperty]
         public Guid PreviewId { get; set; }

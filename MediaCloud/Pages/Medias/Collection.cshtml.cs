@@ -19,8 +19,7 @@ using MediaCloud.WebApp.Pages;
 
 namespace MediaCloud.Pages.Medias
 {
-    [Authorize]
-    public class CollectionModel : BasePageModel
+    public class CollectionModel : AuthorizedPageModel
     {
         [BindProperty]
         public Collection Collection { get; set; }

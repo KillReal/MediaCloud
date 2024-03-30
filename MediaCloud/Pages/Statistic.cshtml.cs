@@ -3,14 +3,15 @@ using MediaCloud.WebApp.Pages;
 using MediaCloud.WebApp.Services;
 using MediaCloud.WebApp.Services.DataService;
 using MediaCloud.WebApp.Services.Statistic;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace MediaCloud.Pages
 {
-    public class StatisticModel : BasePageModel
+    public class StatisticModel : AuthorizedPageModel
     {
-        private readonly IStatisticService _statisticService;
+        private readonly StatisticProvider _statisticProvider;
 
         [BindProperty]
         public double SizeTargetError { get; set; }
@@ -21,15 +22,15 @@ namespace MediaCloud.Pages
         [BindProperty]
         public List<Tag> Tags { get; set; } = new();
 
-        public StatisticModel(IStatisticService statisticService, IDataService dataService) : base(dataService)
+        public StatisticModel(IDataService dataService) : base(dataService)
         {
-            _statisticService = statisticService;
+            _statisticProvider = dataService.StatisticProvider;
         }
 
         public IActionResult OnGet()
         {
             ActivityBacktrackDayCount = ConfigurationService.Statistic.GetActivityBacktrackDayCount();
-            Snapshots = _statisticService.GetStatistic();
+            Snapshots = _statisticProvider.GetAllSnapshots();
             Tags = _dataService.Tags.GetTopUsed(15).Where(x => x.PreviewsCount > 0).ToList();
 
             var actualSize = _dataService.GetDbSize();

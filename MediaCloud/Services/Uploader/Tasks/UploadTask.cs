@@ -62,7 +62,6 @@ namespace MediaCloud.MediaUploader.Tasks
         public UploadTask(Actor actor, List<IFormFile> content, bool isCollection, string? tagString) 
             : base(actor)
         {
-            Id = Guid.NewGuid();
             var orderedContent = content.OrderByDescending(x => x.FileName, new FileNameComparer());
             Content = orderedContent.Where(x => x.FileName.Contains("mp4") == false)
                                                       .Select(x => x.GetBytes())

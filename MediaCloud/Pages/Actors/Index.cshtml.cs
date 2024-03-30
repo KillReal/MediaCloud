@@ -18,14 +18,11 @@ using MediaCloud.WebApp.Pages;
 
 namespace MediaCloud.Pages.Actors
 {
-    [Authorize]
-    public class ActorListModel : BasePageModel
+    public class ActorListModel : AuthorizedPageModel
     {
-        private readonly Actor _actor;
-
         public ActorListModel(IDataService dataService) : base(dataService)
         {
-            _actor = _dataService.GetCurrentActor();
+            CurrentActor = _dataService.GetCurrentActor();
             ListBuilder = new(new());
         }
 
@@ -36,7 +33,7 @@ namespace MediaCloud.Pages.Actors
 
         public async Task<IActionResult> OnGetAsync(ListRequest request)
         {
-            if (_actor == null || _actor.IsAdmin == false)
+            if (CurrentActor == null || CurrentActor.IsAdmin == false)
             {
                 return Redirect("/Account/Login");
             }

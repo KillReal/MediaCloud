@@ -3,6 +3,7 @@ using MediaCloud.Extensions;
 using MediaCloud.MediaUploader;
 using MediaCloud.Pages.Actors;
 using MediaCloud.Services;
+using MediaCloud.WebApp.Services.DataService;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,25 +13,26 @@ namespace MediaCloud.WebApp.Controllers
     [Authorize]
     public class StatisticController : Controller
     {
-        private readonly IStatisticService _statisticService;
+        private readonly StatisticProvider _statisticProvider;
+        private readonly IUploader _uploader;
 
         public IActionResult Index()
         {
             return View();
         }
 
-        public StatisticController(IStatisticService statisticService)
+        public StatisticController(IDataService dataService, IUploader uploader)
         {
-            _statisticService = statisticService;
+            _statisticProvider = dataService.StatisticProvider;
+            _uploader = uploader;
         }
 
         public dynamic GetCurrent()
         {
-            var snapshot = _statisticService.GetTodayStatistic();
+            var snapshot = _statisticProvider.GetTodaySnapshot();
 
             return new
             {
-                Status = _statisticService.GetStatus().GetDisplayName(),
                 snapshot.ActorsCount,
                 snapshot.TagsCount,
                 snapshot.MediasCount,
@@ -39,20 +41,14 @@ namespace MediaCloud.WebApp.Controllers
             };
         }
 
-        public void Recalculate(int days = 0)
+        public IActionResult Recalculate(int days = 0)
         {
-            if (days != 0)
-            {
-                _statisticService.ProceedRecalculaton(days);
-                return;
-            }
+            _statisticProvider.RemoveAllSnapshots();
+            var task = _statisticProvider.GetRecalculationTask(days);
 
-            _statisticService.ProceedRecalculaton();
-        }
+            _uploader.AddTask(task);
 
-        public string Status()
-        {
-            return _statisticService.GetStatus().GetDisplayName();
+            return Redirect($"/Uploader/GetTaskStatus?id={task.Id}");
         }
     }
 }

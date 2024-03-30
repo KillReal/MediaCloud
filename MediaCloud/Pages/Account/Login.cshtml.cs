@@ -17,7 +17,6 @@ namespace MediaCloud.WebApp.Pages
     public class LoginModel : PageModel
     {
         private readonly IActorProvider _actorProvider;
-        private readonly IStatisticService _statisticService;
         private readonly ILogger _logger;
 
         [BindProperty]
@@ -28,11 +27,10 @@ namespace MediaCloud.WebApp.Pages
         [BindProperty]
         public string ReturnUrl { get; set; } = "/";
 
-        public LoginModel(IActorProvider actorProvider, IStatisticService statisticService)
+        public LoginModel(IActorProvider actorProvider)
         {
             _actorProvider = actorProvider;
             _logger = LogManager.GetLogger("Actor.Login");
-            _statisticService = statisticService;
         }
 
         public IActionResult OnGet(string returnUrl = "/")
@@ -44,7 +42,7 @@ namespace MediaCloud.WebApp.Pages
 
         public IActionResult OnPost()
         {
-            var result = _actorProvider.AuthorizeByAuthData(AuthData, HttpContext);
+            var result = _actorProvider.Authorize(AuthData, HttpContext);
 
             if (result == false)
             {

@@ -16,8 +16,7 @@ using MediaCloud.WebApp.Pages;
 
 namespace MediaCloud.Pages.Tags
 {
-    [Authorize]
-    public class TagCreateModel : BasePageModel
+    public class TagCreateModel : AuthorizedPageModel
     {
         [BindProperty]
         public Tag Tag { get; set; } = new();

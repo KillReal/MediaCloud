@@ -25,6 +25,7 @@ namespace MediaCloud.MediaUploader.Tasks
         /// <param name="actor"> Customer of task. </param>
         public Task(Actor actor)
         {
+            Id = Guid.NewGuid();
             Actor = actor;
         }
 

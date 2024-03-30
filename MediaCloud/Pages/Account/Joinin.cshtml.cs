@@ -1,6 +1,8 @@
 using MediaCloud.Data;
 using MediaCloud.Data.Models;
+using MediaCloud.Pages.Actors;
 using MediaCloud.Repositories;
+using MediaCloud.WebApp.Services.ActorProvider;
 using MediaCloud.WebApp.Services.DataService;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -8,13 +10,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using NLog;
 using System.Security.Claims;
+using ILogger = NLog.ILogger;
 
 namespace MediaCloud.WebApp.Pages
 {
-    public class JoininModel : BasePageModel
+    public class JoininModel : PageModel
     {
+        private readonly ILogger _logger;
+        private readonly IActorProvider _actorProvider;
+
         [BindProperty]
-        public string FailStatus { get; set; } = "";
+        public RegistrationResult Result { get; set; } = new();
         [BindProperty]
         public string InviteCode { get; set; } = "";
         [BindProperty]
@@ -23,8 +29,9 @@ namespace MediaCloud.WebApp.Pages
         [BindProperty]
         public string ReturnUrl { get; set; } = "";
 
-        public JoininModel(IDataService dataService) : base(dataService)
+        public JoininModel(IActorProvider actorProvider)
         {
+            _actorProvider = actorProvider;
             _logger = LogManager.GetLogger("Actor.Joinin");
         }
 
@@ -37,37 +44,16 @@ namespace MediaCloud.WebApp.Pages
 
         public IActionResult OnPost()
         {
-            var actor = _dataService.Actors.GetByInviteCode(InviteCode);
+            Result = _actorProvider.Register(AuthData, InviteCode);
 
-            if (actor == null)
+            _logger.Info(Result.Message);
+
+            if (Result.IsSuccess)
             {
-                FailStatus = "invite code";
-                _logger.Error("Join attempt fail with next invite code: {InviteCode}", InviteCode);
-                return Page();
+                return Redirect("/Account/Login");
             }
 
-            if (_dataService.Actors.IsNameFree(AuthData.Name) == false)
-            {
-                FailStatus = "name";
-                _logger.Error("Join attempt fail with next name: {AuthData.Name}", AuthData.Name);
-                return Page();
-            }
-
-            if (AuthData.Password.Length < 6)
-            {
-                FailStatus = "password";
-                _logger.Error("Join attempt fail with next name: {AuthData.Name}", AuthData.Name);
-                return Page();
-            }
-
-            actor.Name = AuthData.Name;
-            actor.PasswordHash = SecureHash.Hash(AuthData.Password);
-            actor.IsActivated = true;
-
-            _dataService.Actors.Update(actor);
-
-            _logger.Info("Joined in actor with id: {actor.Id} and invite code: {InviteCode}", actor.Id, InviteCode);
-            return Redirect("/Account/Login");
+            return Page();
         }
     }
 }

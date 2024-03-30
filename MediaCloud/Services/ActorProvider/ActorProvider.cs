@@ -15,21 +15,14 @@ namespace MediaCloud.WebApp.Services.ActorProvider
 {
     public class ActorProvider : IActorProvider
     {
-        private readonly IStatisticService _statisticService;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly AppDbContext _context;
         private Actor? _cachedActor;
 
-        public ActorProvider(IServiceScopeFactory scopeFactory, IHttpContextAccessor httpContextAccessor, IStatisticService statisticService)
+        public ActorProvider(IServiceScopeFactory scopeFactory, IHttpContextAccessor httpContextAccessor)
         {
             _context = scopeFactory.CreateScope().ServiceProvider.GetRequiredService<AppDbContext>();
             _contextAccessor = httpContextAccessor;
-            _statisticService = statisticService;
-        }
-
-        public Actor? GetCurrent()
-        {
-            return GetCurrent(_context);
         }
 
         public Actor? GetCurrent(AppDbContext context)
@@ -43,7 +36,7 @@ namespace MediaCloud.WebApp.Services.ActorProvider
 
             var identity = httpContext.User.Identity;
 
-            if (identity == null)
+            if (identity == null || identity.Name == null)
             {
                 return null;
             }
@@ -58,7 +51,7 @@ namespace MediaCloud.WebApp.Services.ActorProvider
             return _cachedActor;
         }
 
-        public bool AuthorizeByAuthData(AuthData data, HttpContext httpContext)
+        public bool Authorize(AuthData data, HttpContext httpContext)
         {
             var actor = _context.Actors.FirstOrDefault(x => x.Name == data.Name && x.IsActivated);
 
@@ -78,30 +71,40 @@ namespace MediaCloud.WebApp.Services.ActorProvider
 
             actor.UpdatedAt = actor.UpdatedAt.ToUniversalTime();
             actor.CreatedAt = actor.CreatedAt.ToUniversalTime();
-            actor.LastLoginAt = actor.LastLoginAt.ToUniversalTime();
-
-            UpdateLastLoginAt();
-
-            _statisticService.ActivityFactorRaised.Invoke();
+            actor.LastLoginAt = DateTime.Now.ToUniversalTime();
 
             _cachedActor = actor;
 
             return true;
         }
 
-        private bool UpdateLastLoginAt()
+        public RegistrationResult Register(AuthData data, string inviteCode)
         {
-            var actor = GetCurrent(_context);
+            var actor = _context.Actors.FirstOrDefault(x => x.InviteCode == inviteCode && x.IsActivated == false);
 
             if (actor == null)
             {
-                return false;   
+                return new(false, $"Join attempt failed due to incorrect invite code: {inviteCode}");
             }
 
-            actor.LastLoginAt = DateTime.Now.ToUniversalTime();
+            if (_context.Actors.Any(x => x.Name == data.Name))
+            {
+                return new(false, $"Join attempt failed due to already existing name: {data.Name}");
+            }
 
-            new ActorRepository(_context).Update(actor);
-            return true;
+            if (data.Password.Length < 6)
+            {
+                return new(false, $"Join attempt failed due to short password, it must be longer than 6 characters");
+            }
+
+            actor.Name = data.Name;
+            actor.PasswordHash = SecureHash.Hash(data.Password);
+            actor.IsActivated = true;
+
+            _context.Actors.Update(actor);
+            _context.SaveChanges();
+
+            return new(true, $"Joined in by {data.Name} and invite code: {inviteCode}");
         }
     }
 }

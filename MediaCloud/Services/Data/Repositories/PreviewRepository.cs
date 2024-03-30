@@ -96,7 +96,7 @@ namespace MediaCloud.Repositories
 
             if (preview?.Order == 0)
             {
-                _statisticService.ActivityFactorRaised.Invoke();
+                _statisticProvider.ActivityFactorRaised.Invoke();
             }
 
             return preview;
@@ -115,7 +115,7 @@ namespace MediaCloud.Repositories
             var query = _context.Previews.AsNoTracking().Where(x => x.Order == 0);
             query = SetFilterToQuery(query, listBuilder.Filter);
 
-            _statisticService.ActivityFactorRaised.Invoke();
+            _statisticProvider.ActivityFactorRaised.Invoke();
 
             if (listBuilder.Sort.Contains("Random") &&
                 int.TryParse(listBuilder.Sort.Split('_').Last(), out int seed))
@@ -171,7 +171,7 @@ namespace MediaCloud.Repositories
                         SaveChanges();
                         _logger.Info("Removed Media in Collection with id: {preview.Collection.Id} by: {_actor.Name}", 
                             preview.Collection.Id, _actor.Name);
-                        _statisticService.MediasCountChanged.Invoke(-1, -size);
+                        _statisticProvider.MediasCountChanged.Invoke(-1, -size);
 
                         return true;
                     }
@@ -182,7 +182,7 @@ namespace MediaCloud.Repositories
                     _context.Collections.Remove(preview.Collection);
                     SaveChanges();
                     _logger.Info("Removed Collection with id: {collectionId} by: {_actor.Name}", collectionId, _actor.Name);
-                    _statisticService.MediasCountChanged.Invoke(-1, -size);
+                    _statisticProvider.MediasCountChanged.Invoke(-1, -size);
 
                     return true;
                 }
@@ -193,7 +193,7 @@ namespace MediaCloud.Repositories
             _context.Medias.Remove(preview.Media);
             SaveChanges();
             _logger.Info("Removed Media  with id: {mediaId} by: {_actor.Name}", mediaId, _actor.Name);
-            _statisticService.MediasCountChanged.Invoke(-1, -size);
+            _statisticProvider.MediasCountChanged.Invoke(-1, -size);
 
             return true;
         }

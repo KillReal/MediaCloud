@@ -9,14 +9,14 @@ namespace MediaCloud.Repositories
 {
     public class BaseRepository<T> where T : Entity
     {
-        protected IStatisticService _statisticService;
+        protected StatisticProvider _statisticProvider;
         protected AppDbContext _context;
         protected ILogger _logger;
         protected Actor _actor;
 
         public BaseRepository(RepositoryContext repositoriesContext)
         {
-            _statisticService = repositoriesContext.StatisticService;
+            _statisticProvider = repositoriesContext.StatisticProvider;
             _context = repositoriesContext.DbContext;
             _logger = repositoriesContext.Logger;
 

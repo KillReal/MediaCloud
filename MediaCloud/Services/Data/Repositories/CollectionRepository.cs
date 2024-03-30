@@ -48,7 +48,7 @@ namespace MediaCloud.Repositories
                 return new();
             }
 
-            _statisticService.ActivityFactorRaised.Invoke();
+            _statisticProvider.ActivityFactorRaised.Invoke();
 
             return _context.Previews.Where(x => x.Collection == collection)
                                     .OrderBy(x => x.Order)
@@ -122,7 +122,7 @@ namespace MediaCloud.Repositories
             var size = medias.Sum(x => x.Size);
 
             _context.Medias.RemoveRange(medias);
-            _statisticService.MediasCountChanged(-count, -size);
+            _statisticProvider.MediasCountChanged(-count, -size);
 
             Remove(collection);
 

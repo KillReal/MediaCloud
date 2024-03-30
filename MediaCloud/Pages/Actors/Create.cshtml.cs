@@ -20,8 +20,7 @@ using MediaCloud.WebApp.Pages;
 
 namespace MediaCloud.Pages.Actors
 {
-    [Authorize]
-    public class ActorCreateModel : BasePageModel
+    public class ActorCreateModel : AuthorizedPageModel
     {
         [BindProperty]
         public Actor Actor { get; set; } = new();
