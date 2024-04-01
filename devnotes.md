@@ -15,13 +15,13 @@ Done:
 - Button to Statistic page for recalculation personal statistic
 - Modal window for recalculation task queue
 - New homepage design
+- Fix tag autocompletion in Medias pages
 
 Todo:
 
 - Fix layouts misaligment on smaller displays
 - Fix gallery layout and autoloading on smaller displays (less than actual number of columns)
 - Fix statistics dashboards on smaller displays (low width)
-- Fix tag autocompletion in Medias pages
 - Use CSS styles
 - Solve returnUrl problem (Support only one step hitory)
 - Refactor HTML in Pages

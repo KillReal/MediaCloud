@@ -105,6 +105,8 @@
 <script src="~/js/tagAutocompletion.js"></script>
 
 <script>
+    autocomplete(document.getElementById("filterGrab"));
+
     document.addEventListener('keydown', (event) => {
         if ( event.code == 'ArrowLeft') {
             document.getElementById("left-arrow").click();
