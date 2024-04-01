@@ -5,169 +5,71 @@
     ViewData["Title"] = "Upload";
 }
 
-<h1 class="pt-3 text-white">Upload</h1>
-<div class="button-panel d-flex flex-row align-items-center mt-3">
-           <div>
-                <a href="@(Model.ReturnUrl)" class="btn mt-3 btn-info">Back to Gallery</a>
+<div class="page-container">
+    <h1>Upload</h1>
+    <div class="button-panel">
+        <div>
+            <a href="@(Model.ReturnUrl)" class="btn btn-info mt-3">Back to Gallery</a>
+        </div>
+    </div>
+    <hr class="text-white"/>
+    <div class="row text-white">
+        <div class="col-md-4">
+            <form enctype="multipart/form-data" id='uploadForm' method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control">
+                <div class="form-group mb-3">
+                <label class="col-form-label">Select File</label>
+                    <input asp-for="Files" class="form-control" />
+                    <span asp-validation-for="Files" class="text-danger"></span>
+                </div>
+                <div class="form-group autocomplete-list autocomplete mb-3" style="width:100%">
+                    <label class="col-form-label">Enter tags with spaces between</label>
+                    <textarea asp-for="@Model.Tags" class="form-control" id="filterGrab"></textarea>
+                </div>
+                <div class="form-group mb-3 form-check">
+                <input class="form-check-input" type="checkbox" asp-for=IsCollection>
+                <label class="form-check-label" asp-for=IsCollection>
+                    It's a collection
+                </label>
+                </div>
+                <div class="form-group mb-3">
+                    <input type="submit" value="Upload" class="btn btn-success" />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="loadingModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="modalTitle">Media uploading...</h5>
+            <div class="spinner-border text-primary" role="status" id="loadingSpinner" style="display: block">
             </div>
         </div>
-<hr class="text-white"/>
-<div class="row text-white">
-    <div class="col-md-4">
-        <form enctype="multipart/form-data" id='uploadForm' method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control">
-            <div class="form-group mb-3">
-              <label class="col-form-label">Select File</label>
-                <input asp-for="Files" class="form-control" />
-                <span asp-validation-for="Files" class="text-danger"></span>
+        <div class="modal-body" id="modalBody">
+            <div class="mb-1">
+                        <label class="col-form-label" id="orderPos">Your position in order: updating...</label>
             </div>
-            <div class="form-group autocomplete-list autocomplete mb-3" style="width:100%">
-                <label class="col-form-label">Enter tags with spaces between</label>
-                <textarea asp-for="@Model.Tags" class="form-control" id="filterGrab"></textarea>
+            <div class="mb-1">
+                        <label class="col-form-label" id="mediasCount">Medias count: updating...</label>
             </div>
-            <div class="form-group mb-3 form-check">
-              <input class="form-check-input" type="checkbox" asp-for=IsCollection>
-              <label class="form-check-label" asp-for=IsCollection>
-                It's a collection
-              </label>
-            </div>
-            <div class="form-group mb-3">
-                <input type="submit" value="Upload" class="btn btn-success" />
-            </div>
-        </form>
+        </div>
+        <div class="modal-footer">
+            <a href="@Model.ReturnUrl" class="btn btn-primary">Back to Gallery</a>
+        </div>
+        </div>
+    </div>
     </div>
 </div>
 
-<div class="modal" id="loadingModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalTitle">Media uploading...</h5>
-        <div class="spinner-border text-primary" role="status" id="loadingSpinner" style="display: block">
-        </div>
-      </div>
-      <div class="modal-body" id="modalBody">
-        <div class="mb-1">
-                    <label class="col-form-label" id="orderPos">Your position in order: updating...</label>
-        </div>
-        <div class="mb-1">
-                    <label class="col-form-label" id="mediasCount">Medias count: updating...</label>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <a href="@Model.ReturnUrl" class="btn btn-primary">Back to Gallery</a>
-      </div>
-    </div>
-  </div>
-</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
 
 <script src="~/js/tagAutocompletion.js"></script>
-
-<script type="text/javascript">    
-    var orderPosElem = document.getElementById('orderPos');
-    var mediaCountElem = document.getElementById('mediasCount');
-    var modalTitle = document.getElementById('modalTitle');
-    var modalBody = document.getElementById("modalBody");
-    var loadSpinner = document.getElementById("loadingSpinner");
+<script src="~/Pages/Medias/Upload.cshtml.js"></script>
     
-    function updateModalLoadBody(data) {
-        if (data == undefined) {
-            orderPosElem.innerHTML = 'Your position in order: updating...';
-            mediaCountElem.innerHTML = 'Medias count: updating...';
-        }
-        else {
-            orderPosElem.innerHTML = 'Your position in order: ' + data.queuePosition;
-            mediaCountElem.innerHTML = 'Medias count: ' + data.workCount;
-        }
-    }
-
-    function setModalTitle(title) {
-        modalTitle.innerHTML = title;
-    }
-
-    function hideModalBody() {
-        modalBody.style.display = "none";
-    }
-
-    function showModalBody() {
-        modalBody.style.display = "block";
-    }
-
-    function showLoadSpinner()
-    {
-        loadSpinner.style.display = "block";
-    }
-
-    function hideLoadSpinner()
-    {
-        loadSpinner.style.display = "none";
-    }
-    
-    function formSubmit(event) {
-        setModalTitle('Sending to server...');
-        showModalBody();
-        updateModalLoadBody();
-
-        var url = "/Medias/Upload";
-        var request = new XMLHttpRequest();
-        request.open('POST', url, true);
-        request.onload = function() { // request successful
-            setModalTitle('Waiting queue for processing...');
-            showModalBody();
-            updateModalLoadBody();
-            $('#loadingModal').modal('show');
-            var data = JSON.parse(request.response);
-
-            var url = "/Uploader/GetTaskStatus?id=" + data.id;
-            
-            console.log('Goes to update status');
-
-            const updator = function () {
-                fetch(url)
-                    .then((response) => response.json())
-                    .then(function (data) {
-                        updateModalLoadBody(data);
-                        if (data.queuePosition > 1) {
-                            setModalTitle('Waiting queue for processing...');
-                        }
-                        else if (data.queuePosition = 0 && data.workCount > 0) {
-                            setModalTitle('Server processing...');
-                        }
-                        else if (data.workCount == 0 && data.isInProgress == false) {
-                            setModalTitle('Media successfully uploaded!');
-                            hideModalBody();
-                            hideLoadSpinner();
-
-                            clearInterval(loadingUpdateInterval);
-                        }
-                        else if (data.workCount == 0) {
-                            setModalTitle('Saving in database...');
-                            showLoadSpinner();
-                        }
-                    })
-            }
-
-            updator();
-            var loadingUpdateInterval = setInterval(updator, 1500);
-        };
-
-        request.onerror = function() {
-        // request failed
-        };
-
-        request.send(new FormData(event.target)); // create FormData from form that triggered event
-        event.preventDefault();
-    }
-
-        // and you can attach form submit event like this for example
-    function attachFormSubmitEvent(formId){
-        document.getElementById(formId).addEventListener("submit", formSubmit);
-    }
-
-    attachFormSubmitEvent('uploadForm');
 </script>
