@@ -23,14 +23,13 @@ namespace MediaCloud.WebApp.Pages
         public bool IsFailed { get; set; } = false;
         [BindProperty]
         public AuthData AuthData { get; set; } = new();
-
         [BindProperty]
         public string ReturnUrl { get; set; } = "/";
 
         public LoginModel(IActorProvider actorProvider)
         {
             _actorProvider = actorProvider;
-            _logger = LogManager.GetLogger("Actor.Login");
+            _logger = LogManager.GetLogger("Actor");
         }
 
         public IActionResult OnGet(string returnUrl = "/")

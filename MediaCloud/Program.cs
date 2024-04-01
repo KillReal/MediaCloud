@@ -82,12 +82,5 @@ app.MapControllerRoute(
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGet("/Account/Logout", async (HttpContext context) =>
-{
-    await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-    LogManager.GetLogger("Actor.Logout").Info("Logout actor with name: {AuthData.Name}", context.User.Identity?.Name);
-    return Results.Redirect("/");
-});
-
 app.MapRazorPages();
 app.Run();

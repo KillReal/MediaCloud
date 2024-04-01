@@ -25,14 +25,13 @@ namespace MediaCloud.WebApp.Pages
         public string InviteCode { get; set; } = "";
         [BindProperty]
         public AuthData AuthData { get; set; } = new();
-
         [BindProperty]
         public string ReturnUrl { get; set; } = "";
 
         public JoininModel(IActorProvider actorProvider)
         {
             _actorProvider = actorProvider;
-            _logger = LogManager.GetLogger("Actor.Joinin");
+            _logger = LogManager.GetLogger("Actor");
         }
 
         public IActionResult OnGet(string returnUrl = "/")
