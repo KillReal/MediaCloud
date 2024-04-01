@@ -55,6 +55,25 @@ body {
     width: 100%;
 }
 
+.page-title {
+    border-radius: .3rem !important;
+    padding: 1rem !important;
+    --bs-text-opacity: 1;
+    color: rgba(var(--bs-white-rgb), var(--bs-text-opacity)) !important;
+}
+
+.button-panel {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+}
+
+.control-button-panel {
+    display: flex !important;
+    justify-content: space-between !important;
+    margin-bottom: 1rem !important;
+}
+
 .picture {
     transition: transform .3s; /* Animation */
 }
@@ -88,6 +107,7 @@ body {
 }
 
 .gallery {
+   display: flex;
    margin-top: 2rem!important;
    margin-bottom: 2rem!important;
 }

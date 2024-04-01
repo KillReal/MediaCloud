@@ -7,10 +7,10 @@
     ViewData["Title"] = "Collection";
 }
 
-<div class = "page rounded-3 p-3 text-white">
+<div class = "page-title">
     <h1>Collection</h1>
 
-    <div class="button-panel d-flex flex-row align-items-center">
+    <div class="button-panel">
            <div>
                 <a href="@(Model.ReturnUrl)" class="btn btn-info mt-4">Back to Gallery</a>
             </div>
@@ -49,7 +49,9 @@
         <div class="row">
             <div class="form-group mb-3 col-sm h-100 autocomplete-list autocomplete">
                 <label class="col-form-label">Enter tags with spaces between</label>
-                <textarea asp-for="@Model.TagsString" class="form-control" style="height: 100%" id="filterGrab"></textarea>
+                <textarea asp-for="@Model.TagsString" class="form-control" style="height: 100%" id="filterGrab">
+
+                </textarea>
             </div>
             <div class="col-sm">
                 <label class="col-form-label" style="visibility: hidden">List of existed tags</label>
@@ -60,19 +62,31 @@
                         {
                             if (tag.Type == TagType.Character)
                             {
-                                <a class="btn btn-warning btn-rounded me-1 mb-2" asp-page="/Tags/Detail" asp-route-id=@tag.Id>@tag.Name</a>
+                                <a class="btn btn-warning btn-rounded me-1 mb-2" 
+                                    asp-page="/Tags/Detail" 
+                                    asp-route-id=@tag.Id>@tag.Name
+                                </a>
                             }
                             else if (tag.Type == TagType.Series)
                             {
-                                <a class="btn btn-success btn-rounded me-1 mb-2" asp-page="/Tags/Detail" asp-route-id=@tag.Id>@tag.Name</a>
+                                <a class="btn btn-success btn-rounded me-1 mb-2" 
+                                    asp-page="/Tags/Detail" 
+                                    asp-route-id=@tag.Id>@tag.Name
+                                </a>
                             }
                             else if (tag.Type == TagType.Clothes)
                             {
-                                <a class="btn btn-danger btn-rounded me-1 mb-2" asp-page="/Tags/Detail" asp-route-id=@tag.Id>@tag.Name</a>
+                                <a class="btn btn-danger btn-rounded me-1 mb-2" 
+                                    asp-page="/Tags/Detail" 
+                                    asp-route-id=@tag.Id>@tag.Name
+                                </a>
                             }
                             else
                             {
-                                <a class="btn btn-info btn-rounded me-1 mb-2" asp-page="/Tags/Detail" asp-route-id=@tag.Id>@tag.Name</a>
+                                <a class="btn btn-info btn-rounded me-1 mb-2" 
+                                    asp-page="/Tags/Detail" 
+                                    asp-route-id=@tag.Id>@tag.Name
+                                </a>
                             }
                         }
                     </li>
@@ -80,24 +94,35 @@
             </div>
         </div>
 
-        <div class="form-group mt-3 mb-3 d-flex justify-content-between">
+        <div class="form-group control-button-panel">
             <input type="submit" value="Edit" class="btn btn-success" />
-            <a class="btn btn-info btn-rounded me-1 ms-2" onclick="startReorder();" id="reorder-button">Reorder</a>
-            <a class="btn btn-info btn-rounded me-1 ms-2 text-nowrap" asp-page="Index" asp-route-filter=@(Model.TagsString) asp-route-sort=@("UpdatedAtDesc")>Show similar</a>
-            <button class="btn btn-danger btn-rounded" asp-page-handler="Delete" asp-route-id=@(Model.Collection.Id)>Remove</button>
+            <a class="btn btn-info btn-rounded me-1 ms-2" onclick="startReorder();" id="reorder-button">
+                Reorder
+            </a>
+            <a class="btn btn-info btn-rounded me-1 ms-2 text-nowrap" 
+                asp-page="Index" 
+                asp-route-filter=@(Model.TagsString) 
+                asp-route-sort=@("UpdatedAtDesc")>
+                Show similar
+            </a>
+            <button class="btn btn-danger btn-rounded" 
+                asp-page-handler="Delete" 
+                asp-route-id=@(Model.Collection.Id)>
+                Remove
+            </button>
         </div>
 
-        <div class="row gallery" id="gallery" style="display: flex"> 
-            
+        <div class="row gallery" id="gallery">   
+                
         </div>
 
         <div class="d-flex justify-content-center">
-            @if (Model.Collection.Previews.Count() >= Model.ListRequest.Count)
-            {
-                <div class="spinner-border text-light" role="status" id="loadingSpinner" style="display: block; width:3rem; height:3rem"></div>
-            }
+            <div class="spinner-border text-light" 
+                role="status" 
+                id="loadingSpinner" 
+                style="display: none; width:3rem; height:3rem">
+            </div>
         </div>
-
     </form>
     
 </div>
@@ -130,68 +155,104 @@
         document.getElementById('gallery').style.display = "none";
     }
 
+    function CreateImg(content) {
+        //Create new picture element
+        var img = document.createElement('img');
+        img.className = "w-100 shadow-1-strong";
+        img.style = "border-radius: 0.5rem";
+        img.src = "data:image/png;base64," + content;
+        
+        return img;
+    }
+
+    function CreateActualCard(data, id) {
+        // Create new actual card
+        var cardDiv = document.createElement('div');
+        cardDiv.className = "picture-card picture shadow-1-strong col-md-4";
+        cardDiv.id = id;
+        cardDiv.onclick = function (e) {
+            var id = e.currentTarget.id;
+            window.location = "Detail?id=" + data[id].id + "&returnUrl=/Medias/Collection?id=" + 
+                '@Model.Collection.Id';
+        }
+
+        // With image
+        var img = CreateImg(data[id].content);
+
+        cardDiv.appendChild(img);
+
+        return cardDiv;
+    }
+
+    function CreateSortCard(data, id, orderId) {
+        // Create new sort card
+        var sortCardDiv = document.createElement('div');
+        sortCardDiv.className = "picture-card shadow-1-strong col-md-2";
+        sortCardDiv.draggable = true;
+        sortCardInnerDiv = document.createElement('div');
+        sortCardInnerDiv.className = "card list-clickable p-2 pb-4 d-flex flex-column align-items-center justify-content-between thumbnail";
+        sortCardInnerDiv.style = "border-radius: 0.75rem";
+
+        // With image
+        var img = CreateImg(data[id].content);
+
+        // Create sort input iterator
+        var sortInput = document.createElement('input');
+        sortInput.className = "order-val visually-hidden";
+        sortInput.type = "number";
+        sortInput.id = "Orders_" + orderId;
+        sortInput.name = "Orders[" + orderId + "]";
+        sortInput.value = data[id].order;
+
+        sortCardInnerDiv.appendChild(img);
+        sortCardInnerDiv.appendChild(sortInput);
+        sortCardDiv.appendChild(sortCardInnerDiv);
+
+        return sortCardDiv;
+    }
+
     var currentOffset = -@Model.ListRequest.Count;
     var nextOffset = 0;
 
     window.addEventListener("scroll", function (e) {
+        // OnScroll autoloading
         if ((window.innerHeight + window.scrollY + 2000) >= document.body.offsetHeight) {
+            // Continue if we at end of page
             if (currentOffset == nextOffset) {
+                // Return if we displayed all elements in batches
                 return;
             }
             
             if (currentOffset > @Model.TotalCount) {
+                // If it last batch, hide loading spinner and return
                 nextOffset = currentOffset;
                 document.getElementById('loadingSpinner').style = "display: none";
                 return;
             }
 
+            // Update current progress
             currentOffset += @Model.ListRequest.Count;
-            
 
+            // Get next batch
             var url = "/Collection/PreviewsBatch?id=" + '@Model.Collection.Id' + "&count=" + @Model.ListRequest.Count + "&offset=" + nextOffset;
             fetch(url).then(function (response) {
                 return response.json();
             }).then(function (data) {
+                // Get gallerie to show elements batch. One for viewing and one for sorting.
                 var gallery = document.getElementById('gallery');
                 var sortableGallery = document.getElementById('sortable-gallery');
                 for (var i = 0; i < data.length; i++) {
-                    sortCardDiv = document.createElement('div');
-                    sortCardDiv.className = "picture-card shadow-1-strong col-md-2";
-                    sortCardDiv.draggable = true;
-                    sortCardInnerDiv = document.createElement('div');
-                    sortCardInnerDiv.className = "card list-clickable p-2 pb-4 d-flex flex-column align-items-center justify-content-between thumbnail";
-                    sortCardInnerDiv.style = "border-radius: 0.75rem";
-                    var sortImg = document.createElement('img');
-                    sortImg.className = "w-100 shadow-1-strong";
-                    sortImg.style = "border-radius: 0.5rem";
-                    sortImg.src = "data:image/png;base64," + data[i].content;
-                    var sortInput = document.createElement('input');
-                    sortInput.className = "order-val visually-hidden";
-                    sortInput.type = "number";
-                    sortInput.id = "Orders_" + (i + currentOffset);
-                    sortInput.name = "Orders[" + (i + currentOffset) + "]";
-                    sortInput.value = data[i].order;
+                    // For each element in batch
+                    // Creates new cards
+                    var sortCard = CreateSortCard(data, i, i + currentOffset);
+                    var actualCard = CreateActualCard(data, i);
 
-                    var cardDiv = document.createElement('div');
-                    cardDiv.className = "picture-card picture shadow-1-strong col-md-4";
-                    cardDiv.id = i;
-                    cardDiv.onclick = function (e) {
-                        var id = e.currentTarget.id;
-                        window.location = "Detail?id=" + data[id].id + "&returnUrl=/Medias/Collection?id=" + '@Model.Collection.Id';
-                    }
-                    var img = document.createElement('img');
-                    img.className = "w-100 shadow-1-strong";
-                    img.style = "border-radius: 0.5rem";
-                    img.src = "data:image/png;base64," + data[i].content;
-
-                    cardDiv.appendChild(img);
-                    gallery.appendChild(cardDiv);
-
-                    sortCardInnerDiv.appendChild(sortImg);
-                    sortCardInnerDiv.appendChild(sortInput);
-                    sortCardDiv.appendChild(sortCardInnerDiv);
-                    sortableGallery.appendChild(sortCardDiv);
+                    // Add them to galleries
+                    gallery.appendChild(actualCard);
+                    sortableGallery.appendChild(sortCard);
                 }
+
+                // Move to next batch
                 sortable('.thumbnail-sortable');
                 nextOffset += @Model.ListRequest.Count;
             }).catch(function (err) {
