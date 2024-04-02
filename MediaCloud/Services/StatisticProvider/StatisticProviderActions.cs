@@ -16,32 +16,40 @@ namespace MediaCloud.WebApp.Services.Statistic
         private void MediasCountChangedAction(int affectedCount, long affectedSize)
         {
             var snapshot = GetTodaySnapshot();
+
             snapshot.ActivityFactor += 1;
             snapshot.MediasCount += affectedCount;
             snapshot.MediasSize += affectedSize;
-            CreateOrUpdateSnapshotByDate(snapshot, DateTime.Now.Date);
+
+            CreateOrUpdateSnapshot(snapshot);
         }
 
         private void TagsCountChangedAction(int affectedCount)
         {
             var snapshot = GetTodaySnapshot();
+
             snapshot.ActivityFactor += 1;
             snapshot.TagsCount += affectedCount;
-            CreateOrUpdateSnapshotByDate(snapshot, DateTime.Now.Date);
+
+            CreateOrUpdateSnapshot(snapshot);
         }
         private void ActorsCountChangedAction(int affectedCount)
         {
             var snapshot = GetTodaySnapshot();
+
             snapshot.ActivityFactor += 1;
             snapshot.ActorsCount += affectedCount;
-            CreateOrUpdateSnapshotByDate(snapshot, DateTime.Now.Date);
+
+            CreateOrUpdateSnapshot(snapshot);
         }
 
         private void ActivityFactorRaisedAction()
         {
             var snapshot = GetTodaySnapshot();
+
             snapshot.ActivityFactor += 1;
-            CreateOrUpdateSnapshotByDate(snapshot, DateTime.Now.Date);
+            
+            CreateOrUpdateSnapshot(snapshot);
         }
 
     }
