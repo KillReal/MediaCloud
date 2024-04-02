@@ -47,7 +47,7 @@
                     </ul>
                 </div>
                     <div class="me-3 collapse navbar-collapse collapse d-sm-inline-flex justify-content-between text-right" id="myNavbar">
-                    @if (Model.GetType().IsSubclassOf(typeof(AuthorizedPageModel)) && Model.CurrentActor != null)
+                    @if (Model.CurrentActor != null)
                         {
                             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                                 <li class="nav-item">

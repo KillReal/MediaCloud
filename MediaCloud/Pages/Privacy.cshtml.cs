@@ -1,16 +1,24 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MediaCloud.Data;
+using MediaCloud.Data.Models;
+using MediaCloud.WebApp.Services.ActorProvider;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace MediaCloud.Pages
 {
     public class ChangelogModel : PageModel
     {
-        public ChangelogModel()
-        {
+        [BindProperty]
+        public Actor? CurrentActor { get; set; }
+
+        public ChangelogModel(IActorProvider actorProvider, AppDbContext context)
+        { 
+            CurrentActor = actorProvider.GetCurrent(context);
         }
 
-        public void OnGet()
+        public IActionResult OnGet()
         {
+            return Page();
         }
     }
 }
