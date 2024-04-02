@@ -33,13 +33,13 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
+builder.Services.AddScoped<IConfigProvider, ConfigProvider>();
 builder.Services.AddSingleton<IActorProvider, ActorProvider>();
 builder.Services.AddSingleton<IUploader, Uploader>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IDataService, DataService>();
 builder.Services.AddScoped<IPictureService, PictureService>();
-builder.Services.AddScoped<IConfigProvider, ConfigProvider>();
 
 builder.Services.Configure<FormOptions>(x =>
 {

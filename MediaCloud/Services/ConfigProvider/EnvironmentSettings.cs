@@ -12,8 +12,7 @@ namespace MediaCloud.WebApp.Services.ConfigurationProvider
 
         public EnvironmentSettings(IConfiguration configuration)
         {
-            var dbPath = configuration?["ConnectionStrings:Database"];
-            DatabaseConnectionString =  dbPath?.Split(";").First().Split("=").Last() ?? "";
+            DatabaseConnectionString = configuration?["ConnectionStrings:Database"];
             CookieExpireTime = configuration.GetValue<int>("CookieExpireTime");
             PreviewMaxHeight = configuration.GetValue<int>("PreviewMaxHeight");
             TaskSchedulerWorkerCount = configuration.GetValue<int>("TaskSchedulerWorkerCount");

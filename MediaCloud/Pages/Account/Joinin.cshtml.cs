@@ -3,6 +3,7 @@ using MediaCloud.Data.Models;
 using MediaCloud.Pages.Actors;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services.ActorProvider;
+using MediaCloud.WebApp.Services.ConfigurationProvider;
 using MediaCloud.WebApp.Services.DataService;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -18,6 +19,7 @@ namespace MediaCloud.WebApp.Pages
     {
         private readonly ILogger _logger;
         private readonly IActorProvider _actorProvider;
+        private readonly IConfigProvider _configProvider;
 
         [BindProperty]
         public RegistrationResult Result { get; set; } = new();
@@ -28,9 +30,10 @@ namespace MediaCloud.WebApp.Pages
         [BindProperty]
         public string ReturnUrl { get; set; } = "";
 
-        public JoininModel(IActorProvider actorProvider)
+        public JoininModel(IActorProvider actorProvider, IConfigProvider configProvider)
         {
             _actorProvider = actorProvider;
+            _configProvider = configProvider;
             _logger = LogManager.GetLogger("Actor");
         }
 
@@ -43,7 +46,7 @@ namespace MediaCloud.WebApp.Pages
 
         public IActionResult OnPost()
         {
-            Result = _actorProvider.Register(AuthData, InviteCode);
+            Result = _actorProvider.Register(_configProvider, AuthData, InviteCode);
 
             _logger.Info(Result.Message);
 

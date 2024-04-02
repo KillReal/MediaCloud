@@ -24,12 +24,16 @@ namespace MediaCloud.WebApp.Pages
         [BindProperty]
         public AuthData AuthData { get; set; } = new();
         [BindProperty]
+        public Actor? CurrentActor { get; set; }
+        [BindProperty]
         public string ReturnUrl { get; set; } = "/";
 
         public LoginModel(IActorProvider actorProvider)
         {
             _actorProvider = actorProvider;
             _logger = LogManager.GetLogger("Actor");
+
+            CurrentActor = _actorProvider.GetCurrent();
         }
 
         public IActionResult OnGet(string returnUrl = "/")

@@ -9,7 +9,6 @@ namespace MediaCloud.WebApp.Services.ConfigurationProvider
 {
     public class ConfigProvider : IConfigProvider
     {
-        private IActorProvider _actorProvider;
         private IConfiguration _configuration;
         private ILogger _logger;
 
@@ -29,18 +28,17 @@ namespace MediaCloud.WebApp.Services.ConfigurationProvider
         public ActorSettings ActorSettings { get; set; }
         public EnvironmentSettings EnvironmentSettings { get; set; }
 
-        public ConfigProvider(IConfiguration configuration, IActorProvider actorProvider, AppDbContext context)
+        public ConfigProvider(IConfiguration configuration, IActorProvider actorProvider)
         {
-            _actorProvider = actorProvider;
             _configuration = configuration;
             _logger = LogManager.GetLogger("ConfigurationProvider");
 
-            var currentActor = _actorProvider.GetCurrent(context);
+            var actor = actorProvider.GetCurrent();
 
-            if (currentActor != null)
+            if (actor != null)
             {
-                _logger.Debug("Initialized ConfigurationProvider by actor: {0}", currentActor.Name);
-                ActorSettings = ParseActorSettings(currentActor);
+                _logger.Debug("Initialized ConfigurationProvider by actor: {0}", actor.Name);
+                ActorSettings = ParseActorSettings(actor);
             }
             else 
             {
@@ -51,10 +49,10 @@ namespace MediaCloud.WebApp.Services.ConfigurationProvider
             EnvironmentSettings = new(_configuration);
         }
 
-        public bool SaveActorSettings()
+        public bool SaveActorSettings(IActorProvider actorProvider)
         {
             var jsonSettings = JsonConvert.SerializeObject(ActorSettings, Formatting.Indented);
-            return _actorProvider.SaveSettings(jsonSettings);
+            return actorProvider.SaveSettings(jsonSettings);
         }
     }
 }

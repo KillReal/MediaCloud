@@ -11,9 +11,9 @@ namespace MediaCloud.Pages
         [BindProperty]
         public Actor? CurrentActor { get; set; }
 
-        public PrivacyModel(IActorProvider actorProvider, AppDbContext context)
+        public PrivacyModel(IActorProvider actorProvider)
         { 
-            CurrentActor = actorProvider.GetCurrent(context);
+            CurrentActor = actorProvider.GetCurrent();
         }
 
         public IActionResult OnGet()

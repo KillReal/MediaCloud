@@ -13,6 +13,7 @@ namespace MediaCloud.WebApp.Services.DataService
 {
     public class DataService : IDataService
     {
+        private readonly IActorProvider _actorProvider;
         private readonly RepositoryContext _repositoryContext;
         private readonly IConfigProvider _configProvider;
 
@@ -25,7 +26,8 @@ namespace MediaCloud.WebApp.Services.DataService
             _configProvider = serviceScope.ServiceProvider.GetRequiredService<IConfigProvider>();
             var pictureService = serviceScope.ServiceProvider.GetRequiredService<IPictureService>();
 
-            var currentActor = actorProvider.GetCurrent(dbContext);
+            _actorProvider = actorProvider;
+            var currentActor = _actorProvider.GetCurrent();
             StatisticProvider = new StatisticProvider(dbContext, currentActor);
             _repositoryContext = new RepositoryContext(dbContext, StatisticProvider, pictureService, logger, currentActor);
 
@@ -70,7 +72,7 @@ namespace MediaCloud.WebApp.Services.DataService
         public void SaveActorSettings(ActorSettings settings)
         {
             _configProvider.ActorSettings = settings;
-            _configProvider.SaveActorSettings();
+            _configProvider.SaveActorSettings(_actorProvider);
         }
 
         public void SaveEnvironmentSettings(EnvironmentSettings settings)

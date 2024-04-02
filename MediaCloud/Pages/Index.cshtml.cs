@@ -15,9 +15,9 @@ namespace MediaCloud.Pages
         [BindProperty]
         public Actor? CurrentActor { get; set; }
 
-        public IndexModel(IActorProvider actorProvider, AppDbContext context)
+        public IndexModel(IActorProvider actorProvider)
         { 
-            CurrentActor = actorProvider.GetCurrent(context);
+            CurrentActor = actorProvider.GetCurrent();
         }
 
         public IActionResult OnGet()

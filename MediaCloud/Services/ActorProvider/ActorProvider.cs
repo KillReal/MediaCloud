@@ -18,17 +18,16 @@ namespace MediaCloud.WebApp.Services.ActorProvider
     {
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly AppDbContext _context;
-        private readonly IConfigProvider _configProvider;
         private Actor? _cachedActor;
 
         public ActorProvider(IServiceScopeFactory scopeFactory, IHttpContextAccessor httpContextAccessor)
         {
-            _context = scopeFactory.CreateScope().ServiceProvider.GetRequiredService<AppDbContext>();
-            _configProvider = scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IConfigProvider>();
+            var scope = scopeFactory.CreateScope();
+            _context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             _contextAccessor = httpContextAccessor;
         }
 
-        public Actor? GetCurrent(AppDbContext context)
+        public Actor? GetCurrent()
         {
             var httpContext = _contextAccessor.HttpContext;
 
@@ -49,7 +48,7 @@ namespace MediaCloud.WebApp.Services.ActorProvider
                 return _cachedActor;
             }
 
-            _cachedActor = new ActorRepository(context).Get(identity.Name);
+            _cachedActor = new ActorRepository(_context).Get(identity.Name);
 
             return _cachedActor;
         }
@@ -81,7 +80,7 @@ namespace MediaCloud.WebApp.Services.ActorProvider
             return true;
         }
 
-        public RegistrationResult Register(AuthData data, string inviteCode)
+        public RegistrationResult Register(IConfigProvider configProvider, AuthData data, string inviteCode)
         {
             var actor = _context.Actors.FirstOrDefault(x => x.InviteCode == inviteCode && x.IsActivated == false);
 
@@ -95,12 +94,12 @@ namespace MediaCloud.WebApp.Services.ActorProvider
                 return new(false, $"Join attempt failed due to already existing name: {data.Name}");
             }
 
-            if (data.Password.Length < _configProvider.EnvironmentSettings.PasswordMinLength)
+            if (data.Password.Length < configProvider.EnvironmentSettings.PasswordMinLength)
             {
                 return new(false, $"Join attempt failed due to short password, it must be longer than 6 characters");
             }
 
-            if (data.Password.Any(x => char.IsSymbol(x)) == false && _configProvider.EnvironmentSettings.PasswordMustHaveSymbols)
+            if (data.Password.Any(x => char.IsSymbol(x)) == false && configProvider.EnvironmentSettings.PasswordMustHaveSymbols)
             {
                 return new(false, $"Join attempt failed due to week password, it must contain at least one symbol");
             }
@@ -117,7 +116,7 @@ namespace MediaCloud.WebApp.Services.ActorProvider
 
         public bool SaveSettings(string jsonSettings)
         {
-            var currentActor = GetCurrent(_context);
+            var currentActor = GetCurrent();
 
             if (currentActor != null) {
                 currentActor.PersonalSettings = jsonSettings;
