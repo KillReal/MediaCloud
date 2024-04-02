@@ -16,26 +16,26 @@ Done:
 - Modal window for recalculation task queue
 - New homepage design
 - Fix tag autocompletion in Medias pages
+- Move javascript code in RazorPages from html to ```*.cshtml.js```
+- Use CSS styles
+- Actor settings page. Configuration service must provide actor based settings
 
 Todo:
 
 - Fix layouts misaligment on smaller displays
 - Fix gallery layout and autoloading on smaller displays (less than actual number of columns)
 - Fix statistics dashboards on smaller displays (low width)
-- Use CSS styles
 - Solve returnUrl problem (Support only one step hitory)
 - Refactor HTML in Pages
 	- [ ] 	Use Table layout
 	- [ ] 	Find dynamic gallery layout with resizing support
 	- [x] 	Dynamicly change columns
 		- Rejected due to hard implementation and onresize triggering
-- Actor settings page. Configuration service must provide actor based settings
 - Implement password security polices
 - Review sql requests (Accordingly to ActorProvider staff)
 - Rename Uploader to TaskScheduler
 - Add debug init logging to services
 - Admin check for display actors in Statistic and Statistic
-- Move javascript code in RazorPages from html to ```*.cshtml.js```
 
 
 # Changelog				   
