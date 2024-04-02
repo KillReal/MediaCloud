@@ -106,5 +106,20 @@ namespace MediaCloud.WebApp.Services.ActorProvider
 
             return new(true, $"Joined in by {data.Name} and invite code: {inviteCode}");
         }
+
+        public bool SaveSettings(string jsonSettings)
+        {
+            var currentActor = GetCurrent(_context);
+
+            if (currentActor != null) {
+                currentActor.PersonalSettings = jsonSettings;
+                _context.Actors.Update(currentActor);
+                _context.SaveChanges();
+
+                return true;
+            }
+
+            return false;
+        }
     }
 }

@@ -9,5 +9,6 @@
         public bool IsActivated { get; set; }
         public DateTime LastLoginAt { get; set; }
         public string? InviteCode { get; set; }
+        public string? PersonalSettings { get; set; }
     }
 }

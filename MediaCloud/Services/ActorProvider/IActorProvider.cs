@@ -8,5 +8,6 @@ namespace MediaCloud.WebApp.Services.ActorProvider
         public Actor? GetCurrent(AppDbContext context);
         public bool Authorize(AuthData data, HttpContext httpContext);
         public RegistrationResult Register(AuthData data, string inviteCode);
+        public bool SaveSettings(string jsonSettings);
     }
 }
