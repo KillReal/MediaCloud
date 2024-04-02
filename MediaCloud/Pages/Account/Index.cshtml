@@ -6,7 +6,7 @@
 
 <div class="page-container">
     <h1>
-        Actor list
+        Account settings
     </h1>
 
     <div class="button-panel">
@@ -21,7 +21,7 @@
 
     <div class="page-center-container">
 		<div class="card w-50" style="border-radius: 1rem;">
-			<div class="card-body p-5 text-center text-black">
+			<div class="card-body p-5 text-left text-black">
 				<form enctype="multipart/form-data" method="post">
 					<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 					<input type="hidden" asp-for=@(Model.IsEnvironmentSettingsChanged) class="form-control" id="IsEnvironmentSettingsChanged">
@@ -35,50 +35,89 @@
 						Last login at: @Html.DisplayTextFor(x => x.Actor.LastLoginAt)
 					</div>
 
-					<hr>
-
 					@if (Model.Actor.IsAdmin && Model.EnvironmentSettings != null) {
-						<div class="form-group mb-3">
-							<label class="col-form-label">Database connection string. Need an app restart to apply changes.</label>
-							<input asp-for="@Model.EnvironmentSettings.DatabaseConnectionString" class="form-control bg-warning" onchange="environmentSettingChanged()"/>
+						<h5 class="pt-5">
+							Environment settings:
+						</h5>
+
+						<hr>
+
+						<div> 
+							<div style="color: red;">
+								Be carefull, wrong changes may make application unrunnable. 
+							</div>
 						</div>
 						<div class="form-group mb-3">
-							<label class="col-form-label">Cookie expiration time (min). Need an app restart to apply changes. </label>
-							<input asp-for="@Model.EnvironmentSettings.CookieExpireTime" class="form-control bg-warning" onchange="environmentSettingChanged()"/>
+							<label class="col-form-label">
+								Database connection string. Need an app restart to apply changes.
+							</label>
+							<input class="form-control bg-warning" asp-for="@Model.EnvironmentSettings.DatabaseConnectionString" onchange="environmentSettingChanged()"/>
 						</div>
 						<div class="form-group mb-3">
-							<label class="col-form-label">Max previews height size (pixels)</label>
-							<input asp-for="@Model.EnvironmentSettings.PreviewMaxHeight" class="form-control bg-warning" onchange="environmentSettingChanged()"/>
+							<label class="col-form-label">
+								Cookie expiration time (min). Need an app restart to apply changes. 
+							</label>
+							<input class="form-control bg-warning" 
+								asp-for="@Model.EnvironmentSettings.CookieExpireTime" 
+								onchange="environmentSettingChanged()"/>
 						</div>
 						<div class="form-group mb-3">
-							<label class="col-form-label">Password min length </label>
-							<input asp-for="@Model.EnvironmentSettings.PasswordMinLength" class="form-control bg-warning" onchange="environmentSettingChanged()"/>
+							<label class="col-form-label">
+								Max previews height size (pixels)
+							</label>
+							<input class="form-control bg-warning" 
+								asp-for="@Model.EnvironmentSettings.PreviewMaxHeight" 
+								onchange="environmentSettingChanged()"/>
 						</div>
 						<div class="form-group mb-3">
-							<label class="col-form-label">Password must have at least one symbol</label>
-							<input asp-for="@Model.EnvironmentSettings.PasswordMustHaveSymbols" class="form-control bg-warning" onchange="environmentSettingChanged()"/>
+							<label class="col-form-label">
+								Password min length
+							</label>
+							<input class="form-control bg-warning" 
+								asp-for="@Model.EnvironmentSettings.PasswordMinLength" 
+								onchange="environmentSettingChanged()"/>
 						</div>
-						<hr class="mt-5">
+						<div class="form-group mb-3">
+							<label class="col-form-label" asp-for="@Model.EnvironmentSettings.PasswordMustHaveSymbols">
+								Password must have at least one symbol
+							</label>
+							<div class="w-100">
+								<input class="form-check-input bg-warning big-form-check-input"
+								type="checkbox" 
+								asp-for="@Model.EnvironmentSettings.PasswordMustHaveSymbols" 
+								onchange="environmentSettingChanged()"/>
+							</div>
+						</div>
 					}
 
+					<h5 class="mt-5">User settings</h5>
+					<hr>
 					<div class="form-group mb-3">
-						<label class="col-form-label">Count of entities at page in list</label>
-						<input asp-for="@Model.ActorSettings.ListMaxEntitiesCount" class="form-control" />
+						<label class="col-form-label">
+							Count of entities at page in list
+						</label>
+						<input class="form-control" asp-for="@Model.ActorSettings.ListMaxEntitiesCount" />
 					</div>
 					<div class="form-group mb-3">
-						<label class="col-form-label">Count of showing pages in pagination</label>
-						<input asp-for="@Model.ActorSettings.ListMaxPageCount" class="form-control" />
+						<label class="col-form-label">
+							Count of showing pages in pagination
+						</label>
+						<input class="form-control" asp-for="@Model.ActorSettings.ListMaxPageCount" class="form-control" />
 					</div>
 					<div class="form-group mb-3">
-						<label class="col-form-label">Medias gallery max column count</label>
-						<input asp-for="@Model.ActorSettings.GalleryMaxColumnCount" class="form-control" />
+						<label class="col-form-label">
+							Medias gallery max column count
+						</label>
+						<input class="form-control" asp-for="@Model.ActorSettings.GalleryMaxColumnCount" />
 					</div>
 					<div class="form-group mb-3">
-						<label class="col-form-label">Count of days to show in activity statistic</label>
-						<input asp-for="@Model.ActorSettings.StatisticActivityBacktrackDayCount" class="form-control" />
+						<label class="col-form-label">
+							Count of days to show in activity statistic
+						</label>
+						<input class="form-control" asp-for="@Model.ActorSettings.StatisticActivityBacktrackDayCount" />
 					</div>
 
-					<div class="form-group mb-3 mt-3 d-flex justify-content-between">
+					<div class="form-group mt-5 w-25 d-flex justify-content-between">
 						<input type="submit" value="Save" class="btn btn-success" />
 					</div>
 				</form>

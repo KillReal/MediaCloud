@@ -51,6 +51,12 @@ namespace MediaCloud.WebApp.Pages
         public IActionResult OnPost()
         {
             _dataService.SaveActorSettings(ActorSettings);
+
+            if (IsEnvironmentSettingsChanged && EnvironmentSettings != null)
+            {
+                _dataService.SaveEnvironmentSettings(EnvironmentSettings);
+            }
+
             return Redirect(ReturnUrl);
         }
     }

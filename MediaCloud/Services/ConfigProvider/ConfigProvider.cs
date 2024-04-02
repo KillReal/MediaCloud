@@ -9,6 +9,7 @@ namespace MediaCloud.WebApp.Services.ConfigurationProvider
 {
     public class ConfigProvider : IConfigProvider
     {
+        private IActorProvider _actorProvider;
         private IConfiguration _configuration;
         private ILogger _logger;
 
@@ -25,15 +26,26 @@ namespace MediaCloud.WebApp.Services.ConfigurationProvider
             }
         }
 
+        /// <summary>
+        /// Direct access to a settings of current actor. Default values are taken from <see cref="IConfiguration"/>.
+        /// Does not save changes to database implicitly. 
+        /// Use <see cref="SaveActorSettings()"/> for explicit save.
+        /// </summary>
         public ActorSettings ActorSettings { get; set; }
+        /// <summary>
+        /// Direct access to a settings of environment. Default values are taken from <see cref="IConfiguration"/>.
+        /// Does not save changes to database implicitly. 
+        /// Use <see cref="SaveEnvironmentSettings()"/> for explicit save.
+        /// </summary>
         public EnvironmentSettings EnvironmentSettings { get; set; }
 
         public ConfigProvider(IConfiguration configuration, IActorProvider actorProvider)
         {
+            _actorProvider = actorProvider;
             _configuration = configuration;
             _logger = LogManager.GetLogger("ConfigurationProvider");
 
-            var actor = actorProvider.GetCurrent();
+            var actor = _actorProvider.GetCurrent();
 
             if (actor != null)
             {
@@ -49,10 +61,32 @@ namespace MediaCloud.WebApp.Services.ConfigurationProvider
             EnvironmentSettings = new(_configuration);
         }
 
-        public bool SaveActorSettings(IActorProvider actorProvider)
+        /// <summary>
+        /// Implicitly saves changes to database in json format.
+        /// </summary>
+        /// <returns> Result of operation. </returns>
+        public bool SaveActorSettings()
         {
             var jsonSettings = JsonConvert.SerializeObject(ActorSettings, Formatting.Indented);
-            return actorProvider.SaveSettings(jsonSettings);
+            return _actorProvider.SaveSettings(jsonSettings);
+        }
+
+        /// <summary>
+        /// Implicitly saves changes to database in json format.
+        /// </summary>
+        /// <returns> Result of operation. </returns>
+        public bool SaveEnvironmentSettings()
+        {
+            try 
+            {
+                EnvironmentSettings.SaveToAppSettings(_configuration);
+                return true;
+            }
+            catch (Exception ex) 
+            {
+                _logger.Error(ex, "Could not save environment settings.");
+                return false;  
+            }
         }
     }
 }

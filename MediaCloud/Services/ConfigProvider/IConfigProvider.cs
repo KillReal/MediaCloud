@@ -6,6 +6,7 @@ namespace MediaCloud.WebApp.Services.ConfigurationProvider
     {
         public ActorSettings ActorSettings { get; set;}
         public EnvironmentSettings EnvironmentSettings { get; set; }
-        public bool SaveActorSettings(IActorProvider actorProvider);
+        public bool SaveActorSettings();
+        public bool SaveEnvironmentSettings();
     }
 }

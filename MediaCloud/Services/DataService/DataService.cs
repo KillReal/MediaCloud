@@ -72,12 +72,13 @@ namespace MediaCloud.WebApp.Services.DataService
         public void SaveActorSettings(ActorSettings settings)
         {
             _configProvider.ActorSettings = settings;
-            _configProvider.SaveActorSettings(_actorProvider);
+            _configProvider.SaveActorSettings();
         }
 
         public void SaveEnvironmentSettings(EnvironmentSettings settings)
         {
-
+            _configProvider.EnvironmentSettings = settings;
+            _configProvider.SaveEnvironmentSettings();
         }
     }
 }

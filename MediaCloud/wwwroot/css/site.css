@@ -72,6 +72,7 @@ body {
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
+    flex-wrap: wrap;
 }
 
 .arrow-button {
@@ -201,4 +202,9 @@ body {
 .page-autoload-notifier {
     text-align: center; 
     display: none;
+}
+
+.big-form-check-input {
+    min-width: 2rem !important; 
+    min-height: 2rem !important;
 }

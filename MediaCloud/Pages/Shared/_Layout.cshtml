@@ -13,7 +13,7 @@
 </head>
 <body  bg-secondary class="mb-0" style="min-width: 500px">
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light box-shadow">
+        <nav class="navbar navbar-expand-lg navbar-light box-shadow">
             <div class="container-fluid ps-5 pe-5">
                 <img src="/favicon.ico" style="max-width: 2rem">
                 <a class="ms-3 navbar-brand text-white" asp-area="" asp-page="/Index">MediaCloud v@(Assembly.GetEntryAssembly()?.GetName().Version?.ToString(3))</a>
@@ -21,7 +21,7 @@
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                <div class="navbar-collapse collapse justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link text-white" href="/Medias">Gallery</a>
@@ -44,29 +44,34 @@
                         <li class="nav-item">
                             <a class="nav-link text-white" href="/Privacy">Privacy</a>
                         </li>
+                        <li class="nav-item flex-grow-1">
+                            <div class="me-3 collapse navbar-collapse collapse d-sm-inline-flex justify-content-end text-right" id="myNavbar">
+                                @if (Model.CurrentActor != null)
+                                {
+                                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 text-nowrap">
+                                        <li class="nav-item">
+                                        <a class="nav-link text-white">Hello, @Model.CurrentActor.Name!</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="btn btn-info ms-2 me-2 navbar-right" href="/Account?returnUrl=@Context.Request.Path" method="post">Settings</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="btn btn-danger ms-2 ms-2 navbar-right" href="/Account/Logout" method="post" id="logoutForm">Logout</a>
+                                        </li>
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                                        <li class="nav-item">
+                                            <a class="nav-link text-white" href="/Account/Login">Sign In</a>
+                                        </li>
+                                    </ul>
+                                }
+                            </div>
+                        </li>
                     </ul>
                 </div>
-                    <div class="me-3 collapse navbar-collapse collapse d-sm-inline-flex justify-content-between text-right" id="myNavbar">
-                    @if (Model.CurrentActor != null)
-                        {
-                            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                                <li class="nav-item">
-                                <a class="nav-link text-white" href="/Account?returnUrl=@Context.Request.Path">Hello, @Model.CurrentActor.Name!</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="btn btn-danger navbar-right" href="/Account/Logout" method="post" id="logoutForm">Logout</a>
-                                </li>
-                            </ul>
-                        }
-                        else
-                        {
-                            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                                <li class="nav-item">
-                                    <a class="nav-link text-white" href="/Account/Login">Sign In</a>
-                                </li>
-                            </ul>
-                        }
-                    </div>
             </div>
         </nav>
     </header>

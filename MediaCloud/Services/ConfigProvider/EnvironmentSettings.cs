@@ -1,3 +1,5 @@
+using SixLabors.ImageSharp;
+
 namespace MediaCloud.WebApp.Services.ConfigurationProvider 
 {
     [Serializable]
@@ -23,6 +25,16 @@ namespace MediaCloud.WebApp.Services.ConfigurationProvider
         public EnvironmentSettings()
         {
             
+        }
+
+        public void SaveToAppSettings(IConfiguration configuration)
+        {
+            configuration["ConnectionStrings:Database"] = DatabaseConnectionString;
+            configuration["CookieExpireTime"] = CookieExpireTime.ToString();
+            configuration["PreviewMaxHeight"] = PreviewMaxHeight.ToString();
+            configuration["TaskSchedulerWorkerCount"] = TaskSchedulerWorkerCount.ToString();
+            configuration["PasswordMinLength"] = PasswordMinLength.ToString();
+            configuration["PasswordMustHaveSymbols"] = PasswordMustHaveSymbols.ToString();
         }
     }
 }

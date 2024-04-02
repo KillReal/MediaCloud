@@ -19,23 +19,25 @@ Done:
 - Move javascript code in RazorPages from html to ```*.cshtml.js```
 - Use CSS styles
 - Actor settings page. Configuration service must provide actor based settings
+- Implement password security polices
+- Fix layouts misaligment on smaller displays
+- Refactor HTML in Pages
 
 Todo:
 
-- Fix layouts misaligment on smaller displays
 - Fix gallery layout and autoloading on smaller displays (less than actual number of columns)
 - Fix statistics dashboards on smaller displays (low width)
 - Solve returnUrl problem (Support only one step hitory)
-- Refactor HTML in Pages
+- Rewrite gallery layout
 	- [ ] 	Use Table layout
 	- [ ] 	Find dynamic gallery layout with resizing support
 	- [x] 	Dynamicly change columns
 		- Rejected due to hard implementation and onresize triggering
-- Implement password security polices
 - Review sql requests (Accordingly to ActorProvider staff)
 - Rename Uploader to TaskScheduler
 - Add debug init logging to services
 - Admin check for display actors in Statistic and Statistic
+- Is DataService necessary at all ???
 
 
 # Changelog				   
