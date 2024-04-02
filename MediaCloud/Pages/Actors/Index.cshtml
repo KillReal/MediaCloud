@@ -5,99 +5,141 @@
 
 @{
     ViewData["Title"] = "Actor list";
+
+    var nameSortType = "NameDesc";
+    var nameSortSymbol = "";
+    var nameButtonStyle = "btn-info";
+    var updatedAtSortType = "UpdatedAtDesc";
+    var updatedAtSortSymbol = "";
+    var updatedAtButtonStyle = "btn-info";
+    var lastLoginAtSortType = "LastLoginAtDesc";
+    var lastLoginAtSortSymbol = "";
+    var lastLoginAtButtonStyle = "btn-info";
+
+     @if (@Model.ListBuilder.Sort == "NameDesc"){
+        nameSortType = "Name";
+        nameSortSymbol = "↓";
+        nameButtonStyle = "btn-warning";
+    }
+    else if (@Model.ListBuilder.Sort == "Name"){
+        nameSortType = "NameDesc";
+        nameSortSymbol = "↑";
+        nameButtonStyle = "btn-warning";
+    }
+
+    @if (@Model.ListBuilder.Sort == "UpdatedAtDesc"){
+        updatedAtSortType = "UpdatedAt";
+        updatedAtSortSymbol = "↓";
+        updatedAtButtonStyle = "btn-warning";
+    }
+    else if (@Model.ListBuilder.Sort == "UpdatedAt"){
+        updatedAtSortType = "UpdatedAtDesc";
+        updatedAtSortSymbol = "↑";
+        updatedAtButtonStyle = "btn-warning";
+    }
+
+    @if (@Model.ListBuilder.Sort == "LastLoginAtDesc"){
+        lastLoginAtSortType = "LastLoginAt";
+        lastLoginAtSortSymbol = "↓";
+        lastLoginAtButtonStyle = "btn-warning";
+    }
+    else if (@Model.ListBuilder.Sort == "LastLoginAt"){
+        lastLoginAtSortType = "LastLoginAtDesc";
+        lastLoginAtSortSymbol = "↑";
+        lastLoginAtButtonStyle = "btn-warning";
+    }
 }
 
-<h1 class="pt-3 text-white">Actor list</h1>
+<div class="page-container">
+    <h1>
+        Actor list
+    </h1>
 
-<div class="button-panel d-flex flex-row align-items-center text-white flex-wrap">
-    <div>
-        <a class="btn btn-success btn-rounded me-3 mt-3" asp-page="Create">Create</a>
-    </div>
+    <div class="button-panel">
+        <div>
+            <a class="btn btn-success btn-rounded me-3 mt-3" asp-page="Create">
+                Create
+            </a>
+        </div>
 
-    <div class="vr me-3 mt-3"></div>
-    <div class="align-self-center me-3 mt-3 text-white ">Sorting:</div>
+        <div class="vr me-3 mt-3">
+        </div>
 
-    @if (@Model.ListBuilder.Sort == "Name") {
-        <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("NameDesc")>Name ↓</a>
-    }
-    else if (@Model.ListBuilder.Sort == "NameDesc"){
-        <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("Name")>Name ↑</a>
-    }
-    else {
-        <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("NameDesc")>Name</a>
-    }
+        <div class="align-self-center me-3 mt-3 text-white ">
+            Sorting:
+        </div>
 
-    @if (@Model.ListBuilder.Sort == "UpdatedAt") {
-        <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("UpdatedAtDesc")>Date ↓</a>
-    }
-    else if (@Model.ListBuilder.Sort == "UpdatedAtDesc"){
-        <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("UpdatedAt")>Date ↑</a>
-    }
-    else {
-        <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("UpdatedAtDesc")>Date</a>
-    }
+        <a class="btn @nameButtonStyle btn-rounded me-3 mt-3 text-nowrap" 
+            asp-page="Index" 
+            asp-route-sort=@(nameSortType)>
+            Name @(nameSortSymbol)
+        </a>
+        <a class="btn @updatedAtButtonStyle btn-rounded me-3 mt-3 text-nowrap" 
+            asp-page="Index" 
+            asp-route-sort=@(updatedAtSortType)>
+            Date @(updatedAtSortSymbol)
+        </a>
+        <a class="btn @lastLoginAtButtonStyle btn-rounded me-3 mt-3 text-nowrap" 
+            asp-page="Index" 
+            asp-route-sort=@(lastLoginAtSortType)>
+            Last login at @(lastLoginAtSortSymbol)
+        </a>
 
-    @if (@Model.ListBuilder.Sort == "LastLoginAt") {
-        <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("LastLoginAtDesc")>Last login at ↓</a>
-    }
-    else if (@Model.ListBuilder.Sort == "LastLoginAtDesc"){
-        <a class="btn btn-warning btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("LastLoginAt")>Last login at ↑</a>
-    }
-    else {
-        <a class="btn btn-info btn-rounded me-3 mt-3 text-nowrap" asp-page="Index" asp-route-sort=@("LastLoginAtDesc")>Last login at</a>
-    }
 
-</div>  
-<hr class="text-white"/>
+    </div>  
+    <hr class="text-white"/>
 
- <partial name="~/Pages/Shared/_Pagination.cshtml" />
+    <partial name="~/Pages/Shared/_Pagination.cshtml" />
 
-<table class="table" style="background-color: white; border-radius: 1rem">
-    <thead>
-        <tr>
-            <th class="table-item-padding">
-                @Html.DisplayNameFor(model => model.Actors[0].Name)
-            </th>
-            <th class="table-item-padding">
-                @Html.DisplayNameFor(model => model.Actors[0].IsAdmin)
-            </th>
-            <th class="table-item-padding">
-                @Html.DisplayNameFor(model => model.Actors[0].IsPublic)
-            </th>
-            <th class="table-item-padding">
-                @Html.DisplayNameFor(model => model.Actors[0].IsActivated)
-            </th>
-            <th class="table-item-padding">
-                @Html.DisplayNameFor(model => model.Actors[0].LastLoginAt)
-            </th>
-            <th class="table-item-padding">
-                @Html.DisplayNameFor(model => model.Actors[0].InviteCode)
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.Actors) {
-        <tr class="list-clickable" onclick="document.location = '/Actors/Detail?id=@item.Id&returnUrl=/Actors/Index?sort=@Model.ListBuilder.Sort';">
-            <td class="table-item-padding">
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td class="table-item-padding">
-                @((bool)item.IsAdmin ? "Yes" : "No")
-            </td>
-            <td class="table-item-padding">
-                @((bool)item.IsPublic ? "Yes" : "No")
-            </td>
-            <td class="table-item-padding">
-                @((bool)item.IsActivated ? "Yes" : "No")
-            </td>
-            <td class="table-item-padding">
-                @Html.DisplayFor(modelItem => item.LastLoginAt)
-            </td>
-            <td class="table-item-padding">
-                @Html.DisplayFor(modelItem => item.InviteCode)
-            </td>
-       </tr>
-}
-    </tbody>
-</table>
+    <table class="table" style="background-color: white; border-radius: 1rem">
+        <thead>
+            <tr>
+                <th class="table-item-padding">
+                    @Html.DisplayNameFor(model => model.Actors[0].Name)
+                </th>
+                <th class="table-item-padding">
+                    @Html.DisplayNameFor(model => model.Actors[0].IsAdmin)
+                </th>
+                <th class="table-item-padding">
+                    @Html.DisplayNameFor(model => model.Actors[0].IsPublic)
+                </th>
+                <th class="table-item-padding">
+                    @Html.DisplayNameFor(model => model.Actors[0].IsActivated)
+                </th>
+                <th class="table-item-padding">
+                    @Html.DisplayNameFor(model => model.Actors[0].LastLoginAt)
+                </th>
+                <th class="table-item-padding">
+                    @Html.DisplayNameFor(model => model.Actors[0].InviteCode)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Actors) {
+                <tr class="list-clickable" 
+                    onclick="document.location='/Actors/Detail?id=@item.Id&returnUrl=/Actors/Index?sort=@Model.ListBuilder.Sort';">
+                    <td class="table-item-padding">
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td class="table-item-padding">
+                        @((bool)item.IsAdmin ? "Yes" : "No")
+                    </td>
+                    <td class="table-item-padding">
+                        @((bool)item.IsPublic ? "Yes" : "No")
+                    </td>
+                    <td class="table-item-padding">
+                        @((bool)item.IsActivated ? "Yes" : "No")
+                    </td>
+                    <td class="table-item-padding">
+                        @Html.DisplayFor(modelItem => item.LastLoginAt)
+                    </td>
+                    <td class="table-item-padding">
+                        @Html.DisplayFor(modelItem => item.InviteCode)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
  <partial name="~/Pages/Shared/_Pagination.cshtml" />
