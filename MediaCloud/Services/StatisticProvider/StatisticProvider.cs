@@ -91,6 +91,7 @@ namespace MediaCloud.WebApp.Services.Statistic
             {
                 snapshot = new StatisticSnapshot().Merge(snapshot);
                 snapshot.TakenAt = DateTime.Now.Date;
+                
                 CreateOrUpdateSnapshot(snapshot);
             }
 
@@ -140,11 +141,11 @@ namespace MediaCloud.WebApp.Services.Statistic
         }
 
         /// <summary>
-        /// Takes snapshot by date for current user.
+        /// Capture snapshot by date for current user.
         /// </summary>
-        /// <param name="date"> Date. </param>
-        /// <returns> New snapshot of changes for certain day. This snapshot need to be inserted. </returns>
-        public StatisticSnapshot TakeSnapshot(DateTime date)
+        /// <param name="date"> Date to capture. </param>
+        /// <returns> New snapshot with changes for certain day. This snapshot need to be inserted. </returns>
+        public StatisticSnapshot CaptureSnapshot(DateTime date)
         {
             return new()
             {
@@ -274,7 +275,7 @@ namespace MediaCloud.WebApp.Services.Statistic
 
             var totalDaysCalculated = 0;
             var totalDaysInserted = 0;
-            var prevSnapshot = TakeSnapshot(startTime);
+            var prevSnapshot = CaptureSnapshot(startTime);
             var date = startTime.AddDays(1);
             progressCount = DateTime.Now.Subtract(date).Days;
 
@@ -283,7 +284,7 @@ namespace MediaCloud.WebApp.Services.Statistic
             {
                 var stopwatch = DateTime.Now;
                 _logger.Debug("Calculating statistic for {date.Date}", date.Date);
-                var snapshot = TakeSnapshot(date);
+                var snapshot = CaptureSnapshot(date);
 
                 if (snapshot.IsEmpty() == false)
                 {
