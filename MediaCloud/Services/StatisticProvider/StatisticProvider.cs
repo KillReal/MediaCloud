@@ -91,7 +91,7 @@ namespace MediaCloud.WebApp.Services.Statistic
             {
                 snapshot = new StatisticSnapshot().Merge(snapshot);
                 snapshot.TakenAt = DateTime.Now.Date;
-                
+
                 CreateOrUpdateSnapshot(snapshot);
             }
 
@@ -100,7 +100,7 @@ namespace MediaCloud.WebApp.Services.Statistic
 
         /// <summary>
         /// Select all snapshots for current user in certain data range. Return's at least one.
-        /// If there is no snapshots for user, a new one will be created <see cref="CreateInitialSnapshot()"/>
+        /// If there is no snapshots for user, a new one will be created <see cref="GetTodaySnapshot()"/>
         /// </summary>
         /// <param name="start"> Start date (include). </param>
         /// <param name="end"> End date (include). </param>
@@ -115,7 +115,7 @@ namespace MediaCloud.WebApp.Services.Statistic
 
             if (snapshots.Any() == false)
             {
-                snapshots.Add(CreateInitialSnapshot());
+                snapshots.Add(GetTodaySnapshot());
             }
 
             return snapshots;
@@ -123,7 +123,7 @@ namespace MediaCloud.WebApp.Services.Statistic
 
         /// <summary>
         /// Select all snapshots for current user. Return's at least one. 
-        /// If there is no snapshots for user, a new one will be created <see cref="CreateInitialSnapshot()"/>
+        /// If there is no snapshots for user, a new one will be created <see cref="GetTodaySnapshot()"/>
         /// </summary>
         /// <returns> List of all existing snapshots. </returns>
         public List<StatisticSnapshot> GetAllSnapshots()
@@ -134,7 +134,7 @@ namespace MediaCloud.WebApp.Services.Statistic
 
             if (snapshots.Any() == false)
             {
-                snapshots.Add(CreateInitialSnapshot());
+                snapshots.Add(GetTodaySnapshot());
             }
 
             return snapshots;
