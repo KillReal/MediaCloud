@@ -22,19 +22,11 @@ namespace MediaCloud.Data.Models
 
         public int Order { get; set; }
 
-        public Preview(Media media, Image convertedImage)
+        public Preview(Media media, byte[] content)
         {
             Media = media;
             MediaType = MediaType.JPG;
-            Content = PictureService.LowerResolution(convertedImage, media.Content);
-            Order = 0;
-        }
-
-        public Preview(Media media)
-        {
-            Media = media;
-            MediaType = MediaType.JPG;
-            Content = PictureService.LowerResolution(media.Content);
+            Content = content;
             Order = 0;
         }
 

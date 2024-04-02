@@ -13,19 +13,12 @@ using MediaCloud.WebApp.Services.Statistic;
 using MediaCloud.WebApp.Services.ActorProvider;
 using NLog.Web;
 using NLog;
+using MediaCloud.WebApp.Services.ConfigurationProvider;
 
 var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 logger.Debug("Early NLog initialization");
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options => 
-    {
-        options.LoginPath = "/Account/Login";
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(ConfigurationService.Auth.GetCookieExpireTime());
-    });
-builder.Services.AddAuthorization();
 
 builder.Logging.ClearProviders();
 builder.Logging.AddNLogWeb();
@@ -45,6 +38,8 @@ builder.Services.AddSingleton<IUploader, Uploader>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IDataService, DataService>();
+builder.Services.AddScoped<IPictureService, PictureService>();
+builder.Services.AddScoped<IConfigProvider, ConfigProvider>();
 
 builder.Services.Configure<FormOptions>(x =>
 {
@@ -58,10 +53,16 @@ builder.Services.Configure<KestrelServerOptions>(options =>
     options.Limits.MaxRequestBodySize = int.MaxValue;
 });
 
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options => 
+    {
+        options.LoginPath = "/Account/Login";
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(builder.Configuration.GetValue<int>("CookieExpireTime"));
+    });
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 using var scope = app.Services.CreateScope();
-
-ConfigurationService.Init(scope.ServiceProvider.GetRequiredService<IConfiguration>());
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

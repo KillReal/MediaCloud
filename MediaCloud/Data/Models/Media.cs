@@ -20,7 +20,7 @@ namespace MediaCloud.Data.Models
         [NotMapped]
         public string SizeInfo
         {
-            get => PictureService.FormatSize(Size);
+            get => Size.FormatSize();
             set => Size = long.Parse(value);
         }
 

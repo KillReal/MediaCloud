@@ -15,6 +15,7 @@ using MediaCloud.WebApp.Services;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services.DataService;
 using MediaCloud.WebApp.Pages;
+using MediaCloud.WebApp.Services.ConfigurationProvider;
 
 namespace MediaCloud.Pages.Actors
 {
@@ -23,7 +24,7 @@ namespace MediaCloud.Pages.Actors
         public ActorListModel(IDataService dataService) : base(dataService)
         {
             CurrentActor = _dataService.GetCurrentActor();
-            ListBuilder = new(new());
+            ListBuilder = new(new(), _dataService.ActorSettings);
         }
 
         [BindProperty]
@@ -38,7 +39,7 @@ namespace MediaCloud.Pages.Actors
                 return Redirect("/Account/Login");
             }
 
-            ListBuilder = new(request);
+            ListBuilder = new(request, _dataService.ActorSettings);
             Actors = await ListBuilder.BuildAsync(_dataService.Actors);
 
             return Page();

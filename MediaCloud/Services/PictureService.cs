@@ -1,4 +1,5 @@
 ﻿using MediaCloud.WebApp.Services;
+using MediaCloud.WebApp.Services.ConfigurationProvider;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Jpeg;
@@ -6,11 +7,18 @@ using SixLabors.ImageSharp.Processing;
 
 namespace MediaCloud.Services
 {
-    public class PictureService
+    public class PictureService : IPictureService
     {
-        public static byte[] LowerResolution(Image image, byte[] sourceBytes)
+        private readonly IConfigProvider _configProvider;
+
+        public PictureService(IConfigProvider configProvider)
         {
-            var maxSize = ConfigurationService.Preview.GetMaxHeight();
+            _configProvider = configProvider;
+        }
+
+        public byte[] LowerResolution(Image image, byte[] sourceBytes)
+        {
+            var maxSize = _configProvider.EnvironmentSettings.PreviewMaxHeight;
 
             var size = image.Size;
             var width = maxSize;
@@ -41,24 +49,12 @@ namespace MediaCloud.Services
             return sourceBytes;
         }
 
-        public static byte[] LowerResolution(byte[] pictureBytes)
+        public byte[] LowerResolution(byte[] pictureBytes)
         {
             var stream = new MemoryStream(pictureBytes);
             var image = Image.Load(stream);
 
             return LowerResolution(image, pictureBytes);
-        }
-
-        public static string FormatSize(long bytes, bool useUnit = true)
-        {
-            string[] Suffix = { " B", " kB", " MB", " GB", " TB" };
-            double dblSByte = bytes;
-            int i;
-            for (i = 0; i < Suffix.Length && bytes >= 1024; i++, bytes /= 1024)
-            {
-                dblSByte = bytes / 1024.0;
-            }
-            return $"{dblSByte:0}{(useUnit ? Suffix[i] : null)}";
         }
     }
 }

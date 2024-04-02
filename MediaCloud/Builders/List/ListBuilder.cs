@@ -6,6 +6,7 @@ using MediaCloud.Repositories;
 using MediaCloud.Services;
 using MediaCloud.WebApp.Builders.List.Components;
 using MediaCloud.WebApp.Services;
+using MediaCloud.WebApp.Services.ConfigurationProvider;
 using MediaCloud.WebApp.Services.Data.Repositories.Interfaces;
 using Pagination = MediaCloud.WebApp.Builders.List.Components.Pagination;
 
@@ -76,20 +77,19 @@ namespace MediaCloud.Builders.List
         /// <summary>
         /// Init list builder via list request.
         /// </summary>
-        /// <param name="request">List request.</param>
-        public ListBuilder(ListRequest request)
+        /// <param name="request"> List request. </param>
+        /// <param name="configProvider"> Config provider for current user <see cref="IDataService"/>. </param>
+        public ListBuilder(ListRequest request, ActorSettings actorSettings)
         {
             Sorting = new Sorting(request.Sort ?? "UpdatedAtDesc");
-
             Filtering = new Filtering((request.Filter ?? "").ToLower());
-
             Pagination = new Pagination(request.Count == 0 
-                ? ConfigurationService.List.GetEntityMaxCount()
+                ? actorSettings.ListMaxEntitiesCount
                 : request.Count, 
                 request.Offset,
-                ConfigurationService.List.GetShowedPagesMaxCount());
-
-            ColumnCount = ConfigurationService.Gallery.GetColumnCount();
+                actorSettings.ListMaxPageCount);
+                
+            ColumnCount = actorSettings.GalleryMaxColumnCount;
         }
 
         /// <summary>

@@ -1,6 +1,7 @@
 ﻿using MediaCloud.Data.Models;
 using MediaCloud.WebApp.Pages;
 using MediaCloud.WebApp.Services;
+using MediaCloud.WebApp.Services.ConfigurationProvider;
 using MediaCloud.WebApp.Services.DataService;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.AspNetCore.Authorization;
@@ -29,7 +30,7 @@ namespace MediaCloud.Pages
 
         public IActionResult OnGet()
         {
-            ActivityBacktrackDayCount = ConfigurationService.Statistic.GetActivityBacktrackDayCount();
+            ActivityBacktrackDayCount = _dataService.ActorSettings.StatisticActivityBacktrackDayCount;
             Snapshots = _statisticProvider.GetAllSnapshots();
             Tags = _dataService.Tags.GetTopUsed(15).Where(x => x.PreviewsCount > 0).ToList();
 

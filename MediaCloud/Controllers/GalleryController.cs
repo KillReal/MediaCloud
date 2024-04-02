@@ -1,5 +1,6 @@
 ﻿using MediaCloud.Builders.List;
 using MediaCloud.Data.Models;
+using MediaCloud.WebApp.Services.ConfigurationProvider;
 using MediaCloud.WebApp.Services.DataService;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.AspNetCore.Authorization;
@@ -24,7 +25,8 @@ namespace MediaCloud.WebApp.Controllers
 
         public async Task<List<object>> PreviewsBatchAsync(ListRequest listRequest)
         {
-            var previews = await new ListBuilder<Preview>(listRequest).BuildAsync(_dataService.Previews);
+            var ListBuilder = new ListBuilder<Preview>(listRequest, _dataService.ActorSettings);
+            var previews = await ListBuilder.BuildAsync(_dataService.Previews);
 
             var jsonPreviews = new List<object>();
             foreach (var preview in previews)

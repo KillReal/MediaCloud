@@ -1,0 +1,88 @@
+﻿@page
+@model MediaCloud.WebApp.Pages.IndexModel
+@{
+    ViewData["Title"] = "Index page";
+}
+
+<div class="page-container">
+    <h1>
+        Actor list
+    </h1>
+
+    <div class="button-panel">
+        <div>
+           <a href="@(Model.ReturnUrl)" class="btn btn-info">
+				Back
+			</a>
+        </div>
+	</div>
+
+	<hr>
+
+    <div class="page-center-container">
+		<div class="card w-50" style="border-radius: 1rem;">
+			<div class="card-body p-5 text-center text-black">
+				<form enctype="multipart/form-data" method="post">
+					<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+					<input type="hidden" asp-for=@(Model.IsEnvironmentSettingsChanged) class="form-control" id="IsEnvironmentSettingsChanged">
+					<input type="hidden" asp-for=@(Model.Actor.Id) class="form-control">
+					<input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control">
+
+					<div>
+						Name: @Html.DisplayTextFor(x => x.Actor.Name)
+					</div>
+					<div>
+						Last login at: @Html.DisplayTextFor(x => x.Actor.LastLoginAt)
+					</div>
+
+					<hr>
+
+					@if (Model.Actor.IsAdmin && Model.EnvironmentSettings != null) {
+						<div class="form-group mb-3">
+							<label class="col-form-label">Database connection string. Need an app restart to apply changes.</label>
+							<input asp-for="@Model.EnvironmentSettings.DatabaseConnectionString" class="form-control bg-warning" onchange="environmentSettingChanged()"/>
+						</div>
+						<div class="form-group mb-3">
+							<label class="col-form-label">Cookie expiration time (min). Need an app restart to apply changes. </label>
+							<input asp-for="@Model.EnvironmentSettings.CookieExpireTime" class="form-control bg-warning" onchange="environmentSettingChanged()"/>
+						</div>
+						<div class="form-group mb-3">
+							<label class="col-form-label">Max previews height size (pixels)</label>
+							<input asp-for="@Model.EnvironmentSettings.PreviewMaxHeight" class="form-control bg-warning" onchange="environmentSettingChanged()"/>
+						</div>
+						<hr class="mt-5">
+					}
+
+					<div class="form-group mb-3">
+						<label class="col-form-label">Count of entities at page in list</label>
+						<input asp-for="@Model.ActorSettings.ListMaxEntitiesCount" class="form-control" />
+					</div>
+					<div class="form-group mb-3">
+						<label class="col-form-label">Count of showing pages in pagination</label>
+						<input asp-for="@Model.ActorSettings.ListMaxPageCount" class="form-control" />
+					</div>
+					<div class="form-group mb-3">
+						<label class="col-form-label">Medias gallery max column count</label>
+						<input asp-for="@Model.ActorSettings.GalleryMaxColumnCount" class="form-control" />
+					</div>
+					<div class="form-group mb-3">
+						<label class="col-form-label">Count of days to show in activity statistic</label>
+						<input asp-for="@Model.ActorSettings.StatisticActivityBacktrackDayCount" class="form-control" />
+					</div>
+
+					<div class="form-group mb-3 mt-3 d-flex justify-content-between">
+						<input type="submit" value="Save" class="btn btn-success" />
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<script>
+	function environmentSettingsChanged() {
+		var element = document.getElementById("IsEnvironmentSettingsChanged");
+		element.value = true;
+	}
+</script>

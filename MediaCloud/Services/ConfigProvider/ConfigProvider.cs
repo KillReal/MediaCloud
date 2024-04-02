@@ -7,7 +7,7 @@ using ILogger = NLog.ILogger;
 
 namespace MediaCloud.WebApp.Services.ConfigurationProvider 
 {
-    public class ConfigurationProvider : IConfigurationProvider
+    public class ConfigProvider : IConfigProvider
     {
         private IActorProvider _actorProvider;
         private IConfiguration _configuration;
@@ -29,7 +29,7 @@ namespace MediaCloud.WebApp.Services.ConfigurationProvider
         public ActorSettings ActorSettings { get; set; }
         public EnvironmentSettings EnvironmentSettings { get; set; }
 
-        public ConfigurationProvider(IConfiguration configuration, IActorProvider actorProvider, AppDbContext context)
+        public ConfigProvider(IConfiguration configuration, IActorProvider actorProvider, AppDbContext context)
         {
             _actorProvider = actorProvider;
             _configuration = configuration;
@@ -51,10 +51,10 @@ namespace MediaCloud.WebApp.Services.ConfigurationProvider
             EnvironmentSettings = new(_configuration);
         }
 
-        public void SaveActorSettings()
+        public bool SaveActorSettings()
         {
             var jsonSettings = JsonConvert.SerializeObject(ActorSettings, Formatting.Indented);
-            _actorProvider.SaveSettings(jsonSettings);
+            return _actorProvider.SaveSettings(jsonSettings);
         }
     }
 }

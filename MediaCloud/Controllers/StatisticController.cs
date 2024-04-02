@@ -36,7 +36,7 @@ namespace MediaCloud.WebApp.Controllers
                 snapshot.ActorsCount,
                 snapshot.TagsCount,
                 snapshot.MediasCount,
-                MediasSize = PictureService.FormatSize(snapshot.MediasSize),
+                MediasSize = snapshot.MediasSize.FormatSize(),
                 snapshot.ActivityFactor
             };
         }

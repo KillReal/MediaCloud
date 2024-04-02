@@ -18,6 +18,7 @@ using Microsoft.Extensions.Logging;
 using NLog;
 using ILogger = NLog.ILogger;
 using MediaCloud.WebApp.Pages;
+using MediaCloud.WebApp.Services.ConfigurationProvider;
 
 namespace MediaCloud.Pages.Actors
 {

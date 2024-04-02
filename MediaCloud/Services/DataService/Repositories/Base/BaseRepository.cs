@@ -1,5 +1,6 @@
 ﻿using MediaCloud.Data;
 using MediaCloud.Data.Models;
+using MediaCloud.Services;
 using MediaCloud.WebApp.Services.DataService.Entities.Base;
 using MediaCloud.WebApp.Services.Statistic;
 using NLog;
@@ -10,6 +11,7 @@ namespace MediaCloud.Repositories
     public class BaseRepository<T> where T : Entity
     {
         protected StatisticProvider _statisticProvider;
+        protected IPictureService _pictureService;
         protected AppDbContext _context;
         protected ILogger _logger;
         protected Actor _actor;
@@ -19,6 +21,7 @@ namespace MediaCloud.Repositories
             _statisticProvider = repositoriesContext.StatisticProvider;
             _context = repositoriesContext.DbContext;
             _logger = repositoriesContext.Logger;
+            _pictureService = repositoriesContext.PictureService;
 
             if (repositoriesContext.Actor == null)
             {

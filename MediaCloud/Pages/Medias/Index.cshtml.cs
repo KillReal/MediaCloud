@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Security.Claims;
 using MediaCloud.WebApp.Services.DataService;
 using MediaCloud.WebApp.Pages;
+using MediaCloud.WebApp.Services.ConfigurationProvider;
 
 namespace MediaCloud.Pages.Medias
 {
@@ -43,12 +44,12 @@ namespace MediaCloud.Pages.Medias
                 ExampleFilter = "Create more tags to filtering";
             }
 
-            ListBuilder = new ListBuilder<Preview>(new());
+            ListBuilder = new ListBuilder<Preview>(new(), _dataService.ActorSettings);
         }
 
         public async Task<IActionResult> OnGetAsync(ListRequest request)
         {
-            ListBuilder = new ListBuilder<Preview>(request);
+            ListBuilder = new ListBuilder<Preview>(request, _dataService.ActorSettings);
             Previews = await ListBuilder.BuildAsync(_dataService.Previews);
             IsAutoloadEnabled = request.IsUseAutoload;
 

@@ -1,4 +1,5 @@
 ﻿using MediaCloud.Data.Models;
+using MediaCloud.WebApp.Services.ConfigurationProvider;
 using MediaCloud.WebApp.Services.DataService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
@@ -23,7 +24,6 @@ namespace MediaCloud.WebApp.Pages
             _dataService = dataService;
             _logger = LogManager.GetLogger("PageModel");
 
-
             LogPageInit();
         }
 
@@ -31,7 +31,7 @@ namespace MediaCloud.WebApp.Pages
         {
             CurrentActor = _dataService.GetCurrentActor();
 
-            var url = this.GetType().Name;
+            var url = GetType().Name;
 
             _logger.Debug("Page: {url} initialized by {CurrentActor.Name}", url, CurrentActor.Name);
         }

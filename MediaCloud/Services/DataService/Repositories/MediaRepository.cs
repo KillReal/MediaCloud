@@ -2,7 +2,9 @@
 using MediaCloud.Builders.List;
 using MediaCloud.Data;
 using MediaCloud.Data.Models;
+using MediaCloud.Services;
 using MediaCloud.WebApp.Services;
+using MediaCloud.WebApp.Services.ConfigurationProvider;
 using MediaCloud.WebApp.Services.DataService.Entities.Base;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +22,10 @@ namespace MediaCloud.Repositories
             var stream = new MemoryStream(file);
             var convertedImage = Image.Load(stream);
             var media = new Media(file, convertedImage.Width, convertedImage.Height);
-            media.Preview = new Preview(media, convertedImage);
+            
+            var imageContent = _pictureService.LowerResolution(convertedImage, media.Content);
+            
+            media.Preview = new Preview(media, imageContent);
             media.Creator = _context.Actors.First(x => x.Id == _actor.Id);
             media.Updator = media.Creator;
             media.Preview.Creator = media.Creator;

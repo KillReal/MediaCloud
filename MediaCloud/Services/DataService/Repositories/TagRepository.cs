@@ -7,7 +7,6 @@ using MediaCloud.WebApp.Repositories.Base;
 using MediaCloud.WebApp.Services.Data.Repositories.Interfaces;
 using MediaCloud.WebApp.Services.DataService.Entities.Base;
 using Microsoft.EntityFrameworkCore;
-using static MediaCloud.WebApp.Services.ConfigurationService;
 using Preview = MediaCloud.Data.Models.Preview;
 
 namespace MediaCloud.Repositories

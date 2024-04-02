@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using MediaCloud.WebApp.Services.DataService;
 using MediaCloud.WebApp.Pages;
+using MediaCloud.WebApp.Services.ConfigurationProvider;
+using MediaCloud.Extensions;
 
 namespace MediaCloud.Pages.Medias
 {
@@ -56,7 +58,7 @@ namespace MediaCloud.Pages.Medias
 
             var preview = Collection.Previews.OrderBy(x => x.Order).First();
             var collectionSize = _dataService.Collections.GetSize(id);
-            CollectionSizeInfo = PictureService.FormatSize(collectionSize);
+            CollectionSizeInfo = collectionSize.FormatSize();
             TotalCount = _dataService.Collections.GetListCount(id).Result;
 
             Tags = preview.Tags.OrderBy(x => x.Type).ToList();

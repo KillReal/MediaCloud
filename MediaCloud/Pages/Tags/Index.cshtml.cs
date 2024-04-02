@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using MediaCloud.WebApp.Services.DataService;
 using MediaCloud.WebApp.Pages;
+using MediaCloud.WebApp.Services.ConfigurationProvider;
 
 namespace MediaCloud.Pages.Tags
 {
@@ -21,7 +22,7 @@ namespace MediaCloud.Pages.Tags
     {
         public TagListModel(IDataService dataService) : base(dataService)
         {
-            ListBuilder = new(new());
+            ListBuilder = new(new(), _dataService.ActorSettings);
         }
 
         [BindProperty]
@@ -33,7 +34,7 @@ namespace MediaCloud.Pages.Tags
 
         public async Task<IActionResult> OnGetAsync(ListRequest request)
         {
-            ListBuilder = new(request);
+            ListBuilder = new(request, _dataService.ActorSettings);
             Tags = await ListBuilder.BuildAsync(_dataService.Tags);
 
             return Page();
