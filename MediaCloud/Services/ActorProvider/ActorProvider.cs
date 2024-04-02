@@ -1,6 +1,7 @@
 ﻿using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
+using MediaCloud.WebApp.Services.ConfigurationProvider;
 using MediaCloud.WebApp.Services.DataService.Entities.Base;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.AspNetCore.Authentication;
@@ -17,11 +18,13 @@ namespace MediaCloud.WebApp.Services.ActorProvider
     {
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly AppDbContext _context;
+        private readonly IConfigProvider _configProvider;
         private Actor? _cachedActor;
 
         public ActorProvider(IServiceScopeFactory scopeFactory, IHttpContextAccessor httpContextAccessor)
         {
             _context = scopeFactory.CreateScope().ServiceProvider.GetRequiredService<AppDbContext>();
+            _configProvider = scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IConfigProvider>();
             _contextAccessor = httpContextAccessor;
         }
 
@@ -92,9 +95,14 @@ namespace MediaCloud.WebApp.Services.ActorProvider
                 return new(false, $"Join attempt failed due to already existing name: {data.Name}");
             }
 
-            if (data.Password.Length < 6)
+            if (data.Password.Length < _configProvider.EnvironmentSettings.PasswordMinLength)
             {
                 return new(false, $"Join attempt failed due to short password, it must be longer than 6 characters");
+            }
+
+            if (data.Password.Any(x => char.IsSymbol(x)) == false && _configProvider.EnvironmentSettings.PasswordMustHaveSymbols)
+            {
+                return new(false, $"Join attempt failed due to week password, it must contain at least one symbol");
             }
 
             actor.Name = data.Name;
