@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 
 namespace MediaCloud.MediaUploader
 {
-    public class UploaderStatus
+    public class TaskSchedulerStatus
     {
         public int TaskCount { get; set; }
         public int MediaCount { get; set; }
         public int WorkersActive { get; set; }
         public int MaxWorkersAvailable { get; set; }
 
-        public UploaderStatus(Queue currentQueue, Scheduler scheduler)
+        public TaskSchedulerStatus(Queue currentQueue, TaskScheduler scheduler)
         {
             MediaCount = currentQueue.WorkCount;
             TaskCount = currentQueue.TaskCount;
-            WorkersActive = scheduler.WorkersActive;
+            WorkersActive = scheduler.BusyWorkersCount;
             MaxWorkersAvailable = scheduler.MaxWorkersCount - WorkersActive;
         }
     }

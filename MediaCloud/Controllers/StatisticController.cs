@@ -14,14 +14,14 @@ namespace MediaCloud.WebApp.Controllers
     public class StatisticController : Controller
     {
         private readonly StatisticProvider _statisticProvider;
-        private readonly IUploader _uploader;
+        private readonly ITaskScheduler _uploader;
 
         public IActionResult Index()
         {
             return View();
         }
 
-        public StatisticController(IDataService dataService, IUploader uploader)
+        public StatisticController(IDataService dataService, ITaskScheduler uploader)
         {
             _statisticProvider = dataService.StatisticProvider;
             _uploader = uploader;

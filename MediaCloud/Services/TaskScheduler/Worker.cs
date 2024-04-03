@@ -19,8 +19,8 @@ namespace MediaCloud.MediaUploader
     public class Worker
     {
         private readonly Queue _queue;
-        private readonly Scheduler _scheduler;
-        private readonly IDataService _dataService;
+        private readonly TaskScheduler _scheduler;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
 
         /// <summary>
         /// Current task. Return's null if no task currently taken.
@@ -35,13 +35,13 @@ namespace MediaCloud.MediaUploader
         /// Initilize worker instance.
         /// </summary>
         /// <param name="queue"> Current <see cref="Queue"/>. </param>
-        /// <param name="scheduler"> Current <see cref="Scheduler"/>. </param>
+        /// <param name="scheduler"> Current <see cref="TaskScheduler"/>. </param>
         /// <param name="dataService"> Current data service <seealso cref="IDataService"/>. </param>
-        public Worker(Queue queue, Scheduler scheduler, IDataService dataService) 
+        public Worker(Queue queue, TaskScheduler scheduler, IServiceScopeFactory serviceScopeFactory) 
         {
             _queue = queue;
             _scheduler = scheduler;
-            _dataService = dataService;
+            _serviceScopeFactory = serviceScopeFactory;
         }
 
         /// <summary>
@@ -74,7 +74,9 @@ namespace MediaCloud.MediaUploader
 
             try
             {
-                Task.DoTheTask(_dataService);
+                var dataService = new DataService(_serviceScopeFactory, Task.Actor);
+
+                Task.DoTheTask(dataService);
             }
             catch (Exception ex)
             {

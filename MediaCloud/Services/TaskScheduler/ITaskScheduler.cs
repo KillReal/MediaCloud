@@ -2,11 +2,11 @@
 
 namespace MediaCloud.MediaUploader
 {
-    public interface IUploader
+    public interface ITaskScheduler
     {
         public Guid AddTask(Task task);
 
-        public UploaderStatus GetStatus();
+        public TaskSchedulerStatus GetStatus();
 
         public TaskStatus GetStatus(Guid taskId);
     }

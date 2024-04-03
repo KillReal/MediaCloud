@@ -1,5 +1,6 @@
 ﻿using MediaCloud.Data;
 using MediaCloud.Data.Models;
+using MediaCloud.MediaUploader.Tasks;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services.ConfigurationProvider;
 using MediaCloud.WebApp.Services.DataService.Entities.Base;
@@ -8,28 +9,37 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
+using Task = MediaCloud.MediaUploader.Tasks.Task;
 
 namespace MediaCloud.WebApp.Services.ActorProvider
 {
     public class ActorProvider : IActorProvider
     {
-        private readonly IHttpContextAccessor _contextAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly AppDbContext _context;
-        private Actor? _cachedActor;
+        private IMemoryCache _memoryCache;
 
-        public ActorProvider(IServiceScopeFactory scopeFactory, IHttpContextAccessor httpContextAccessor)
+        private MemoryCacheEntryOptions _memoryCacheOptions;
+
+        public ActorProvider(IServiceScopeFactory scopeFactory, IHttpContextAccessor httpContextAccessor, 
+            IMemoryCache memoryCache, IConfiguration configuration)
         {
             var scope = scopeFactory.CreateScope();
             _context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            _contextAccessor = httpContextAccessor;
+            _memoryCache = memoryCache;
+            _memoryCacheOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromMinutes(new EnvironmentSettings(configuration).CookieExpireTime));
+
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public Actor? GetCurrent()
         {
-            var httpContext = _contextAccessor.HttpContext;
+            var httpContext = _httpContextAccessor.HttpContext;
 
             if (httpContext == null)
             {
@@ -43,14 +53,19 @@ namespace MediaCloud.WebApp.Services.ActorProvider
                 return null;
             }
 
-            if (identity.Name == _cachedActor?.Name)
+            if (_memoryCache.TryGetValue(identity.Name, out Actor? actor))
             {
-                return _cachedActor;
+                return actor;
             }
 
-            _cachedActor = new ActorRepository(_context).Get(identity.Name);
+            var cachedActor = new ActorRepository(_context).Get(identity.Name);
 
-            return _cachedActor;
+            if (cachedActor != null)
+            {
+                _memoryCache.Set(identity.Name, cachedActor, _memoryCacheOptions);
+            }
+
+            return cachedActor;
         }
 
         public bool Authorize(AuthData data, HttpContext httpContext)
@@ -64,8 +79,7 @@ namespace MediaCloud.WebApp.Services.ActorProvider
 
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, data.Name)
-
+                new(ClaimTypes.Name, data.Name)
             };
             var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
 
@@ -75,7 +89,7 @@ namespace MediaCloud.WebApp.Services.ActorProvider
             actor.CreatedAt = actor.CreatedAt.ToUniversalTime();
             actor.LastLoginAt = DateTime.Now.ToUniversalTime();
 
-            _cachedActor = actor;
+            _memoryCache.Set(data.Name, actor, _memoryCacheOptions);
 
             return true;
         }

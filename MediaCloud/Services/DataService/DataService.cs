@@ -8,28 +8,30 @@ using MediaCloud.WebApp.Services.DataService.Entities.Base;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.EntityFrameworkCore;
 using NLog;
+using ILogger = NLog.ILogger;
 
 namespace MediaCloud.WebApp.Services.DataService
 {
     public class DataService : IDataService
     {
-        private readonly IActorProvider _actorProvider;
         private readonly RepositoryContext _repositoryContext;
         private readonly IConfigProvider _configProvider;
+        private static ILogger Logger => LogManager.GetLogger("DataService");
 
-        public DataService(IServiceScopeFactory scopeFactory, IActorProvider actorProvider)
+        public DataService(IServiceScopeFactory scopeFactory, IActorProvider actorProvider) 
+            : this(scopeFactory, actorProvider.GetCurrent())
         {
-            var logger = LogManager.GetLogger("DataService");
+        }
 
+        public DataService(IServiceScopeFactory scopeFactory, Actor? actor)
+        {
             var serviceScope = scopeFactory.CreateScope();
             var dbContext = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
             _configProvider = serviceScope.ServiceProvider.GetRequiredService<IConfigProvider>();
             var pictureService = serviceScope.ServiceProvider.GetRequiredService<IPictureService>();
 
-            _actorProvider = actorProvider;
-            var currentActor = _actorProvider.GetCurrent();
-            StatisticProvider = new StatisticProvider(dbContext, currentActor);
-            _repositoryContext = new RepositoryContext(dbContext, StatisticProvider, pictureService, logger, currentActor);
+            StatisticProvider = new StatisticProvider(dbContext, actor);
+            _repositoryContext = new RepositoryContext(dbContext, StatisticProvider, pictureService, Logger, actor);
 
             Actors = new(_repositoryContext.DbContext);
             Collections = new(_repositoryContext);
@@ -40,7 +42,7 @@ namespace MediaCloud.WebApp.Services.DataService
             ActorSettings = _configProvider.ActorSettings;
             EnvironmentSettings = _configProvider.EnvironmentSettings;
 
-            logger.Debug("Initialized DataService instance by {currentActor.Name}", currentActor?.Name);
+            Logger.Debug("Initialized DataService instance by {currentActor.Name}", actor?.Name);
         }
 
         public ActorRepository Actors { get; } 

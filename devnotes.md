@@ -38,6 +38,7 @@ Todo:
 - Add debug init logging to services
 - Admin check for display actors in Statistic and Statistic
 - Is DataService necessary at all ???
+- Fix DataService actor context when it used by task in background when actor is logged off or close page.
 
 
 # Changelog				   

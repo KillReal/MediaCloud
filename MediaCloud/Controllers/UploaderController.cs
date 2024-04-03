@@ -5,28 +5,28 @@ using Microsoft.AspNetCore.Mvc;
 namespace MediaCloud.WebApp.Controllers
 {
     [Authorize]
-    public class UploaderController : Controller
+    public class TaskSchedulerController : Controller
     {
-        private IUploader _uploader;
+        private readonly ITaskScheduler _taskScheduler;
 
         public IActionResult Index()
         {
             return View();
         }
 
-        public UploaderController(IUploader uploader)
+        public TaskSchedulerController(ITaskScheduler taskScheduler)
         {
-            _uploader = uploader;
+            _taskScheduler = taskScheduler;
         }
 
         public MediaUploader.TaskStatus GetTaskStatus(Guid id)
         {
-            return _uploader.GetStatus(id);
+            return _taskScheduler.GetStatus(id);
         }
 
-        public UploaderStatus GetStatus()
+        public TaskSchedulerStatus GetStatus()
         {
-            return _uploader.GetStatus();
+            return _taskScheduler.GetStatus();
         }
     }
 }

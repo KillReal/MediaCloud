@@ -33,9 +33,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-builder.Services.AddScoped<IConfigProvider, ConfigProvider>();
+builder.Services.AddSingleton<IConfigProvider, ConfigProvider>();
 builder.Services.AddSingleton<IActorProvider, ActorProvider>();
-builder.Services.AddSingleton<IUploader, Uploader>();
+builder.Services.AddSingleton<ITaskScheduler, MediaCloud.MediaUploader.TaskScheduler>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IDataService, DataService>();
@@ -62,7 +62,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
-using var scope = app.Services.CreateScope();
+//using var scope = app.Services.CreateScope();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

@@ -52,7 +52,7 @@ var orderPosElem = document.getElementById('orderPos');
             $('#loadingModal').modal('show');
             var data = JSON.parse(request.response);
 
-            var url = "/Uploader/GetTaskStatus?id=" + data.id;
+            var url = "/TaskScheduler/GetTaskStatus?id=" + data.id;
             
             console.log('Goes to update status');
 
