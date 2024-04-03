@@ -208,3 +208,15 @@ body {
     min-width: 2rem !important; 
     min-height: 2rem !important;
 }
+
+.chart-canvas {
+    min-height: 20rem;
+    max-height: 60rem;
+}
+
+.chart-canvas-block {
+    min-height: 30rem;
+    min-width: 30rem;
+    max-width: 75rem;
+    max-height: 75rem;
+}

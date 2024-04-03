@@ -22,6 +22,8 @@ Done:
 - Implement password security polices
 - Fix layouts misaligment on smaller displays
 - Refactor HTML in Pages
+- Fixed DataService actor context when it used by task in background when actor is logged off or close page.
+- Rename Uploader to TaskScheduler
 
 Todo:
 
@@ -34,11 +36,8 @@ Todo:
 	- [x] 	Dynamicly change columns
 		- Rejected due to hard implementation and onresize triggering
 - Review sql requests (Accordingly to ActorProvider staff)
-- Rename Uploader to TaskScheduler
 - Add debug init logging to services
 - Admin check for display actors in Statistic and Statistic
-- Is DataService necessary at all ???
-- Fix DataService actor context when it used by task in background when actor is logged off or close page.
 
 
 # Changelog				   
