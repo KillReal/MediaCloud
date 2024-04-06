@@ -23,15 +23,56 @@ namespace MediaCloud.Services
             var size = image.Size;
             var width = maxSize;
             var height = maxSize;
-            var div = new float[] { size.Width / (float)width, size.Height / (float)height };
+            var div = new float[] 
+            { 
+                size.Width / (float)width, 
+                size.Height / (float)height 
+            };
             var maxDiv = Math.Max(div[0], div[1]);
 
             if (maxDiv > 1.0)
             {
-                var targetSize = new Size(Convert.ToInt32(size.Width / maxDiv), Convert.ToInt32(size.Height / maxDiv));
-                image.Mutate(x => x.Resize(targetSize, KnownResamplers.Lanczos3, true)) ;
+                var newWidth = Convert.ToInt32(size.Width / maxDiv);
+                var newHeight = Convert.ToInt32(size.Height / maxDiv);
+                var targetSize = new Size(newWidth, newHeight);
+                image.Mutate(x => x.Resize(targetSize, KnownResamplers.Lanczos3, true));
 
-                var ms = new MemoryStream();
+                return ConvertToBytes(image);
+            }
+
+            return sourceBytes;
+        }
+
+        public byte[] LowerResolution(byte[] pictureBytes)
+        {
+            return LowerResolution(ConvertToImage(pictureBytes), pictureBytes);
+        }
+
+        public byte[] RotateImage(byte[] pictureBytes, int rotationgDegrees)
+        {
+            var image = ConvertToImage(pictureBytes);
+            image.Mutate(x => x.Rotate(rotationgDegrees));
+
+            return ConvertToBytes(image);
+        }
+
+        public byte[] ChangeBrightnessImage(byte[] pictureBytes, float amount)
+        {
+            var image = ConvertToImage(pictureBytes);
+            image.Mutate(x => x.Brightness(amount));
+
+            return ConvertToBytes(image);
+        }
+
+        private static Image ConvertToImage(byte[] pictureBytes)
+        {
+            var stream = new MemoryStream(pictureBytes);
+            return Image.Load(stream);
+        }
+
+        private static byte[] ConvertToBytes(Image image)
+        {
+            var ms = new MemoryStream();
 
                 var encoder = image.Metadata.DecodedImageFormat;
                 if (encoder != null)
@@ -44,17 +85,6 @@ namespace MediaCloud.Services
                 }
 
                 return ms.ToArray();
-            }
-
-            return sourceBytes;
-        }
-
-        public byte[] LowerResolution(byte[] pictureBytes)
-        {
-            var stream = new MemoryStream(pictureBytes);
-            var image = Image.Load(stream);
-
-            return LowerResolution(image, pictureBytes);
         }
     }
 }

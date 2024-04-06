@@ -11,5 +11,7 @@ namespace MediaCloud.Services
     {
         public byte[] LowerResolution(Image image, byte[] sourceBytes);
         public byte[] LowerResolution(byte[] pictureBytes);
+        public byte[] RotateImage(byte[] pictureBytes, int rotationgDegrees);
+        public byte[] ChangeBrightnessImage(byte[] pictureBytes, float amount);
     }
 }

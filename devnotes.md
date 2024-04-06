@@ -26,6 +26,7 @@ Done:
 - Rename Uploader to TaskScheduler
 - Fix statistics dashboards on smaller displays (low width)
 - Implemented multiple actors session data chaching
+- Implement picture modifying options (rotate, exposure and etc)
 
 Todo:
 
@@ -35,11 +36,12 @@ Todo:
 	- [ ] 	Use Table layout
 	- [ ] 	Find dynamic gallery layout with resizing support
 	- [x] 	Dynamicly change columns
-		- Rejected due to hard implementation and onresize triggering
+		- Could be implemented with autoloading support. Calculate viewport width cliet sided and request certain columns width
+		- The problem is that user can change columns count and there might be need some commentaries to option desc
 - Review sql requests (Accordingly to ActorProvider staff)
 - Add debug init logging to services
-- Admin check for display actors in Statistic and Statistic
-- Implement picture modifying options (rotate, exposure and etc)
+- Admin check for display actors in Statistic
+- Optimize DI in TaskScheduler. Create only needed services instead of creating DataService.
 
 
 # Changelog				   
