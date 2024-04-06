@@ -16,34 +16,34 @@
     var lastLoginAtSortSymbol = "";
     var lastLoginAtButtonStyle = "btn-info";
 
-     @if (@Model.ListBuilder.Sort == "NameDesc"){
+     @if (@Model.ListBuilder.Sorting.PropertyName == "NameDesc"){
         nameSortType = "Name";
         nameSortSymbol = "↓";
         nameButtonStyle = "btn-warning";
     }
-    else if (@Model.ListBuilder.Sort == "Name"){
+    else if (@Model.ListBuilder.Sorting.PropertyName == "Name"){
         nameSortType = "NameDesc";
         nameSortSymbol = "↑";
         nameButtonStyle = "btn-warning";
     }
 
-    @if (@Model.ListBuilder.Sort == "UpdatedAtDesc"){
+    @if (@Model.ListBuilder.Sorting.PropertyName == "UpdatedAtDesc"){
         updatedAtSortType = "UpdatedAt";
         updatedAtSortSymbol = "↓";
         updatedAtButtonStyle = "btn-warning";
     }
-    else if (@Model.ListBuilder.Sort == "UpdatedAt"){
+    else if (@Model.ListBuilder.Sorting.PropertyName == "UpdatedAt"){
         updatedAtSortType = "UpdatedAtDesc";
         updatedAtSortSymbol = "↑";
         updatedAtButtonStyle = "btn-warning";
     }
 
-    @if (@Model.ListBuilder.Sort == "LastLoginAtDesc"){
+    @if (@Model.ListBuilder.Sorting.PropertyName == "LastLoginAtDesc"){
         lastLoginAtSortType = "LastLoginAt";
         lastLoginAtSortSymbol = "↓";
         lastLoginAtButtonStyle = "btn-warning";
     }
-    else if (@Model.ListBuilder.Sort == "LastLoginAt"){
+    else if (@Model.ListBuilder.Sorting.PropertyName == "LastLoginAt"){
         lastLoginAtSortType = "LastLoginAtDesc";
         lastLoginAtSortSymbol = "↑";
         lastLoginAtButtonStyle = "btn-warning";
@@ -117,7 +117,7 @@
         <tbody>
             @foreach (var item in Model.Actors) {
                 <tr class="list-clickable" 
-                    onclick="document.location='/Actors/Detail?id=@item.Id&returnUrl=/Actors/Index?sort=@Model.ListBuilder.Sort';">
+                    onclick="document.location='/Actors/Detail?id=@item.Id&returnUrl=/Actors/Index?sort=@Model.ListBuilder.Sorting.PropertyName';">
                     <td class="table-item-padding">
                         @Html.DisplayFor(modelItem => item.Name)
                     </td>

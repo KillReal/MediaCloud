@@ -18,61 +18,16 @@ namespace MediaCloud.Builders.List
     /// <typeparam name="T"><see cref="Record"/></typeparam>
     public class ListBuilder<T> where T : Record
     {
-        private Sorting Sorting { get; set; }
+        public Sorting Sorting { get; init; }
 
-        private Filtering Filtering { get; set; }
+        public Filtering Filtering { get; init; }
 
-        private Pagination Pagination { get; set; }
+        public Pagination Pagination { get; init; }
 
         /// <summary>
         /// Column count for list. Default value is <see cref="ConfigurationService.Gallery.GetColumnCount"/>
         /// </summary>
         public int ColumnCount { get; set; }
-
-        /// <summary>
-        /// Filter parameter.
-        /// </summary>
-        public string Filter => Filtering.Filter;
-
-        /// <summary>
-        /// Sort entity by property name.
-        /// </summary>
-        public string Sort => Sorting.PropertyName;
-
-        /// <summary>
-        /// Ordering of query of sorting.
-        /// </summary>
-        public Ordering Order => Sorting.GetOrder();
-
-        /// <summary>
-        /// Entities count on single page.
-        /// </summary>
-        public int Count => Pagination.Count;
-
-        /// <summary>
-        /// Total entities count.
-        /// </summary>
-        public int TotalCount => Pagination.TotalCount;
-
-        /// <summary>
-        /// Entities offset in query.
-        /// </summary>
-        public int Offset => Pagination.Offset;
-
-        /// <summary>
-        /// Start page number.
-        /// </summary>
-        public int StartPageNumber => Pagination.StartPageNumber;
-
-        /// <summary>
-        /// Current page number.
-        /// </summary>
-        public int CurrentPageNumber => Pagination.CurrentPageNumber;
-
-        /// <summary>
-        /// Last page number.
-        /// </summary>
-        public int LastPageNumber => Pagination.EndPageNumber;
 
         /// <summary>
         /// Init list builder via list request.

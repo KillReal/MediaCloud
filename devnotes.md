@@ -24,11 +24,12 @@ Done:
 - Refactor HTML in Pages
 - Fixed DataService actor context when it used by task in background when actor is logged off or close page.
 - Rename Uploader to TaskScheduler
+- Fix statistics dashboards on smaller displays (low width)
+- Implemented multiple actors session data chaching
 
 Todo:
 
 - Fix gallery layout and autoloading on smaller displays (less than actual number of columns)
-- Fix statistics dashboards on smaller displays (low width)
 - Solve returnUrl problem (Support only one step hitory)
 - Rewrite gallery layout
 	- [ ] 	Use Table layout
@@ -38,6 +39,7 @@ Todo:
 - Review sql requests (Accordingly to ActorProvider staff)
 - Add debug init logging to services
 - Admin check for display actors in Statistic and Statistic
+- Implement picture modifying options (rotate, exposure and etc)
 
 
 # Changelog				   

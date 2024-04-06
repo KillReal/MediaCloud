@@ -1,36 +1,40 @@
-﻿@if (Model.ListBuilder.TotalCount > Model.ListBuilder.Count)
+﻿@if (Model.ListBuilder.Pagination.TotalCount > Model.ListBuilder.Pagination.Count)
 {
     <nav aria-label="...">
       <ul class="pagination d-flex justify-content-center flex-wrap">
         <li class="page-item">
-                <a class="page-link" href="?count=@(Model.ListBuilder.Count)&offset=0&sort=@(Model.ListBuilder.Sort)&filter=@(Model.ListBuilder.Filter)&isUseAutoload=@(Model.IsAutoloadEnabled)">First</a>
+                <a class="page-link" href="?count=@(Model.ListBuilder.Pagination.Count)&offset=0&sort=@(Model.ListBuilder.Sorting.PropertyName)&filter=@(Model.ListBuilder.Filtering.Filter)&isUseAutoload=@(Model.IsAutoloadEnabled)">
+                    First
+                </a>
         </li>
-        @for (int i = Model.ListBuilder.StartPageNumber; i < Model.ListBuilder.CurrentPageNumber; i++)
+        @for (int i = Model.ListBuilder.Pagination.StartPageNumber; i < Model.ListBuilder.Pagination.CurrentPageNumber; i++)
         {
             <li class="page-item">
                 <a class="page-link"
-                       href="?count=@(Model.ListBuilder.Count)&offset=@(i * Model.ListBuilder.Count)&sort=@(Model.ListBuilder.Sort)&filter=@(Model.ListBuilder.Filter)&isUseAutoload=@(Model.IsAutoloadEnabled)">
+                       href="?count=@(Model.ListBuilder.Pagination.Count)&offset=@(i * Model.ListBuilder.Pagination.Count)&sort=@(Model.ListBuilder.Sorting.PropertyName)&filter=@(Model.ListBuilder.Filtering.Filter)&isUseAutoload=@(Model.IsAutoloadEnabled)">
                     @(i + 1)
                 </a>
             </li>
         }
         <li class="page-item active z-1">
-            <span class="page-link" style="z-index: 0">@(Model.ListBuilder.CurrentPageNumber + 1)
+            <span class="page-link" style="z-index: 0">@(Model.ListBuilder.Pagination.CurrentPageNumber + 1)
                     <span class="sr-only"></span>
             </span>
         </li>
-        @for (int i = Model.ListBuilder.CurrentPageNumber + 1; i < Model.ListBuilder.LastPageNumber; i++)
+        @for (int i = Model.ListBuilder.Pagination.CurrentPageNumber + 1; i < Model.ListBuilder.Pagination.EndPageNumber; i++)
         {
             <li class="page-item">
                 <a class="page-link"
-                       href="?count=@(Model.ListBuilder.Count)&offset=@(i * Model.ListBuilder.Count)&sort=@(Model.ListBuilder.Sort)&filter=@(Model.ListBuilder.Filter)&isUseAutoload=@(Model.IsAutoloadEnabled)">
+                       href="?count=@(Model.ListBuilder.Pagination.Count)&offset=@(i * Model.ListBuilder.Pagination.Count)&sort=@(Model.ListBuilder.Sorting.PropertyName)&filter=@(Model.ListBuilder.Filtering.Filter)&isUseAutoload=@(Model.IsAutoloadEnabled)">
                     @(i + 1)
                 </a>
             </li>
         }
         <li class="page-item">
-          <a class="page-link"
-                   href="?count=@(Model.ListBuilder.Count)&offset=@(Model.ListBuilder.TotalCount / Model.ListBuilder.Count * Model.ListBuilder.Count)&sort=@(Model.ListBuilder.Sort)&filter=@(Model.ListBuilder.Filter)&isUseAutoload=@(Model.IsAutoloadEnabled)">Last</a>
+            <a class="page-link"
+                href="?count=@(Model.ListBuilder.Pagination.Count)&offset=@(Model.ListBuilder.Pagination.TotalCount / Model.ListBuilder.Pagination.Count * Model.ListBuilder.Pagination.Count)&sort=@(Model.ListBuilder.Sorting.PropertyName)&filter=@(Model.ListBuilder.Filtering.Filter)&isUseAutoload=@(Model.IsAutoloadEnabled)">
+                Last
+            </a>
         </li>
       </ul>
 </nav>

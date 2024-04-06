@@ -103,10 +103,10 @@ namespace MediaCloud.Repositories
 
         public List<Tag> GetList(ListBuilder<Tag> listBuilder)
         {
-            return _context.Tags.AsNoTracking().Order(listBuilder.Order)
+            return _context.Tags.AsNoTracking().Order(listBuilder.Sorting.GetOrder())
                                                .Where(x => x.CreatorId == _actor.Id)
-                                               .Skip(listBuilder.Offset)
-                                               .Take(listBuilder.Count)
+                                               .Skip(listBuilder.Pagination.Offset)
+                                               .Take(listBuilder.Pagination.Count)
                                                .ToList();
         }
 

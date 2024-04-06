@@ -67,9 +67,9 @@ namespace MediaCloud.Repositories
 
         public List<Actor> GetList(ListBuilder<Actor> listBuilder)
         {
-            return _context.Actors.AsNoTracking().Order(listBuilder.Order)
-                                                 .Skip(listBuilder.Offset)
-                                                 .Take(listBuilder.Count)
+            return _context.Actors.AsNoTracking().Order(listBuilder.Sorting.GetOrder())
+                                                 .Skip(listBuilder.Pagination.Offset)
+                                                 .Take(listBuilder.Pagination.Count)
                                                  .ToList();
         }
 

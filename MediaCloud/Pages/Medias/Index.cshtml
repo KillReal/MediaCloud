@@ -11,29 +11,29 @@
     var createdAtSortSymbol = "";
     var createdAtButtonStyle = "btn-info";
 
-    if (Model.ListBuilder.Sort == "UpdatedAtDesc"){
+    if (Model.ListBuilder.Sorting.PropertyName == "UpdatedAtDesc"){
         updatedAtSortType = "UpdatedAt";
         updatedAtSortSymbol = "↓";
         updatedAtButtonStyle = "btn-warning";
     }
-    else if (Model.ListBuilder.Sort == "UpdatedAt"){
+    else if (Model.ListBuilder.Sorting.PropertyName == "UpdatedAt"){
         updatedAtSortType = "UpdatedAtDesc";
         updatedAtSortSymbol = "↑";
         updatedAtButtonStyle = "btn-warning";
     }
 
-    if (Model.ListBuilder.Sort == "CreatedAtDesc"){
+    if (Model.ListBuilder.Sorting.PropertyName == "CreatedAtDesc"){
         createdAtSortType = "CreatedAt";
         createdAtSortSymbol = "↓";
         createdAtButtonStyle = "btn-warning";
     }
-    else if (Model.ListBuilder.Sort == "CreatedAt"){
+    else if (Model.ListBuilder.Sorting.PropertyName == "CreatedAt"){
         createdAtSortType = "CreatedAtDesc";
         createdAtSortSymbol = "↑";
         createdAtButtonStyle = "btn-warning";
     }
 
-    var randomButtonStyle = Model.ListBuilder.Sort.Contains("Random") 
+    var randomButtonStyle = Model.ListBuilder.Sorting.PropertyName.Contains("Random") 
         ? "btn-warning"
         : "btn-info";
     var autoloadingButtonStyle = Model.IsAutoloadEnabled 
@@ -51,7 +51,7 @@
         <div class="form-group align-self-center d-flex flex-wrap">   
             <a class="btn btn-success btn-rounded me-3 mt-3" 
                 asp-page="Upload"
-                asp-route-returnUrl="/Medias?count=@(Model.ListBuilder.Count)$offset=@(Model.ListBuilder.Offset)$sort=@(Model.ListBuilder.Sort)$filter=@(Model.ListBuilder.Filter)$isUseAutoload=@(Model.IsAutoloadEnabled)">
+                asp-route-returnUrl="/Medias?count=@(Model.ListBuilder.Pagination.Count)$offset=@(Model.ListBuilder.Pagination.Offset)$sort=@(Model.ListBuilder.Sorting.PropertyName)$filter=@(Model.ListBuilder.Filtering.Filter)$isUseAutoload=@(Model.IsAutoloadEnabled)">
                     Upload
                 </a>
             <div class="vr me-3 mt-3">
@@ -62,21 +62,21 @@
 
             <a class="btn @updatedAtButtonStyle btn-rounded me-3 mt-3 text-nowrap" 
                 asp-page="Index" 
-                asp-route-filter=@(Model.ListBuilder.Filter) 
+                asp-route-filter=@(Model.ListBuilder.Filtering.Filter) 
                 asp-route-sort=@(updatedAtSortType) 
                 asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>
                 Updated @(updatedAtSortSymbol)
             </a>
             <a class="btn @createdAtButtonStyle btn-rounded me-3 mt-3 text-nowrap" 
                 asp-page="Index" 
-                asp-route-filter=@(Model.ListBuilder.Filter) 
+                asp-route-filter=@(Model.ListBuilder.Filtering.Filter) 
                 asp-route-sort=@(createdAtSortType) 
                 asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>
                 Created @(createdAtSortSymbol)
             </a>        
             <a class="btn @randomButtonStyle btn-rounded me-3 mt-3 text-nowrap" 
                 asp-page="Index" 
-                asp-route-filter=@(Model.ListBuilder.Filter) 
+                asp-route-filter=@(Model.ListBuilder.Filtering.Filter) 
                 asp-route-sort=@($"Random_{new Random().Next(int.MaxValue)}") 
                 asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>
                 Random
@@ -86,8 +86,8 @@
 
             <a class="btn @autoloadingButtonStyle btn-rounded me-3 mt-3 text-nowrap" 
                 asp-page="Index" 
-                asp-route-filter=@(Model.ListBuilder.Filter) 
-                asp-route-sort=@(Model.ListBuilder.Sort) 
+                asp-route-filter=@(Model.ListBuilder.Filtering.Filter) 
+                asp-route-sort=@(Model.ListBuilder.Sorting.PropertyName) 
                 asp-route-isUseAutoload=@(!Model.IsAutoloadEnabled)>
                 Autoload @autoloadingButtonSymbol
             </a>
@@ -99,7 +99,7 @@
                 Tag filter:
             </div>
             <div class="autocomplete-list autocomplete me-3 mt-3 flex-grow-1">
-                <input asp-for=@Model.ListBuilder.Filter 
+                <input asp-for=@Model.ListBuilder.Filtering.Filter 
                     class="form-control" 
                     id="filterGrab" 
                     placeholder="example: @Model.ExampleFilter" 
@@ -151,7 +151,7 @@
         }
     </div>
     <div class="d-flex justify-content-center">
-        @if (Model.Previews.Count >= Model.ListBuilder.Count && Model.IsAutoloadEnabled)
+        @if (Model.Previews.Count >= Model.ListBuilder.Pagination.Count && Model.IsAutoloadEnabled)
         {
             <div class="oad-spinner spinner-border" 
                 role="status" 
@@ -194,15 +194,15 @@
     function GetPostUrl(entityType, dataId)
     {
         return "Medias/" + entityType +"?id=" + dataId +
-            "&returnUrl=/Medias?count=" + @Model.ListBuilder.Count + 
-            "$offset=" + @Model.ListBuilder.Offset +
-            "$sort=" + '@Model.ListBuilder.Sort' + 
-            "$filter=" + '@Model.ListBuilder.Filter' + 
+            "&returnUrl=/Medias?count=" + @Model.ListBuilder.Pagination.Count + 
+            "$offset=" + @Model.ListBuilder.Pagination.Offset +
+            "$sort=" + '@Model.ListBuilder.Sorting.PropertyName' + 
+            "$filter=" + '@Model.ListBuilder.Filtering.Filter' + 
             "$isUseAutoload=@Model.IsAutoloadEnabled";
     }
 
-    var currentOffset = @Model.ListBuilder.Offset;
-    var nextOffset = @Model.ListBuilder.Offset + @Model.ListBuilder.Count;
+    var currentOffset = @Model.ListBuilder.Pagination.Offset;
+    var nextOffset = @Model.ListBuilder.Pagination.Offset + @Model.ListBuilder.Pagination.Count;
 
     window.addEventListener("scroll", function(e) {
         if (!isAutoLoadingEnabled)
@@ -212,16 +212,17 @@
 
         if ((window.innerHeight + window.scrollY + 2000) >= document.body.offsetHeight) {
 
-            if (currentOffset == nextOffset || currentOffset > @Model.ListBuilder.TotalCount) {
-                if (currentOffset > @Model.ListBuilder.TotalCount) {
+            if (currentOffset == nextOffset || currentOffset > @Model.ListBuilder.Pagination.TotalCount) {
+                if (currentOffset > @Model.ListBuilder.Pagination.TotalCount) {
                     document.getElementById('loadingSpinner').style = "display: none";
                     document.getElementById('loadingDone').style = "text-align: center; display: block";
                 }
                 return;
             }
-            currentOffset += @Model.ListBuilder.Count;
+            currentOffset += @Model.ListBuilder.Pagination.Count;
 
-            var url = "/Gallery/PreviewsBatch?count=" + @Model.ListBuilder.Count + "&offset=" + nextOffset + "&sort=" + '@(Model.ListBuilder.Sort)' + "&filter=" + '@(Model.ListBuilder.Filter)';
+            var url = "/Gallery/PreviewsBatch?count=" + @Model.ListBuilder.Pagination.Count + "&offset=" + nextOffset 
+                + "&sort=" + '@(Model.ListBuilder.Sorting.PropertyName)' + "&filter=" + '@(Model.ListBuilder.Filtering.Filter)';
             fetch(url).then(function(response) {
                 return response.json();
             }).then(function(data) {
@@ -254,7 +255,7 @@
                     columnDiv.appendChild(cardDiv);
                 }
                 gallery.appendChild(columnDiv);
-                nextOffset += @Model.ListBuilder.Count;
+                nextOffset += @Model.ListBuilder.Pagination.Count;
             }).catch(function(err) {
                 console.log('Fetch Error :-S', err);
             });
@@ -264,7 +265,7 @@
     function filterClicked()
     {
         var filter = document.getElementById("filterGrab").value;
-        window.location.href = "/Medias?filter=" + filter + "&sort=@(Model.ListBuilder.Sort)&isUseAutoload=@(Model.IsAutoloadEnabled)";
+        window.location.href = "/Medias?filter=" + filter + "&sort=@(Model.ListBuilder.Sorting.PropertyName)&isUseAutoload=@(Model.IsAutoloadEnabled)";
     };
 
 </script>

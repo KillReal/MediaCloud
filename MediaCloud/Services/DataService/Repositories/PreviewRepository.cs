@@ -106,19 +106,19 @@ namespace MediaCloud.Repositories
         {
             var query = _context.Previews.AsNoTracking().Where(x => x.Order == 0);
 
-            return await SetFilterToQuery(query, listBuilder.Filter).Where(x => x.CreatorId == _actor.Id)
+            return await SetFilterToQuery(query, listBuilder.Filtering.Filter).Where(x => x.CreatorId == _actor.Id)
                                                                     .CountAsync();
         }
 
         public List<Preview> GetList(ListBuilder<Preview> listBuilder)
         {
             var query = _context.Previews.AsNoTracking().Where(x => x.Order == 0);
-            query = SetFilterToQuery(query, listBuilder.Filter);
+            query = SetFilterToQuery(query, listBuilder.Filtering.Filter);
 
             _statisticProvider.ActivityFactorRaised.Invoke();
 
-            if (listBuilder.Sort.Contains("Random") &&
-                int.TryParse(listBuilder.Sort.Split('_').Last(), out int seed))
+            if (listBuilder.Sorting.PropertyName.Contains("Random") &&
+                int.TryParse(listBuilder.Sorting.PropertyName.Split('_').Last(), out int seed))
             {
                 var previewIdsList = _context.Previews.Where(x => x.Order == 0)
                                                       .Select(x => x.Id)
@@ -130,15 +130,15 @@ namespace MediaCloud.Repositories
                             .Include(x => x.Collection)
                             .ToList()
                             .OrderBy(x => previewIdsList.IndexOf(x.Id))
-                            .Skip(listBuilder.Offset)
-                            .Take(listBuilder.Count)
+                            .Skip(listBuilder.Pagination.Offset)
+                            .Take(listBuilder.Pagination.Count)
                             .ToList();
             }  
 
-            return query.Order(listBuilder.Order)
+            return query.Order(listBuilder.Sorting.GetOrder())
                         .Where(x => x.CreatorId == _actor.Id)
-                        .Skip(listBuilder.Offset)
-                        .Take(listBuilder.Count)
+                        .Skip(listBuilder.Pagination.Offset)
+                        .Take(listBuilder.Pagination.Count)
                         .Include(x => x.Collection)
                         .ToList();
         }
