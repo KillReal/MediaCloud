@@ -11,20 +11,23 @@ using MediaCloud.Services;
 using MediaCloud.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using MediaCloud.WebApp.Services.DataService;
 using MediaCloud.WebApp.Services.Statistic;
 using MediaCloud.WebApp.Pages;
+using MediaCloud.WebApp.Services.ActorProvider;
 
 namespace MediaCloud.Pages.Medias
 {
     public class MediaDetailModel : AuthorizedPageModel
     {
         private readonly IPictureService _pictureService;
+        private readonly TagRepository _tagRepository;
+        private readonly PreviewRepository _previewRepository;
+        private readonly MediaRepository _mediaRepository;
 
         [BindProperty]
         public Guid PreviewId { get; set; }
         [BindProperty]
-        public Media Media { get; set; }
+        public Media Media { get; set; } = new();
         [BindProperty]
         public List<Tag> Tags { get; set; } = new();
         [BindProperty]
@@ -38,16 +41,18 @@ namespace MediaCloud.Pages.Medias
         [BindProperty]
         public int RotationDegree {get; set;} = 0;
 
-        public MediaDetailModel(IDataService dataService, IPictureService pictureService) : base(dataService)
+        public MediaDetailModel(IActorProvider actorProvider, IPictureService pictureService, TagRepository tagRepository,
+            PreviewRepository previewRepository, MediaRepository mediaRepository) : base(actorProvider)
         {
             _pictureService = pictureService;
-
-            Media = new();
+            _tagRepository = tagRepository;
+            _previewRepository = previewRepository;
+            _mediaRepository = mediaRepository;
         }
 
         public IActionResult OnGet(Guid id, string returnUrl = "/Medias")
         {
-            var preview = _dataService.Previews.Get(id);
+            var preview = _previewRepository.Get(id);
 
             if (preview == null)
             {
@@ -74,15 +79,15 @@ namespace MediaCloud.Pages.Medias
 
         public IActionResult OnPost()
         {
-            var preview = _dataService.Previews.Get(PreviewId);
+            var preview = _previewRepository.Get(PreviewId);
 
             if (preview == null || Media == null)
             {
                 return Redirect("/Error");
             }
 
-            var tags = _dataService.Tags.GetRangeByString(TagsString);
-            _dataService.Tags.UpdatePreviewLinks(tags, preview);
+            var tags = _tagRepository.GetRangeByString(TagsString);
+            _tagRepository.UpdatePreviewLinks(tags, preview);
             
             var media = preview.Media;
             media.Rate = Media.Rate;
@@ -94,14 +99,14 @@ namespace MediaCloud.Pages.Medias
 
             }
 
-            _dataService.Medias.Update(media);
+            _mediaRepository.Update(media);
 
             return Redirect(ReturnUrl.Replace("$", "&"));
         }
 
         public IActionResult OnPostDelete(Guid id)
         {
-            if (_dataService.Previews.TryRemove(id) == false)
+            if (_previewRepository.TryRemove(id) == false)
             {
                 return Redirect("/Error");
             }

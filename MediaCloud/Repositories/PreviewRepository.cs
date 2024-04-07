@@ -4,9 +4,11 @@ using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.Extensions;
 using MediaCloud.WebApp.Repositories.Base;
+using MediaCloud.WebApp.Services.ActorProvider;
 using MediaCloud.WebApp.Services.Data.Repositories.Interfaces;
-using MediaCloud.WebApp.Services.DataService.Entities.Base;
+using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.EntityFrameworkCore;
+using NLog;
 
 namespace MediaCloud.Repositories
 {
@@ -86,7 +88,8 @@ namespace MediaCloud.Repositories
             return query;
         }
 
-        public PreviewRepository(RepositoryContext context) : base(context)
+        public PreviewRepository(AppDbContext context, StatisticProvider statisticProvider, IActorProvider actorProvider) 
+        : base(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider)
         {
         }
 

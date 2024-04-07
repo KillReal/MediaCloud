@@ -3,15 +3,18 @@ using MediaCloud.Builders.List;
 using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.Extensions;
-using MediaCloud.WebApp.Services.DataService.Entities.Base;
+using MediaCloud.WebApp.Services.ActorProvider;
+using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using NLog;
 
 namespace MediaCloud.Repositories
 {
     public class CollectionRepository : BaseRepository<Collection>
     {
-        public CollectionRepository(RepositoryContext context) : base(context)
+        public CollectionRepository(AppDbContext context, StatisticProvider statisticProvider, IActorProvider actorProvider) 
+            : base(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider)
         {
         }
 

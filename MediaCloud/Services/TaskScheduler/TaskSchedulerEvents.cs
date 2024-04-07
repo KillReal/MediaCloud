@@ -3,7 +3,6 @@ using MediaCloud.MediaUploader.Tasks;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services;
 using MediaCloud.WebApp.Services.ConfigurationProvider;
-using MediaCloud.WebApp.Services.DataService;
 using NLog;
 using ILogger = NLog.ILogger;
 using Task = MediaCloud.MediaUploader.Tasks.Task;

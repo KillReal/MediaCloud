@@ -13,7 +13,7 @@ namespace MediaCloud.Pages
 
         public ChangelogModel(IActorProvider actorProvider)
         { 
-            CurrentActor = actorProvider.GetCurrent();
+            CurrentActor = actorProvider.GetCurrentOrDefault();
         }
 
         public IActionResult OnGet()

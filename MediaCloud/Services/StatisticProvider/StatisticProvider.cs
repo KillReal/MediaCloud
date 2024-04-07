@@ -3,7 +3,6 @@ using MediaCloud.Data.Models;
 using MediaCloud.MediaUploader;
 using MediaCloud.MediaUploader.Tasks;
 using MediaCloud.WebApp.Services.ActorProvider;
-using MediaCloud.WebApp.Services.DataService;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using NLog;
@@ -18,17 +17,16 @@ namespace MediaCloud.WebApp.Services.Statistic
         private readonly AppDbContext _context;
         private readonly Actor _actor;
 
-        public StatisticProvider(AppDbContext context, Actor? actor)
+        public StatisticProvider(AppDbContext context, IActorProvider actorProvider)
         {
             _logger = LogManager.GetLogger("StatisticProvider");
             _context = context;
+            _actor = actorProvider.GetCurrent();
 
-            if (actor == null)
+            if (_actor == null)
             {
                 throw new ArgumentException("Cannot initialize statisticProvider with unknown actor context");
             }
-
-            _actor = actor;
 
             MediasCountChanged += MediasCountChangedAction;
             TagsCountChanged += TagsCountChangedAction;

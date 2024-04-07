@@ -1,7 +1,6 @@
 ﻿using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.MediaUploader.Tasks;
-using MediaCloud.WebApp.Services.DataService;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -74,9 +73,9 @@ namespace MediaCloud.MediaUploader
 
             try
             {
-                var dataService = new DataService(_serviceScopeFactory, Task.Actor);
+                var taskContext = new TaskExecutionContext(Task);
 
-                Task.DoTheTask(dataService);
+                taskContext.DoTheTask(_serviceScopeFactory.CreateScope().ServiceProvider);
             }
             catch (Exception ex)
             {

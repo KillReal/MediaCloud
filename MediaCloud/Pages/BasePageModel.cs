@@ -1,6 +1,6 @@
 ﻿using MediaCloud.Data.Models;
+using MediaCloud.WebApp.Services.ActorProvider;
 using MediaCloud.WebApp.Services.ConfigurationProvider;
-using MediaCloud.WebApp.Services.DataService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -12,16 +12,16 @@ namespace MediaCloud.WebApp.Pages
 {
     [Authorize]
     public class AuthorizedPageModel : PageModel
-    {
-        protected IDataService _dataService;
+    {   
+        protected IActorProvider _actorProvider;
         protected ILogger _logger;
 
         [BindProperty]
         public Actor? CurrentActor { get; set; }
 
-        public AuthorizedPageModel(IDataService dataService) 
+        public AuthorizedPageModel(IActorProvider actorProvider) 
         {
-            _dataService = dataService;
+            _actorProvider = actorProvider;
             _logger = LogManager.GetLogger("PageModel");
 
             LogPageInit();
@@ -29,7 +29,7 @@ namespace MediaCloud.WebApp.Pages
 
         private void LogPageInit()
         {
-            CurrentActor = _dataService.GetCurrentActor();
+            CurrentActor = _actorProvider.GetCurrent();
 
             var url = GetType().Name;
 

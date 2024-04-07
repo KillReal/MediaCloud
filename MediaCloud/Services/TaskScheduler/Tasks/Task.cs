@@ -1,6 +1,6 @@
 ﻿using MediaCloud.Data;
 using MediaCloud.Data.Models;
-using MediaCloud.WebApp.Services.DataService;
+using MediaCloud.WebApp.Services.ActorProvider;
 
 namespace MediaCloud.MediaUploader.Tasks
 {
@@ -40,13 +40,19 @@ namespace MediaCloud.MediaUploader.Tasks
         }
 
         /// <summary>
-        /// Execute task.
+        /// Do the task.
         /// </summary>
-        /// <param name="DataService"> Current <see cref="IDataService"/> to work with. </param>
-        /// <exception cref="NotImplementedException"> Exception because it's abstract parent instance. </exception>
-        public virtual void DoTheTask(IDataService DataService)
+        /// <param name="serviceProvider"> Used for creation of needed repositories. </param>
+        /// <param name="actorProvider"> Used to set the current actor for repositories. </param>
+        /// <exception cref="NotImplementedException"></exception>
+        public virtual void DoTheTask(IServiceProvider serviceProvider, IActorProvider actorProvider)
         {
             throw new NotImplementedException();
+        }
+
+        public Actor GetAuthor()
+        {
+            return Actor;
         }
     }
 }

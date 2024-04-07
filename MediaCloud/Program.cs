@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using MediaCloud.WebApp.Services;
-using MediaCloud.WebApp.Services.DataService;
 using MediaCloud.WebApp.Services.Statistic;
 using MediaCloud.WebApp.Services.ActorProvider;
 using NLog.Web;
@@ -38,8 +37,13 @@ builder.Services.AddSingleton<IActorProvider, ActorProvider>();
 builder.Services.AddSingleton<ITaskScheduler, MediaCloud.MediaUploader.TaskScheduler>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<IDataService, DataService>();
-builder.Services.AddScoped<IPictureService, PictureService>();
+builder.Services.AddScoped<StatisticProvider>();
+builder.Services.AddScoped<ActorRepository>();
+builder.Services.AddScoped<PreviewRepository>();
+builder.Services.AddScoped<MediaRepository>();
+builder.Services.AddScoped<CollectionRepository>();
+builder.Services.AddScoped<TagRepository>();
+builder.Services.AddSingleton<IPictureService, PictureService>();
 
 builder.Services.Configure<FormOptions>(x =>
 {

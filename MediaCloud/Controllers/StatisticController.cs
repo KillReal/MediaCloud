@@ -3,7 +3,6 @@ using MediaCloud.Extensions;
 using MediaCloud.MediaUploader;
 using MediaCloud.Pages.Actors;
 using MediaCloud.Services;
-using MediaCloud.WebApp.Services.DataService;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,9 +20,9 @@ namespace MediaCloud.WebApp.Controllers
             return View();
         }
 
-        public StatisticController(IDataService dataService, ITaskScheduler uploader)
+        public StatisticController(StatisticProvider statisticProvider, ITaskScheduler uploader)
         {
-            _statisticProvider = dataService.StatisticProvider;
+            _statisticProvider = statisticProvider;
             _uploader = uploader;
         }
 
@@ -50,5 +49,9 @@ namespace MediaCloud.WebApp.Controllers
 
             return Redirect($"/Uploader/GetTaskStatus?id={task.Id}");
         }
+    }
+
+    public interface IStatisticProvider
+    {
     }
 }

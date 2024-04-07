@@ -2,7 +2,6 @@ using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services.ActorProvider;
-using MediaCloud.WebApp.Services.DataService;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -32,8 +31,6 @@ namespace MediaCloud.WebApp.Pages
         {
             _actorProvider = actorProvider;
             _logger = LogManager.GetLogger("Actor");
-
-            CurrentActor = _actorProvider.GetCurrent();
         }
 
         public IActionResult OnGet(string returnUrl = "/")

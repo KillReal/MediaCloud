@@ -11,18 +11,21 @@ using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using MediaCloud.WebApp.Services.DataService;
 using MediaCloud.WebApp.Pages;
+using MediaCloud.WebApp.Services.ActorProvider;
 
 namespace MediaCloud.Pages.Tags
 {
     public class TagCreateModel : AuthorizedPageModel
     {
+        private readonly TagRepository _tagRepository;
+
         [BindProperty]
         public Tag Tag { get; set; } = new();
 
-        public TagCreateModel(IDataService dataService) : base(dataService)
+        public TagCreateModel(IActorProvider actorProvider, TagRepository tagRepository) : base(actorProvider)
         {
+            _tagRepository = tagRepository;
         }
 
         public IActionResult OnGet()
@@ -32,7 +35,7 @@ namespace MediaCloud.Pages.Tags
 
         public IActionResult OnPost()
         {
-            _dataService.Tags.Create(Tag);
+            _tagRepository.Create(Tag);
 
             return RedirectToPage("/Tags");
         }

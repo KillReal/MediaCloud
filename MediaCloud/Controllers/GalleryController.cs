@@ -1,7 +1,7 @@
 ﻿using MediaCloud.Builders.List;
 using MediaCloud.Data.Models;
+using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services.ConfigurationProvider;
-using MediaCloud.WebApp.Services.DataService;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,22 +11,26 @@ namespace MediaCloud.WebApp.Controllers
     [Authorize]
     public class GalleryController : Controller
     {
-        private readonly IDataService _dataService;
+        private readonly IConfigProvider _configProvider;
+        private readonly TagRepository _tagRepository;
+        private readonly PreviewRepository _previewRepository;
 
-        public GalleryController(IDataService dataService)
+        public GalleryController(IConfigProvider configProvider, TagRepository tagRepository, PreviewRepository previewRepository)
         {
-            _dataService = dataService;
+            _configProvider = configProvider;
+            _tagRepository = tagRepository;
+            _previewRepository = previewRepository;
         }
 
         public List<string> GetSuggestions(string searchString, int limit = 10)
         {
-            return _dataService.Tags.GetSuggestionsByString(searchString, limit);
+            return _tagRepository.GetSuggestionsByString(searchString, limit);
         }
 
         public async Task<List<object>> PreviewsBatchAsync(ListRequest listRequest)
         {
-            var ListBuilder = new ListBuilder<Preview>(listRequest, _dataService.ActorSettings);
-            var previews = await ListBuilder.BuildAsync(_dataService.Previews);
+            var ListBuilder = new ListBuilder<Preview>(listRequest, _configProvider.ActorSettings);
+            var previews = await ListBuilder.BuildAsync(_previewRepository);
 
             var jsonPreviews = new List<object>();
             foreach (var preview in previews)
@@ -48,7 +52,7 @@ namespace MediaCloud.WebApp.Controllers
 
         public FileContentResult Preview(Guid id)
         {
-            var preview = _dataService.Previews.Get(id);
+            var preview = _previewRepository.Get(id);
 
             if (preview != null)
             {
@@ -60,7 +64,7 @@ namespace MediaCloud.WebApp.Controllers
 
         public FileContentResult Source(Guid id)
         {
-            var preview = _dataService.Previews.Get(id);
+            var preview = _previewRepository.Get(id);
 
             if (preview != null)
             {

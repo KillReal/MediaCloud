@@ -13,18 +13,25 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using MediaCloud.WebApp.Services;
 using MediaCloud.Repositories;
-using MediaCloud.WebApp.Services.DataService;
 using MediaCloud.WebApp.Pages;
 using MediaCloud.WebApp.Services.ConfigurationProvider;
+using MediaCloud.WebApp.Services.ActorProvider;
 
 namespace MediaCloud.Pages.Actors
 {
     public class ActorListModel : AuthorizedPageModel
     {
-        public ActorListModel(IDataService dataService) : base(dataService)
+        private IConfigProvider _configProvider;
+        private readonly ActorRepository _actorRepository;
+
+        public ActorListModel(IActorProvider actorProvider, IConfigProvider configProvider, ActorRepository actorRepository) 
+            : base(actorProvider)
         {
-            CurrentActor = _dataService.GetCurrentActor();
-            ListBuilder = new(new(), _dataService.ActorSettings);
+            _configProvider = configProvider;
+            _actorRepository = actorRepository;
+
+            CurrentActor = _actorProvider.GetCurrent();
+            ListBuilder = new(new(), _configProvider.ActorSettings);
         }
 
         [BindProperty]
@@ -39,8 +46,8 @@ namespace MediaCloud.Pages.Actors
                 return Redirect("/Account/Login");
             }
 
-            ListBuilder = new(request, _dataService.ActorSettings);
-            Actors = await ListBuilder.BuildAsync(_dataService.Actors);
+            ListBuilder = new(request, _configProvider.ActorSettings);
+            Actors = await ListBuilder.BuildAsync(_actorRepository);
 
             return Page();
         }

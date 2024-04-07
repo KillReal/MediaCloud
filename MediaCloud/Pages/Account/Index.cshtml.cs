@@ -3,7 +3,6 @@ using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services.ActorProvider;
 using MediaCloud.WebApp.Services.ConfigurationProvider;
-using MediaCloud.WebApp.Services.DataService;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -19,6 +18,8 @@ namespace MediaCloud.WebApp.Pages
 {
     public class IndexModel : AuthorizedPageModel
     {
+        private readonly IConfigProvider _configProvider;
+
         [BindProperty]
         public Actor Actor { get; set; }
         [BindProperty]
@@ -31,14 +32,16 @@ namespace MediaCloud.WebApp.Pages
         [BindProperty]
         public string ReturnUrl { get; set; } = "/";
 
-        public IndexModel(IDataService dataService) : base(dataService)
+        public IndexModel(IActorProvider actorProvider, IConfigProvider configProvider) : base(actorProvider)
         {
             _logger = LogManager.GetLogger("Actor");
-            Actor = _dataService.GetCurrentActor();
+            _configProvider = configProvider;
 
-            ActorSettings = dataService.ActorSettings;
+            Actor = actorProvider.GetCurrent();
+
+            ActorSettings = _configProvider.ActorSettings;
             EnvironmentSettings = Actor.IsAdmin 
-                ? dataService.EnvironmentSettings 
+                ? _configProvider.EnvironmentSettings 
                 : null;
         }
 
@@ -50,11 +53,11 @@ namespace MediaCloud.WebApp.Pages
 
         public IActionResult OnPost()
         {
-            _dataService.SaveActorSettings(ActorSettings);
+            _configProvider.SaveActorSettings();
 
             if (IsEnvironmentSettingsChanged && EnvironmentSettings != null)
             {
-                _dataService.SaveEnvironmentSettings(EnvironmentSettings);
+                _configProvider.SaveEnvironmentSettings();
             }
 
             return Redirect(ReturnUrl);

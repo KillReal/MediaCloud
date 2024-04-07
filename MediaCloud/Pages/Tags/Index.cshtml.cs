@@ -12,18 +12,16 @@ using MediaCloud.Services;
 using MediaCloud.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using MediaCloud.WebApp.Services.DataService;
 using MediaCloud.WebApp.Pages;
 using MediaCloud.WebApp.Services.ConfigurationProvider;
+using MediaCloud.WebApp.Services.ActorProvider;
 
 namespace MediaCloud.Pages.Tags
 {
     public class TagListModel : AuthorizedPageModel
     {
-        public TagListModel(IDataService dataService) : base(dataService)
-        {
-            ListBuilder = new(new(), _dataService.ActorSettings);
-        }
+        private readonly TagRepository _tagRepository;
+        private readonly IConfigProvider _configProvider;
 
         [BindProperty]
         public List<Tag> Tags { get; set; } = new();
@@ -32,10 +30,19 @@ namespace MediaCloud.Pages.Tags
         [BindProperty]
         public bool IsAutoloadEnabled { get; set; } = false;
 
+        public TagListModel(IActorProvider actorProvider, IConfigProvider configProvider, TagRepository tagRepository) 
+            : base(actorProvider)
+        {
+            _configProvider = configProvider;
+            _tagRepository = tagRepository;
+
+            ListBuilder = new(new(), _configProvider.ActorSettings);
+        }
+
         public async Task<IActionResult> OnGetAsync(ListRequest request)
         {
-            ListBuilder = new(request, _dataService.ActorSettings);
-            Tags = await ListBuilder.BuildAsync(_dataService.Tags);
+            ListBuilder = new(request, _configProvider.ActorSettings);
+            Tags = await ListBuilder.BuildAsync(_tagRepository);
 
             return Page();
         }

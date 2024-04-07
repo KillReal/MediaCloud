@@ -4,9 +4,11 @@ using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.Data.Types;
 using MediaCloud.WebApp.Repositories.Base;
+using MediaCloud.WebApp.Services.ActorProvider;
 using MediaCloud.WebApp.Services.Data.Repositories.Interfaces;
-using MediaCloud.WebApp.Services.DataService.Entities.Base;
+using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.EntityFrameworkCore;
+using NLog;
 using Preview = MediaCloud.Data.Models.Preview;
 
 namespace MediaCloud.Repositories
@@ -25,7 +27,8 @@ namespace MediaCloud.Repositories
             return string.Join(' ', tags.Distinct());
         }
 
-        public TagRepository(RepositoryContext context) : base(context)
+        public TagRepository(AppDbContext context, StatisticProvider statisticProvider, IActorProvider actorProvider) 
+        : base(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider)
         {
         }
 

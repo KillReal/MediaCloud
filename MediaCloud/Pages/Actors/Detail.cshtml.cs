@@ -13,28 +13,31 @@ using System.Security.Claims;
 using MediaCloud.WebApp.Services;
 using MediaCloud.WebApp;
 using MediaCloud.Repositories;
-using MediaCloud.WebApp.Services.DataService;
 using Microsoft.Extensions.Logging;
 using NLog;
 using ILogger = NLog.ILogger;
 using MediaCloud.WebApp.Pages;
 using MediaCloud.WebApp.Services.ConfigurationProvider;
+using MediaCloud.WebApp.Services.ActorProvider;
 
 namespace MediaCloud.Pages.Actors
 {
     public class ActorDetailModel : AuthorizedPageModel
     {
+        private readonly ActorRepository _actorRepository;
+
         [BindProperty]
         public Actor Actor { get; set; }
 
         [BindProperty]
         public string ReturnUrl { get; set; } = "/Actors";
 
-        public ActorDetailModel(IDataService dataService) : base(dataService)
+        public ActorDetailModel(IActorProvider actorProvider, ActorRepository actorRepository) : base(actorProvider)
         {
             _logger = LogManager.GetLogger("Actor.Detail");
+            _actorRepository = actorRepository;
 
-            Actor = _dataService.GetCurrentActor();
+            Actor =  _actorProvider.GetCurrent();
         }
 
         public IActionResult OnGet(Guid id, string returnUrl = "/Actors")
@@ -45,7 +48,7 @@ namespace MediaCloud.Pages.Actors
             }
 
             ReturnUrl = returnUrl.Replace("$", "&");  
-            Actor = _dataService.Actors.Get(id) ?? new();
+            Actor = _actorRepository.Get(id) ?? new();
             Actor.PasswordHash = string.Empty;
 
             return Page();
@@ -53,7 +56,7 @@ namespace MediaCloud.Pages.Actors
 
         public IActionResult OnPost()
         {
-            var currentActor = _dataService.GetCurrentActor();
+            var currentActor = _actorProvider.GetCurrent();
 
             if (currentActor.IsAdmin == false)
             {
@@ -61,7 +64,7 @@ namespace MediaCloud.Pages.Actors
                 return Redirect("/Account/Login");
             }
 
-            var referenceActor = _dataService.Actors.Get(Actor.Id);
+            var referenceActor = _actorRepository.Get(Actor.Id);
 
             if (string.IsNullOrEmpty(Actor.PasswordHash) == false)
             {
@@ -79,16 +82,16 @@ namespace MediaCloud.Pages.Actors
             referenceActor.IsActivated = Actor.IsActivated;
             referenceActor.InviteCode = Actor.InviteCode;
 
-            _dataService.Actors.Update(referenceActor);
+            _actorRepository.Update(referenceActor);
 
             return Redirect(ReturnUrl.Replace("$", "&"));
         }
 
         public IActionResult OnPostDelete(Guid id)
         {
-            Actor = _dataService.GetCurrentActor();
+            Actor = _actorProvider.GetCurrent();
 
-            if (Actor.IsAdmin == false || _dataService.Actors.TryRemove(id) == false)
+            if (Actor.IsAdmin == false || _actorRepository.TryRemove(id) == false)
             {
                 _logger.Error("Fail attempt to access to Actor/Detail?action=Delete by: {Actor.Id}", Actor.Id);
                 return Redirect("/Account/Login");

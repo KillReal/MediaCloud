@@ -12,14 +12,18 @@ using MediaCloud.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Security.Claims;
-using MediaCloud.WebApp.Services.DataService;
 using MediaCloud.WebApp.Pages;
 using MediaCloud.WebApp.Services.ConfigurationProvider;
+using MediaCloud.WebApp.Services.ActorProvider;
 
 namespace MediaCloud.Pages.Medias
 {
     public class MediaListModel : AuthorizedPageModel
     {
+        private readonly IConfigProvider _configProvider;
+        private readonly TagRepository _tagRepository;
+        private readonly PreviewRepository _previewRepository;
+
         [BindProperty]
         public List<Preview> Previews { get; set; } = new();
 
@@ -32,9 +36,14 @@ namespace MediaCloud.Pages.Medias
         [BindProperty]
         public bool IsAutoloadEnabled { get; set; } = true;
 
-        public MediaListModel(IDataService dataService) : base(dataService)
+        public MediaListModel(IActorProvider actorProvider, IConfigProvider configProvider, TagRepository tagRepository, 
+            PreviewRepository previewRepository) : base(actorProvider)
         {
-            var topTagNames = _dataService.Tags.GetTopUsed(2).Select(x => x.Name.ToLower());
+            _configProvider = configProvider;
+            _tagRepository = tagRepository;
+            _previewRepository = previewRepository;
+
+            var topTagNames = _tagRepository.GetTopUsed(2).Select(x => x.Name.ToLower());
             if (topTagNames.Count() > 1)
             {
                 ExampleFilter = $"{topTagNames.First()} !{topTagNames.Last()}";
@@ -44,13 +53,13 @@ namespace MediaCloud.Pages.Medias
                 ExampleFilter = "Create more tags to filtering";
             }
 
-            ListBuilder = new ListBuilder<Preview>(new(), _dataService.ActorSettings);
+            ListBuilder = new ListBuilder<Preview>(new(), _configProvider.ActorSettings);
         }
 
         public async Task<IActionResult> OnGetAsync(ListRequest request)
         {
-            ListBuilder = new ListBuilder<Preview>(request, _dataService.ActorSettings);
-            Previews = await ListBuilder.BuildAsync(_dataService.Previews);
+            ListBuilder = new ListBuilder<Preview>(request, _configProvider.ActorSettings);
+            Previews = await ListBuilder.BuildAsync(_previewRepository);
             IsAutoloadEnabled = request.IsUseAutoload;
 
             return Page();

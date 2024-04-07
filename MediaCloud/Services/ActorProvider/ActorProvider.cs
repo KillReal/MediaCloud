@@ -3,7 +3,6 @@ using MediaCloud.Data.Models;
 using MediaCloud.MediaUploader.Tasks;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services.ConfigurationProvider;
-using MediaCloud.WebApp.Services.DataService.Entities.Base;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -37,7 +36,34 @@ namespace MediaCloud.WebApp.Services.ActorProvider
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public Actor? GetCurrent()
+        public Actor GetCurrent()
+        {
+            var httpContext = _httpContextAccessor.HttpContext;
+
+            if (httpContext == null)
+            {
+                throw new ArgumentException("Cannot get actor without HttpContext");
+            }
+
+            var identity = httpContext.User.Identity;
+
+            if (identity == null || identity.Name == null)
+            {
+                throw new ArgumentException("Cannot get actor without HttpContext");
+            }
+
+            if (_memoryCache.TryGetValue(identity.Name, out Actor actor))
+            {
+                return actor;
+            }
+
+            var cachedActor = _context.Actors.First(x => x.Name == identity.Name);
+            _memoryCache.Set(identity.Name, cachedActor, _memoryCacheOptions);
+
+            return cachedActor;
+        }
+
+        public Actor? GetCurrentOrDefault()
         {
             var httpContext = _httpContextAccessor.HttpContext;
 
@@ -53,17 +79,13 @@ namespace MediaCloud.WebApp.Services.ActorProvider
                 return null;
             }
 
-            if (_memoryCache.TryGetValue(identity.Name, out Actor? actor))
+            if (_memoryCache.TryGetValue(identity.Name, out Actor actor))
             {
                 return actor;
             }
 
-            var cachedActor = new ActorRepository(_context).Get(identity.Name);
-
-            if (cachedActor != null)
-            {
-                _memoryCache.Set(identity.Name, cachedActor, _memoryCacheOptions);
-            }
+            var cachedActor = _context.Actors.First(x => x.Name == identity.Name);
+            _memoryCache.Set(identity.Name, cachedActor, _memoryCacheOptions);
 
             return cachedActor;
         }

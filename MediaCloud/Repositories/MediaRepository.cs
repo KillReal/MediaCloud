@@ -4,11 +4,12 @@ using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.Services;
 using MediaCloud.WebApp.Services;
+using MediaCloud.WebApp.Services.ActorProvider;
 using MediaCloud.WebApp.Services.ConfigurationProvider;
-using MediaCloud.WebApp.Services.DataService.Entities.Base;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using NLog;
 using SixLabors.ImageSharp;
 using System.Data;
 using System.IO;
@@ -17,6 +18,8 @@ namespace MediaCloud.Repositories
 {
     public class MediaRepository : BaseRepository<Media>
     {
+        private IPictureService _pictureService;
+
         private Media CreateMediaFromFile(byte[] file)
         {
             var stream = new MemoryStream(file);
@@ -34,8 +37,10 @@ namespace MediaCloud.Repositories
             return media;
         }
 
-        public MediaRepository(RepositoryContext context) : base(context)
+        public MediaRepository(AppDbContext context, StatisticProvider statisticProvider, IActorProvider actorProvider, IPictureService pictureService) 
+            : base(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider)
         {
+            _pictureService = pictureService;
         }
 
         public override void Remove(Media entity)

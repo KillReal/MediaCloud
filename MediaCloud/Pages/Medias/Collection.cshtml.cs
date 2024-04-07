@@ -14,17 +14,20 @@ using System.Drawing.Imaging;
 using MediaCloud.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using MediaCloud.WebApp.Services.DataService;
 using MediaCloud.WebApp.Pages;
 using MediaCloud.WebApp.Services.ConfigurationProvider;
 using MediaCloud.Extensions;
+using MediaCloud.WebApp.Services.ActorProvider;
 
 namespace MediaCloud.Pages.Medias
 {
     public class CollectionModel : AuthorizedPageModel
     {
+        private readonly CollectionRepository _collectionRepository;
+        private readonly TagRepository _tagRepository;
+
         [BindProperty]
-        public Collection Collection { get; set; }
+        public Collection Collection { get; set; } = new();
         [BindProperty]
         public string ReturnUrl { get; set; } = "/Medias";
         [BindProperty]
@@ -42,14 +45,15 @@ namespace MediaCloud.Pages.Medias
         [BindProperty]
         public string? CollectionSizeInfo { get; set; }
 
-        public CollectionModel(IDataService dataService) : base(dataService)
+        public CollectionModel(IActorProvider actorProvider, CollectionRepository collectionRepository, TagRepository tagRepository) : base(actorProvider)
         {
-            Collection = new();
+            _collectionRepository = collectionRepository;
+            _tagRepository = tagRepository;
         }
 
         public IActionResult OnGet(Guid id, string returnUrl = "/Medias")
         {
-            Collection = _dataService.Collections.Get(id) ?? new();
+            Collection = _collectionRepository.Get(id) ?? new();
 
             if (Collection == null)
             {
@@ -57,9 +61,9 @@ namespace MediaCloud.Pages.Medias
             }
 
             var preview = Collection.Previews.OrderBy(x => x.Order).First();
-            var collectionSize = _dataService.Collections.GetSize(id);
+            var collectionSize = _collectionRepository.GetSize(id);
             CollectionSizeInfo = collectionSize.FormatSize();
-            TotalCount = _dataService.Collections.GetListCount(id).Result;
+            TotalCount = _collectionRepository.GetListCount(id).Result;
 
             Tags = preview.Tags.OrderBy(x => x.Type).ToList();
             TagsString = string.Join(" ", Tags.Select(x => x.Name.ToLower()));
@@ -77,21 +81,21 @@ namespace MediaCloud.Pages.Medias
 
             if (IsOrderChanged)
             {
-                if (_dataService.Collections.TryUpdateOrder(Collection.Id, Orders) == false)
+                if (_collectionRepository.TryUpdateOrder(Collection.Id, Orders) == false)
                 {
                     return Redirect("/Error");
                 }
             }
 
-            var collection = _dataService.Collections.Get(Collection.Id);
+            var collection = _collectionRepository.Get(Collection.Id);
             if (collection == null)
             {
                 return Redirect("/Error");
             }
 
             var preview = collection.Previews.OrderBy(x => x.Order).First();
-            var tags = _dataService.Tags.GetRangeByString(TagsString);
-            _dataService.Tags.UpdatePreviewLinks(tags, preview);
+            var tags = _tagRepository.GetRangeByString(TagsString);
+            _tagRepository.UpdatePreviewLinks(tags, preview);
 
             if (IsOrderChanged)
             {
@@ -103,7 +107,7 @@ namespace MediaCloud.Pages.Medias
 
         public IActionResult OnPostDelete(Guid id)
         {
-            if (_dataService.Collections.TryRemove(id) == false)
+            if (_collectionRepository.TryRemove(id) == false)
             {
                 return Redirect("/Error");
             }

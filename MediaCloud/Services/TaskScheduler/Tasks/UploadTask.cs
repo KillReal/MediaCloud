@@ -2,8 +2,11 @@
 using MediaCloud.Data.Models;
 using MediaCloud.Extensions;
 using MediaCloud.Repositories;
-using MediaCloud.WebApp.Services.DataService;
+using MediaCloud.Services;
+using MediaCloud.WebApp.Services.ActorProvider;
+using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -70,22 +73,29 @@ namespace MediaCloud.MediaUploader.Tasks
             TagString = tagString ?? "";
         }
 
-        public override void DoTheTask(IDataService dataService)
+        public override void DoTheTask(IServiceProvider serviceProvider, IActorProvider actorProvider)
         {
-            var foundTags = dataService.Tags.GetRangeByString(TagString);
+            var context = serviceProvider.GetRequiredService<AppDbContext>();
+            var statisticProvider = serviceProvider.GetRequiredService<StatisticProvider>();
+            var pictureService = serviceProvider.GetRequiredService<IPictureService>();
+
+            var tagRepository = new TagRepository(context, statisticProvider, actorProvider);
+            var mediasRepository = new MediaRepository(context, statisticProvider, actorProvider, pictureService);
+
+            var foundTags = tagRepository.GetRangeByString(TagString);
             var medias = new List<Media>();
 
             if (IsCollection)
             {
-                medias = dataService.Medias.CreateCollection(Content);
+                medias = mediasRepository.CreateCollection(Content);
             }
             else
             {
-                medias = dataService.Medias.CreateRange(Content);
+                medias = mediasRepository.CreateRange(Content);
             }
 
             var preview = medias.Select(x => x.Preview).Where(x => x.Order == 0).First();
-            dataService.Tags.UpdatePreviewLinks(foundTags, preview);
+            tagRepository.UpdatePreviewLinks(foundTags, preview);
         }
     }
 }

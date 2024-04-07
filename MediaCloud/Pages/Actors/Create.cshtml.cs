@@ -13,26 +13,29 @@ using System.Security.Claims;
 using MediaCloud.WebApp.Services;
 using MediaCloud.WebApp;
 using MediaCloud.Repositories;
-using MediaCloud.WebApp.Services.DataService;
 using NLog;
 using ILogger = NLog.ILogger;
 using MediaCloud.WebApp.Pages;
+using MediaCloud.WebApp.Services.ActorProvider;
 
 namespace MediaCloud.Pages.Actors
 {
     public class ActorCreateModel : AuthorizedPageModel
     {
+        private readonly ActorRepository _actorRepository;
+
         [BindProperty]
         public Actor Actor { get; set; } = new();
 
-        public ActorCreateModel(IDataService dataService) : base(dataService)
+        public ActorCreateModel(IActorProvider actorProvider, ActorRepository actorRepository) : base(actorProvider)
         {
             _logger = LogManager.GetLogger("Actors.Create");
+            _actorRepository = actorRepository;
         }
 
         public IActionResult OnGet()
         {
-            var currentActor = _dataService.GetCurrentActor();
+            var currentActor = _actorProvider.GetCurrent();
 
             if (currentActor.IsAdmin == false)
             {
@@ -45,7 +48,7 @@ namespace MediaCloud.Pages.Actors
 
         public IActionResult OnPost()
         {
-            var currentActor = _dataService.GetCurrentActor();
+            var currentActor = _actorProvider.GetCurrent();
 
             if (currentActor.IsAdmin == false)
             {
@@ -63,7 +66,7 @@ namespace MediaCloud.Pages.Actors
                 Actor.InviteCode = SecureHash.HashMD5(Actor.InviteCode);
             }
 
-            _dataService.Actors.Create(Actor);
+            _actorRepository.Create(Actor);
 
             return RedirectToPage("/Actors/Index");
         }

@@ -14,9 +14,9 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services;
-using MediaCloud.WebApp.Services.DataService;
 using MediaCloud.WebApp.Services.Statistic;
 using MediaCloud.WebApp.Pages;
+using MediaCloud.WebApp.Services.ActorProvider;
 
 namespace MediaCloud.Pages.Medias
 {
@@ -34,9 +34,9 @@ namespace MediaCloud.Pages.Medias
         [BindProperty]
         public string ReturnUrl { get; set; } = "/Medias";
 
-        public MediaUploadModel(IDataService dataService, ITaskScheduler taskScheduler) : base(dataService)
+        public MediaUploadModel(IActorProvider actorProvider, ITaskScheduler taskScheduler) : base(actorProvider)
         {
-            _actor = dataService.GetCurrentActor();
+            _actor = actorProvider.GetCurrent();
             _taskScheduler = taskScheduler;
         }
 

@@ -52,6 +52,19 @@ namespace MediaCloud.Data
             return base.SaveChanges();
         }
 
+        public long GetDbSize()
+        {
+            using var command = Database.GetDbConnection().CreateCommand();
+            var databaseSize = Database.GetDbConnection().Database;
+
+            command.CommandText = $"SELECT pg_database_size('{databaseSize}');";
+            Database.OpenConnection();
+
+            using var reader = command.ExecuteReader();
+            reader.Read();
+            return reader.GetInt64(0);
+        }
+
         public DbSet<Actor> Actors { get; set; } = null!;
         public DbSet<Preview> Previews { get; set; } = null!;
         public DbSet<Media> Medias { get; set; } = null!;

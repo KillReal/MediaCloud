@@ -4,7 +4,6 @@ using MediaCloud.Pages.Actors;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services.ActorProvider;
 using MediaCloud.WebApp.Services.ConfigurationProvider;
-using MediaCloud.WebApp.Services.DataService;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
@@ -27,6 +26,8 @@ namespace MediaCloud.WebApp.Pages
         public string InviteCode { get; set; } = "";
         [BindProperty]
         public AuthData AuthData { get; set; } = new();
+        [BindProperty]
+        public Actor? CurrentActor { get; set; }
         [BindProperty]
         public string ReturnUrl { get; set; } = "";
 

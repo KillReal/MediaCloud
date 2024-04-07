@@ -2,7 +2,8 @@
 using MediaCloud.Data.Models;
 using MediaCloud.Extensions;
 using MediaCloud.Repositories;
-using MediaCloud.WebApp.Services.DataService;
+using MediaCloud.WebApp.Services.ActorProvider;
+using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using NLog;
@@ -29,9 +30,12 @@ namespace MediaCloud.MediaUploader.Tasks
             _startDate = startDate;
         }
 
-        public override void DoTheTask(IDataService dataService)
+        public override void DoTheTask(IServiceProvider serviceProvider, IActorProvider actorProvider)
         {
-            dataService.StatisticProvider.Recalculate(_startDate, ref _workCount);
+            var context = serviceProvider.GetRequiredService<AppDbContext>();
+
+            var statisticProvider = new StatisticProvider(context, actorProvider);
+            statisticProvider.Recalculate(_startDate, ref _workCount);
         }
     }
 }

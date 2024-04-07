@@ -1,7 +1,7 @@
 ﻿using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.Services;
-using MediaCloud.WebApp.Services.DataService.Entities.Base;
+using MediaCloud.WebApp.Services.ActorProvider;
 using MediaCloud.WebApp.Services.Statistic;
 using NLog;
 using ILogger = NLog.ILogger;
@@ -11,24 +11,17 @@ namespace MediaCloud.Repositories
     public class BaseRepository<T> where T : Entity
     {
         protected StatisticProvider _statisticProvider;
-        protected IPictureService _pictureService;
         protected AppDbContext _context;
         protected ILogger _logger;
         protected Actor _actor;
 
-        public BaseRepository(RepositoryContext repositoriesContext)
+        public BaseRepository(AppDbContext context, StatisticProvider statisticProvider, ILogger logger, IActorProvider actorProvider)
         {
-            _statisticProvider = repositoriesContext.StatisticProvider;
-            _context = repositoriesContext.DbContext;
-            _logger = repositoriesContext.Logger;
-            _pictureService = repositoriesContext.PictureService;
+            _statisticProvider = statisticProvider;
+            _context = context;
+            _logger = logger;
 
-            if (repositoriesContext.Actor == null)
-            {
-                throw new ArgumentException("Cannot initialize repository with unknown actor context");
-            }
-
-            _actor = repositoriesContext.Actor;
+            _actor = actorProvider.GetCurrent();
         }
 
         public virtual T? Get(Guid id)
