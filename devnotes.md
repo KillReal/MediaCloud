@@ -27,22 +27,17 @@ Done:
 - Fix statistics dashboards on smaller displays (low width)
 - Implemented multiple actors session data chaching
 - Implement picture modifying options (rotate, exposure and etc)
+- Optimize DI and improved loading speed in TaskScheduler, PageModels and Controllers.
+- Fix gallery layout and autoloading on smaller displays (less than actual number of columns)
+- Rewrite gallery layout
+- Solve returnUrl problem (Support only one step hitory)
 
 Todo:
 
-- Fix gallery layout and autoloading on smaller displays (less than actual number of columns)
-- Solve returnUrl problem (Support only one step hitory)
-- Rewrite gallery layout
-	- [ ] 	Use Table layout
-	- [ ] 	Find dynamic gallery layout with resizing support
-	- [x] 	Dynamicly change columns
-		- Could be implemented with autoloading support. Calculate viewport width cliet sided and request certain columns width
-		- The problem is that user can change columns count and there might be need some commentaries to option desc
 - Review sql requests (Accordingly to ActorProvider staff)
 - Add debug init logging to services
 - Admin check for display actors in Statistic
-- Optimize DI in TaskScheduler, PageModels and Controllers. Create only needed services instead of creating DataService. Then DataService should be removed.
-	For TaskScheduler some context could be used that Initialize IActorService for target actor.
+- Implement all actors statistic dashboards for Admin
 
 
 # Changelog				   

@@ -10,6 +10,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using NLog;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using Task = MediaCloud.MediaUploader.Tasks.Task;
@@ -34,6 +35,8 @@ namespace MediaCloud.WebApp.Services.ActorProvider
                 .SetAbsoluteExpiration(TimeSpan.FromMinutes(new EnvironmentSettings(configuration).CookieExpireTime));
 
             _httpContextAccessor = httpContextAccessor;
+
+            LogManager.GetLogger("ActorProvider").Debug("ActorProvider initialized");
         }
 
         public Actor GetCurrent()
