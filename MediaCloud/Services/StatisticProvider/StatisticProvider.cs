@@ -32,6 +32,8 @@ namespace MediaCloud.WebApp.Services.Statistic
             TagsCountChanged += TagsCountChangedAction;
             ActorsCountChanged += ActorsCountChangedAction;
             ActivityFactorRaised += ActivityFactorRaisedAction;
+
+            _logger.Debug("Initialized StatisticProvider by actor: {0}", _actor.Name);
         }
 
         // Select existing snapshot by date.

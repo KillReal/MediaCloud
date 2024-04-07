@@ -1,6 +1,7 @@
 ﻿using MediaCloud.Data.Models;
 using MediaCloud.WebApp;
 using Microsoft.EntityFrameworkCore;
+using NLog;
 
 namespace MediaCloud.Data
 {
@@ -25,7 +26,11 @@ namespace MediaCloud.Data
 
                 Actors.Add(admin);
                 SaveChangesAsync();
+
+                LogManager.GetLogger("AppDbContext").Warn("Initial admin had inserted");
             }
+
+            LogManager.GetLogger("AppDbContext").Debug("Initialized AppDbContext");
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

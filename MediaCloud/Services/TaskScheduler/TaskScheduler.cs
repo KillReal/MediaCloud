@@ -42,6 +42,8 @@ namespace MediaCloud.MediaUploader
             OnTaskStarted += WorkerStartTask;
             OnTaskCompleted += WorkerCompleteTask;
             OnTaskErrorOccured += WorkerFacedErrorWithTask;
+
+            _logger.Debug("Initialized TaskScheduler");
         }
 
         public Guid AddTask(Task task)

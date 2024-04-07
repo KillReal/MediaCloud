@@ -10,6 +10,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using NLog;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using Task = MediaCloud.MediaUploader.Tasks.Task;
@@ -25,6 +26,8 @@ namespace MediaCloud.WebApp.Services.ActorProvider
         {
             _actorRepository = actorRepository;
             _currentActor = actor;
+
+            LogManager.GetLogger("ActorProvider").Debug("DummyActorProvider initialized");
         }
 
         public Actor GetCurrent() => _currentActor;

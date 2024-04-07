@@ -1,5 +1,6 @@
 ﻿using MediaCloud.WebApp.Services;
 using MediaCloud.WebApp.Services.ConfigurationProvider;
+using NLog;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Jpeg;
@@ -14,6 +15,8 @@ namespace MediaCloud.Services
         public PictureService(IConfigProvider configProvider)
         {
             _configProvider = configProvider;
+
+            LogManager.GetLogger("PictureService").Debug("Initialized PictureService");
         }
 
         public byte[] LowerResolution(Image image, byte[] sourceBytes)

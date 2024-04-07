@@ -1,46 +1,38 @@
 
 # Infrastructure             
 
-- 1.4.5 mediacloud
-- 1.5.0 mediacloud-dev
+- 1.5.0 mediacloud
+- 1.6.0 mediacloud-dev
 
-# Next release - 1.5.0       
+# Next release - 1.6.0       
+# Next minor - 1.5.1   
 
 Done:
-
-- Incapsulate Statistic activity factor inside DataService
-- Reworker tag linking funtional. Moved responsibility from PreviewRepository to TagRepository
-- Fixed joinin logic
-- Actor personal statistic
-- Button to Statistic page for recalculation personal statistic
-- Modal window for recalculation task queue
-- New homepage design
-- Fix tag autocompletion in Medias pages
-- Move javascript code in RazorPages from html to ```*.cshtml.js```
-- Use CSS styles
-- Actor settings page. Configuration service must provide actor based settings
-- Implement password security polices
-- Fix layouts misaligment on smaller displays
-- Refactor HTML in Pages
-- Fixed DataService actor context when it used by task in background when actor is logged off or close page.
-- Rename Uploader to TaskScheduler
-- Fix statistics dashboards on smaller displays (low width)
-- Implemented multiple actors session data chaching
-- Implement picture modifying options (rotate, exposure and etc)
-- Optimize DI and improved loading speed in TaskScheduler, PageModels and Controllers.
-- Fix gallery layout and autoloading on smaller displays (less than actual number of columns)
-- Rewrite gallery layout
-- Solve returnUrl problem (Support only one step hitory)
 
 Todo:
 
 - Review sql requests (Accordingly to ActorProvider staff)
-- Add debug init logging to services
 - Admin check for display actors in Statistic
 - Implement all actors statistic dashboards for Admin
 
 
 # Changelog				   
+
+### Version 1.5.0 - 07th Apr, 2024
+- Statistics dashboards now showing personal statistics
+- Added personal account settings
+- New homepage design
+- Added recalculation button to statistics with modal window of recalculation task status
+- Massive code cleanup and refactor
+- Improved overall page loading speed by 10-40%
+- Improved tag and preview saving perfomance
+- New universal gallery layout
+- Added multiple actor session caching
+- Added picture rotating option
+- Fixed page layouts for small screens
+- Fixed returnUrl problem for Collections (When go to Medias->Collection->Edit and back)
+- Improved logging for services
+- Minor fixes and local improvements
 
 ### Version 1.4.5 - 28th Mar, 2024
 - Implemented PageModel debug logging
