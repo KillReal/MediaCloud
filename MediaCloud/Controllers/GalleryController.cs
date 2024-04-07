@@ -50,6 +50,14 @@ namespace MediaCloud.WebApp.Controllers
             return jsonPreviews;
         }
 
+        public async Task<ActionResult> GetBatchAsync(ListRequest listRequest)
+        {
+            var ListBuilder = new ListBuilder<Preview>(listRequest, _configProvider.ActorSettings);
+            var previews = await ListBuilder.BuildAsync(_previewRepository);
+
+            return PartialView("/Pages/Medias/_Gallery.cshtml", new _GalleryPageModel(previews));
+        }
+
         public FileContentResult Preview(Guid id)
         {
             var preview = _previewRepository.Get(id);

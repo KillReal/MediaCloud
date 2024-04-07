@@ -22,7 +22,7 @@ function CreateActualCard(data, id, collectionId) {
     cardDiv.id = id;
     cardDiv.onclick = function (e) {
         var id = e.currentTarget.id;
-        window.location = "Detail?id=" + data[id].id + "&returnUrl=/Medias/Collection?id=" + collectionId;
+        window.location = "Detail?id=" + data[id].id + "&returnUrl=/Medias/Collection?id=" + collectionId + "&rootReturnUrl=" + rootReturnUrl;
     }
 
     // With image

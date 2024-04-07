@@ -120,35 +120,7 @@
                 There is nothing here 😥
             </h1>
         }
-        @for (int c = 0; c < Model.ListBuilder.ColumnCount; c++)
-        {
-            <div class="col-sm-@(12 / Model.ListBuilder.ColumnCount) image-column" id="column-@c">
-                @for(int i = c; i < Model.Previews.Count; i += Model.ListBuilder.ColumnCount)
-                {
-                    @if (Model.Previews[i].Collection != null)
-                    {
-                        <div class="w-100 shadow-1-strong picture mb-2 d-flex justify-content-end align-items-end"
-                            onclick="OnCardClick('Collection', '@(Model.Previews[i].Collection?.Id)')" 
-                            onauxclick="OnCardInNewWindowClick('Collection', '@(Model.Previews[i].Collection?.Id)')">
-                            <div class="bg-success rounded-circle" style="position: absolute; min-width: 2.25rem; text-align: center; margin-bottom: 1.85rem; margin-right: 0.25rem; font-size: 1.5rem"> @Model.Previews[i].Collection?.Count</div>
-                            <img class="w-100 shadow-1-strong mb-4 picture-image bg-image"
-                                src="data:image/png;base64,@Convert.ToBase64String(Model.Previews[i].Content)"
-                            />
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="w-100 shadow-1-strong picture mb-2 d-flex justify-content-end align-items-end"
-                            onclick="OnCardClick('Detail', '@(Model.Previews[i].Id)')" 
-                            onauxclick="OnCardInNewWindowClick('Detail', '@(Model.Previews[i].Id)')">
-                            <img class="w-100 shadow-1-strong mb-4 picture-image bg-image"
-                                src="data:image/png;base64,@Convert.ToBase64String(Model.Previews[i].Content)"
-                            />
-                        </div>
-                    }
-                }
-            </div>
-        }
+        
     </div>
     <div class="d-flex justify-content-center">
         @if (Model.Previews.Count >= Model.ListBuilder.Pagination.Count && Model.IsAutoloadEnabled)
@@ -204,64 +176,43 @@
     var currentOffset = @Model.ListBuilder.Pagination.Offset;
     var nextOffset = @Model.ListBuilder.Pagination.Offset + @Model.ListBuilder.Pagination.Count;
 
+    enrichGallery();
+
     window.addEventListener("scroll", function(e) {
-        if (!isAutoLoadingEnabled)
-        {
+        if (!isAutoLoadingEnabled) {
             return;
         }
 
         if ((window.innerHeight + window.scrollY + 2000) >= document.body.offsetHeight) {
+            enrichGallery();
+        }
+    });
 
-            if (currentOffset == nextOffset || currentOffset > @Model.ListBuilder.Pagination.TotalCount) {
+    function enrichGallery() {
+        if (currentOffset == nextOffset || currentOffset > @Model.ListBuilder.Pagination.TotalCount) {
                 if (currentOffset > @Model.ListBuilder.Pagination.TotalCount) {
                     document.getElementById('loadingSpinner').style = "display: none";
                     document.getElementById('loadingDone').style = "text-align: center; display: block";
                 }
                 return;
-            }
-            currentOffset += @Model.ListBuilder.Pagination.Count;
-
-            var url = "/Gallery/PreviewsBatch?count=" + @Model.ListBuilder.Pagination.Count + "&offset=" + nextOffset 
-                + "&sort=" + '@(Model.ListBuilder.Sorting.PropertyName)' + "&filter=" + '@(Model.ListBuilder.Filtering.Filter)';
-            fetch(url).then(function(response) {
-                return response.json();
-            }).then(function(data) {
-                var gallery = document.getElementById('gallery');
-
-                for (var i = 0; i < data.length; i++) {
-                    var columnDiv = document.getElementById('column-' + (i % @Model.ListBuilder.ColumnCount));
-                    var cardDiv = document.createElement('div');
-                    cardDiv.className = "w-100 shadow-1-strong picture mb-2 d-flex justify-content-end align-items-end";
-                    cardDiv.id = i;
-
-                    if (data[i].collection.count != null) {
-                        cardDiv.onclick = function (e) { OnCardClick('Collection', data[e.currentTarget.id].collection.id) };
-                        cardDiv.onauxclick = function (e) { OnCardInNewWindowClick('Collection', data[e.currentTarget.id].collection.id) };
-
-                        var circleDiv = document.createElement('div');
-                        circleDiv.className = "bg-success rounded-circle";
-                        circleDiv.style = "position: absolute; min-width: 2.25rem; text-align: center; margin-bottom: 1.85rem; margin-right: 0.25rem; font-size: 1.5rem";
-                        circleDiv.innerText = data[i].collection.count;
-                        cardDiv.appendChild(circleDiv);
-                    }
-                    else {
-                        cardDiv.onclick = function (e) { OnCardClick('Detail', data[e.currentTarget.id].id) };
-                        cardDiv.onauxclick = function (e) { OnCardInNewWindowClick('Detail', data[e.currentTarget.id].id) };
-                    }
-                    var img = document.createElement('img');
-                    img.className = "w-100 shadow-1-strong mb-4 picture-image bg-image";
-                    img.src = "data:image/png;base64," + data[i].content;
-                    cardDiv.appendChild(img);
-                    columnDiv.appendChild(cardDiv);
-                }
-                gallery.appendChild(columnDiv);
-                nextOffset += @Model.ListBuilder.Pagination.Count;
-            }).catch(function(err) {
-                console.log('Fetch Error :-S', err);
-            });
         }
-    });
+        currentOffset += @Model.ListBuilder.Pagination.Count;
 
+        var url = "/Gallery/GetBatch?count=" + @Model.ListBuilder.Pagination.Count + "&offset=" + nextOffset 
+            + "&sort=" + '@(Model.ListBuilder.Sorting.PropertyName)' + "&filter=" + '@(Model.ListBuilder.Filtering.Filter)';
+        fetch(url).then(function(response) {
+            return response.text();
+        }).then(function(data) {
+            var gallery = document.getElementById('gallery');
+
+            console.log(data);
+
+            gallery.innerHTML += data;
+            nextOffset += @Model.ListBuilder.Pagination.Count;
+        }).catch(function(err) {
+            console.log('Fetch Error :-S', err);
+        });
+    }
     function filterClicked()
     {
         var filter = document.getElementById("filterGrab").value;

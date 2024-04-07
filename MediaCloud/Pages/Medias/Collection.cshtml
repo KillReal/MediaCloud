@@ -65,6 +65,7 @@
                                 <a class="btn btn-warning btn-rounded me-1 mb-2" 
                                     asp-page="/Tags/Detail" 
                                     asp-route-id=@tag.Id>@tag.Name
+                                    asp-route-returnUrl=@Model.ReturnUrl
                                 </a>
                             }
                             else if (tag.Type == TagType.Series)
@@ -72,6 +73,7 @@
                                 <a class="btn btn-success btn-rounded me-1 mb-2" 
                                     asp-page="/Tags/Detail" 
                                     asp-route-id=@tag.Id>@tag.Name
+                                    asp-route-returnUrl=@Model.ReturnUrl
                                 </a>
                             }
                             else if (tag.Type == TagType.Clothes)
@@ -79,6 +81,7 @@
                                 <a class="btn btn-danger btn-rounded me-1 mb-2" 
                                     asp-page="/Tags/Detail" 
                                     asp-route-id=@tag.Id>@tag.Name
+                                    asp-route-returnUrl=@Model.ReturnUrl
                                 </a>
                             }
                             else
@@ -86,6 +89,7 @@
                                 <a class="btn btn-info btn-rounded me-1 mb-2" 
                                     asp-page="/Tags/Detail" 
                                     asp-route-id=@tag.Id>@tag.Name
+                                    asp-route-returnUrl=@Model.ReturnUrl
                                 </a>
                             }
                         }
@@ -149,6 +153,7 @@
         }
     });
 
+    var rootReturnUrl = '@Model.ReturnUrl.Replace("&", "$")';
     var currentOffset = -@Model.ListRequest.Count;
     var nextOffset = 0;
 

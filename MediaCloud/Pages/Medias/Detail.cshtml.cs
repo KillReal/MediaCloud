@@ -34,6 +34,8 @@ namespace MediaCloud.Pages.Medias
         public string? TagsString { get; set; } = "";
         [BindProperty]
         public string ReturnUrl { get; set; } = "/";
+         [BindProperty]
+        public string RootReturnUrl { get; set; } = "/";
         [BindProperty]
         public Guid? PrevPreviewId { get; set; } = null;
         [BindProperty]
@@ -50,7 +52,7 @@ namespace MediaCloud.Pages.Medias
             _mediaRepository = mediaRepository;
         }
 
-        public IActionResult OnGet(Guid id, string returnUrl = "/Medias")
+        public IActionResult OnGet(Guid id, string returnUrl = "/Medias", string rootReturnUrl = "/")
         {
             var preview = _previewRepository.Get(id);
 
@@ -72,6 +74,7 @@ namespace MediaCloud.Pages.Medias
             Tags = preview.Tags.OrderBy(x => x.Type).ToList();
 
             ReturnUrl = returnUrl.Replace("$", "&");
+            RootReturnUrl = rootReturnUrl.Replace("$", "&");
             TagsString = string.Join(" ", Tags.Select(x => x.Name.ToLower()));
 
             return Page();
