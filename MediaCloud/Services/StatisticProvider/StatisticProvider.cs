@@ -130,7 +130,7 @@ namespace MediaCloud.WebApp.Services.Statistic
                                 .OrderBy(x => x.TakenAt.Date)
                                 .ToList();
 
-            if (snapshots.Any() == false)
+            if (snapshots.Any() == false || snapshots.Last().TakenAt.Date != DateTime.Now.Date)
             {
                 snapshots.Add(GetTodaySnapshot());
             }
