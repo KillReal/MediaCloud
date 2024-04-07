@@ -48,7 +48,7 @@ namespace MediaCloud.Services
             return LowerResolution(ConvertToImage(pictureBytes), pictureBytes);
         }
 
-        public byte[] RotateImage(byte[] pictureBytes, int rotationgDegrees)
+        public byte[] Rotate(byte[] pictureBytes, int rotationgDegrees)
         {
             var image = ConvertToImage(pictureBytes);
             image.Mutate(x => x.Rotate(rotationgDegrees));

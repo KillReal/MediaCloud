@@ -22,13 +22,13 @@
         {
             <img id="left-arrow" 
                 src="/img/arrow-left.svg" 
-                class="arrow-button" 
+                class="arrow-button-left" 
                 onclick="window.location='/Medias/Detail/?id=@(Model.PrevPreviewId)&returnUrl=@(Model.ReturnUrl)'"
             />
         }
         
-        <div class="w-100 shadow-1-strong mb-4" style="max-height: 85vmin;">
-            <img class="picture-viewer w-100 h-100 shadow-1-strong mb-2 me-3 rounded"
+        <div class="picture-viewport w-100 shadow-1-strong mb-4">
+            <img class="picture-viewer h-100 shadow-1-strong mb-2 me-3 rounded" id="picture"
                 src="data:image/png;base64,@Convert.ToBase64String(Model.Media.Content)"
             />
         </div>
@@ -37,10 +37,20 @@
         {
             <img id="right-arrow" 
                 src="/img/arrow-right.svg" 
-                class="arrow-button"
+                class="arrow-button-right"
                 onclick="window.location='/Medias/Detail/?id=@(Model.NextPreviewId)&returnUrl=@(Model.ReturnUrl)'"
             />
         }
+
+        <div class="picture-controls-container text-black">
+            Rotation:
+            <button class="btn btn-info btn-rounded rotate-button" style="height: 2rem" onclick="rotatePicture(-90);">
+                <img class="h-100" src="/img/rotating-arrow-left.png">
+            </button>
+            <button class="btn btn-info btn-rounded rotate-button" style="height: 2rem" onclick="rotatePicture(90);">
+                <img class="h-100" src="/img/rotating-arrow-right.png">
+            </button>
+        </div>
     </div>
 
     <div class="row">
@@ -51,6 +61,7 @@
             <input type="hidden" asp-for=@(Model.Media.Preview.Id) class="form-control">
             <input type="hidden" asp-for=@(Model.Media.Id) class="form-control">
             <input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control">
+            <input type="hidden" asp-for=@(Model.RotationDegree) class="form-control" id="modelRotationDegree">
             <div class="row">
                 <div class="form-group autocomplete-list autocomplete mb-3 col">
                     <label class="col-form-label">
@@ -133,6 +144,32 @@
             document.getElementById("right-arrow").click();
         }
     }, false);
+
+    var currentDegree = 0;
+
+    function rotatePicture(degree) {
+
+        currentDegree += degree;
+
+        if (currentDegree > 180) {
+            currentDegree = -90;
+        } else if (currentDegree < -180) {
+            currentDegree = 90;    
+        }
+
+        var picture = document.getElementById("picture");
+        picture.style.transform = "rotate(" + currentDegree + "deg)";
+
+        if (currentDegree == 90 || currentDegree == -90) {
+            picture.style.scale = picture.height / picture.width;
+        }
+        else {
+            picture.style.scale = 1;
+        }
+
+        var modelRotationDegree = document.getElementById("modelRotationDegree");
+        modelRotationDegree.value = currentDegree;
+    }
 </script>
 
 @section Scripts {

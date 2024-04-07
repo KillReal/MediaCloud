@@ -41,7 +41,8 @@ Todo:
 - Review sql requests (Accordingly to ActorProvider staff)
 - Add debug init logging to services
 - Admin check for display actors in Statistic
-- Optimize DI in TaskScheduler. Create only needed services instead of creating DataService.
+- Optimize DI in TaskScheduler, PageModels and Controllers. Create only needed services instead of creating DataService. Then DataService should be removed.
+	For TaskScheduler some context could be used that Initialize IActorService for target actor.
 
 
 # Changelog				   

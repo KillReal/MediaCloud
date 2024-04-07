@@ -75,7 +75,37 @@ body {
     flex-wrap: wrap;
 }
 
-.arrow-button {
+.picture-controls-container {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    background: white;
+    border-radius: 1rem;
+    max-height: 5rem;
+    padding: .5rem;
+    display: flex;
+    align-items: center;
+}
+
+.rotate-button {
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    justify-content: center;
+    margin-left: .5rem;
+}
+
+.arrow-button-right {
+    cursor: pointer; 
+    position: absolute; 
+    right: 0; 
+    width: 2rem; 
+    background: deepskyblue; 
+    padding: 0.5rem; 
+    border-radius: 1rem;
+}
+
+.arrow-button-left {
     cursor: pointer; 
     position: absolute; 
     left: 0; 
@@ -162,6 +192,12 @@ body {
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
+}
+
+.picture-viewport {
+    max-height: 85vmin;
+    display: flex;
+    justify-content: center;
 }
 
 .picture-viewer {

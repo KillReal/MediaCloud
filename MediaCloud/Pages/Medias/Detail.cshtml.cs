@@ -19,6 +19,8 @@ namespace MediaCloud.Pages.Medias
 {
     public class MediaDetailModel : AuthorizedPageModel
     {
+        private readonly IPictureService _pictureService;
+
         [BindProperty]
         public Guid PreviewId { get; set; }
         [BindProperty]
@@ -33,9 +35,13 @@ namespace MediaCloud.Pages.Medias
         public Guid? PrevPreviewId { get; set; } = null;
         [BindProperty]
         public Guid? NextPreviewId { get; set; } = null;
+        [BindProperty]
+        public int RotationDegree {get; set;} = 0;
 
-        public MediaDetailModel(IDataService dataService) : base(dataService)
+        public MediaDetailModel(IDataService dataService, IPictureService pictureService) : base(dataService)
         {
+            _pictureService = pictureService;
+
             Media = new();
         }
 
@@ -80,6 +86,14 @@ namespace MediaCloud.Pages.Medias
             
             var media = preview.Media;
             media.Rate = Media.Rate;
+
+            if (RotationDegree != 0)
+            {
+                media.Preview.Content = _pictureService.Rotate(preview.Content, RotationDegree);
+                media.Content = _pictureService.Rotate(media.Content, RotationDegree);
+
+            }
+
             _dataService.Medias.Update(media);
 
             return Redirect(ReturnUrl.Replace("$", "&"));
