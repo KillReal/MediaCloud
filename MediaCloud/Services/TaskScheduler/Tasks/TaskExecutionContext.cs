@@ -3,7 +3,7 @@ using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services.ActorProvider;
 
-namespace MediaCloud.MediaUploader.Tasks
+namespace MediaCloud.TaskScheduler.Tasks
 {
     public class TaskExecutionContext
     {

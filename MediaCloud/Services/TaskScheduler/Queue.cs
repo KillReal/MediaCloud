@@ -1,11 +1,11 @@
-﻿using MediaCloud.MediaUploader.Tasks;
+﻿using MediaCloud.TaskScheduler.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Task = MediaCloud.MediaUploader.Tasks.Task;
+using Task = MediaCloud.TaskScheduler.Tasks.Task;
 
-namespace MediaCloud.MediaUploader
+namespace MediaCloud.TaskScheduler
 {
     public class Queue
     {

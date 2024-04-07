@@ -2,7 +2,7 @@
 using MediaCloud.Data.Models;
 using MediaCloud.WebApp.Services.ActorProvider;
 
-namespace MediaCloud.MediaUploader.Tasks
+namespace MediaCloud.TaskScheduler.Tasks
 {
     public interface ITask
     {

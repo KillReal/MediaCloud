@@ -173,20 +173,18 @@
             "$isUseAutoload=@Model.IsAutoloadEnabled";
     }
 
-    var currentOffset = @Model.ListBuilder.Pagination.Offset;
-    var nextOffset = @Model.ListBuilder.Pagination.Offset + @Model.ListBuilder.Pagination.Count;
+    var currentOffset = @Model.ListBuilder.Pagination.Offset - @Model.ListBuilder.Pagination.Count;;
+    var nextOffset = @Model.ListBuilder.Pagination.Offset
 
     enrichGallery();
 
-    window.addEventListener("scroll", function(e) {
-        if (!isAutoLoadingEnabled) {
-            return;
-        }
-
-        if ((window.innerHeight + window.scrollY + 2000) >= document.body.offsetHeight) {
-            enrichGallery();
-        }
-    });
+    if (isAutoLoadingEnabled) {
+        window.addEventListener("scroll", function(e) {
+            if ((window.innerHeight + window.scrollY + 2000) >= document.body.offsetHeight) {
+                enrichGallery();
+            }
+        });
+    }
 
     function enrichGallery() {
         if (currentOffset == nextOffset || currentOffset > @Model.ListBuilder.Pagination.TotalCount) {

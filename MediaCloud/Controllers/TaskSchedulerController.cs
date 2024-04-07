@@ -1,4 +1,4 @@
-﻿using MediaCloud.MediaUploader;
+﻿using MediaCloud.TaskScheduler;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,7 +19,7 @@ namespace MediaCloud.WebApp.Controllers
             _taskScheduler = taskScheduler;
         }
 
-        public MediaUploader.TaskStatus GetTaskStatus(Guid id)
+        public TaskScheduler.TaskStatus GetTaskStatus(Guid id)
         {
             return _taskScheduler.GetStatus(id);
         }

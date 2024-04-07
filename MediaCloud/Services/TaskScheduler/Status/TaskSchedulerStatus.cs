@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MediaCloud.MediaUploader
+namespace MediaCloud.TaskScheduler
 {
     public class TaskSchedulerStatus
     {

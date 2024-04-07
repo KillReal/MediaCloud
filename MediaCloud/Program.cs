@@ -1,7 +1,7 @@
 using MediaCloud.Data;
 using MediaCloud.Repositories;
 using MediaCloud.Services;
-using MediaCloud.MediaUploader;
+using MediaCloud.TaskScheduler;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
@@ -34,7 +34,7 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 builder.Services.AddSingleton<IConfigProvider, ConfigProvider>();
 builder.Services.AddSingleton<IActorProvider, ActorProvider>();
-builder.Services.AddSingleton<ITaskScheduler, MediaCloud.MediaUploader.TaskScheduler>();
+builder.Services.AddSingleton<ITaskScheduler, MediaCloud.TaskScheduler.TaskScheduler>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<StatisticProvider>();

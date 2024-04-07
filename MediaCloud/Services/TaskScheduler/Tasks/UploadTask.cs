@@ -15,7 +15,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MediaCloud.MediaUploader.Tasks
+namespace MediaCloud.TaskScheduler.Tasks
 {
     internal class FileNameComparer : IComparer<string>
     {
@@ -76,7 +76,7 @@ namespace MediaCloud.MediaUploader.Tasks
         public override void DoTheTask(IServiceProvider serviceProvider, IActorProvider actorProvider)
         {
             var context = serviceProvider.GetRequiredService<AppDbContext>();
-            var statisticProvider = serviceProvider.GetRequiredService<StatisticProvider>();
+            var statisticProvider = new StatisticProvider(context, actorProvider);
             var pictureService = serviceProvider.GetRequiredService<IPictureService>();
 
             var tagRepository = new TagRepository(context, statisticProvider, actorProvider);

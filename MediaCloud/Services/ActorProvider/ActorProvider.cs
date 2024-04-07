@@ -1,6 +1,6 @@
 ﻿using MediaCloud.Data;
 using MediaCloud.Data.Models;
-using MediaCloud.MediaUploader.Tasks;
+using MediaCloud.TaskScheduler.Tasks;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services.ConfigurationProvider;
 using MediaCloud.WebApp.Services.Statistic;
@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 using NLog;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
-using Task = MediaCloud.MediaUploader.Tasks.Task;
+using Task = MediaCloud.TaskScheduler.Tasks.Task;
 
 namespace MediaCloud.WebApp.Services.ActorProvider
 {

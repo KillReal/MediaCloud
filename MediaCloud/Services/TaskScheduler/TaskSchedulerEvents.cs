@@ -1,13 +1,13 @@
 ﻿using MediaCloud.Data;
-using MediaCloud.MediaUploader.Tasks;
+using MediaCloud.TaskScheduler.Tasks;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services;
 using MediaCloud.WebApp.Services.ConfigurationProvider;
 using NLog;
 using ILogger = NLog.ILogger;
-using Task = MediaCloud.MediaUploader.Tasks.Task;
+using Task = MediaCloud.TaskScheduler.Tasks.Task;
 
-namespace MediaCloud.MediaUploader
+namespace MediaCloud.TaskScheduler
 {
     /// <summary>
     /// Internal task scheduler.
@@ -31,13 +31,13 @@ namespace MediaCloud.MediaUploader
 
         private void WorkerStartTask(Task task)
         {
-            _logger.Info("Worker ({0}/{1}) processing the task: {2} author: {3}",
+            _logger.Info("Worker ({BusyWorkersCount}/{MaxWorkersCount}) processing the task: {task.Id} author: {task.Actor.Name}",
                 BusyWorkersCount, MaxWorkersCount, task.Id, task.Actor.Name);
         }
 
         private void WorkerCompleteTask(Task task)
         {
-            _logger.Info("Worker ({0}/{1}) completed the task: {2} author: {3}",
+            _logger.Info("Worker ({BusyWorkersCount - 1}/{MaxWorkersCount}) completed the task: {task.Id} author: {task.Actor.Name}",
                 BusyWorkersCount - 1, MaxWorkersCount, task.Id, task.Actor.Name);
 
             _queue.OnTaskComplete.Invoke(task);
@@ -49,7 +49,7 @@ namespace MediaCloud.MediaUploader
 
         private void WorkerFacedErrorWithTask(Task task, Exception ex)
         {
-            _logger.Error("Worker faced error during processing of task: {0} author: {1} exception: {3}", 
+            _logger.Error("Worker faced error during processing of task: {task.Id} author: {task.Actor.Name} exception: {ex}", 
                 task.Id, task.Actor.Name, ex);
         }
     }

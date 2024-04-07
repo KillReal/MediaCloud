@@ -1,6 +1,6 @@
-﻿using Task = MediaCloud.MediaUploader.Tasks.Task;
+﻿using Task = MediaCloud.TaskScheduler.Tasks.Task;
 
-namespace MediaCloud.MediaUploader
+namespace MediaCloud.TaskScheduler
 {
     public interface ITaskScheduler
     {

@@ -1,7 +1,7 @@
 ﻿using MediaCloud.Data;
 using MediaCloud.Data.Models;
-using MediaCloud.MediaUploader;
-using MediaCloud.MediaUploader.Tasks;
+using MediaCloud.TaskScheduler;
+using MediaCloud.TaskScheduler.Tasks;
 using MediaCloud.WebApp.Services.ActorProvider;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;

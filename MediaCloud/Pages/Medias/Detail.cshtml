@@ -121,7 +121,8 @@
                         }
                         <a class="btn @classStyle btn-rounded me-1 mb-2" 
                             asp-page="/Tags/Detail" 
-                            asp-route-id=@tag.Id>
+                            asp-route-id=@tag.Id
+                            asp-route-returnUrl='@Model.ReturnUrl'>
                             @tag.Name
                         </a>
                     }

@@ -15,7 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ILogger = NLog.ILogger;
 
-namespace MediaCloud.MediaUploader.Tasks
+namespace MediaCloud.TaskScheduler.Tasks
 {
     public class RecalculateTask : Task, ITask
     {

@@ -1,13 +1,13 @@
 ﻿using MediaCloud.Data;
-using MediaCloud.MediaUploader.Tasks;
+using MediaCloud.TaskScheduler.Tasks;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services;
 using MediaCloud.WebApp.Services.ConfigurationProvider;
 using NLog;
 using ILogger = NLog.ILogger;
-using Task = MediaCloud.MediaUploader.Tasks.Task;
+using Task = MediaCloud.TaskScheduler.Tasks.Task;
 
-namespace MediaCloud.MediaUploader
+namespace MediaCloud.TaskScheduler
 {
     /// <summary>
     /// Internal task scheduler.
