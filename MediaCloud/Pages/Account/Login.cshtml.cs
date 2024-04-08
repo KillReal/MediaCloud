@@ -37,9 +37,7 @@ namespace MediaCloud.WebApp.Pages
         {
             ReturnUrl = returnUrl;
 
-            var actor = _actorProvider.GetCurrentOrDefault();
-
-            if (actor != null)
+            if (_actorProvider.GetCurrentOrDefault() == null)
             {
                 return Redirect(ReturnUrl);
             }
@@ -49,13 +47,13 @@ namespace MediaCloud.WebApp.Pages
 
         public IActionResult OnPost()
         {
-            var result = _actorProvider.Authorize(AuthData, HttpContext);
 
-            if (result == false)
+            if (_actorProvider.Authorize(AuthData, HttpContext) == false)
             {
                 CurrentActor = null;
                 _logger.Error("Failed sign attempt by name: {AuthData.Name}", AuthData.Name);
                 IsFailed = true;
+                
                 return Page();
             }
 

@@ -42,9 +42,7 @@ namespace MediaCloud.WebApp.Pages
         {
             ReturnUrl = returnUrl;
 
-            var actor = _actorProvider.GetCurrentOrDefault();
-
-            if (actor != null)
+            if (_actorProvider.GetCurrentOrDefault() != null)
             {
                 return Redirect(ReturnUrl);
             }
