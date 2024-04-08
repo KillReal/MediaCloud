@@ -37,7 +37,7 @@ namespace MediaCloud.WebApp.Pages
         {
             ReturnUrl = returnUrl;
 
-            if (_actorProvider.GetCurrentOrDefault() == null)
+            if (_actorProvider.GetCurrentOrDefault() != null)
             {
                 return Redirect(ReturnUrl);
             }

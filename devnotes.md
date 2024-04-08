@@ -14,6 +14,7 @@ Todo:
 - Review sql requests (Accordingly to ActorProvider staff)
 - Admin check for display actors in Statistic
 - Implement all actors statistic dashboards for Admin
+- Write unit tests
 
 
 # Changelog				   
