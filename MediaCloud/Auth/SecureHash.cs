@@ -2,6 +2,7 @@
 using System.Text;
 using System.IO;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using NLog;
 
 namespace MediaCloud.WebApp
 {
@@ -89,6 +90,24 @@ namespace MediaCloud.WebApp
         /// <returns>Could be verified?</returns>
         public static bool Verify(string password, string hashedPassword)
         {
+            try 
+            {
+                return InternalVerify(password, hashedPassword);
+            } 
+            catch (Exception ex)
+            {
+                LogManager.GetLogger("SecureHash").Error(ex, "Could not verify password");
+                return false;
+            }
+        }
+
+        private static bool InternalVerify(string password, string hashedPassword)
+        {   
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                throw new NullReferenceException("Password cannot be null or empty");
+            }
+
             if (!IsHashSupported(hashedPassword))
             {
                 throw new NotSupportedException("The hashtype is not supported");
