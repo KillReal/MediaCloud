@@ -1,15 +1,13 @@
 
 # Infrastructure             
 
-- 1.5.0 mediacloud
-- 1.6.0 mediacloud-dev
+- 1.5.1 mediacloud
+- 1.5.1 mediacloud-dev
 
 # Next release - 1.6.0       
-# Next minor - 1.5.1   
+# Next minor - 1.5.2   
 
 Done:
-- Fixed exception handling when empty password provided for login
-- Removed unused config settings
 
 Todo:
 
@@ -19,6 +17,11 @@ Todo:
 
 
 # Changelog				   
+
+### Version 1.5.1 - 08th Apr, 2024
+- Fixed exception handling when empty password provided for login
+- Removed unused config settings
+- Varios fixes and improvements
 
 ### Version 1.5.0 - 07th Apr, 2024
 - Statistics dashboards now showing personal statistics
