@@ -25,11 +25,6 @@ namespace MediaCloud.Builders.List
         public Pagination Pagination { get; init; }
 
         /// <summary>
-        /// Column count for list. Default value is <see cref="ConfigurationService.Gallery.GetColumnCount"/>
-        /// </summary>
-        public int ColumnCount { get; set; }
-
-        /// <summary>
         /// Init list builder via list request.
         /// </summary>
         /// <param name="request"> List request. </param>
@@ -43,8 +38,6 @@ namespace MediaCloud.Builders.List
                 : request.Count, 
                 request.Offset,
                 actorSettings.ListMaxPageCount);
-                
-            ColumnCount = actorSettings.GalleryMaxColumnCount;
         }
 
         /// <summary>
