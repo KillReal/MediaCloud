@@ -8,6 +8,8 @@
 # Next minor - 1.5.1   
 
 Done:
+- Fixed exception handling when empty password provided for login
+- Removed unused config settings
 
 Todo:
 

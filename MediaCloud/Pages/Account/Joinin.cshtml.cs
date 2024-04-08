@@ -27,7 +27,7 @@ namespace MediaCloud.WebApp.Pages
         [BindProperty]
         public AuthData AuthData { get; set; } = new();
         [BindProperty]
-        public Actor? CurrentActor { get; set; }
+        public Actor? CurrentActor { get; set; } = null;
         [BindProperty]
         public string ReturnUrl { get; set; } = "";
 
@@ -41,6 +41,13 @@ namespace MediaCloud.WebApp.Pages
         public IActionResult OnGet(string returnUrl = "/")
         {
             ReturnUrl = returnUrl;
+
+            var actor = _actorProvider.GetCurrentOrDefault();
+
+            if (actor != null)
+            {
+                return Redirect(ReturnUrl);
+            }
 
             return Page();
         }
@@ -56,6 +63,7 @@ namespace MediaCloud.WebApp.Pages
                 return Redirect("/Account/Login");
             }
 
+            CurrentActor = null;
             return Page();
         }
     }
