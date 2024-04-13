@@ -8,13 +8,18 @@
 # Next minor - 1.5.2   
 
 Done:
+- Fix preview updateAt change after editing
+- Optimize gallery first batch loading. (Use force partial preloading for first batch on page)
+- Show loading modal window before files transfer begins
 
 Todo:
-
 - Review sql requests (Accordingly to ActorProvider staff)
 - Admin check for display actors in Statistic
 - Implement all actors statistic dashboards for Admin
 - Write unit tests
+- Fix redirect after tag creation
+- Add custom tags to tag autocompletion
+- Show first uploaded image on uploade page
 
 
 # Changelog				   

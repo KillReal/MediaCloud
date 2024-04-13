@@ -1,4 +1,5 @@
 ﻿@page
+@using MediaCloud.WebApp
 @model MediaCloud.Pages.Medias.MediaListModel
 
 @{
@@ -114,6 +115,8 @@
     <hr style="margin-bottom: 2rem"/>
     <partial name="~/Pages/Shared/_Pagination.cshtml" />
     <div class="row image-row gallery" id="gallery">
+        <partial name="~/Pages/Medias/_Gallery.cshtml" model=@(new _GalleryPageModel(Model.Previews))/>
+        
         @if (Model.Previews.Count == 0)
         {
             <h1 style="text-align: center">
@@ -173,8 +176,8 @@
             "$isUseAutoload=@Model.IsAutoloadEnabled";
     }
 
-    var currentOffset = @Model.ListBuilder.Pagination.Offset - @Model.ListBuilder.Pagination.Count;;
-    var nextOffset = @Model.ListBuilder.Pagination.Offset
+    var currentOffset = @Model.ListBuilder.Pagination.Offset;
+    var nextOffset = @Model.ListBuilder.Pagination.Offset + @Model.ListBuilder.Pagination.Count;
 
     enrichGallery();
 

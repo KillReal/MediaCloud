@@ -160,7 +160,16 @@ body {
 }
 
 .gallery-item {
-    min-width: 30rem;
+    min-width: 25rem;
+}
+
+.gallery-item-bubble {
+    position: absolute; 
+    min-width: 2.25rem; 
+    text-align: center; 
+    margin-bottom: 1.85rem; 
+    margin-right: 0.25rem; 
+    font-size: 1.5rem;
 }
 
 .list-clickable {

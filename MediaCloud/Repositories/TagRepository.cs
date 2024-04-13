@@ -85,6 +85,7 @@ namespace MediaCloud.Repositories
 
             var affectedTags = tagsToLink.Union(tagsToUnlink);
 
+            _context.Previews.Update(preview);
             _context.Tags.UpdateRange(affectedTags);
             _context.SaveChanges();
 

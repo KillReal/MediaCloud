@@ -39,6 +39,7 @@ function formSubmit(event) {
     setModalTitle('Sending to server...');
     showModalBody();
     updateModalLoadBody();
+    $('#loadingModal').modal('show');
 
     var url = "/Medias/Upload";
     var request = new XMLHttpRequest();
@@ -47,7 +48,6 @@ function formSubmit(event) {
         setModalTitle('Waiting queue for processing...');
         showModalBody();
         updateModalLoadBody();
-        $('#loadingModal').modal('show');
         var data = JSON.parse(request.response);
 
         var url = "/TaskScheduler/GetTaskStatus?id=" + data.id;
