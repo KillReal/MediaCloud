@@ -11,6 +11,7 @@ Done:
 - Fix preview updateAt change after editing
 - Optimize gallery first batch loading. (Use force partial preloading for first batch on page)
 - Show loading modal window before files transfer begins
+- Update SixLabour.ImageSharp to 3.1.4
 
 Todo:
 - Review sql requests (Accordingly to ActorProvider staff)

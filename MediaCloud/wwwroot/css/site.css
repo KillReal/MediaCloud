@@ -216,6 +216,7 @@ body {
 .picture-viewer {
     object-fit: contain; 
     max-height: 80vmin;
+    max-width: 90vw;
 }
 
 #btn-back-to-top {
