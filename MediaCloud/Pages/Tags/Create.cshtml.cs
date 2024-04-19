@@ -23,12 +23,13 @@ namespace MediaCloud.Pages.Tags
         [BindProperty]
         public Tag Tag { get; set; } = new();
 
-        public TagCreateModel(IActorProvider actorProvider, TagRepository tagRepository) : base(actorProvider)
+        public TagCreateModel(IActorProvider actorProvider, TagRepository tagRepository) 
+            : base(actorProvider)
         {
             _tagRepository = tagRepository;
         }
 
-        public IActionResult OnGet()
+        public IActionResult OnGet(string ReturnUrl = "/Tags")
         {
             return Page();
         }
@@ -37,7 +38,7 @@ namespace MediaCloud.Pages.Tags
         {
             _tagRepository.Create(Tag);
 
-            return RedirectToPage("/Tags");
+            return RedirectToPage("/Tags/Index");
         }
     }
 }
