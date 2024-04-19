@@ -12,6 +12,7 @@ Done:
 - Optimize gallery first batch loading. (Use force partial preloading for first batch on page)
 - Show loading modal window before files transfer begins
 - Update SixLabour.ImageSharp to 3.1.4
+- Remvoed authorization requirement for TaskScheduler Api
 
 Todo:
 - Review sql requests (Accordingly to ActorProvider staff)
@@ -21,6 +22,7 @@ Todo:
 - Fix redirect after tag creation
 - Add custom tags to tag autocompletion
 - Show first uploaded image on uploade page
+- Update zabbix metrics from Uploader to TaskScheduler
 
 
 # Changelog				   

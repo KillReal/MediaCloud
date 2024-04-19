@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MediaCloud.WebApp.Controllers
 {
-    [Authorize]
     public class TaskSchedulerController : Controller
     {
         private readonly ITaskScheduler _taskScheduler;
