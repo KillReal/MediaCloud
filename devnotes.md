@@ -13,17 +13,17 @@ Done:
 - Show loading modal window before files transfer begins
 - Update SixLabour.ImageSharp to 3.1.4
 - Remvoed authorization requirement for TaskScheduler Api
+- Fix redirect after tag creation
 
 Todo:
 - Review sql requests (Accordingly to ActorProvider staff)
 - Admin check for display actors in Statistic
 - Implement all actors statistic dashboards for Admin
 - Write unit tests
-- Fix redirect after tag creation
 - Add custom tags to tag autocompletion
 - Show first uploaded image on uploade page
 - Update zabbix metrics from Uploader to TaskScheduler
-
+- Fix home page layout for narrow displays
 
 # Changelog				   
 
