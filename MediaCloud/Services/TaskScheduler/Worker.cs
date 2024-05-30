@@ -49,6 +49,12 @@ namespace MediaCloud.TaskScheduler
         public void Run()
         {
             Task = _queue.GetNextTask();
+
+            if (Task == null)
+            {
+                return;
+            }
+            
             ThreadPool.QueueUserWorkItem(WorkRoutine);
         }
 
@@ -85,8 +91,6 @@ namespace MediaCloud.TaskScheduler
             _scheduler.OnTaskCompleted.Invoke(Task);
             Task = null;
             IsReady = true;
-
-            return;
         }
     }
 }
