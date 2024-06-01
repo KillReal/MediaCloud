@@ -25,6 +25,6 @@
         /// </summary>
         public string Filter { get; set; } = "";
 
-        public bool IsUseAutoload { get; set; } = true;
+        public bool? IsUseAutoload { get; set; } = null;
     }
 }

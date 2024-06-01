@@ -54,13 +54,14 @@ namespace MediaCloud.Pages.Medias
             }
 
             ListBuilder = new ListBuilder<Preview>(new(), _configProvider.ActorSettings);
+            IsAutoloadEnabled = _configProvider.ActorSettings.ListAutoloadingEnabled;
         }
 
         public async Task<IActionResult> OnGetAsync(ListRequest request)
         {
             ListBuilder = new ListBuilder<Preview>(request, _configProvider.ActorSettings);
             Previews = await ListBuilder.BuildAsync(_previewRepository);
-            IsAutoloadEnabled = request.IsUseAutoload;
+            IsAutoloadEnabled = request.IsUseAutoload ?? IsAutoloadEnabled;
 
             return Page();
         }  

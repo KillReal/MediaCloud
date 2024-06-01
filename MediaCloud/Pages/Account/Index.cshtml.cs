@@ -53,10 +53,12 @@ namespace MediaCloud.WebApp.Pages
 
         public IActionResult OnPost()
         {
+            _configProvider.ActorSettings = ActorSettings;
             _configProvider.SaveActorSettings();
 
             if (IsEnvironmentSettingsChanged && EnvironmentSettings != null)
             {
+                _configProvider.EnvironmentSettings = EnvironmentSettings;
                 _configProvider.SaveEnvironmentSettings();
             }
 
