@@ -113,10 +113,28 @@ namespace MediaCloud.WebApp.Services.ActorProvider
             actor.UpdatedAt = actor.UpdatedAt.ToUniversalTime();
             actor.CreatedAt = actor.CreatedAt.ToUniversalTime();
             actor.LastLoginAt = DateTime.Now.ToUniversalTime();
-
+            
+            _context.Actors.Update(actor);
             _memoryCache.Set(data.Name, actor, _memoryCacheOptions);
 
             return true;
+        }
+
+        public void Logout(HttpContext httpContext)
+        {
+            _ = httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var identity = httpContext.User.Identity;
+
+            if (identity == null || identity.Name == null)
+            {
+                throw new ArgumentException("Cannot get actor without HttpContext");
+            }
+
+            if (_memoryCache.TryGetValue(identity.Name, out Actor actor))
+            {
+                _memoryCache.Remove(identity.Name);
+            }
         }
 
         public RegistrationResult Register(IConfigProvider configProvider, AuthData data, string inviteCode)

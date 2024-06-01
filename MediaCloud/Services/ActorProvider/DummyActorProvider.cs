@@ -36,6 +36,11 @@ namespace MediaCloud.WebApp.Services.ActorProvider
 
         public bool Authorize(AuthData data, HttpContext httpContext) => false;
 
+        public void Logout(HttpContext httpContext)
+        {
+            throw new NotImplementedException($"Dummy provider cannot proceed logout");
+        }
+
         public RegistrationResult Register(IConfigProvider configProvider, AuthData data, string inviteCode) 
         => new(false, $"Dummy provider cannot register an actor");
 
