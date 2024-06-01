@@ -24,7 +24,11 @@
 			<div class="card-body p-5 text-left text-black">
 				<form enctype="multipart/form-data" method="post">
 					<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-					<input type="hidden" asp-for=@(Model.IsEnvironmentSettingsChanged) class="form-control" id="IsEnvironmentSettingsChanged">
+
+					@if (Model.Actor.IsAdmin)
+					{
+						<input type="hidden" asp-for=@(Model.IsEnvironmentSettingsChanged) class="form-control" id="IsEnvironmentSettingsChanged">
+					}
 					<input type="hidden" asp-for=@(Model.Actor.Id) class="form-control">
 					<input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control">
 
@@ -131,9 +135,11 @@
 
 </div>
 
-<script>
-	function environmentSettingsChanged() {
-		var element = document.getElementById("IsEnvironmentSettingsChanged");
-		element.value = true;
-	}
-</script>
+@if (Model.Actor.IsAdmin) {
+	<script>
+		function environmentSettingsChanged() {
+			var element = document.getElementById("IsEnvironmentSettingsChanged");
+			element.value = true;
+		}
+	</script>
+}
