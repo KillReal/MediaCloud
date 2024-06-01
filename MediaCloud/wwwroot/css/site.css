@@ -23,6 +23,15 @@ body {
     margin-bottom: 60px;
 }
 
+.background-image {
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    position: fixed;
+    margin-left: -3rem;
+    width: 100%;
+}
+
 .gradient-main {
     /* fallback for old browsers */
     background: #5063b9;
