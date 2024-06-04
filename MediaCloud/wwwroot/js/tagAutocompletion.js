@@ -1,4 +1,4 @@
-﻿let autocomplete = (inp) => {
+﻿let autocomplete = (inp,  isAliases = false) => {
     /*the autocomplete function takes two arguments,
     the text field element and an array of possible autocompleted values:*/
     let currentFocus;
@@ -6,7 +6,7 @@
         let a, //OUTER html: variable for listed content with html-content
             b, // INNER html: filled with array-Data and html
             i, //Counter
-            val = this.value.replaceAll("!", "").split(' ').pop();
+            val = this.value.replaceAll("!", "").replaceAll("+", "").split(' ').pop();
 
         closeAllLists();
 
@@ -25,6 +25,12 @@
         this.parentNode.appendChild(a);
 
         var url = "/Gallery/GetSuggestions?searchString=" + val + '&limit=7';
+
+        if (isAliases)
+        {
+            var url = "/Gallery/GetAliasSuggestions?searchString=" + val + '&limit=30';
+        }
+
         fetch(url).then(function (response) {
             return response.json();
         }).then(function (data) {
@@ -42,6 +48,9 @@
                         var tag = this.getElementsByTagName("input")[0].value.toLowerCase() + ' ';
                         if (inputs[inputs.length - 1].includes("!")) {
                             tag = "!" + tag;
+                        }
+                        if (inputs[inputs.length - 1].includes("+")) {
+                            tag = "+" + tag;
                         }
                         inputs[inputs.length - 1] = tag;
                         inp.value = inputs.join(' ');

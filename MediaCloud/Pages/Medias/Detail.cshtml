@@ -84,6 +84,7 @@
                     asp-route-id=@(Model.PreviewId)>
                     Remove
                 </button>
+                <input class="btn btn-success btn-rounded" type="button" value="Autocomplete" onclick="autocompleteTags('@Model.PreviewId')" />
             </div>
         </form>
     </div>
@@ -170,6 +171,16 @@
 
         var modelRotationDegree = document.getElementById("modelRotationDegree");
         modelRotationDegree.value = currentDegree;
+    }
+
+    function autocompleteTags(previewId) {
+        var url = "/Gallery/AutocompleteTagForMedia?previewId=" + previewId;
+
+        fetch(url)
+            .then((response) => response.json())
+            .then(function (data) {
+                console.log(data);
+            })
     }
 </script>
 

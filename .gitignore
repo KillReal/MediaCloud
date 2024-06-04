@@ -79,3 +79,8 @@ _[Ss]cripts
 *.dot[Cc]over
 *.db*
 *.vsidx
+# Python and PyTorch
+######################
+__pycache__/
+*.onnx
+*.safetensors
