@@ -13,6 +13,7 @@ using MediaCloud.WebApp.Services.ActorProvider;
 using NLog.Web;
 using NLog;
 using MediaCloud.WebApp.Services.ConfigurationProvider;
+using MediaCloud.WebApp;
 
 var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 logger.Debug("Early NLog initialization");
@@ -37,6 +38,7 @@ builder.Services.AddSingleton<IActorProvider, ActorProvider>();
 builder.Services.AddSingleton<ITaskScheduler, MediaCloud.TaskScheduler.TaskScheduler>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IAutotagService, AutotagService>();
 builder.Services.AddScoped<StatisticProvider>();
 builder.Services.AddScoped<ActorRepository>();
 builder.Services.AddScoped<PreviewRepository>();

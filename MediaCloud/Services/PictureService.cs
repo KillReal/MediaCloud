@@ -67,6 +67,22 @@ namespace MediaCloud.Services
             return ConvertToBytes(image);
         }
 
+        public bool SaveImageToPath(byte[] pictureBytes, string path)
+        {
+            try 
+            {
+                var image = ConvertToImage(pictureBytes);
+                image.Save(path);
+            }
+            catch (Exception ex)
+            {
+                LogManager.GetLogger("PictureService").Error(ex, "Failed to save image to path");
+                return false;
+            }
+
+            return true;
+        }
+
         private static Image ConvertToImage(byte[] pictureBytes)
         {
             var stream = new MemoryStream(pictureBytes);

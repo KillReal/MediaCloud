@@ -9,6 +9,7 @@ using MediaCloud.WebApp.Services.Data.Repositories.Interfaces;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.EntityFrameworkCore;
 using NLog;
+using SixLabors.ImageSharp.ColorSpaces;
 using Preview = MediaCloud.Data.Models.Preview;
 
 namespace MediaCloud.Repositories
@@ -27,7 +28,7 @@ namespace MediaCloud.Repositories
             return string.Join(' ', tags.Distinct());
         }
 
-        public TagRepository(AppDbContext context, StatisticProvider statisticProvider, IActorProvider actorProvider) 
+        public TagRepository(AppDbContext context, StatisticProvider statisticProvider, IActorProvider actorProvider)
         : base(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider)
         {
         }
@@ -105,6 +106,30 @@ namespace MediaCloud.Repositories
                                 .ToList();
         }
 
+        public List<Tag> GetRangeByAliasString(string? aliasesString)
+        {
+            if (string.IsNullOrEmpty(aliasesString))
+            {
+                return new();
+            }
+            aliasesString = DeduplicateTagString(aliasesString).ToLower();
+            var aliases = aliasesString.ToLower().Split(' ');
+            
+            var selectedTags = _context.Tags.AsEnumerable().Where(x => aliases.Where(y => x.Alias
+                    .Split(' ')
+                    .Any(z => z == y))
+                    .Any()
+                    && x.CreatorId == _actor.Id)
+                .ToList();
+
+            selectedTags.RemoveAll(x => x.Alias.Split(' ')
+                .Any(y => y.Contains('!') && aliases.Contains(y.Replace("!", ""))));
+            selectedTags.RemoveAll(x => x.Alias.Split(' ')
+                .Any(y => y.Contains('+') && aliases.Contains(y.Replace("+", "")) == false));
+
+            return selectedTags;
+        }
+
         public List<Tag> GetList(ListBuilder<Tag> listBuilder)
         {
             return _context.Tags.AsNoTracking().Order(listBuilder.Sorting.GetOrder())
@@ -114,7 +139,7 @@ namespace MediaCloud.Repositories
                                                .ToList();
         }
 
-        public async Task<int> GetListCountAsync(ListBuilder<Tag> listBuilder) 
+        public async Task<int> GetListCountAsync(ListBuilder<Tag> listBuilder)
             => await _context.Tags.Where(x => x.CreatorId == _actor.Id).AsNoTracking().CountAsync();
 
         /// <summary>

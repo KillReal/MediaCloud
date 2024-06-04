@@ -12,18 +12,21 @@ Done:
 - Optimize gallery first batch loading. (Use force partial preloading for first batch on page)
 - Show loading modal window before files transfer begins
 - Update SixLabour.ImageSharp to 3.1.4
-- Remvoed authorization requirement for TaskScheduler Api
+- Removed authorization requirement for TaskScheduler Api
 - Fix redirect after tag creation
+- Fix home page layout for narrow displays
+- Added autoloading setting to account settings page
+- Fixed creator change when tag updating
+- Implemented AI tag autocompletion
 
 Todo:
 - Review sql requests (Accordingly to ActorProvider staff)
 - Admin check for display actors in Statistic
 - Implement all actors statistic dashboards for Admin
 - Write unit tests
-- Add custom tags to tag autocompletion
 - Show first uploaded image on uploade page
 - Update zabbix metrics from Uploader to TaskScheduler
-- Fix home page layout for narrow displays
+- Review creator updator linking when updating entities.
 
 # Changelog				   
 
