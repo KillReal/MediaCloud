@@ -31,26 +31,25 @@ namespace MediaCloud.TaskScheduler
 
         private void WorkerStartTask(Task task)
         {
-            _logger.Info("Worker ({BusyWorkersCount}/{MaxWorkersCount}) processing the task: {task.Id} author: {task.Actor.Name}",
-                BusyWorkersCount, MaxWorkersCount, task.Id, task.Actor.Name);
+            task.IsWaiting = false;
+
+            _logger.Info("Worker ({BusyWorkersCount}/{MaxWorkersCount}) processing the {task.GetType().Name}: {task.Id} author: {task.Actor.Name}",
+                BusyWorkersCount, MaxWorkersCount, task.GetType().Name, task.Id, task.Actor.Name);
         }
 
         private void WorkerCompleteTask(Task task)
         {
-            _logger.Info("Worker ({BusyWorkersCount - 1}/{MaxWorkersCount}) completed the task: {task.Id} author: {task.Actor.Name}",
-                BusyWorkersCount - 1, MaxWorkersCount, task.Id, task.Actor.Name);
+            _logger.Info("Worker ({BusyWorkersCount - 1}/{MaxWorkersCount}) completed the {task.GetType().Name}: {task.Id} author: {task.Actor.Name}",
+                BusyWorkersCount - 1, MaxWorkersCount, task.GetType().Name, task.Id, task.Actor.Name);
 
             _queue.OnTaskComplete.Invoke(task);
-            if (_queue.IsEmpty == false)
-            {
-                Run();
-            }
+            Run();
         }
 
         private void WorkerFacedErrorWithTask(Task task, Exception ex)
         {
-            _logger.Error("Worker faced error during processing of task: {task.Id} author: {task.Actor.Name} exception: {ex}", 
-                task.Id, task.Actor.Name, ex);
+            _logger.Error("Worker faced error during processing of {task.GetType().Name}: {task.Id} author: {task.Actor.Name} exception: {ex}", 
+                task.GetType().Name, task.Id, task.Actor.Name, ex);
         }
     }
 }

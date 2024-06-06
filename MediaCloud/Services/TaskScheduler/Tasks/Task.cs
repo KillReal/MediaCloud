@@ -20,6 +20,11 @@ namespace MediaCloud.TaskScheduler.Tasks
         public Actor Actor { get; set; }
 
         /// <summary>
+        /// Wether the task can be executed.
+        /// </summary>
+        public bool IsWaiting { get; set; } = true;
+
+        /// <summary>
         /// Task init.
         /// </summary>
         /// <param name="actor"> Customer of task. </param>

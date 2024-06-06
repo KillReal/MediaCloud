@@ -28,7 +28,16 @@ namespace MediaCloud.TaskScheduler
 
         public void RemoveTask(Task task) => _tasks.Remove(task);
 
-        public Task GetNextTask() => _tasks.First();
+        public Task? GetNextTask(string type) 
+        {
+            return _tasks.Where(x => x.IsWaiting && type.Split(" ")
+                                .Any(y => x.GetType().Name == y))
+                            .FirstOrDefault();
+        }
+
+        public List<string> GetWaitingTaskTypes() => _tasks.Where(x => x.IsWaiting)
+                                                            .Select(x => x.GetType().Name)
+                                                            .ToList();
 
         public Task? GetTask(Guid id) => _tasks.FirstOrDefault(x => x.Id == id);
 

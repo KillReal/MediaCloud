@@ -103,5 +103,10 @@ namespace MediaCloud.WebApp.Controllers
 
             return _taskScheduler.AddTask(task);
         }
+
+        public double GetAverageAutocompleteTagExecution()
+        {
+            return _autotagService.GetAverageExecutionTime();
+        }
     }
 }

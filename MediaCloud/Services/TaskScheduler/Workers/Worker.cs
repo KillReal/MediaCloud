@@ -17,6 +17,7 @@ namespace MediaCloud.TaskScheduler
     /// </summary>
     public class Worker
     {
+        private readonly string _taskType;
         private readonly Queue _queue;
         private readonly TaskScheduler _scheduler;
         private readonly IServiceScopeFactory _serviceScopeFactory;
@@ -25,6 +26,7 @@ namespace MediaCloud.TaskScheduler
         /// Current task. Return's null if no task currently taken.
         /// </summary>
         public Task? Task;
+
         /// <summary>
         /// State of Worker that it ready to take next <see cref="ITask"/>.
         /// </summary>
@@ -36,11 +38,12 @@ namespace MediaCloud.TaskScheduler
         /// <param name="queue"> Current <see cref="Queue"/>. </param>
         /// <param name="scheduler"> Current <see cref="TaskScheduler"/>. </param>
         /// <param name="dataService"> Current data service <seealso cref="IDataService"/>. </param>
-        public Worker(Queue queue, TaskScheduler scheduler, IServiceScopeFactory serviceScopeFactory) 
+        public Worker(Queue queue, TaskScheduler scheduler, IServiceScopeFactory serviceScopeFactory, string taskType) 
         {
             _queue = queue;
             _scheduler = scheduler;
             _serviceScopeFactory = serviceScopeFactory;
+            _taskType = taskType;
         }
 
         /// <summary>
@@ -48,7 +51,7 @@ namespace MediaCloud.TaskScheduler
         /// </summary>
         public void Run()
         {
-            Task = _queue.GetNextTask();
+            Task = _queue.GetNextTask(_taskType);
 
             if (Task == null)
             {
@@ -59,11 +62,13 @@ namespace MediaCloud.TaskScheduler
         }
 
         /// <summary>
-        /// Waiting to worker thread completion or stop. Usually used for wait to thread completion.
+        /// Checks if the worker is able to execute the given task type.
         /// </summary>
-        public void Stop()
+        /// <param name="taskType"> The type of task to check. </param>
+        /// <returns> True if the worker can execute the task type, otherwise false. </returns>
+        public bool IsAbleToExecute(string taskType)
         {
-            
+            return _taskType.Split(" ").Any(x => x == taskType);
         }
 
         private void WorkRoutine(object? state)
@@ -88,9 +93,9 @@ namespace MediaCloud.TaskScheduler
                 _scheduler.OnTaskErrorOccured.Invoke(Task, ex);
             }
 
-            _scheduler.OnTaskCompleted.Invoke(Task);
-            Task = null;
             IsReady = true;
+
+            _scheduler.OnTaskCompleted.Invoke(Task);
         }
     }
 }

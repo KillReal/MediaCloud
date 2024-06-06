@@ -26,36 +26,32 @@ public class AutocompleteTagsTask : Task, ITask
     public override void DoTheTask(IServiceProvider serviceProvider, IActorProvider actorProvider)
     {
         var context = serviceProvider.GetRequiredService<AppDbContext>();
-        var pictureService = serviceProvider.GetRequiredService<IPictureService>();
         
         var statisticProvider = new StatisticProvider(context, actorProvider);
         var previewRepository = new PreviewRepository(context, statisticProvider, actorProvider);
         var tagRepository = new TagRepository(context, statisticProvider, actorProvider);
-        var autotagService = new AutotagService(pictureService, previewRepository);
+        var autotagService = serviceProvider.GetRequiredService<IAutotagService>();
 
         foreach (var previewId in _previewIds)
         {
-            var tagAliases = autotagService.AutocompleteTagsForImage(previewId);
-            var suggestedTags = tagRepository.GetRangeByAliasString(string.Join(" ", tagAliases));
-
-            if (suggestedTags.Any() == false)
-            {
-                _workCount -= 1;
-                continue;
-            }
+            _workCount -= 1;
             
             var preview = previewRepository.Get(previewId);
 
             if (preview == null)
             {
-                _workCount -= 1;
+                continue;
+            }
+
+            var suggestedTags = autotagService.AutocompleteTagsForImage(preview, tagRepository);
+
+            if (suggestedTags.Any() == false)
+            {
                 continue;
             }
 
             var tags = preview.Tags.Union(suggestedTags).ToList();
             tagRepository.UpdatePreviewLinks(tags, preview);
-
-            _workCount -= 1;
         }
     }
 
