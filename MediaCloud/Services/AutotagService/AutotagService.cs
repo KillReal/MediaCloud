@@ -1,43 +1,74 @@
 ﻿using System.Diagnostics;
+using MediaCloud.Data;
+using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
 using MediaCloud.Services;
+using MediaCloud.WebApp.Controllers;
+using MediaCloud.WebApp.Services.ActorProvider;
+using Microsoft.AspNetCore.Routing.Constraints;
 using NLog;
+using ILogger = NLog.ILogger;
 
 namespace MediaCloud.WebApp;
 
 public class AutotagService : IAutotagService
 {
-    private readonly PreviewRepository _previewRepository;
+    private readonly ILogger _logger = LogManager.GetLogger("AutotagService");
     private readonly IPictureService _pictureService;
 
-    public AutotagService(IPictureService pictureService, PreviewRepository previewRepository)
+    private double _averageExecutionTime = 0;
+
+    public double GetAverageExecutionTime() => _averageExecutionTime;
+
+    public AutotagService(IPictureService pictureService)
     {
-        _previewRepository = previewRepository;
         _pictureService = pictureService;
     }
 
-    public List<string> AutocompleteTagsForImage(Guid previewId)
+    public List<Tag> AutocompleteTagsForImage(Preview preview, TagRepository tagRepository)
     {
-        var preview = _previewRepository.Get(previewId);
-
         if (preview == null)
         {
             return new();
         }
         
         try {
+            var stopwatch = DateTime.Now;
+
+            _logger.Info("Executed AI tag autocompletion for Preview: {previewId}", preview.Id);
             var image = _pictureService.SaveImageToPath(preview.Content, "D:/ref.jpg");
 
             Run("D:/Development/MediaCloud/JoyTag/joytag.py", "");
-            
-            return File.ReadLines("D:/suggested_tags.txt")
+
+            var suggestedTags = File.ReadLines("D:/suggested_tags.txt")
                 .Take(100)
                 .Select(x => x.Split(":")[0])
-                .Where(x => string.IsNullOrWhiteSpace(x) == false).ToList();
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .ToList();
+            var suggestedTagsString = string.Join(" ", suggestedTags);
+
+             var elapsedTime = (DateTime.Now - stopwatch).TotalSeconds;
+
+             if (_averageExecutionTime <= 0.0) {
+                _averageExecutionTime = elapsedTime;
+             }
+             else {
+                _averageExecutionTime = (_averageExecutionTime + elapsedTime) / 2;
+             }
+
+            _logger.Info("AI tag autocompletion for Preview: {previewId} successfully executed within: {elapsedTime} sec, suggested tags: {suggestedTagsString}", 
+                preview.Id, elapsedTime, suggestedTagsString);
+            
+            var actualTags = tagRepository.GetRangeByAliasString(suggestedTagsString);
+            var actualTagsString = string.Join(" ", actualTags.Select(x => x.Name));
+
+            _logger.Info("Existing tags for suggestion: {actualTagsString}", actualTagsString);
+
+            return actualTags;
         }
         catch (Exception ex)
         {
-            LogManager.GetLogger("AutotagService").Error(ex, "Failed to process autotagging for image");
+            _logger.Error(ex, "Failed to process autotagging for image");
             throw;
         }
     }
@@ -52,7 +83,7 @@ public class AutotagService : IAutotagService
         }
         catch (Exception ex)
         {
-            LogManager.GetLogger("AutotagService").Error(ex, "Failed to read tag aliases");
+            _logger.Error(ex, "Failed to read tag aliases");
             return new();
         }
     }

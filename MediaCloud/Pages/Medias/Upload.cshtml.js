@@ -62,19 +62,19 @@ function formSubmit(event) {
                     if (data.queuePosition > 1) {
                         setModalTitle('Waiting queue for processing...');
                     }
-                    else if (data.queuePosition = 0 && data.workCount > 0) {
+                    else if (data.queuePosition == 1) {
                         setModalTitle('Server processing...');
                     }
-                    else if (data.workCount == 0 && data.isInProgress == false) {
+                    else if (data.workCount == 0 && data.isExist) {
+                        setModalTitle('Saving in database...');
+                        showLoadSpinner();
+                    }
+                    else if (data.workCount == 0 && data.isExist == false) {
                         setModalTitle('Media successfully uploaded!');
                         hideModalBody();
                         hideLoadSpinner();
 
                         clearInterval(loadingUpdateInterval);
-                    }
-                    else if (data.workCount == 0) {
-                        setModalTitle('Saving in database...');
-                        showLoadSpinner();
                     }
                 })
         }

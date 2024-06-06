@@ -38,7 +38,7 @@ builder.Services.AddSingleton<IActorProvider, ActorProvider>();
 builder.Services.AddSingleton<ITaskScheduler, MediaCloud.TaskScheduler.TaskScheduler>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<IAutotagService, AutotagService>();
+builder.Services.AddSingleton<IAutotagService, AutotagService>();
 builder.Services.AddScoped<StatisticProvider>();
 builder.Services.AddScoped<ActorRepository>();
 builder.Services.AddScoped<PreviewRepository>();

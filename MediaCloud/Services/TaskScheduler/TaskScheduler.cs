@@ -6,6 +6,7 @@ using MediaCloud.WebApp.Services.ConfigurationProvider;
 using NLog;
 using ILogger = NLog.ILogger;
 using Task = MediaCloud.TaskScheduler.Tasks.Task;
+using MediaCloud.WebApp;
 
 namespace MediaCloud.TaskScheduler
 {
@@ -30,14 +31,23 @@ namespace MediaCloud.TaskScheduler
         public TaskScheduler(IServiceScopeFactory serviceScopeFactory, IConfigProvider configProvider)
         {
             _serviceScopeFactory = serviceScopeFactory;
-            _logger = LogManager.GetLogger("Uploader.Scheduler");
+            _logger = LogManager.GetLogger("Scheduler");
             _workers = new List<Worker>();
             _queue = new Queue();
-            MaxWorkersCount = configProvider.EnvironmentSettings.TaskSchedulerWorkerCount;
-            for (int i = 0; i < MaxWorkersCount; i++)
+
+            var workersCount = configProvider.EnvironmentSettings.TaskSchedulerWorkerCount;
+            for (int i = 0; i < workersCount; i++)
             {
-                _workers.Add(new Worker(_queue, this, _serviceScopeFactory));
+                _workers.Add(new Worker(_queue, this, _serviceScopeFactory, "Task RecalculateTask UploadTask"));
             }
+
+            var autotaggingWorkersCount = configProvider.EnvironmentSettings.TaskSchedulerAutotaggingWorkerCount;
+            for (int i = 0; i < autotaggingWorkersCount; i++)
+            {
+                _workers.Add(new AutotagWorker(_queue, this, _serviceScopeFactory));
+            }
+
+            MaxWorkersCount = _workers.Count;
 
             OnTaskStarted += WorkerStartTask;
             OnTaskCompleted += WorkerCompleteTask;
@@ -46,6 +56,12 @@ namespace MediaCloud.TaskScheduler
             _logger.Debug("Initialized TaskScheduler");
         }
 
+        
+        /// <summary>
+        /// Adds a task to the queue and starts processing the queue.
+        /// </summary>
+        /// <param name="task">The task to be added to the queue.</param>
+        /// <returns>The unique identifier of the added task.</returns>
         public Guid AddTask(Task task)
         {
             _queue.AddTask(task);
@@ -55,7 +71,8 @@ namespace MediaCloud.TaskScheduler
         }
 
         /// <summary>
-        /// Run scheduler. Scheduler check whether queue is empty, and if not tries to run one of free <see cref="Worker"/>.
+        /// Executes the scheduler run process.
+        /// Checks if the queue is empty, and if not, assigns tasks to available workers.
         /// </summary>
         public void Run()
         {
@@ -66,8 +83,14 @@ namespace MediaCloud.TaskScheduler
                 return;
             }
 
-            var worker = _workers.Where(x => x.IsReady).FirstOrDefault();
-            worker?.Run();
+            var taskTypes = _queue.GetWaitingTaskTypes();
+            taskTypes.ForEach(type => 
+            {
+                _workers.Where(worker => worker.IsAbleToExecute(type) && 
+                                                        worker.IsReady)
+                                                    .FirstOrDefault()
+                                                    ?.Run();
+            });
         }
 
         /// <summary>
