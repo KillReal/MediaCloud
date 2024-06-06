@@ -39,6 +39,11 @@
     <Content Update="nlog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\JoyTag\**">
+      <Link>JoyTag\%(RecursiveDir)\%(Filename)%(Extension)</Link>
+      <TargetPath>JoyTag\%(RecursiveDir)\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

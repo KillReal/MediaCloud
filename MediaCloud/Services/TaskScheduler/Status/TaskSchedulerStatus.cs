@@ -12,6 +12,7 @@ namespace MediaCloud.TaskScheduler
         public int MediaCount { get; set; }
         public int WorkersActive { get; set; }
         public int MaxWorkersAvailable { get; set; }
+        public List<TaskStatus> TaskStatuses { get; set; } = new();
 
         public TaskSchedulerStatus(Queue currentQueue, TaskScheduler scheduler)
         {
@@ -19,6 +20,7 @@ namespace MediaCloud.TaskScheduler
             TaskCount = currentQueue.TaskCount;
             WorkersActive = scheduler.BusyWorkersCount;
             MaxWorkersAvailable = scheduler.MaxWorkersCount - WorkersActive;
+            TaskStatuses = currentQueue.GetTaskStatuses();
         }
     }
 }

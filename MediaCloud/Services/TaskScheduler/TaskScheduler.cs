@@ -38,7 +38,13 @@ namespace MediaCloud.TaskScheduler
             var workersCount = configProvider.EnvironmentSettings.TaskSchedulerWorkerCount;
             for (int i = 0; i < workersCount; i++)
             {
-                _workers.Add(new Worker(_queue, this, _serviceScopeFactory, "Task RecalculateTask UploadTask"));
+                var types = new List<Type>() 
+                {
+                    typeof(Task), 
+                    typeof(RecalculateTask), 
+                    typeof(UploadTask)
+                };
+                _workers.Add(new Worker(_queue, this, _serviceScopeFactory, types));
             }
 
             var autotaggingWorkersCount = configProvider.EnvironmentSettings.TaskSchedulerAutotaggingWorkerCount;
@@ -86,10 +92,9 @@ namespace MediaCloud.TaskScheduler
             var taskTypes = _queue.GetWaitingTaskTypes();
             taskTypes.ForEach(type => 
             {
-                _workers.Where(worker => worker.IsAbleToExecute(type) && 
-                                                        worker.IsReady)
-                                                    .FirstOrDefault()
-                                                    ?.Run();
+                _workers.Where(worker => worker.IsAbleToExecute(type) && worker.IsReady)
+                                                .FirstOrDefault()
+                                                ?.Run();
             });
         }
 
@@ -104,21 +109,6 @@ namespace MediaCloud.TaskScheduler
         /// </summary>
         /// <param name="taskId"> Task id. </param>
         /// <returns> <see cref="TaskStatus"/> with task state. </returns>
-        public TaskStatus GetStatus(Guid taskId) 
-        {
-            var tastStatus = new TaskStatus
-            {
-                Id = taskId,
-                IsInProgress = _workers.Where(x => x.Task?.Id == taskId).Any(),
-                QueuePosition = _queue.GetTaskPosition(taskId)
-            };
-            var task = _queue.GetTask(taskId);
-            tastStatus.IsExist = task != null;
-            tastStatus.WorkCount = task == null 
-                ? 0 
-                : task.GetWorkCount();
-
-            return tastStatus;
-        }
+        public TaskStatus GetStatus(Guid taskId) => _queue.GetTaskStatus(taskId);
     }
 }

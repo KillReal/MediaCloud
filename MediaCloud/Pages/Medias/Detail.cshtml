@@ -210,6 +210,16 @@
         modelRotationDegree.value = currentDegree;
     }
 
+     fetch('/Gallery/IsPreviewAutotaggingExecuted?previewId=' + '@Model.PreviewId')
+            .then((response) => response.json())
+            .then(function (data) {
+                if (data == true) {
+                        document.getElementById('autotagButton').disabled = true;
+                        document.getElementById('autotagButton').value = "Autotagging... ";
+                }
+            }
+        )
+
     var modalTitle = document.getElementById('modalTitle');
     var modalBody = document.getElementById("modalBody");
     var loadSpinner = document.getElementById("loadingSpinner");
