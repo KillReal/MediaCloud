@@ -19,10 +19,11 @@ namespace MediaCloud.WebApp.Controllers
         private readonly ITaskScheduler _taskScheduler;
         private readonly IActorProvider _actorProvider;
         private readonly IAutotagService _autotagService;
+        private readonly CollectionRepository _collectionRepository;
 
         public GalleryController(IConfigProvider configProvider, TagRepository tagRepository, 
-            PreviewRepository previewRepository, ITaskScheduler taskScheduler, IActorProvider actorProvider,
-            IAutotagService actorService)
+            PreviewRepository previewRepository, CollectionRepository collectionRepository, 
+            ITaskScheduler taskScheduler, IActorProvider actorProvider, IAutotagService actorService)
         {
             _configProvider = configProvider;
             _tagRepository = tagRepository;
@@ -30,6 +31,7 @@ namespace MediaCloud.WebApp.Controllers
             _taskScheduler = taskScheduler;
             _actorProvider = actorProvider;
             _autotagService = actorService;
+            _collectionRepository = collectionRepository;
         }
 
         public List<string> GetSuggestions(string searchString, int limit = 10)
@@ -104,9 +106,27 @@ namespace MediaCloud.WebApp.Controllers
             return _taskScheduler.AddTask(task);
         }
 
+        public Guid AutocompleteTagForCollection(Guid collectionId)
+        {
+            var previewIds = _collectionRepository.Get(collectionId)?.Previews.Select(x => x.Id).ToList();
+
+            if (previewIds != null && previewIds.Any())
+            {
+                var task = new AutocompleteTagsTask(_actorProvider.GetCurrent(), previewIds);
+                return _taskScheduler.AddTask(task);
+            }
+
+            return Guid.Empty;
+        }
+
         public double GetAverageAutocompleteTagExecution()
         {
             return _autotagService.GetAverageExecutionTime();
+        }
+
+        public bool IsPreviewAutotaggingExecuted(Guid previewId)
+        {
+            return _autotagService.IsPreviewIsProceeded(previewId);
         }
     }
 }

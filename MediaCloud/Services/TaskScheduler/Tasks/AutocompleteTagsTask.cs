@@ -32,18 +32,16 @@ public class AutocompleteTagsTask : Task, ITask
         var tagRepository = new TagRepository(context, statisticProvider, actorProvider);
         var autotagService = serviceProvider.GetRequiredService<IAutotagService>();
 
-        foreach (var previewId in _previewIds)
+        while (_previewIds.Any())
         {
-            _workCount -= 1;
-            
-            var preview = previewRepository.Get(previewId);
+            var preview = previewRepository.Get(_previewIds.First());
 
             if (preview == null)
             {
                 continue;
             }
 
-            var suggestedTags = autotagService.AutocompleteTagsForImage(preview, tagRepository);
+            var suggestedTags = autotagService.AutocompleteTagsForPreview(preview, tagRepository);
 
             if (suggestedTags.Any() == false)
             {
@@ -52,6 +50,8 @@ public class AutocompleteTagsTask : Task, ITask
 
             var tags = preview.Tags.Union(suggestedTags).ToList();
             tagRepository.UpdatePreviewLinks(tags, preview);
+
+            _previewIds.Remove(preview.Id);
         }
     }
 

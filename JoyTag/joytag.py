@@ -5,7 +5,7 @@ from pathlib import Path
 import torch
 import torchvision.transforms.functional as TVF
 
-path = 'D:\Development\MediaCloud\JoyTag\models'  # Change this to where you downloaded the model
+path = './models'  # Change this to where you downloaded the model
 THRESHOLD = 0.4
 
 model = VisionModel.load_model(path)
@@ -44,8 +44,6 @@ def predict(image: Image.Image):
 	batch = {
 		'image': image_tensor.unsqueeze(0).to('cpu'),
 	}
-	
-	#torch.set_num_threads(32)
 
 	with torch.amp.autocast_mode.autocast('cpu', enabled=True, cache_enabled=False):
 		preds = model(batch)
@@ -57,10 +55,10 @@ def predict(image: Image.Image):
 
 	return tag_string, scores
 
-image = Image.open('D:/ref.jpg')
+image = Image.open('./temp.jpg')
 tag_string, scores = predict(image)
 
-with open('D:/suggested_tags.txt', 'w') as f:
+with open('./suggested_tags.txt', 'w') as f:
 	for tag, score in sorted(scores.items(), key=lambda x: x[1], reverse=True):
 		if score > 0.35:
 			print(f'{tag}: {score:.3f}', file=f)

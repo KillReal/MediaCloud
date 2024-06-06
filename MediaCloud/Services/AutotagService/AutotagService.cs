@@ -5,6 +5,7 @@ using MediaCloud.Repositories;
 using MediaCloud.Services;
 using MediaCloud.WebApp.Controllers;
 using MediaCloud.WebApp.Services.ActorProvider;
+using MediaCloud.WebApp.Services.ConfigurationProvider;
 using Microsoft.AspNetCore.Routing.Constraints;
 using NLog;
 using ILogger = NLog.ILogger;
@@ -16,16 +17,27 @@ public class AutotagService : IAutotagService
     private readonly ILogger _logger = LogManager.GetLogger("AutotagService");
     private readonly IPictureService _pictureService;
 
+    private readonly List<Guid> _proceededPreviewIds = new();
+
     private double _averageExecutionTime = 0;
+    private string _tempFilePath;
+    private string _joyTagExecutionPath;
+    private string _joyTagTagsPath;
+    private string _pythonPath;
 
     public double GetAverageExecutionTime() => _averageExecutionTime;
 
-    public AutotagService(IPictureService pictureService)
+    public AutotagService(IPictureService pictureService, IConfigProvider configProvider)
     {
         _pictureService = pictureService;
+
+        _tempFilePath = configProvider.EnvironmentSettings.PreviewAiAutotagProcessingPath ?? "./temp.jpg";
+        _joyTagExecutionPath = configProvider.EnvironmentSettings.AiJoyTagExecutionPath ?? "./JoyTag/joytag.py";
+        _joyTagTagsPath = configProvider.EnvironmentSettings.AiJoyTagTagsPath ?? "./JoyTag/models/top_tags.txt";
+        _pythonPath = configProvider.EnvironmentSettings.PythonPath ?? "python3";
     }
 
-    public List<Tag> AutocompleteTagsForImage(Preview preview, TagRepository tagRepository)
+    public List<Tag> AutocompleteTagsForPreview(Preview preview, TagRepository tagRepository)
     {
         if (preview == null)
         {
@@ -34,13 +46,14 @@ public class AutotagService : IAutotagService
         
         try {
             var stopwatch = DateTime.Now;
+            _proceededPreviewIds.Add(preview.Id);
 
             _logger.Info("Executed AI tag autocompletion for Preview: {previewId}", preview.Id);
-            var image = _pictureService.SaveImageToPath(preview.Content, "D:/ref.jpg");
+            var image = _pictureService.SaveImageToPath(preview.Content, _tempFilePath + "/temp.jpg");
 
-            Run("D:/Development/MediaCloud/JoyTag/joytag.py", "");
+            Run(_joyTagExecutionPath, "");
 
-            var suggestedTags = File.ReadLines("D:/suggested_tags.txt")
+            var suggestedTags = File.ReadLines(_tempFilePath + "/suggested_tags.txt")
                 .Take(100)
                 .Select(x => x.Split(":")[0])
                 .Where(x => !string.IsNullOrWhiteSpace(x))
@@ -64,6 +77,8 @@ public class AutotagService : IAutotagService
 
             _logger.Info("Existing tags for suggestion: {actualTagsString}", actualTagsString);
 
+            _proceededPreviewIds.Remove(preview.Id);
+
             return actualTags;
         }
         catch (Exception ex)
@@ -76,7 +91,7 @@ public class AutotagService : IAutotagService
     public List<string> GetSuggestionsByString(string searchString, int limit = 10)
     {
         try {
-            return File.ReadLines("D:/Development/MediaCloud/JoyTag/models/top_tags.txt")
+            return File.ReadLines(_joyTagTagsPath)
                 .Where(x => x.ToLower().StartsWith(searchString.ToLower()))
                 .Take(limit)
                 .ToList();
@@ -88,11 +103,16 @@ public class AutotagService : IAutotagService
         }
     }
 
+    public bool IsPreviewIsProceeded(Guid previewId)
+    {
+        return _proceededPreviewIds.Exists(x => x == previewId);
+    }
+
     private void Run(string cmd, string args)
     {
         ProcessStartInfo info = new()
         {
-            FileName = "C:/Users/rtimo/AppData/Local/Microsoft/WindowsApps/python3.11.exe",
+            FileName = _pythonPath,
             Arguments = string.Format("\"{0}\" \"{1}\"", cmd, args),
             UseShellExecute = false,// Do not use OS shell
             CreateNoWindow = false, // We don't need new window
@@ -100,6 +120,6 @@ public class AutotagService : IAutotagService
             RedirectStandardError = true // Any error in standard output will be redirected back (for example exceptions)
         };
 
-        Process.Start(info).WaitForExit();
+        Process.Start(info)?.WaitForExit();
     }
 }

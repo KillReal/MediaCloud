@@ -17,7 +17,7 @@ namespace MediaCloud.TaskScheduler
     /// </summary>
     public class Worker
     {
-        private readonly string _taskType;
+        private readonly List<Type> _taskTypes;
         private readonly Queue _queue;
         private readonly TaskScheduler _scheduler;
         private readonly IServiceScopeFactory _serviceScopeFactory;
@@ -33,17 +33,33 @@ namespace MediaCloud.TaskScheduler
         public bool IsReady { get; private set; } = true;
 
         /// <summary>
-        /// Initilize worker instance.
+        /// Initializes a new instance of the <see cref="Worker"/> class.
         /// </summary>
-        /// <param name="queue"> Current <see cref="Queue"/>. </param>
-        /// <param name="scheduler"> Current <see cref="TaskScheduler"/>. </param>
-        /// <param name="dataService"> Current data service <seealso cref="IDataService"/>. </param>
-        public Worker(Queue queue, TaskScheduler scheduler, IServiceScopeFactory serviceScopeFactory, string taskType) 
+        /// <param name="queue">The queue from which tasks will be dequeued.</param>
+        /// <param name="scheduler">The task scheduler responsible for managing the execution of tasks.</param>
+        /// <param name="serviceScopeFactory">The service scope factory used to create scopes for task execution.</param>
+        /// <param name="taskTypes">The types of tasks that this worker is able to execute.</param>
+        public Worker(Queue queue, TaskScheduler scheduler, IServiceScopeFactory serviceScopeFactory, List<Type> taskTypes)
         {
             _queue = queue;
             _scheduler = scheduler;
             _serviceScopeFactory = serviceScopeFactory;
-            _taskType = taskType;
+            _taskTypes = taskTypes;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Worker"/> class.
+        /// </summary>
+        /// <param name="queue">The queue from which tasks will be dequeued.</param>
+        /// <param name="scheduler">The task scheduler responsible for managing the execution of tasks.</param>
+        /// <param name="serviceScopeFactory">The service scope factory used to create scopes for task execution.</param>
+        /// <param name="taskType">The types of tasks that this worker is able to execute.</param>
+        public Worker(Queue queue, TaskScheduler scheduler, IServiceScopeFactory serviceScopeFactory, Type taskType)
+        {
+            _queue = queue;
+            _scheduler = scheduler;
+            _serviceScopeFactory = serviceScopeFactory;
+            _taskTypes = new() { taskType };
         }
 
         /// <summary>
@@ -51,7 +67,7 @@ namespace MediaCloud.TaskScheduler
         /// </summary>
         public void Run()
         {
-            Task = _queue.GetNextTask(_taskType);
+            Task = _queue.GetNextTask(_taskTypes);
 
             if (Task == null)
             {
@@ -66,9 +82,9 @@ namespace MediaCloud.TaskScheduler
         /// </summary>
         /// <param name="taskType"> The type of task to check. </param>
         /// <returns> True if the worker can execute the task type, otherwise false. </returns>
-        public bool IsAbleToExecute(string taskType)
+        public bool IsAbleToExecute(Type taskType)
         {
-            return _taskType.Split(" ").Any(x => x == taskType);
+            return _taskTypes.Any(x => x == taskType);
         }
 
         private void WorkRoutine(object? state)

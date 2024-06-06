@@ -27,7 +27,7 @@ Todo:
 - Show first uploaded image on uploade page
 - Update zabbix metrics from Uploader to TaskScheduler
 - Review creator updator linking when updating entities.
-- Fix TaskScheduler queue, next task won't run immediately after previous one
+- Add check is task executed or queued before adding to queue
 
 # Changelog				   
 
