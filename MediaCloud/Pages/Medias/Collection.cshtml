@@ -138,6 +138,37 @@
             </div>
         </div>
     </form>
+
+      <div class="modal text-black" id="loadingModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">
+                        Tag autocompletion in progress...
+                    </h5>
+                    <div class="spinner-border text-primary" role="status" id="loadingSpinner" style="display: block">
+                    </div>
+                </div>
+                <div class="modal-body" id="modalBody">
+                    <div class="mb-1">
+                        <label class="col-form-label" id ="executionTime">
+                            It's may take some time...
+                        </label>
+                    </div>
+                    <div class="mb-1">
+                        <label class="col-form-label" id="progress">
+                            Progress: 0%
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-primary" onclick="hideModalBody()">
+                        Close
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
     
 </div>
 
