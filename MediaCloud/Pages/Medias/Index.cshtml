@@ -179,8 +179,6 @@
     var currentOffset = @Model.ListBuilder.Pagination.Offset;
     var nextOffset = @Model.ListBuilder.Pagination.Offset + @Model.ListBuilder.Pagination.Count;
 
-    enrichGallery();
-
     if (isAutoLoadingEnabled) {
         window.addEventListener("scroll", function(e) {
             if ((window.innerHeight + window.scrollY + 2000) >= document.body.offsetHeight) {
