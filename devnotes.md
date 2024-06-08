@@ -28,6 +28,7 @@ Todo:
 - Update zabbix metrics from Uploader to TaskScheduler
 - Review creator updator linking when updating entities.
 - Add check is task executed or queued before adding to queue
+- Remove unnecessary dependencies in python .venv on prod
 
 # Changelog				   
 
