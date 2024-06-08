@@ -60,14 +60,16 @@ public class AutotagService : IAutotagService
                 .ToList();
             var suggestedTagsString = string.Join(" ", suggestedTags);
 
-             var elapsedTime = (DateTime.Now - stopwatch).TotalSeconds;
+            var elapsedTime = (DateTime.Now - stopwatch).TotalSeconds;
 
-             if (_averageExecutionTime <= 0.0) {
+            if (_averageExecutionTime <= 0.0) 
+            {
                 _averageExecutionTime = elapsedTime;
-             }
-             else {
+            }
+            else 
+            {
                 _averageExecutionTime = (_averageExecutionTime + elapsedTime) / 2;
-             }
+            }
 
             _logger.Info("AI tag autocompletion for Preview: {previewId} successfully executed within: {elapsedTime} sec, suggested tags: {suggestedTagsString}", 
                 preview.Id, elapsedTime, suggestedTagsString);
@@ -84,7 +86,41 @@ public class AutotagService : IAutotagService
         catch (Exception ex)
         {
             _logger.Error(ex, "Failed to process autotagging for image");
-            throw;
+            return new();
+        }
+    }
+
+    public List<Tag> AutocompleteTagsForCollection(Collection collection, TagRepository tagRepository)
+    {
+        if (collection == null || collection.Previews.Any() == false)
+        {
+            return new();
+        }
+
+        try {
+            var stopwatch = DateTime.Now;
+            _proceededPreviewIds.AddRange(collection.Previews.Select(x => x.Id));
+
+            _logger.Info("Executed AI tag autocompletion for Collection: {collection.Id}", collection.Id);
+
+            List<Tag> tags = new();
+
+            foreach(var preview in collection.Previews)
+            {
+                tags = tags.Union(AutocompleteTagsForPreview(preview, tagRepository)).ToList();
+            }
+            
+            var elapsedTime = (DateTime.Now - stopwatch).TotalSeconds;
+            var tagsString = string.Join(" ", tags.Select(x => x.Name));
+
+            _logger.Info("AI tag autocompletion for Preview: {previewId} successfully executed within: {elapsedTime} sec, suggested tags: {suggestedTagsString}", 
+                collection.Id, elapsedTime, tagsString);
+            return tags;
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Failed to process autotagging for image");
+            return new();
         }
     }
 

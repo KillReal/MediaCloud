@@ -210,15 +210,26 @@
         modelRotationDegree.value = currentDegree;
     }
 
-     fetch('/Gallery/IsPreviewAutotaggingExecuted?previewId=' + '@Model.PreviewId')
-            .then((response) => response.json())
-            .then(function (data) {
-                if (data == true) {
-                        document.getElementById('autotagButton').disabled = true;
-                        document.getElementById('autotagButton').value = "Autotagging... ";
-                }
+    fetch('/Gallery/IsPreviewAutotaggingExecuted?previewId=' + '@Model.PreviewId')
+        .then((response) => response.json())
+        .then(function (data) {
+            if (data == true) {
+                    document.getElementById('autotagButton').disabled = true;
+                    document.getElementById('autotagButton').value = "Autotagging... ";
             }
-        )
+        }
+    )
+
+    var averageExecutionTime = 45.0;
+
+    fetch('/Gallery/GetAverageAutocompleteTagExecution')
+        .then((response) => response.json())
+        .then(function (data) {
+            if (data > 0) {
+                averageExecutionTime = data;
+            }
+        }
+    )
 
     var modalTitle = document.getElementById('modalTitle');
     var modalBody = document.getElementById("modalBody");
@@ -252,7 +263,6 @@
         loadSpinner.style.display = "none";
     }
 
-    var averageExecutionTime = 45.0;
     var timerCounter = 0;
     var updateInterval = 3000;
 
@@ -263,15 +273,6 @@
         var request = new XMLHttpRequest();
         request.open('POST', url, true);
         request.onload = function() { // request successful
-            
-            fetch('/Gallery/GetAverageAutocompleteTagExecution')
-                .then((response) => response.json())
-                .then(function (data) {
-                    if (data > 0) {
-                        averageExecutionTime = data;
-                    }
-                }
-            )
             setModalTitle('Waiting queue for processing...');
             showModalBody();
             var data = JSON.parse(request.response);

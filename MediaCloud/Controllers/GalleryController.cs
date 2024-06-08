@@ -128,5 +128,25 @@ namespace MediaCloud.WebApp.Controllers
         {
             return _autotagService.IsPreviewIsProceeded(previewId);
         }
+
+        public bool IsCollectionAutotaggingExecuted(Guid collectionId)
+        {
+            var previewIds = _collectionRepository.Get(collectionId)?.Previews.Select(x => x.Id).ToList();
+
+            if (previewIds == null || previewIds.Any() == false)
+            {
+                return false;
+            }
+
+            foreach (var previewId in previewIds)
+            {
+               if (_autotagService.IsPreviewIsProceeded(previewId))
+               {
+                    return true;
+               }
+            }
+
+            return false;
+        }
     }
 }
