@@ -22,6 +22,7 @@ namespace MediaCloud.WebApp.Services.ActorProvider
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly AppDbContext _context;
         private IMemoryCache _memoryCache;
+        private Mutex _mutex = new();
 
         private MemoryCacheEntryOptions _memoryCacheOptions;
 
@@ -60,8 +61,12 @@ namespace MediaCloud.WebApp.Services.ActorProvider
                 return actor;
             }
 
+            _mutex.WaitOne();
+
             var cachedActor = _context.Actors.First(x => x.Name == identity.Name);
             _memoryCache.Set(identity.Name, cachedActor, _memoryCacheOptions);
+
+            _mutex.ReleaseMutex();
 
             return cachedActor;
         }

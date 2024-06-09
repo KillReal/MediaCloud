@@ -4,8 +4,19 @@ import torch.amp.autocast_mode
 from pathlib import Path
 import torch
 import torchvision.transforms.functional as TVF
+import web
+import json
+import os
+import base64
+from io import BytesIO
 
-path = './models'  # Change this to where you downloaded the model
+urls = (
+	'/predictTags', 'predictTags',
+	'/suggestedTags', 'suggestedTags'
+)
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
+path = dir_path + '/models'  # Change this to where you downloaded the model
 THRESHOLD = 0.4
 
 model = VisionModel.load_model(path)
@@ -14,6 +25,36 @@ model = model.to('cpu')
 
 with open(Path(path) / 'top_tags.txt', 'r') as f:
 	top_tags = [line.strip() for line in f.readlines() if line.strip()]
+
+if __name__ == "__main__":
+    app = web.application(urls, globals())
+    app.run()
+
+class suggestedTags:
+	def POST(self):
+		data = json.loads(web.data())
+		searchString = str(data["searchString"])
+		limit = int(data["limit"])
+
+		return [i for i in top_tags if i.startswith(searchString)][:limit]
+
+class predictTags:
+	def GET(self, name):
+		return "true"
+	def POST(self):
+		data = json.loads(web.data())
+		value = str.encode(data["image"])
+		image = Image.open(BytesIO(base64.decodebytes(value)))
+		tag_string, scores = predict(image)
+
+		result = ''
+
+		with open('./suggested_tags.txt', 'w') as f:
+			for tag, score in sorted(scores.items(), key=lambda x: x[1], reverse=True):
+				if score > 0.35:
+					result += f'{tag}: {score:.3f}\n'
+
+		return result
 
 def prepare_image(image: Image.Image, target_size: int) -> torch.Tensor:
 	# Pad image to square
@@ -54,11 +95,3 @@ def predict(image: Image.Image):
 	tag_string = ', '.join(predicted_tags)
 
 	return tag_string, scores
-
-image = Image.open('./temp.jpg')
-tag_string, scores = predict(image)
-
-with open('./suggested_tags.txt', 'w') as f:
-	for tag, score in sorted(scores.items(), key=lambda x: x[1], reverse=True):
-		if score > 0.35:
-			print(f'{tag}: {score:.3f}', file=f)

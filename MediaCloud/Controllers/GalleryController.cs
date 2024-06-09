@@ -101,27 +101,36 @@ namespace MediaCloud.WebApp.Controllers
 
         public Guid AutocompleteTagForMedia(Guid previewId)
         {
-            var task = new AutocompleteTagsTask(_actorProvider.GetCurrent(), new() { previewId });
+            var task = new AutotagPreviewTask(_actorProvider.GetCurrent(), new() { previewId });
 
             return _taskScheduler.AddTask(task);
         }
 
         public Guid AutocompleteTagForCollection(Guid collectionId)
         {
-            var previewIds = _collectionRepository.Get(collectionId)?.Previews.Select(x => x.Id).ToList();
+            var task = new AutotagCollectionTask(_actorProvider.GetCurrent(), collectionId);
 
-            if (previewIds != null && previewIds.Any())
-            {
-                var task = new AutocompleteTagsTask(_actorProvider.GetCurrent(), previewIds);
-                return _taskScheduler.AddTask(task);
-            }
-
-            return Guid.Empty;
+            return _taskScheduler.AddTask(task);
         }
 
         public double GetAverageAutocompleteTagExecution()
         {
             return _autotagService.GetAverageExecutionTime();
+        }
+
+        public double GetAverageAutocompleteTagForCollectionExecution(int previewsCount)
+        {
+            var duration = _autotagService.GetAverageExecutionTime();
+            var parallelDegree = _configProvider.EnvironmentSettings.TaskSchedulerAutotaggingWorkerCount / 2;
+
+            var batchCount = previewsCount / parallelDegree;
+
+            if (batchCount < 1)
+            {
+                batchCount = 1;
+            }
+
+            return duration * batchCount;
         }
 
         public bool IsPreviewAutotaggingExecuted(Guid previewId)
