@@ -1,4 +1,7 @@
-﻿using System.Diagnostics;
+﻿using System.Buffers.Text;
+using System.Diagnostics;
+using System.Net;
+using System.Net.Http.Headers;
 using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
@@ -7,6 +10,8 @@ using MediaCloud.WebApp.Controllers;
 using MediaCloud.WebApp.Services.ActorProvider;
 using MediaCloud.WebApp.Services.ConfigurationProvider;
 using Microsoft.AspNetCore.Routing.Constraints;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using NLog;
 using ILogger = NLog.ILogger;
 
@@ -15,29 +20,23 @@ namespace MediaCloud.WebApp;
 public class AutotagService : IAutotagService
 {
     private readonly ILogger _logger = LogManager.GetLogger("AutotagService");
-    private readonly IPictureService _pictureService;
-
     private readonly List<Guid> _proceededPreviewIds = new();
+    private static readonly HttpClient _httpClient = new();
+    private Mutex _mutex = new();
 
     private double _averageExecutionTime = 0;
-    private string _tempFilePath;
-    private string _joyTagExecutionPath;
-    private string _joyTagTagsPath;
-    private string _pythonPath;
+    private string _joyTagConnectionString;
 
     public double GetAverageExecutionTime() => _averageExecutionTime;
 
-    public AutotagService(IPictureService pictureService, IConfigProvider configProvider)
+    public AutotagService(IConfigProvider configProvider)
     {
-        _pictureService = pictureService;
-
-        _tempFilePath = configProvider.EnvironmentSettings.PreviewAiAutotagProcessingPath ?? "./temp.jpg";
-        _joyTagExecutionPath = configProvider.EnvironmentSettings.AiJoyTagExecutionPath ?? "./JoyTag/joytag.py";
-        _joyTagTagsPath = configProvider.EnvironmentSettings.AiJoyTagTagsPath ?? "./JoyTag/models/top_tags.txt";
-        _pythonPath = configProvider.EnvironmentSettings.PythonPath ?? "python3";
+        _joyTagConnectionString = configProvider.EnvironmentSettings.AiJoyTagConnectionString ?? 
+            throw new Exception("AI JoyTag Connection String is not set");
     }
 
-    public List<Tag> AutocompleteTagsForPreview(Preview preview, TagRepository tagRepository)
+    public List<Tag> AutocompleteTagsForPreview(Preview preview, TagRepository tagRepository, 
+        bool isParallel = false)
     {
         if (preview == null)
         {
@@ -49,15 +48,25 @@ public class AutotagService : IAutotagService
             _proceededPreviewIds.Add(preview.Id);
 
             _logger.Info("Executed AI tag autocompletion for Preview: {previewId}", preview.Id);
-            var image = _pictureService.SaveImageToPath(preview.Content, _tempFilePath + "/temp.jpg");
 
-            Run(_joyTagExecutionPath, "");
+            object data = new
+            {
+                image = preview.Content
+            };
 
-            var suggestedTags = File.ReadLines(_tempFilePath + "/suggested_tags.txt")
+            var result = Post("predictTags", data);
+
+            if (string.IsNullOrWhiteSpace(result))
+            {
+                return new();
+            }
+
+            var suggestedTags = result.Split("\n")
                 .Take(100)
                 .Select(x => x.Split(":")[0])
                 .Where(x => !string.IsNullOrWhiteSpace(x))
                 .ToList();
+                
             var suggestedTagsString = string.Join(" ", suggestedTags);
 
             var elapsedTime = (DateTime.Now - stopwatch).TotalSeconds;
@@ -74,7 +83,18 @@ public class AutotagService : IAutotagService
             _logger.Info("AI tag autocompletion for Preview: {previewId} successfully executed within: {elapsedTime} sec, suggested tags: {suggestedTagsString}", 
                 preview.Id, elapsedTime, suggestedTagsString);
             
+            if (isParallel)
+            {
+                _mutex.WaitOne();
+            }
+
             var actualTags = tagRepository.GetRangeByAliasString(suggestedTagsString);
+
+            if (isParallel)
+            {
+                _mutex.ReleaseMutex();
+            }
+
             var actualTagsString = string.Join(" ", actualTags.Select(x => x.Name));
 
             _logger.Info("Existing tags for suggestion: {actualTagsString}", actualTagsString);
@@ -90,7 +110,8 @@ public class AutotagService : IAutotagService
         }
     }
 
-    public List<Tag> AutocompleteTagsForCollection(Collection collection, TagRepository tagRepository)
+    public List<Tag> AutocompleteTagsForCollection(Collection collection, TagRepository tagRepository, 
+        int parallelDegree = 1)
     {
         if (collection == null || collection.Previews.Any() == false)
         {
@@ -99,16 +120,17 @@ public class AutotagService : IAutotagService
 
         try {
             var stopwatch = DateTime.Now;
-            _proceededPreviewIds.AddRange(collection.Previews.Select(x => x.Id));
 
             _logger.Info("Executed AI tag autocompletion for Collection: {collection.Id}", collection.Id);
 
             List<Tag> tags = new();
 
-            foreach(var preview in collection.Previews)
+            var options = new ParallelOptions { MaxDegreeOfParallelism = parallelDegree };
+            Parallel.ForEach(collection.Previews, options, preview => 
             {
-                tags = tags.Union(AutocompleteTagsForPreview(preview, tagRepository)).ToList();
-            }
+                tags = tags.Union(AutocompleteTagsForPreview(preview, tagRepository, parallelDegree > 1))
+                            .ToList();
+            });
             
             var elapsedTime = (DateTime.Now - stopwatch).TotalSeconds;
             var tagsString = string.Join(" ", tags.Select(x => x.Name));
@@ -126,15 +148,26 @@ public class AutotagService : IAutotagService
 
     public List<string> GetSuggestionsByString(string searchString, int limit = 10)
     {
-        try {
-            return File.ReadLines(_joyTagTagsPath)
-                .Where(x => x.ToLower().StartsWith(searchString.ToLower()))
-                .Take(limit)
-                .ToList();
+        try 
+        {
+            object data = new
+            {
+                searchString,
+                limit
+            };
+
+            var result = Post("suggestedTags", data);
+
+             if (string.IsNullOrWhiteSpace(result))
+            {
+                return new();
+            }
+
+            return result.Split("\n").ToList();
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to read tag aliases");
+            _logger.Error(ex, "Failed to get tag aliases");
             return new();
         }
     }
@@ -144,18 +177,24 @@ public class AutotagService : IAutotagService
         return _proceededPreviewIds.Exists(x => x == previewId);
     }
 
-    private void Run(string cmd, string args)
+    private string Post(string method, object data)
     {
-        ProcessStartInfo info = new()
-        {
-            FileName = _pythonPath,
-            Arguments = string.Format("\"{0}\" \"{1}\"", cmd, args),
-            UseShellExecute = false,// Do not use OS shell
-            CreateNoWindow = false, // We don't need new window
-            RedirectStandardOutput = true,// Any output, generated by application will be redirected back
-            RedirectStandardError = true // Any error in standard output will be redirected back (for example exceptions)
-        };
+        var content = JsonConvert.SerializeObject(data);
+        var buffer = System.Text.Encoding.UTF8.GetBytes(content);
+        var contentBytes = new ByteArrayContent(buffer);
 
-        Process.Start(info)?.WaitForExit();
+        contentBytes.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+        var response = _httpClient.PostAsync(_joyTagConnectionString + "/" + method, contentBytes);
+        var result = response.GetAwaiter().GetResult();
+
+        if (result.StatusCode != HttpStatusCode.OK)
+        {
+            return string.Empty;
+        }
+
+        return result.Content.ReadAsStringAsync()
+                                .GetAwaiter()
+                                .GetResult();
     }
 }

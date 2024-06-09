@@ -46,4 +46,8 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Remove="..\JoyTag\suggested_tags.txt" />
+  </ItemGroup>
+
 </Project>

@@ -29,6 +29,7 @@ Todo:
 - Review creator updator linking when updating entities.
 - Add check is task executed or queued before adding to queue
 - Remove unnecessary dependencies in python .venv on prod
+- Implement in task time execution measuring
 
 # Changelog				   
 

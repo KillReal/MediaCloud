@@ -257,11 +257,11 @@
 
     var averageExecutionTime = 45.0 * @Model.TotalCount;
 
-    fetch('/Gallery/GetAverageAutocompleteTagExecution')
+    fetch('/Gallery/GetAverageAutocompleteTagForCollectionExecution?previewsCount=' + @Model.TotalCount)
         .then((response) => response.json())
         .then(function (data) {
             if (data > 0) {
-                averageExecutionTime = data * @Model.TotalCount;
+                averageExecutionTime = data;
             }
         }
     )
@@ -302,7 +302,6 @@
     var updateInterval = 3000;
 
     function autocompleteTags(collectionId) {
-        
         var url = "/Gallery/AutocompleteTagForCollection?collectionId=" + collectionId;
 
         var request = new XMLHttpRequest();

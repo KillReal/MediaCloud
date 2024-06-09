@@ -10,19 +10,19 @@ using Task = MediaCloud.TaskScheduler.Tasks.Task;
 
 namespace MediaCloud.WebApp;
 
-public class AutocompleteTagsTask : Task, ITask
+public class AutotagPreviewTask : Task, ITask
 {
+    private Guid _collectionId = Guid.Empty;
     private List<Guid> _previewIds = new();
     private int _workCount;
     
     public override int GetWorkCount() => _workCount;
 
-    public AutocompleteTagsTask(Actor actor, List<Guid> previewsIds) : base(actor)
+    public AutotagPreviewTask(Actor actor, List<Guid> previewsIds) : base(actor)
     {
         _previewIds = previewsIds;
         _workCount = _previewIds.Count;
     }
-
     public override void DoTheTask(IServiceProvider serviceProvider, IActorProvider actorProvider)
     {
         var context = serviceProvider.GetRequiredService<AppDbContext>();
@@ -38,20 +38,19 @@ public class AutocompleteTagsTask : Task, ITask
 
             if (preview == null)
             {
+                _previewIds.Remove(_previewIds.First());
                 continue;
             }
 
             var suggestedTags = autotagService.AutocompleteTagsForPreview(preview, tagRepository);
 
-            if (suggestedTags.Any() == false)
+            if (suggestedTags.Any())
             {
-                continue;
+                var tags = preview.Tags.Union(suggestedTags).ToList();
+                tagRepository.UpdatePreviewLinks(tags, preview);
             }
 
-            var tags = preview.Tags.Union(suggestedTags).ToList();
-            tagRepository.UpdatePreviewLinks(tags, preview);
-
-            _previewIds.Remove(preview.Id);
+            _previewIds.Remove(_previewIds.First());
         }
     }
 
