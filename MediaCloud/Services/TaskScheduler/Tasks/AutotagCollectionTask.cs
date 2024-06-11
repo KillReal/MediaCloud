@@ -12,11 +12,21 @@ namespace MediaCloud.WebApp;
 
 public class AutotagCollectionTask : Task, ITask
 {
-    private Guid _collectionId = Guid.Empty;
-    private int _parallelMaxDegree = 1;
-    private int _workCount;
-    
-    public override int GetWorkCount() => _workCount;
+    private readonly Guid _collectionId = Guid.Empty;
+    private double _aproximateExecutionTime;
+
+    public override int GetWorkCount() 
+    {
+        if (ExecutedAt == DateTime.MinValue)
+        {
+            return 0;
+        }
+
+        var time = (DateTime.Now - ExecutedAt).Seconds;
+        var progress = (double)(time / _aproximateExecutionTime) * 100;
+
+        return (int)Math.Clamp(progress, 0, 100);
+    }
 
     public AutotagCollectionTask(Actor actor, Guid collectionId) : base(actor)
     {
@@ -32,8 +42,6 @@ public class AutotagCollectionTask : Task, ITask
         var autotagService = serviceProvider.GetRequiredService<IAutotagService>();
         var configProvider = serviceProvider.GetRequiredService<IConfigProvider>();
 
-        _parallelMaxDegree = configProvider.EnvironmentSettings.TaskSchedulerAutotaggingWorkerCount / 2;
-
         var collection = collectionRepository.Get(_collectionId);
         var titlePreview = collection?.Previews.FirstOrDefault(p => p.Order == 0);
 
@@ -42,9 +50,10 @@ public class AutotagCollectionTask : Task, ITask
             var previews = collection.Previews.ToList();
             var tags = new List<Tag>();
 
-            _workCount = previews.Count;
+            _aproximateExecutionTime = autotagService.GetAverageExecutionTime(previews.Count);
 
-            tags = autotagService.AutocompleteTagsForCollection(collection, tagRepository, _parallelMaxDegree);           
+            ExecutedAt = DateTime.Now;
+            tags = autotagService.AutocompleteTagsForCollection(collection.Previews, tagRepository);           
             tagRepository.UpdatePreviewLinks(tags, titlePreview);
         }
     }

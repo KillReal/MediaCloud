@@ -12,16 +12,26 @@ namespace MediaCloud.WebApp;
 
 public class AutotagPreviewTask : Task, ITask
 {
-    private Guid _collectionId = Guid.Empty;
-    private List<Guid> _previewIds = new();
-    private int _workCount;
+    private readonly List<Guid> _previewIds = new();
+    private double _aproximateExecutionTime;
     
-    public override int GetWorkCount() => _workCount;
+    public override int GetWorkCount() 
+    {
+        if (ExecutedAt == DateTime.MinValue)
+        {
+            return 0;
+        }
 
-    public AutotagPreviewTask(Actor actor, List<Guid> previewsIds) : base(actor)
+        var time = (DateTime.Now - ExecutedAt).TotalSeconds;
+        var progress = (double)(time / _aproximateExecutionTime) * 100;
+
+        return (int)Math.Clamp(progress, 0, 100);
+    }
+
+    public AutotagPreviewTask(Actor actor, List<Guid> previewsIds) 
+        : base(actor)
     {
         _previewIds = previewsIds;
-        _workCount = _previewIds.Count;
     }
     public override void DoTheTask(IServiceProvider serviceProvider, IActorProvider actorProvider)
     {
@@ -34,6 +44,7 @@ public class AutotagPreviewTask : Task, ITask
 
         while (_previewIds.Any())
         {
+            _aproximateExecutionTime = autotagService.GetAverageExecutionTime();
             var preview = previewRepository.Get(_previewIds.First());
 
             if (preview == null)
@@ -42,6 +53,7 @@ public class AutotagPreviewTask : Task, ITask
                 continue;
             }
 
+            ExecutedAt = DateTime.Now;
             var suggestedTags = autotagService.AutocompleteTagsForPreview(preview, tagRepository);
 
             if (suggestedTags.Any())

@@ -28,7 +28,6 @@ builder.Host.UseNLog();
 builder.Services.AddRazorPages();
 builder.Services.AddDbContext<AppDbContext>(options => 
 {
-    options.EnableSensitiveDataLogging();
     options.UseNpgsql(builder.Configuration.GetConnectionString("Database"));
 });
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);

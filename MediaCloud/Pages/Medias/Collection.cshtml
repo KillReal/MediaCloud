@@ -317,18 +317,7 @@
                 fetch(url)
                     .then((response) => response.json())
                     .then(function (data) {
-
-                        var progress = 0;
-
-                        if (progress < 99)
-                        {
-                            progress = ((timerCounter / 1000) / averageExecutionTime) * 100;
-                        }
-
-                        if (progress > 99)
-                        {
-                            progress = 99;
-                        }
+                        var progress = data.workCount;
 
                         if (data.queuePosition > 1) {
                             setModalTitle('Waiting queue for processing...');
