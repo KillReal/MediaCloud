@@ -120,17 +120,7 @@ namespace MediaCloud.WebApp.Controllers
 
         public double GetAverageAutocompleteTagForCollectionExecution(int previewsCount)
         {
-            var duration = _autotagService.GetAverageExecutionTime();
-            var parallelDegree = _configProvider.EnvironmentSettings.TaskSchedulerAutotaggingWorkerCount / 2;
-
-            var batchCount = previewsCount / parallelDegree;
-
-            if (batchCount < 1)
-            {
-                batchCount = 1;
-            }
-
-            return duration * batchCount;
+            return _autotagService.GetAverageExecutionTime(previewsCount);
         }
 
         public bool IsPreviewAutotaggingExecuted(Guid previewId)

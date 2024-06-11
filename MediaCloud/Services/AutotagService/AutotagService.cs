@@ -21,22 +21,45 @@ public class AutotagService : IAutotagService
 {
     private readonly ILogger _logger = LogManager.GetLogger("AutotagService");
     private readonly List<Guid> _proceededPreviewIds = new();
-    private static readonly HttpClient _httpClient = new();
-    private Mutex _mutex = new();
+    private readonly HttpClient _httpClient;
+    private readonly Mutex _mutex = new();
+    private readonly Semaphore _semaphore;
 
-    private double _averageExecutionTime = 0;
+    private int _maxParralelDegree = 1;
+    private double? _averageExecutionTime = null;
     private string _joyTagConnectionString;
 
-    public double GetAverageExecutionTime() => _averageExecutionTime;
+    public double GetAverageExecutionTime() => _averageExecutionTime ?? 45.0;
+
+    public double GetAverageExecutionTime(int previewsCount) 
+    {
+        var batchCount = (int)Math.Ceiling(((double)previewsCount) / _maxParralelDegree);
+        var approximateTime = _averageExecutionTime * batchCount;
+        
+        if (previewsCount > 4)
+        {
+            approximateTime *= 1.2;
+        }
+
+        return approximateTime ?? 45.0 * batchCount;
+    }
 
     public AutotagService(IConfigProvider configProvider)
     {
         _joyTagConnectionString = configProvider.EnvironmentSettings.AiJoyTagConnectionString ?? 
             throw new Exception("AI JoyTag Connection String is not set");
+
+        var parralelDegree = configProvider.EnvironmentSettings.TaskSchedulerAutotaggingWorkerCount;
+        _semaphore = new(parralelDegree, parralelDegree);
+        _maxParralelDegree = parralelDegree;
+
+        _httpClient = new HttpClient
+        {
+            Timeout = TimeSpan.FromSeconds(120)
+        };
     }
 
-    public List<Tag> AutocompleteTagsForPreview(Preview preview, TagRepository tagRepository, 
-        bool isParallel = false)
+    public List<Tag> AutocompleteTagsForPreview(Preview preview, TagRepository tagRepository)
     {
         if (preview == null)
         {
@@ -54,7 +77,9 @@ public class AutotagService : IAutotagService
                 image = preview.Content
             };
 
+            _semaphore.WaitOne();
             var result = Post("predictTags", data);
+            _semaphore.Release();
 
             if (string.IsNullOrWhiteSpace(result))
             {
@@ -71,7 +96,7 @@ public class AutotagService : IAutotagService
 
             var elapsedTime = (DateTime.Now - stopwatch).TotalSeconds;
 
-            if (_averageExecutionTime <= 0.0) 
+            if (_averageExecutionTime == null) 
             {
                 _averageExecutionTime = elapsedTime;
             }
@@ -83,17 +108,9 @@ public class AutotagService : IAutotagService
             _logger.Info("AI tag autocompletion for Preview: {previewId} successfully executed within: {elapsedTime} sec, suggested tags: {suggestedTagsString}", 
                 preview.Id, elapsedTime, suggestedTagsString);
             
-            if (isParallel)
-            {
-                _mutex.WaitOne();
-            }
-
+            _mutex.WaitOne();
             var actualTags = tagRepository.GetRangeByAliasString(suggestedTagsString);
-
-            if (isParallel)
-            {
-                _mutex.ReleaseMutex();
-            }
+            _mutex.ReleaseMutex();
 
             var actualTagsString = string.Join(" ", actualTags.Select(x => x.Name));
 
@@ -105,38 +122,42 @@ public class AutotagService : IAutotagService
         }
         catch (Exception ex)
         {
+            _proceededPreviewIds.Remove(preview.Id);
             _logger.Error(ex, "Failed to process autotagging for image");
             return new();
         }
     }
 
-    public List<Tag> AutocompleteTagsForCollection(Collection collection, TagRepository tagRepository, 
-        int parallelDegree = 1)
+    public List<Tag> AutocompleteTagsForCollection(List<Preview> previews, TagRepository tagRepository)
     {
-        if (collection == null || collection.Previews.Any() == false)
+        var collectionId = previews.First().Collection?.Id;
+
+        if (previews.Any() == false || collectionId == null)
         {
             return new();
         }
 
         try {
             var stopwatch = DateTime.Now;
-
-            _logger.Info("Executed AI tag autocompletion for Collection: {collection.Id}", collection.Id);
+            
+            _logger.Info("Executed AI tag autocompletion for Collection: {collection.Id}", collectionId);
 
             List<Tag> tags = new();
 
-            var options = new ParallelOptions { MaxDegreeOfParallelism = parallelDegree };
-            Parallel.ForEach(collection.Previews, options, preview => 
+            var options = new ParallelOptions { MaxDegreeOfParallelism = _maxParralelDegree};
+            Parallel.ForEach(previews, options, preview => 
             {
-                tags = tags.Union(AutocompleteTagsForPreview(preview, tagRepository, parallelDegree > 1))
-                            .ToList();
+                var stags = AutocompleteTagsForPreview(preview, tagRepository);
+                var strtags = string.Join(" ", stags.Select(x => x.Name));
+
+                tags = tags.Union(stags).ToList();
             });
             
             var elapsedTime = (DateTime.Now - stopwatch).TotalSeconds;
             var tagsString = string.Join(" ", tags.Select(x => x.Name));
 
-            _logger.Info("AI tag autocompletion for Preview: {previewId} successfully executed within: {elapsedTime} sec, suggested tags: {suggestedTagsString}", 
-                collection.Id, elapsedTime, tagsString);
+            _logger.Info("AI tag autocompletion for Preview: {previewId} successfully executed within: {elapsedTime} sec, suggested tags: {suggestedTagsString}", collectionId, elapsedTime, tagsString);
+            
             return tags;
         }
         catch (Exception ex)
@@ -190,7 +211,7 @@ public class AutotagService : IAutotagService
 
         if (result.StatusCode != HttpStatusCode.OK)
         {
-            return string.Empty;
+            throw new HttpRequestException("Request to JoyTag AI failed");
         }
 
         return result.Content.ReadAsStringAsync()

@@ -24,6 +24,8 @@ namespace MediaCloud.TaskScheduler.Tasks
         /// </summary>
         public bool IsWaiting { get; set; } = true;
 
+        public DateTime ExecutedAt {get; set;}
+
         /// <summary>
         /// Task init.
         /// </summary>
