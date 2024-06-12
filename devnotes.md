@@ -1,22 +1,33 @@
 
 # Infrastructure             
 
-- 1.5.1 mediacloud
-- 1.5.1 mediacloud-dev
+- 1.6.0 mediacloud
+- 1.6.0 mediacloud-dev
 
-# Next release - 1.6.0       
-# Next minor - 1.5.2   
-
-Done:
+# Next release - 1.7.0       
+# Next minor - 1.6.1   
 
 Todo:
-
 - Review sql requests (Accordingly to ActorProvider staff)
 - Admin check for display actors in Statistic
 - Implement all actors statistic dashboards for Admin
-
+- Write unit tests
+- Show first uploaded image on uploade page
+- Update zabbix metrics from Uploader to TaskScheduler
+- Review creator updator linking when updating entities.
+- Add check is task executed or queued before adding to queue
+- Remove unnecessary dependencies in python .venv on prod
+- Implement in task time execution measuring
 
 # Changelog				   
+
+### Version 1.6.0 - 12th Jun, 2024
+- Added AI Medias and Collection autotagging with JoyTag AI model
+- Added new account personal settings page
+- Updated SixLabour.ImageSharp lib to 3.1.4
+- Optimized autoloading speed for first page
+- Various layout fixes for narrow displays
+- A lot of other fixes
 
 ### Version 1.5.1 - 08th Apr, 2024
 - Fixed exception handling when empty password provided for login

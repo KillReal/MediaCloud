@@ -26,6 +26,7 @@ bin/
 obj/
 TestResults/
 .vs/
+.vscode/
 ###################
 # Web publish log #
 ###################
@@ -78,3 +79,8 @@ _[Ss]cripts
 *.dot[Cc]over
 *.db*
 *.vsidx
+# Python and PyTorch
+######################
+__pycache__/
+*.onnx
+*.safetensors

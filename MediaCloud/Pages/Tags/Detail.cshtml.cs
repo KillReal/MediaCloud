@@ -42,12 +42,19 @@ namespace MediaCloud.Pages.Tags
 
         public IActionResult OnPost()
         {
-            if (Tag == null)
+            var tag = _tagRepository.Get(Tag.Id);
+
+            if (tag == null)
             {
                 return Redirect("/Error");
             }
 
-            _tagRepository.Update(Tag);
+            tag.Name = Tag.Name;
+            tag.Description = Tag.Description;
+            tag.Alias = Tag.Alias;
+            tag.Type = Tag.Type;
+
+            _tagRepository.Update(tag);
 
             return Redirect(ReturnUrl.Replace("$", "&"));
         }

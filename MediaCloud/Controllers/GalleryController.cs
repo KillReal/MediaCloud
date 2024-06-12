@@ -1,6 +1,8 @@
 ﻿using MediaCloud.Builders.List;
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
+using MediaCloud.TaskScheduler;
+using MediaCloud.WebApp.Services.ActorProvider;
 using MediaCloud.WebApp.Services.ConfigurationProvider;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.AspNetCore.Authorization;
@@ -14,17 +16,32 @@ namespace MediaCloud.WebApp.Controllers
         private readonly IConfigProvider _configProvider;
         private readonly TagRepository _tagRepository;
         private readonly PreviewRepository _previewRepository;
+        private readonly ITaskScheduler _taskScheduler;
+        private readonly IActorProvider _actorProvider;
+        private readonly IAutotagService _autotagService;
+        private readonly CollectionRepository _collectionRepository;
 
-        public GalleryController(IConfigProvider configProvider, TagRepository tagRepository, PreviewRepository previewRepository)
+        public GalleryController(IConfigProvider configProvider, TagRepository tagRepository, 
+            PreviewRepository previewRepository, CollectionRepository collectionRepository, 
+            ITaskScheduler taskScheduler, IActorProvider actorProvider, IAutotagService actorService)
         {
             _configProvider = configProvider;
             _tagRepository = tagRepository;
             _previewRepository = previewRepository;
+            _taskScheduler = taskScheduler;
+            _actorProvider = actorProvider;
+            _autotagService = actorService;
+            _collectionRepository = collectionRepository;
         }
 
         public List<string> GetSuggestions(string searchString, int limit = 10)
         {
             return _tagRepository.GetSuggestionsByString(searchString, limit);
+        }
+
+        public List<string> GetAliasSuggestions(string searchString, int limit = 10)
+        {
+            return _autotagService.GetSuggestionsByString(searchString, limit);
         }
 
         public async Task<List<object>> PreviewsBatchAsync(ListRequest listRequest)
@@ -80,6 +97,55 @@ namespace MediaCloud.WebApp.Controllers
             }
 
             return new FileContentResult(System.IO.File.ReadAllBytes("wwwroot/noimg.jpg"), "image/jpeg");
+        }
+
+        public Guid AutocompleteTagForMedia(Guid previewId)
+        {
+            var task = new AutotagPreviewTask(_actorProvider.GetCurrent(), new() { previewId });
+
+            return _taskScheduler.AddTask(task);
+        }
+
+        public Guid AutocompleteTagForCollection(Guid collectionId)
+        {
+            var task = new AutotagCollectionTask(_actorProvider.GetCurrent(), collectionId);
+
+            return _taskScheduler.AddTask(task);
+        }
+
+        public double GetAverageAutocompleteTagExecution()
+        {
+            return _autotagService.GetAverageExecutionTime();
+        }
+
+        public double GetAverageAutocompleteTagForCollectionExecution(int previewsCount)
+        {
+            return _autotagService.GetAverageExecutionTime(previewsCount);
+        }
+
+        public bool IsPreviewAutotaggingExecuted(Guid previewId)
+        {
+            return _autotagService.IsPreviewIsProceeded(previewId);
+        }
+
+        public bool IsCollectionAutotaggingExecuted(Guid collectionId)
+        {
+            var previewIds = _collectionRepository.Get(collectionId)?.Previews.Select(x => x.Id).ToList();
+
+            if (previewIds == null || previewIds.Any() == false)
+            {
+                return false;
+            }
+
+            foreach (var previewId in previewIds)
+            {
+               if (_autotagService.IsPreviewIsProceeded(previewId))
+               {
+                    return true;
+               }
+            }
+
+            return false;
         }
     }
 }

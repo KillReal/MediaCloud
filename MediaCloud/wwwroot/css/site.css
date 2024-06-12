@@ -23,6 +23,15 @@ body {
     margin-bottom: 60px;
 }
 
+.background-image {
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    position: fixed;
+    margin-left: -3rem;
+    width: 100%;
+}
+
 .gradient-main {
     /* fallback for old browsers */
     background: #5063b9;
@@ -160,7 +169,16 @@ body {
 }
 
 .gallery-item {
-    min-width: 30rem;
+    min-width: 25rem;
+}
+
+.gallery-item-bubble {
+    position: absolute; 
+    min-width: 2.25rem; 
+    text-align: center; 
+    margin-bottom: 1.85rem; 
+    margin-right: 0.25rem; 
+    font-size: 1.5rem;
 }
 
 .list-clickable {
@@ -207,6 +225,7 @@ body {
 .picture-viewer {
     object-fit: contain; 
     max-height: 80vmin;
+    max-width: 90vw;
 }
 
 #btn-back-to-top {
@@ -255,8 +274,8 @@ body {
 }
 
 .chart-canvas-block {
-    min-height: 30rem;
-    min-width: 30rem;
+    min-height: 20rem;
+    min-width: 20rem;
     max-width: 75rem;
     max-height: 75rem;
 }

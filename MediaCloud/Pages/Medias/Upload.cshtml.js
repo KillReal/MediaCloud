@@ -39,6 +39,7 @@ function formSubmit(event) {
     setModalTitle('Sending to server...');
     showModalBody();
     updateModalLoadBody();
+    $('#loadingModal').modal('show');
 
     var url = "/Medias/Upload";
     var request = new XMLHttpRequest();
@@ -47,7 +48,6 @@ function formSubmit(event) {
         setModalTitle('Waiting queue for processing...');
         showModalBody();
         updateModalLoadBody();
-        $('#loadingModal').modal('show');
         var data = JSON.parse(request.response);
 
         var url = "/TaskScheduler/GetTaskStatus?id=" + data.id;
@@ -62,19 +62,19 @@ function formSubmit(event) {
                     if (data.queuePosition > 1) {
                         setModalTitle('Waiting queue for processing...');
                     }
-                    else if (data.queuePosition = 0 && data.workCount > 0) {
+                    else if (data.queuePosition == 1) {
                         setModalTitle('Server processing...');
                     }
-                    else if (data.workCount == 0 && data.isInProgress == false) {
+                    else if (data.workCount == 0 && data.isExist) {
+                        setModalTitle('Saving in database...');
+                        showLoadSpinner();
+                    }
+                    else if (data.workCount == 0 && data.isExist == false) {
                         setModalTitle('Media successfully uploaded!');
                         hideModalBody();
                         hideLoadSpinner();
 
                         clearInterval(loadingUpdateInterval);
-                    }
-                    else if (data.workCount == 0) {
-                        setModalTitle('Saving in database...');
-                        showLoadSpinner();
                     }
                 })
         }

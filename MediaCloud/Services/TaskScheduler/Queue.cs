@@ -28,7 +28,15 @@ namespace MediaCloud.TaskScheduler
 
         public void RemoveTask(Task task) => _tasks.Remove(task);
 
-        public Task GetNextTask() => _tasks.First();
+        public Task? GetNextTask(List<Type> types) 
+        {
+            return _tasks.Where(x => x.IsWaiting && types.Any(y => x.GetType() == y))
+                            .FirstOrDefault();
+        }
+
+        public List<Type> GetWaitingTaskTypes() => _tasks.Where(x => x.IsWaiting)
+                                                            .Select(x => x.GetType())
+                                                            .ToList();
 
         public Task? GetTask(Guid id) => _tasks.FirstOrDefault(x => x.Id == id);
 
@@ -43,5 +51,24 @@ namespace MediaCloud.TaskScheduler
 
             return _tasks.IndexOf(task) + 1;
         }
+
+        public TaskStatus GetTaskStatus(Guid taskId) 
+        {
+             var taskStatus = new TaskStatus
+            {
+                Id = taskId,
+                QueuePosition = GetTaskPosition(taskId)
+            };
+            var task = GetTask(taskId);
+            taskStatus.IsInProgress = task != null && !task.IsWaiting;
+            taskStatus.IsExist = task != null;
+            taskStatus.WorkCount = task == null 
+                ? 0 
+                : task.GetWorkCount();
+
+            return taskStatus;
+        }
+
+        public List<TaskStatus> GetTaskStatuses() => _tasks.Select(x => GetTaskStatus(x.Id)).ToList();
     }
 }

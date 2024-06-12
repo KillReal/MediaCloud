@@ -22,6 +22,7 @@ namespace MediaCloud.WebApp.Services.ActorProvider
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly AppDbContext _context;
         private IMemoryCache _memoryCache;
+        private Mutex _mutex = new();
 
         private MemoryCacheEntryOptions _memoryCacheOptions;
 
@@ -60,8 +61,12 @@ namespace MediaCloud.WebApp.Services.ActorProvider
                 return actor;
             }
 
+            _mutex.WaitOne();
+
             var cachedActor = _context.Actors.First(x => x.Name == identity.Name);
             _memoryCache.Set(identity.Name, cachedActor, _memoryCacheOptions);
+
+            _mutex.ReleaseMutex();
 
             return cachedActor;
         }
@@ -113,10 +118,28 @@ namespace MediaCloud.WebApp.Services.ActorProvider
             actor.UpdatedAt = actor.UpdatedAt.ToUniversalTime();
             actor.CreatedAt = actor.CreatedAt.ToUniversalTime();
             actor.LastLoginAt = DateTime.Now.ToUniversalTime();
-
+            
+            _context.Actors.Update(actor);
             _memoryCache.Set(data.Name, actor, _memoryCacheOptions);
 
             return true;
+        }
+
+        public void Logout(HttpContext httpContext)
+        {
+            _ = httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var identity = httpContext.User.Identity;
+
+            if (identity == null || identity.Name == null)
+            {
+                throw new ArgumentException("Cannot get actor without HttpContext");
+            }
+
+            if (_memoryCache.TryGetValue(identity.Name, out Actor actor))
+            {
+                _memoryCache.Remove(identity.Name);
+            }
         }
 
         public RegistrationResult Register(IConfigProvider configProvider, AuthData data, string inviteCode)

@@ -94,15 +94,16 @@ namespace MediaCloud.Pages.Medias
             
             var media = preview.Media;
             media.Rate = Media.Rate;
+            media.UpdatedAt = DateTime.UtcNow;
 
             if (RotationDegree != 0)
             {
                 media.Preview.Content = _pictureService.Rotate(preview.Content, RotationDegree);
                 media.Content = _pictureService.Rotate(media.Content, RotationDegree);
-
+                
             }
-
-            _mediaRepository.Update(media);
+            
+            _mediaRepository.Update(media); 
 
             return Redirect(ReturnUrl.Replace("$", "&"));
         }

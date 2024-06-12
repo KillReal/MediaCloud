@@ -73,6 +73,12 @@
             </div>
             <div class="form-group mb-3 d-flex justify-content-between">
                 <input type="submit" value="Edit" class="btn btn-success" />
+                <input class="btn btn-success btn-rounded" 
+                    type="button" 
+                    value="Autotag ✨" 
+                    id="autotagButton" 
+                    onclick="autocompleteTags('@Model.PreviewId')" 
+                />
                 <a class="btn btn-info btn-rounded text-nowrap" 
                     asp-page="Index" 
                     asp-route-filter=@(Model.TagsString) 
@@ -130,6 +136,38 @@
             </ul>
         </div>
     </div>
+
+    <div class="modal text-black" id="loadingModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">
+                        Tag autocompletion in progress...
+                    </h5>
+                    <div class="spinner-border text-primary" role="status" id="loadingSpinner" style="display: block">
+                    </div>
+                </div>
+                <div class="modal-body" id="modalBody">
+                    <div class="mb-1">
+                        <label class="col-form-label" id ="executionTime">
+                            It's may take some time (~45 sec)
+                        </label>
+                    </div>
+                    <div class="mb-1">
+                        <label class="col-form-label" id="progress">
+                            Progress: 0%
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-primary" onclick="hideModalBody()">
+                        Close
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <script src="~/js/tagAutocompletion.js"></script>
@@ -170,6 +208,110 @@
 
         var modelRotationDegree = document.getElementById("modelRotationDegree");
         modelRotationDegree.value = currentDegree;
+    }
+
+    fetch('/Gallery/IsPreviewAutotaggingExecuted?previewId=' + '@Model.PreviewId')
+        .then((response) => response.json())
+        .then(function (data) {
+            if (data == true) {
+                    document.getElementById('autotagButton').disabled = true;
+                    document.getElementById('autotagButton').value = "Autotagging... ";
+            }
+        }
+    )
+
+    var averageExecutionTime = 45.0;
+
+    fetch('/Gallery/GetAverageAutocompleteTagExecution')
+        .then((response) => response.json())
+        .then(function (data) {
+            if (data > 0) {
+                averageExecutionTime = data;
+            }
+        }
+    )
+
+    var modalTitle = document.getElementById('modalTitle');
+    var modalBody = document.getElementById("modalBody");
+    var loadSpinner = document.getElementById("loadingSpinner");
+
+    function setModalTitle(title) {
+        modalTitle.innerHTML = title;
+    }
+
+    function setModalProgress(progress, executionTime) {
+        document.getElementById('progress').innerHTML = "Progress: " + parseInt(progress, 10)+ "%";
+        document.getElementById('executionTime').innerHTML = 'It may take some time (~' + parseInt(executionTime, 10) + ' sec)';
+        document.getElementById('autotagButton').value = "Autotagging... " + parseInt(progress, 10)+ "%";
+    }
+
+    function hideModalBody() {
+        $('#loadingModal').modal('hide');
+    }
+
+    function showModalBody() {
+        $('#loadingModal').modal('show');
+        document.getElementById('autotagButton').disabled = true;
+        document.getElementById('autotagButton').value = "Autotagging... ";
+    }
+
+    function showLoadSpinner() {
+        loadSpinner.style.display = "block";
+    }
+
+    function hideLoadSpinner() {
+        loadSpinner.style.display = "none";
+    }
+
+    var timerCounter = 0;
+    var updateInterval = 3000;
+    var progress = 0;
+
+    function autocompleteTags(previewId, isExecuted = false) {
+        
+        var url = "/Gallery/AutocompleteTagForMedia?previewId=" + previewId;
+
+        var request = new XMLHttpRequest();
+        request.open('POST', url, true);
+        request.onload = function() { // request successful
+            setModalTitle('Waiting queue for processing...');
+            showModalBody();
+            var data = JSON.parse(request.response);
+
+            var url = "/TaskScheduler/GetTaskStatus?id=" + data;
+
+            const updator = function () {
+                fetch(url)
+                    .then((response) => response.json())
+                    .then(function (data) {
+
+                        progress = data.workCount;
+
+                        if (data.queuePosition > 1) {
+                            setModalTitle('Waiting queue for processing...');
+                        }
+                        else if (data.queuePosition == 1) {
+                            setModalTitle('Autotagging in progress...');
+                            setModalProgress(progress, averageExecutionTime);
+                            timerCounter += updateInterval;
+                        }
+                        else if (data.workCount == 0 && data.isExist == false) {
+                            setModalTitle('Autotagging successfully completed!');
+                            hideModalBody();
+                            hideLoadSpinner();
+
+                            location.reload();
+
+                            clearInterval(loadingUpdateInterval);
+                        }
+                    })
+                }
+
+                updator();
+                var loadingUpdateInterval = setInterval(updator, updateInterval);
+            };
+
+        request.send();
     }
 </script>
 
