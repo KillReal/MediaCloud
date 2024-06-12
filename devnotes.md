@@ -1,23 +1,11 @@
 
 # Infrastructure             
 
-- 1.5.1 mediacloud
-- 1.5.1 mediacloud-dev
+- 1.6.0 mediacloud
+- 1.6.0 mediacloud-dev
 
-# Next release - 1.6.0       
-# Next minor - 1.5.2   
-
-Done:
-- Fix preview updateAt change after editing
-- Optimize gallery first batch loading. (Use force partial preloading for first batch on page)
-- Show loading modal window before files transfer begins
-- Update SixLabour.ImageSharp to 3.1.4
-- Removed authorization requirement for TaskScheduler Api
-- Fix redirect after tag creation
-- Fix home page layout for narrow displays
-- Added autoloading setting to account settings page
-- Fixed creator change when tag updating
-- Implemented AI tag autocompletion
+# Next release - 1.7.0       
+# Next minor - 1.6.1   
 
 Todo:
 - Review sql requests (Accordingly to ActorProvider staff)
@@ -32,6 +20,14 @@ Todo:
 - Implement in task time execution measuring
 
 # Changelog				   
+
+### Version 1.6.0 - 12th Jun, 2024
+- Added AI Medias and Collection autotagging with JoyTag AI model
+- Added new account personal settings page
+- Updated SixLabour.ImageSharp lib to 3.1.4
+- Optimized autoloading speed for first page
+- Various layout fixes for narrow displays
+- A lot of other fixes
 
 ### Version 1.5.1 - 08th Apr, 2024
 - Fixed exception handling when empty password provided for login
