@@ -45,7 +45,7 @@ namespace MediaCloud.WebApp.Services.ConfigurationProvider
             _configuration = configuration;
             _logger = LogManager.GetLogger("ConfigurationProvider");
 
-            var actor = _actorProvider.GetCurrent();
+            var actor = _actorProvider.GetCurrentOrDefault();
 
             if (actor != null)
             {
