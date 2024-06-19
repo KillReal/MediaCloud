@@ -15,9 +15,9 @@ Todo:
 - Show first uploaded image on uploade page
 - Update zabbix metrics from Uploader to TaskScheduler
 - Review creator updator linking when updating entities.
-- Add check is task executed or queued before adding to queue
 - Remove unnecessary dependencies in python .venv on prod
 - Implement in task time execution measuring
+- Fix tag alias require (should be non required)
 
 # Changelog				   
 

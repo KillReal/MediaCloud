@@ -49,6 +49,16 @@ namespace MediaCloud.Pages.Tags
                 return Redirect("/Error");
             }
 
+            if (Tag.Alias == null)
+            {
+                Tag.Alias = string.Empty;
+            }
+
+            if (Tag.Description == null)
+            {
+                Tag.Description = string.Empty;
+            }
+
             tag.Name = Tag.Name;
             tag.Description = Tag.Description;
             tag.Alias = Tag.Alias;
