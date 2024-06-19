@@ -36,6 +36,16 @@ namespace MediaCloud.Pages.Tags
 
         public IActionResult OnPost()
         {
+            if (Tag.Alias == null)
+            {
+                Tag.Alias = string.Empty;
+            }
+
+            if (Tag.Description == null)
+            {
+                Tag.Description = string.Empty;
+            }
+
             _tagRepository.Create(Tag);
 
             return RedirectToPage("/Tags/Index");
