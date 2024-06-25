@@ -50,6 +50,9 @@ namespace MediaCloud.TaskScheduler
         {
             _logger.Error("Worker faced error during processing of {task.GetType().Name}: {task.Id} author: {task.Actor.Name} exception: {ex}", 
                 task.GetType().Name, task.Id, task.Actor.Name, ex);
+            
+            _queue.OnTaskComplete.Invoke(task);
+            Run();
         }
     }
 }
