@@ -179,12 +179,12 @@ public class AutotagService : IAutotagService
 
             var result = Post("suggestedTags", data);
 
-             if (string.IsNullOrWhiteSpace(result))
+            if (string.IsNullOrWhiteSpace(result))
             {
                 return new();
             }
 
-            return result.Split("\n").ToList();
+            return JsonConvert.DeserializeObject<List<string>>(result) ?? new List<string>();
         }
         catch (Exception ex)
         {

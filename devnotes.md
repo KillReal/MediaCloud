@@ -17,6 +17,10 @@ Todo:
 - Review creator updator linking when updating entities.
 - Remove unnecessary dependencies in python .venv on prod
 - Implement in task time execution measuring
+- Fix tag alias autocompletion
+- Fix autotagging task stuck when service doesn't respond
+
+Done:
 - Fix tag alias require (should be non required)
 
 # Changelog				   
