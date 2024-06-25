@@ -1,11 +1,15 @@
 
 # Infrastructure             
 
-- 1.6.0 mediacloud
-- 1.6.0 mediacloud-dev
+- 1.6.1 mediacloud
+- 1.6.1 mediacloud-dev
+
+# Publishing
+
+`dotnet publish -r linux-x64 -p:PublishSingleFile=true --no-selft-contained -o D:/Development/MediaCloud-Prod`
 
 # Next release - 1.7.0       
-# Next minor - 1.6.1   
+# Next minor - 1.6.2   
 
 Todo:
 - Review sql requests (Accordingly to ActorProvider staff)
@@ -17,13 +21,13 @@ Todo:
 - Review creator updator linking when updating entities.
 - Remove unnecessary dependencies in python .venv on prod
 - Implement in task time execution measuring
-- Fix tag alias autocompletion
 - Fix autotagging task stuck when service doesn't respond
 
-Done:
-- Fix tag alias require (should be non required)
-
 # Changelog				   
+
+### Version 1.6.1 - 12th Jun, 2024
+- Tag alias not required parameter anymore
+- Fixed Tag alias autocompletion
 
 ### Version 1.6.0 - 12th Jun, 2024
 - Added AI Medias and Collection autotagging with JoyTag AI model

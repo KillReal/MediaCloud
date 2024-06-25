@@ -26,10 +26,11 @@ public class AutotagService : IAutotagService
     private readonly Semaphore _semaphore;
 
     private int _maxParralelDegree = 1;
+    private double _defaultExecutionTime = 45.0;
     private double? _averageExecutionTime = null;
     private string _joyTagConnectionString;
 
-    public double GetAverageExecutionTime() => _averageExecutionTime ?? 45.0;
+    public double GetAverageExecutionTime() => _averageExecutionTime ?? _defaultExecutionTime;
 
     public double GetAverageExecutionTime(int previewsCount) 
     {
@@ -41,7 +42,7 @@ public class AutotagService : IAutotagService
             approximateTime *= 1.2;
         }
 
-        return approximateTime ?? 45.0 * batchCount;
+        return approximateTime ?? _defaultExecutionTime * batchCount;
     }
 
     public AutotagService(IConfigProvider configProvider)
@@ -55,7 +56,7 @@ public class AutotagService : IAutotagService
 
         _httpClient = new HttpClient
         {
-            Timeout = TimeSpan.FromSeconds(120)
+            Timeout = TimeSpan.FromSeconds(_defaultExecutionTime * 2)
         };
     }
 
