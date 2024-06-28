@@ -8,6 +8,10 @@
 
 `dotnet publish -r linux-x64 -p:PublishSingleFile=true --no-selft-contained -o D:/Development/MediaCloud-Prod`
 
+# JoyTag
+https://github.com/fpgaminer/joytag
+Need to download model before using
+
 # Next release - 1.7.0       
 # Next minor - 1.6.2   
 
