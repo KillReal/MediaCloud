@@ -79,6 +79,8 @@ _[Ss]cripts
 *.dot[Cc]over
 *.db*
 *.vsidx
+.vs/
+.vscode/
 # Python and PyTorch
 ######################
 __pycache__/
