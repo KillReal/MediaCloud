@@ -26,6 +26,11 @@ Todo:
 - Remove unnecessary dependencies in python .venv on prod
 - Implement in task time execution measuring
 - Fix autotagging task stuck when service doesn't respond
+- Fix workers count in logs
+- Move Autotagging loging to another log file
+- Change autotag actual tag alias log to debug
+- Round autotag execution time in logging to seconds
+- Change back buttons in page layouts to window.history.back
 
 # Changelog				   
 
