@@ -33,15 +33,16 @@ MediaCloud is a home media cloud app for storing and fast accesing your images.
 
 ### Deployment
 
+0. Deploy and prepare PostgreSQL server (https://www.postgresql.org/)
 1. Build app by `dotnet` for target OS as example:
     `dotnet publish -r linux-x64 -p:PublishSingleFile=true --no-selft-contained -o C:/MediaCloud-deploy`
 2. Setup hosting configuration in `appsettings.json` (Host endpoint, DB connectionString and etc...)
 3. Deploy JoyTag AI model if you need it or disable in `appsettings.json`:
-    a. Download JoyTag model from https://huggingface.co/fancyfeast/joytag/tree/main (config.json, model.onnx, model.safetensors and top_tags.txt)
-    b. Place it to /JoyTag/modelshttps://huggingface.co/fancyfeast/joytag/tree/main
-    c. Deploy JoyTag server on some port:
+    1. Download JoyTag model from https://huggingface.co/fancyfeast/joytag/tree/main (config.json, model.onnx, model.safetensors and top_tags.txt)
+    2. Place it to `/JoyTag/models`
+    3. Deploy JoyTag server on some port:
         `python3 joytag.py 5050 & disown`
-    d. Add joytag url to `appsettings.json`
+    4. Add joytag url to `appsettings.json`
 4. Start application:
     `./MediaCloud.WebApp`
 5. Login in admin account (login: Admin, pass: superadmin)
