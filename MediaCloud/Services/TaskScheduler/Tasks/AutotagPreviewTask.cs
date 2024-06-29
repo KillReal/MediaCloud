@@ -4,7 +4,7 @@ using MediaCloud.Repositories;
 using MediaCloud.Services;
 using MediaCloud.TaskScheduler.Tasks;
 using MediaCloud.WebApp.Services.ActorProvider;
-using MediaCloud.WebApp.Services.ConfigurationProvider;
+using MediaCloud.WebApp.Services.ConfigProvider;
 using MediaCloud.WebApp.Services.Statistic;
 using Task = MediaCloud.TaskScheduler.Tasks.Task;
 

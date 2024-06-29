@@ -2,7 +2,7 @@
 using MediaCloud.Data.Models;
 using MediaCloud.TaskScheduler.Tasks;
 using MediaCloud.Repositories;
-using MediaCloud.WebApp.Services.ConfigurationProvider;
+using MediaCloud.WebApp.Services.ConfigProvider;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -50,6 +50,11 @@ namespace MediaCloud.WebApp.Services.ActorProvider
             _actorRepository.Update(_currentActor);
 
             return true;
+        }
+
+        public ActorSettings? GetSettings()
+        {
+            throw new NotImplementedException();
         }
     }
 }

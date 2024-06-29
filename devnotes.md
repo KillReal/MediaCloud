@@ -6,7 +6,7 @@
 
 # Publishing
 
-`dotnet publish -r linux-x64 -p:PublishSingleFile=true --no-selft-contained -o D:/Development/MediaCloud-Prod`
+`dotnet publish -r linux-x64 -p:PublishSingleFile=true --no-self-contained -o D:/Development/MediaCloud-Prod`
 
 # JoyTag
 https://github.com/fpgaminer/joytag
@@ -19,7 +19,7 @@ Todo:
 - Review sql requests (Accordingly to ActorProvider staff)
 - Admin check for display actors in Statistic
 - Implement all actors statistic dashboards for Admin
-- Write unit tests
+- Write unit tests 
 - Show first uploaded image on uploade page
 - Update zabbix metrics from Uploader to TaskScheduler
 - Review creator updator linking when updating entities.
@@ -31,6 +31,8 @@ Todo:
 - Change autotag actual tag alias log to debug
 - Round autotag execution time in logging to seconds
 - Change back buttons in page layouts to window.history.back
+- Fix collection autotagging progress
+- Fix personal account settings
 
 # Changelog				   
 

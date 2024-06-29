@@ -49,10 +49,9 @@ class predictTags:
 
 		result = ''
 
-		with open('./suggested_tags.txt', 'w') as f:
-			for tag, score in sorted(scores.items(), key=lambda x: x[1], reverse=True):
-				if score > 0.35:
-					result += f'{tag}: {score:.3f}\n'
+		for tag, score in sorted(scores.items(), key=lambda x: x[1], reverse=True):
+			if score > 0.35:
+				result += f'{tag}: {score:.3f}\n'
 
 		return result
 

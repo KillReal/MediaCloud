@@ -1,5 +1,5 @@
 ﻿using MediaCloud.WebApp.Services;
-using MediaCloud.WebApp.Services.ConfigurationProvider;
+using MediaCloud.WebApp.Services.ConfigProvider;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Jpeg;

@@ -20,6 +20,7 @@ MediaCloud is a home media cloud app for storing and fast accesing your images.
 - Personal account settings
 - Invite registration system (check for invite code for create account)
 - Statistic dashboards (Images and tag count, database size)
+- Logging by NLog
 
 ### Stack
 
@@ -30,6 +31,7 @@ MediaCloud is a home media cloud app for storing and fast accesing your images.
 - PostgreSQL (Actually may be easily replaced by any other database that EF Core supports)
 - Bootstrap
 - JQuery
+- NLog
 
 ### Deployment
 

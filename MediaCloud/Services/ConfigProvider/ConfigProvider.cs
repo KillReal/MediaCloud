@@ -1,43 +1,53 @@
-using MediaCloud.Data;
-using MediaCloud.Data.Models;
 using MediaCloud.WebApp.Services.ActorProvider;
 using Newtonsoft.Json;
 using NLog;
 using ILogger = NLog.ILogger;
 
-namespace MediaCloud.WebApp.Services.ConfigurationProvider 
+namespace MediaCloud.WebApp.Services.ConfigProvider
 {
     public class ConfigProvider : IConfigProvider
     {
-        private IActorProvider _actorProvider;
-        private IConfiguration _configuration;
-        private ILogger _logger;
+        private readonly IActorProvider _actorProvider;
+        private readonly IConfiguration _configuration;
+        private readonly ILogger _logger;
 
-        private ActorSettings ParseActorSettings(Actor actor)
-        {
-            try 
-            {
-                return  JsonConvert.DeserializeObject<ActorSettings>(actor.PersonalSettings ?? "") 
-                    ?? new(_configuration);
-            }
-            catch (Exception ex) {
-                _logger.Error("Could not parse personal settings for actor {0} exception: {1}", actor.Name, ex);
-                return new(_configuration);
-            }
-        }
+        private EnvironmentSettings _environmentSettings;
 
         /// <summary>
         /// Direct access to a settings of current actor. Default values are taken from <see cref="IConfiguration"/>.
         /// Does not save changes to database implicitly. 
         /// Use <see cref="SaveActorSettings()"/> for explicit save.
         /// </summary>
-        public ActorSettings ActorSettings { get; set; }
+        public ActorSettings ActorSettings
+        { 
+            get 
+            { 
+                return _actorProvider.GetSettings() ?? new(_configuration);
+            }
+            set 
+            {
+                SaveActorSettings();
+            }
+        }
+        
         /// <summary>
         /// Direct access to a settings of environment. Default values are taken from <see cref="IConfiguration"/>.
         /// Does not save changes to database implicitly. 
         /// Use <see cref="SaveEnvironmentSettings()"/> for explicit save.
         /// </summary>
-        public EnvironmentSettings EnvironmentSettings { get; set; }
+        public EnvironmentSettings EnvironmentSettings 
+        { 
+            get
+            {
+                return _environmentSettings;
+            }
+            set
+            {
+                _environmentSettings = value;
+                SaveEnvironmentSettings();
+            } 
+        }
+
 
         public ConfigProvider(IConfiguration configuration, IActorProvider actorProvider)
         {
@@ -50,15 +60,13 @@ namespace MediaCloud.WebApp.Services.ConfigurationProvider
             if (actor != null)
             {
                 _logger.Debug("Initialized ConfigurationProvider by actor: {0}", actor.Name);
-                ActorSettings = ParseActorSettings(actor);
             }
             else 
             {
                 _logger.Debug("Initialized ConfigurationProvider anonymously");
-                ActorSettings = new(_configuration);
             }
 
-            EnvironmentSettings = new(_configuration);
+            _environmentSettings = new(_configuration);
         }
 
         /// <summary>

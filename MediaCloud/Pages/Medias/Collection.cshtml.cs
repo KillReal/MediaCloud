@@ -15,7 +15,7 @@ using MediaCloud.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using MediaCloud.WebApp.Pages;
-using MediaCloud.WebApp.Services.ConfigurationProvider;
+using MediaCloud.WebApp.Services.ConfigProvider;
 using MediaCloud.Extensions;
 using MediaCloud.WebApp.Services.ActorProvider;
 

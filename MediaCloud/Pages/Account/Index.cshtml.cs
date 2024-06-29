@@ -2,7 +2,7 @@ using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services.ActorProvider;
-using MediaCloud.WebApp.Services.ConfigurationProvider;
+using MediaCloud.WebApp.Services.ConfigProvider;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using NLog;
 using SixLabors.ImageSharp.Advanced;
 using System.Security.Claims;
-using IConfigProvider = MediaCloud.WebApp.Services.ConfigurationProvider.IConfigProvider;
+using IConfigProvider = MediaCloud.WebApp.Services.ConfigProvider.IConfigProvider;
 using ILogger = NLog.ILogger;
 
 namespace MediaCloud.WebApp.Pages
@@ -54,14 +54,12 @@ namespace MediaCloud.WebApp.Pages
         public IActionResult OnPost()
         {
             _configProvider.ActorSettings = ActorSettings;
-            _configProvider.SaveActorSettings();
 
             var actualActor = _actorProvider.GetCurrent();
 
             if (IsEnvironmentSettingsChanged && EnvironmentSettings != null && actualActor.IsAdmin)
             {
                 _configProvider.EnvironmentSettings = EnvironmentSettings;
-                _configProvider.SaveEnvironmentSettings();
             }
 
             return Redirect(ReturnUrl);

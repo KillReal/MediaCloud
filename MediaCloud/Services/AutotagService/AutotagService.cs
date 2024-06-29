@@ -8,7 +8,7 @@ using MediaCloud.Repositories;
 using MediaCloud.Services;
 using MediaCloud.WebApp.Controllers;
 using MediaCloud.WebApp.Services.ActorProvider;
-using MediaCloud.WebApp.Services.ConfigurationProvider;
+using MediaCloud.WebApp.Services.ConfigProvider;
 using Microsoft.AspNetCore.Routing.Constraints;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;

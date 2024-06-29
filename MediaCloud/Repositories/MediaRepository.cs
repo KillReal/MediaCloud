@@ -5,7 +5,7 @@ using MediaCloud.Data.Models;
 using MediaCloud.Services;
 using MediaCloud.WebApp.Services;
 using MediaCloud.WebApp.Services.ActorProvider;
-using MediaCloud.WebApp.Services.ConfigurationProvider;
+using MediaCloud.WebApp.Services.ConfigProvider;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;

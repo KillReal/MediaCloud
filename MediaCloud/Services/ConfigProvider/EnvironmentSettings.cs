@@ -1,6 +1,6 @@
 using SixLabors.ImageSharp;
 
-namespace MediaCloud.WebApp.Services.ConfigurationProvider 
+namespace MediaCloud.WebApp.Services.ConfigProvider 
 {
     [Serializable]
     public class EnvironmentSettings

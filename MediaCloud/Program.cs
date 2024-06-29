@@ -12,7 +12,7 @@ using MediaCloud.WebApp.Services.Statistic;
 using MediaCloud.WebApp.Services.ActorProvider;
 using NLog.Web;
 using NLog;
-using MediaCloud.WebApp.Services.ConfigurationProvider;
+using MediaCloud.WebApp.Services.ConfigProvider;
 using MediaCloud.WebApp;
 
 var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();

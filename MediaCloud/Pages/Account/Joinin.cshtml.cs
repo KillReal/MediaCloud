@@ -3,7 +3,7 @@ using MediaCloud.Data.Models;
 using MediaCloud.Pages.Actors;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services.ActorProvider;
-using MediaCloud.WebApp.Services.ConfigurationProvider;
+using MediaCloud.WebApp.Services.ConfigProvider;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;

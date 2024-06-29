@@ -2,7 +2,7 @@
 using MediaCloud.Data.Models;
 using MediaCloud.TaskScheduler.Tasks;
 using MediaCloud.Repositories;
-using MediaCloud.WebApp.Services.ConfigurationProvider;
+using MediaCloud.WebApp.Services.ConfigProvider;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -14,6 +14,7 @@ using NLog;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using Task = MediaCloud.TaskScheduler.Tasks.Task;
+using Newtonsoft.Json;
 
 namespace MediaCloud.WebApp.Services.ActorProvider
 {
@@ -174,6 +175,18 @@ namespace MediaCloud.WebApp.Services.ActorProvider
             _context.SaveChanges();
 
             return new(true, $"Joined in by {data.Name} and invite code: {inviteCode}");
+        }
+
+        public ActorSettings? GetSettings()
+        {
+            var currentActor = GetCurrent();
+
+            if (currentActor != null && currentActor.PersonalSettings != null)
+            {
+                return JsonConvert.DeserializeObject<ActorSettings>(currentActor.PersonalSettings);
+            }
+
+            return null;
         }
 
         public bool SaveSettings(string jsonSettings)
