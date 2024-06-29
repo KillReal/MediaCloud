@@ -17,6 +17,7 @@ MediaCloud is a home media cloud app for storing and fast accesing your images.
 - AI autotagging by JoyTag model (https://github.com/fpgaminer/joytag) with backgound configurable quueue and workers
 - Image search by tags
 - Multiple account authorization (Cookie Bearer)
+- Personal account settings
 - Invite registration system (check for invite code for create account)
 - Statistic dashboards (Images and tag count, database size)
 
@@ -36,3 +37,19 @@ MediaCloud is a home media cloud app for storing and fast accesing your images.
 - SixLabors.ImageSharp (https://github.com/SixLabors/ImageSharp) for image processing
 - Html5Sortable (https://github.com/lukasoppermann/html5sortable) for image rearranging by drag-&-drop
 - JQuery (for html5sortable lib)
+
+### Deployment
+
+1. Build app by `dotnet` for target OS as example below:
+    `dotnet publish -r linux-x64 -p:PublishSingleFile=true --no-selft-contained -o C:/MediaCloud-deploy`
+2. Setup hosting configuration in `appsettings.json` (Host endpoint, DB connectionString and etc...)
+3. Start application:
+    `./MediaCloud.WebApp`
+4. Deploy JoyTag AI model if you need it or disable in `appsettings.json`:
+    a. Download JoyTag model from https://huggingface.co/fancyfeast/joytag/tree/main (config.json, model.onnx, model.safetensors and top_tags.txt)
+    b. Place it to /JoyTag/modelshttps://huggingface.co/fancyfeast/joytag/tree/main
+    c. Deploy JoyTag server on some port:
+        `python3 joytag.py 5050 & disown`
+    d. Add joytag url to `appsettings.json`
+5. Login in admin account (login: Admin, pass: superadmin)
+6. Enjoy!
