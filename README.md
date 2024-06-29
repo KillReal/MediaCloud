@@ -31,16 +31,9 @@ MediaCloud is a home media cloud app for storing and fast accesing your images.
 - Bootstrap
 - JQuery
 
-### Used libs
-
-- AI JoyTag (https://github.com/fpgaminer/joytag) for AI autotagging
-- SixLabors.ImageSharp (https://github.com/SixLabors/ImageSharp) for image processing
-- Html5Sortable (https://github.com/lukasoppermann/html5sortable) for image rearranging by drag-&-drop
-- JQuery (for html5sortable lib)
-
 ### Deployment
 
-1. Build app by `dotnet` for target OS as example below:
+1. Build app by `dotnet` for target OS as example:
     `dotnet publish -r linux-x64 -p:PublishSingleFile=true --no-selft-contained -o C:/MediaCloud-deploy`
 2. Setup hosting configuration in `appsettings.json` (Host endpoint, DB connectionString and etc...)
 3. Start application:
@@ -53,3 +46,10 @@ MediaCloud is a home media cloud app for storing and fast accesing your images.
     d. Add joytag url to `appsettings.json`
 5. Login in admin account (login: Admin, pass: superadmin)
 6. Enjoy!
+
+### Used libs
+
+- AI JoyTag (https://github.com/fpgaminer/joytag) for AI autotagging
+- SixLabors.ImageSharp (https://github.com/SixLabors/ImageSharp) for image processing
+- Html5Sortable (https://github.com/lukasoppermann/html5sortable) for image rearranging by drag-&-drop
+- JQuery (for html5sortable lib)
