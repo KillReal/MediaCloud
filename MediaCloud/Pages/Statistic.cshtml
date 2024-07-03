@@ -402,19 +402,15 @@
                         if (data.queuePosition > 1) {
                             setModalTitle('Waiting queue for processing...');
                         }
-                        else if (data.queuePosition = 0 && data.workCount > 0) {
+                        else if (data.queuePosition == 1) {
                             setModalTitle('Server processing...');
                         }
-                        else if (data.workCount == 0 && data.isInProgress == false) {
-                            setModalTitle('Recalculation successfully uploaded!');
+                        else if (data.workCount == 0 && data.isExist == false) {
+                            setModalTitle('Recalculation successfully completed!');
                             hideModalBody();
                             hideLoadSpinner();
 
                             clearInterval(loadingUpdateInterval);
-                        }
-                        else if (data.workCount == 0) {
-                            setModalTitle('Saving in database...');
-                            showLoadSpinner();
                         }
                     })
             }

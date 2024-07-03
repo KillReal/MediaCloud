@@ -22,6 +22,8 @@ TODO:
 - Write unit tests 
 - Show first uploaded image on uploade page
 - Fix autotagging task stuck when service doesn't respond
+- Fix statistic recalculation when only 1 day recorded
+- Fix statistic recalculation task waiting
 
 DONE:
 - Fix personal account settings
