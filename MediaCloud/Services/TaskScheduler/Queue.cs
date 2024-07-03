@@ -60,11 +60,16 @@ namespace MediaCloud.TaskScheduler
                 QueuePosition = GetTaskPosition(taskId)
             };
             var task = GetTask(taskId);
-            taskStatus.IsInProgress = task != null && !task.IsWaiting;
-            taskStatus.IsExist = task != null;
-            taskStatus.WorkCount = task == null 
-                ? 0 
-                : task.GetWorkCount();
+
+            if (task == null)
+            {
+                return new();
+            }
+
+            taskStatus.IsInProgress = !task.IsWaiting;
+            taskStatus.IsExist = true;
+            taskStatus.WorkCount = task.GetWorkCount();
+            taskStatus.ExecutedAt = task.ExecutedAt;
 
             return taskStatus;
         }
