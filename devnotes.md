@@ -15,26 +15,24 @@ Need to download model before using
 # Next release - 1.7.0       
 # Next minor - 1.6.2   
 
-Todo:
+TODO:
 - Review sql requests (Accordingly to ActorProvider staff)
 - Admin check for display actors in Statistic
 - Implement all actors statistic dashboards for Admin
 - Write unit tests 
-- Show first upltioaded image on uploade page
-- Update zabbix metrics from Uploader to TaskScheduler
-- Review creator updator linking when updating entities.
-- Remove unnecessary dependencies in python .venv on prod
-- Implement in task time execution measuring
+- Show first uploaded image on uploade page
 - Fix autotagging task stuck when service doesn't respond
-- Move Autotagging loging to another log file
-- Change autotag actual tag alias log to debug
-- Fix collection autotagging progress
 
-Done:
+DONE:
 - Fix personal account settings
 - Change back buttons in page layouts to window.history.back
 - Round autotag execution time in logging to seconds
 - Fix workers count in logs
+- Change autotag actual tag alias log to debug
+- Fix collection autotagging progress
+- Implement in task time execution measuring
+- Review creator updator linking when updating entities.
+- Fix slow loading of statistics dashboard (cdn slow response, switched to local js copyies)
 
 # Changelog				   
 
