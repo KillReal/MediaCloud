@@ -40,7 +40,7 @@ namespace MediaCloud.TaskScheduler
         private void WorkerCompleteTask(Task task)
         {
             _logger.Info("Worker ({BusyWorkersCount - 1}/{MaxWorkersCount}) completed the {task.GetType().Name}: {task.Id} author: {task.Actor.Name}",
-                BusyWorkersCount - 1, MaxWorkersCount, task.GetType().Name, task.Id, task.Actor.Name);
+                BusyWorkersCount, MaxWorkersCount, task.GetType().Name, task.Id, task.Actor.Name);
 
             _queue.OnTaskComplete.Invoke(task);
             Run();

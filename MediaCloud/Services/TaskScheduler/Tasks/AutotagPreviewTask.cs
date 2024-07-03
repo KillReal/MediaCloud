@@ -23,6 +23,12 @@ public class AutotagPreviewTask : Task, ITask
         }
 
         var time = (DateTime.Now - ExecutedAt).TotalSeconds;
+
+        if (time > _aproximateExecutionTime)
+        {
+            return 99;
+        }
+
         var progress = (double)(time / _aproximateExecutionTime) * 100;
 
         return (int)Math.Clamp(progress, 0, 100);

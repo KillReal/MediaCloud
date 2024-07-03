@@ -25,10 +25,10 @@ public class AutotagService : IAutotagService
     private readonly Mutex _mutex = new();
     private readonly Semaphore _semaphore;
 
-    private int _maxParralelDegree = 1;
-    private double _defaultExecutionTime = 45.0;
+    private readonly int _maxParralelDegree = 1;
+    private const double _defaultExecutionTime = 45.0;
     private double? _averageExecutionTime = null;
-    private string _joyTagConnectionString;
+    private readonly string _joyTagConnectionString;
 
     public double GetAverageExecutionTime() => _averageExecutionTime ?? _defaultExecutionTime;
 
@@ -106,8 +106,8 @@ public class AutotagService : IAutotagService
                 _averageExecutionTime = (_averageExecutionTime + elapsedTime) / 2;
             }
 
-            _logger.Info("AI tag autocompletion for Preview: {previewId} successfully executed within: {elapsedTime} sec, suggested tags: {suggestedTagsString}", 
-                preview.Id, elapsedTime, suggestedTagsString);
+            _logger.Debug("AI tag autocompletion for Preview: {previewId} successfully executed within: {elapsedTime} sec, suggested tags: {suggestedTagsString}", 
+                preview.Id, elapsedTime.ToString("N0"), suggestedTagsString);
             
             _mutex.WaitOne();
             var actualTags = tagRepository.GetRangeByAliasString(suggestedTagsString);
@@ -115,7 +115,7 @@ public class AutotagService : IAutotagService
 
             var actualTagsString = string.Join(" ", actualTags.Select(x => x.Name));
 
-            _logger.Info("Existing tags for suggestion: {actualTagsString}", actualTagsString);
+            _logger.Debug("Existing tags for suggestion: {actualTagsString}", actualTagsString);
 
             _proceededPreviewIds.Remove(preview.Id);
 
@@ -157,7 +157,7 @@ public class AutotagService : IAutotagService
             var elapsedTime = (DateTime.Now - stopwatch).TotalSeconds;
             var tagsString = string.Join(" ", tags.Select(x => x.Name));
 
-            _logger.Info("AI tag autocompletion for Preview: {previewId} successfully executed within: {elapsedTime} sec, suggested tags: {suggestedTagsString}", collectionId, elapsedTime, tagsString);
+            _logger.Debug("AI tag autocompletion for Preview: {previewId} successfully executed within: {elapsedTime} sec, suggested tags: {suggestedTagsString}", collectionId, elapsedTime.ToString("N0"), tagsString);
             
             return tags;
         }

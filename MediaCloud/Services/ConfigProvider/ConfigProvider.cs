@@ -26,7 +26,7 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
             }
             set 
             {
-                SaveActorSettings();
+                SaveActorSettings(value);
             }
         }
         
@@ -73,9 +73,9 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
         /// Implicitly saves changes to database in json format.
         /// </summary>
         /// <returns> Result of operation. </returns>
-        public bool SaveActorSettings()
+        public bool SaveActorSettings(ActorSettings settings)
         {
-            var jsonSettings = JsonConvert.SerializeObject(ActorSettings, Formatting.Indented);
+            var jsonSettings = JsonConvert.SerializeObject(settings, Formatting.Indented);
             return _actorProvider.SaveSettings(jsonSettings);
         }
 

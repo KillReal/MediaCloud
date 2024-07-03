@@ -23,6 +23,12 @@ public class AutotagCollectionTask : Task, ITask
         }
 
         var time = (DateTime.Now - ExecutedAt).Seconds;
+
+        if (time > _aproximateExecutionTime)
+        {
+            return 99;
+        }
+
         var progress = (double)(time / _aproximateExecutionTime) * 100;
 
         return (int)Math.Clamp(progress, 0, 100);
