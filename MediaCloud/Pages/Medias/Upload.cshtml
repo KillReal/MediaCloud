@@ -6,13 +6,19 @@
 }
 
 <div class="page-container">
+    
     <h1>Upload</h1>
+
     <div class="button-panel">
         <div>
-            <a href="@(Model.ReturnUrl)" class="btn btn-info mt-3">Back to Gallery</a>
+           <a onclick="history.back();" class="btn btn-info">
+				Back
+			</a>
         </div>
-    </div>
+	</div>
+
     <hr class="text-white"/>
+
     <div class="row text-white">
         <div class="col-md-4">
             <form enctype="multipart/form-data" id='uploadForm' method="post">

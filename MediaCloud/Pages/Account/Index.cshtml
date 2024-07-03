@@ -9,9 +9,9 @@
         Account settings
     </h1>
 
-    <div class="button-panel">
+	<div class="button-panel">
         <div>
-           <a href="@(Model.ReturnUrl)" class="btn btn-info">
+           <a onclick="history.back();" class="btn btn-info">
 				Back
 			</a>
         </div>
@@ -37,6 +37,37 @@
 					</div>
 					<div>
 						Last login at: @Html.DisplayTextFor(x => x.Actor.LastLoginAt)
+					</div>
+
+					<h5 class="mt-5">User settings</h5>
+					<hr>
+					<div class="form-group mb-3">
+						<label class="col-form-label">
+							Count of entities at page in list
+						</label>
+						<input class="form-control" asp-for="@Model.ActorSettings.ListMaxEntitiesCount" />
+					</div>
+					<div class="form-group mb-3">
+						<label class="col-form-label">
+							Count of showing pages in pagination
+						</label>
+						<input class="form-control" asp-for="@Model.ActorSettings.ListMaxPageCount" class="form-control" />
+					</div>
+					<div class="form-group mb-3">
+						<label class="col-form-label" asp-for="@Model.ActorSettings.ListAutoloadingEnabled">
+							Autoload next entities in list
+						</label>
+						<div class="w-100">
+							<input class="form-check-input big-form-check-input"
+							type="checkbox" 
+							asp-for="@Model.ActorSettings.ListAutoloadingEnabled"/>
+						</div>
+					</div>
+					<div class="form-group mb-3">
+						<label class="col-form-label">
+							Count of days to show in activity statistic
+						</label>
+						<input class="form-control" asp-for="@Model.ActorSettings.StatisticActivityBacktrackDayCount" />
 					</div>
 
 					@if (Model.Actor.IsAdmin && Model.EnvironmentSettings != null) {
@@ -93,37 +124,6 @@
 							</div>
 						</div>
 					}
-
-					<h5 class="mt-5">User settings</h5>
-					<hr>
-					<div class="form-group mb-3">
-						<label class="col-form-label">
-							Count of entities at page in list
-						</label>
-						<input class="form-control" asp-for="@Model.ActorSettings.ListMaxEntitiesCount" />
-					</div>
-					<div class="form-group mb-3">
-						<label class="col-form-label">
-							Count of showing pages in pagination
-						</label>
-						<input class="form-control" asp-for="@Model.ActorSettings.ListMaxPageCount" class="form-control" />
-					</div>
-					<div class="form-group mb-3">
-						<label class="col-form-label" asp-for="@Model.ActorSettings.ListAutoloadingEnabled">
-							Autoload next entities in list
-						</label>
-						<div class="w-100">
-							<input class="form-check-input big-form-check-input"
-							type="checkbox" 
-							asp-for="@Model.ActorSettings.ListAutoloadingEnabled"/>
-						</div>
-					</div>
-					<div class="form-group mb-3">
-						<label class="col-form-label">
-							Count of days to show in activity statistic
-						</label>
-						<input class="form-control" asp-for="@Model.ActorSettings.StatisticActivityBacktrackDayCount" />
-					</div>
 
 					<div class="form-group mt-5 w-25 d-flex justify-content-between">
 						<input type="submit" value="Save" class="btn btn-success" />

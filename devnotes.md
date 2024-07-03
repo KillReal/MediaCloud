@@ -5,7 +5,7 @@
 - 1.6.1 mediacloud-dev
 
 # Publishing
-
+`
 `dotnet publish -r linux-x64 -p:PublishSingleFile=true --no-self-contained -o D:/Development/MediaCloud-Prod`
 
 # JoyTag
@@ -20,19 +20,21 @@ Todo:
 - Admin check for display actors in Statistic
 - Implement all actors statistic dashboards for Admin
 - Write unit tests 
-- Show first uploaded image on uploade page
+- Show first upltioaded image on uploade page
 - Update zabbix metrics from Uploader to TaskScheduler
 - Review creator updator linking when updating entities.
 - Remove unnecessary dependencies in python .venv on prod
 - Implement in task time execution measuring
 - Fix autotagging task stuck when service doesn't respond
-- Fix workers count in logs
 - Move Autotagging loging to another log file
 - Change autotag actual tag alias log to debug
-- Round autotag execution time in logging to seconds
-- Change back buttons in page layouts to window.history.back
 - Fix collection autotagging progress
+
+Done:
 - Fix personal account settings
+- Change back buttons in page layouts to window.history.back
+- Round autotag execution time in logging to seconds
+- Fix workers count in logs
 
 # Changelog				   
 

@@ -11,9 +11,11 @@
 
     <div class="button-panel">
         <div>
-            <a href="@(Model.ReturnUrl)&ReturnUrl=@Model.RootReturnUrl.Replace('&', '$')" class="btn btn-info mt-4">Back to Gallery</a>
+           <a onclick="history.back();" class="btn btn-info">
+				Back
+			</a>
         </div>
-    </div>
+	</div>
 
     <hr />
 

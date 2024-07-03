@@ -181,7 +181,7 @@
 
     if (isAutoLoadingEnabled) {
         window.addEventListener("scroll", function(e) {
-            if ((window.innerHeight + window.scrollY + 2000) >= document.body.offsetHeight) {
+            if ((window.innerHeight + window.scrollY + 1000) >= document.body.offsetHeight) {
                 enrichGallery();
             }
         });
@@ -206,7 +206,7 @@
 
             console.log(data);
 
-            gallery.innerHTML += data;
+            gallery.insertAdjacentHTML('beforeend', data);
             nextOffset += @Model.ListBuilder.Pagination.Count;
         }).catch(function(err) {
             console.log('Fetch Error :-S', err);
