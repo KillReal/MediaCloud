@@ -1,19 +1,18 @@
 
 # Infrastructure             
 
-- 1.6.1 mediacloud
-- 1.6.1 mediacloud-dev
+- 1.6.2 mediacloud
+- 1.6.2 mediacloud-dev
+
 
 # Publishing
-`
+
 `dotnet publish -r linux-x64 -p:PublishSingleFile=true --no-self-contained -o D:/Development/MediaCloud-Prod`
 
-# JoyTag
-https://github.com/fpgaminer/joytag
-Need to download model before using
 
 # Next release - 1.7.0       
-# Next minor - 1.6.2   
+# Next minor - 1.6.3   
+
 
 TODO:
 - Review sql requests (Accordingly to ActorProvider staff)
@@ -23,20 +22,18 @@ TODO:
 - Show first uploaded image on uploade page
 - Fix autotagging task stuck when service doesn't respond
 - Fix statistic recalculation when only 1 day recorded
-- Fix statistic recalculation task waiting
 
-DONE:
-- Fix personal account settings
-- Change back buttons in page layouts to window.history.back
-- Round autotag execution time in logging to seconds
-- Fix workers count in logs
-- Change autotag actual tag alias log to debug
-- Fix collection autotagging progress
-- Implement in task time execution measuring
-- Review creator updator linking when updating entities.
-- Fix slow loading of statistics dashboard (cdn slow response, switched to local js copyies)
 
 # Changelog				   
+
+### Version 1.6.2 - 13th Jul, 2024
+- Added new animations for gallery cards
+- Changed back buttons logic to use native browser history
+- Improvements in autotagging logger format
+- Fixed slow statistic loading
+- Fixed collection autotagging progress
+- Fixed personal account settings
+- Fixed statistic recalculation task waiting
 
 ### Version 1.6.1 - 12th Jun, 2024
 - Tag alias not required parameter anymore
