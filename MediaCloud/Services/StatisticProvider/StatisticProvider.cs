@@ -1,12 +1,9 @@
 ﻿using MediaCloud.Data;
 using MediaCloud.Data.Models;
-using MediaCloud.TaskScheduler;
 using MediaCloud.TaskScheduler.Tasks;
 using MediaCloud.WebApp.Services.ActorProvider;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using NLog;
-using System.Net.NetworkInformation;
 using ILogger = NLog.ILogger;
 
 namespace MediaCloud.WebApp.Services.Statistic

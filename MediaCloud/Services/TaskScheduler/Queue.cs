@@ -1,9 +1,4 @@
-﻿using MediaCloud.TaskScheduler.Tasks;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Task = MediaCloud.TaskScheduler.Tasks.Task;
+﻿using Task = MediaCloud.TaskScheduler.Tasks.Task;
 
 namespace MediaCloud.TaskScheduler
 {

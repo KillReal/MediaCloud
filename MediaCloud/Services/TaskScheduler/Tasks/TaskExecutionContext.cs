@@ -1,5 +1,3 @@
-using MediaCloud.Data;
-using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services.ActorProvider;
 

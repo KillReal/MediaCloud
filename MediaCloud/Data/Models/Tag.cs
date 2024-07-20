@@ -1,5 +1,4 @@
 ﻿using MediaCloud.Data.Types;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MediaCloud.Data.Models
 {

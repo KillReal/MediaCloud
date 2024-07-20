@@ -5,15 +5,7 @@ using MediaCloud.Repositories;
 using MediaCloud.Services;
 using MediaCloud.WebApp.Services.ActorProvider;
 using MediaCloud.WebApp.Services.Statistic;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace MediaCloud.TaskScheduler.Tasks
 {

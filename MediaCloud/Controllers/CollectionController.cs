@@ -1,7 +1,5 @@
 ﻿using MediaCloud.Builders.List;
-using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
-using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

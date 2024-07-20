@@ -1,5 +1,3 @@
-using MediaCloud.WebApp.Services.ActorProvider;
-
 namespace MediaCloud.WebApp.Services.ConfigProvider
 {
     public interface IConfigProvider

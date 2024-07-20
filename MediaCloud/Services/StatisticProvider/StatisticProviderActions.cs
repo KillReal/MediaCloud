@@ -1,9 +1,4 @@
-﻿using MediaCloud.Data;
-using MediaCloud.Data.Models;
-using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
-
-namespace MediaCloud.WebApp.Services.Statistic
+﻿namespace MediaCloud.WebApp.Services.Statistic
 {
     public partial class StatisticProvider
     {

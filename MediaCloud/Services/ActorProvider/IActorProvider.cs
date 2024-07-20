@@ -1,5 +1,4 @@
-﻿using MediaCloud.Data;
-using MediaCloud.Data.Models;
+﻿using MediaCloud.Data.Models;
 using MediaCloud.WebApp.Services.ConfigProvider;
 
 namespace MediaCloud.WebApp.Services.ActorProvider

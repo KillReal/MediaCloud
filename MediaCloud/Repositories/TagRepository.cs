@@ -2,14 +2,11 @@
 using MediaCloud.Builders.List;
 using MediaCloud.Data;
 using MediaCloud.Data.Models;
-using MediaCloud.Data.Types;
-using MediaCloud.WebApp.Repositories.Base;
 using MediaCloud.WebApp.Services.ActorProvider;
 using MediaCloud.WebApp.Services.Data.Repositories.Interfaces;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.EntityFrameworkCore;
 using NLog;
-using SixLabors.ImageSharp.ColorSpaces;
 using Preview = MediaCloud.Data.Models.Preview;
 
 namespace MediaCloud.Repositories

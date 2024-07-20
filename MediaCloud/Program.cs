@@ -5,15 +5,14 @@ using MediaCloud.TaskScheduler;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using MediaCloud.WebApp.Services;
 using MediaCloud.WebApp.Services.Statistic;
 using MediaCloud.WebApp.Services.ActorProvider;
 using NLog.Web;
 using NLog;
 using MediaCloud.WebApp.Services.ConfigProvider;
 using MediaCloud.WebApp;
+using Npgsql;
 
 var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 logger.Debug("Early NLog initialization");
@@ -28,7 +27,7 @@ builder.Host.UseNLog();
 builder.Services.AddRazorPages();
 builder.Services.AddDbContext<AppDbContext>(options => 
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Database"));
+    _ = options.UseNpgsql(builder.Configuration.GetConnectionString("Database") ?? throw new NpgsqlException("Database connection string must be specified"));
 });
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 

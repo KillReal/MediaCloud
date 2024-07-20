@@ -1,14 +1,8 @@
-using MediaCloud.Data;
 using MediaCloud.Data.Models;
-using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services.ActorProvider;
-using MediaCloud.WebApp.Services.Statistic;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using NLog;
-using System.Security.Claims;
 using ILogger = NLog.ILogger;
 
 namespace MediaCloud.WebApp.Pages

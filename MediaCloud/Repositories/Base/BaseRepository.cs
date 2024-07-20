@@ -1,9 +1,7 @@
 ﻿using MediaCloud.Data;
 using MediaCloud.Data.Models;
-using MediaCloud.Services;
 using MediaCloud.WebApp.Services.ActorProvider;
 using MediaCloud.WebApp.Services.Statistic;
-using NLog;
 using ILogger = NLog.ILogger;
 
 namespace MediaCloud.Repositories

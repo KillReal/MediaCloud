@@ -1,7 +1,5 @@
 ﻿using MediaCloud.Extensions;
-using MediaCloud.Services;
 using System.ComponentModel.DataAnnotations.Schema;
-using SixLabors.ImageSharp;
 
 namespace MediaCloud.Data.Models
 {

@@ -1,16 +1,8 @@
-﻿using System.Buffers.Text;
-using System.Diagnostics;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http.Headers;
-using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
-using MediaCloud.Services;
-using MediaCloud.WebApp.Controllers;
-using MediaCloud.WebApp.Services.ActorProvider;
 using MediaCloud.WebApp.Services.ConfigProvider;
-using Microsoft.AspNetCore.Routing.Constraints;
-using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using NLog;
 using ILogger = NLog.ILogger;

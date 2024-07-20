@@ -1,19 +1,11 @@
 ﻿using MediaCloud.Data;
 using MediaCloud.Data.Models;
-using MediaCloud.TaskScheduler.Tasks;
-using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services.ConfigProvider;
-using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.CodeAnalysis;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 using NLog;
-using System.Runtime.CompilerServices;
 using System.Security.Claims;
-using Task = MediaCloud.TaskScheduler.Tasks.Task;
 using Newtonsoft.Json;
 
 namespace MediaCloud.WebApp.Services.ActorProvider
@@ -22,10 +14,10 @@ namespace MediaCloud.WebApp.Services.ActorProvider
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly AppDbContext _context;
-        private IMemoryCache _memoryCache;
-        private Mutex _mutex = new();
+        private readonly IMemoryCache _memoryCache;
+        private readonly Mutex _mutex = new();
 
-        private MemoryCacheEntryOptions _memoryCacheOptions;
+        private readonly MemoryCacheEntryOptions _memoryCacheOptions;
 
         public ActorProvider(IServiceScopeFactory scopeFactory, IHttpContextAccessor httpContextAccessor, 
             IMemoryCache memoryCache, IConfiguration configuration)
@@ -43,13 +35,9 @@ namespace MediaCloud.WebApp.Services.ActorProvider
 
         public Actor GetCurrent()
         {
-            var httpContext = _httpContextAccessor.HttpContext;
-
-            if (httpContext == null)
-            {
+            var httpContext = _httpContextAccessor.HttpContext ?? 
                 throw new ArgumentException("Cannot get actor without HttpContext");
-            }
-
+            
             var identity = httpContext.User.Identity;
 
             if (identity == null || identity.Name == null)
@@ -57,7 +45,7 @@ namespace MediaCloud.WebApp.Services.ActorProvider
                 throw new ArgumentException("Cannot get actor without HttpContext");
             }
 
-            if (_memoryCache.TryGetValue(identity.Name, out Actor actor))
+            if (_memoryCache.TryGetValue(identity.Name, out Actor? actor) && actor != null)
             {
                 return actor;
             }
@@ -88,7 +76,7 @@ namespace MediaCloud.WebApp.Services.ActorProvider
                 return null;
             }
 
-            if (_memoryCache.TryGetValue(identity.Name, out Actor actor))
+            if (_memoryCache.TryGetValue(identity.Name, out Actor? actor))
             {
                 return actor;
             }
@@ -137,7 +125,7 @@ namespace MediaCloud.WebApp.Services.ActorProvider
                 throw new ArgumentException("Cannot get actor without HttpContext");
             }
 
-            if (_memoryCache.TryGetValue(identity.Name, out Actor actor))
+            if (_memoryCache.TryGetValue(identity.Name, out Actor? _))
             {
                 _memoryCache.Remove(identity.Name);
             }
@@ -162,7 +150,7 @@ namespace MediaCloud.WebApp.Services.ActorProvider
                 return new(false, $"Join attempt failed due to short password, it must be longer than 6 characters");
             }
 
-            if (data.Password.Any(x => char.IsSymbol(x)) == false && configProvider.EnvironmentSettings.PasswordMustHaveSymbols)
+            if (data.Password.Any(char.IsSymbol) == false && configProvider.EnvironmentSettings.PasswordMustHaveSymbols)
             {
                 return new(false, $"Join attempt failed due to week password, it must contain at least one symbol");
             }

@@ -1,7 +1,4 @@
-﻿using MediaCloud.Data;
-using MediaCloud.TaskScheduler.Tasks;
-using MediaCloud.Repositories;
-using MediaCloud.WebApp.Services;
+﻿using MediaCloud.TaskScheduler.Tasks;
 using MediaCloud.WebApp.Services.ConfigProvider;
 using NLog;
 using ILogger = NLog.ILogger;

@@ -1,19 +1,7 @@
-﻿using MediaCloud.Data;
-using MediaCloud.Data.Models;
-using MediaCloud.TaskScheduler.Tasks;
+﻿using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services.ConfigProvider;
-using MediaCloud.WebApp.Services.Statistic;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.CodeAnalysis;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 using NLog;
-using System.Runtime.CompilerServices;
-using System.Security.Claims;
-using Task = MediaCloud.TaskScheduler.Tasks.Task;
 
 namespace MediaCloud.WebApp.Services.ActorProvider
 {

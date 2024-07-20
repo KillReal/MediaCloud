@@ -1,6 +1,4 @@
-using SixLabors.ImageSharp;
-
-namespace MediaCloud.WebApp.Services.ConfigProvider 
+namespace MediaCloud.WebApp.Services.ConfigProvider
 {
     [Serializable]
     public class EnvironmentSettings
@@ -16,8 +14,8 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
 
         public EnvironmentSettings(IConfiguration configuration)
         {
-            DatabaseConnectionString = configuration?["ConnectionStrings:Database"];
-            AiJoyTagConnectionString = configuration?["ConnectionStrings:AiJoyTag"];
+            DatabaseConnectionString = configuration["ConnectionStrings:Database"];
+            AiJoyTagConnectionString = configuration["ConnectionStrings:AiJoyTag"];
             CookieExpireTime = configuration.GetValue<int>("CookieExpireTime");
             PreviewMaxHeight = configuration.GetValue<int>("PreviewMaxHeight");
             TaskSchedulerWorkerCount = configuration.GetValue<int>("TaskSchedulerWorkerCount");

@@ -1,21 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using MediaCloud.Data;
+﻿using Microsoft.AspNetCore.Mvc;
 using MediaCloud.Builders.List;
 using MediaCloud.Data.Models;
-using MediaCloud.Services;
-using System.Drawing;
-using System.Drawing.Imaging;
 using MediaCloud.Repositories;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
 using MediaCloud.WebApp.Pages;
-using MediaCloud.WebApp.Services.ConfigProvider;
 using MediaCloud.Extensions;
 using MediaCloud.WebApp.Services.ActorProvider;
 

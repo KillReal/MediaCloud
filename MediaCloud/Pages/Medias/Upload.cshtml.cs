@@ -1,20 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MediaCloud.Data;
-using MediaCloud.Data.Models;
-using MediaCloud.Services;
+﻿using MediaCloud.Data.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using MediaCloud.TaskScheduler;
 using MediaCloud.TaskScheduler.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-using MediaCloud.Repositories;
-using MediaCloud.WebApp.Services;
-using MediaCloud.WebApp.Services.Statistic;
 using MediaCloud.WebApp.Pages;
 using MediaCloud.WebApp.Services.ActorProvider;
 

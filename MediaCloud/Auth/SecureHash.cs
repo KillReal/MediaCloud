@@ -1,7 +1,5 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
-using System.IO;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using NLog;
 
 namespace MediaCloud.WebApp
@@ -11,8 +9,8 @@ namespace MediaCloud.WebApp
     /// </summary>
     public static class SecureHash
     {
-        private const int SaltSize = 16;
-        private const int HashSize = 20;
+        private const int _saltSize = 16;
+        private const int _hashSize = 20;
 
         /// <summary>
         /// Creates MD5 hash from string.
@@ -46,18 +44,16 @@ namespace MediaCloud.WebApp
 
             using (var rng = RandomNumberGenerator.Create())
             {
-                rng.GetBytes(salt = new byte[SaltSize]);
-                refreshToken = Convert.ToBase64String(salt = new byte[SaltSize]);
+                rng.GetBytes(salt = new byte[_saltSize]);
+                refreshToken = Convert.ToBase64String(salt = new byte[_saltSize]);
             }
 
-            //new RNGCryptoServiceProvider().GetBytes(salt = new byte[SaltSize]);
+            var pbkdf2 = new Rfc2898DeriveBytes(password, salt, iterations, HashAlgorithmName.SHA256);
+            var hash = pbkdf2.GetBytes(_hashSize);
 
-            var pbkdf2 = new Rfc2898DeriveBytes(password, salt, iterations);
-            var hash = pbkdf2.GetBytes(HashSize);
-
-            var hashBytes = new byte[SaltSize + HashSize];
-            Array.Copy(salt, 0, hashBytes, 0, SaltSize);
-            Array.Copy(hash, 0, hashBytes, SaltSize, HashSize);
+            var hashBytes = new byte[_saltSize + _hashSize];
+            Array.Copy(salt, 0, hashBytes, 0, _saltSize);
+            Array.Copy(hash, 0, hashBytes, _saltSize, _hashSize);
 
             return $"h5KPDjrv89{iterations}${Convert.ToBase64String(hashBytes)}";
         }
@@ -119,15 +115,15 @@ namespace MediaCloud.WebApp
 
             var hashBytes = Convert.FromBase64String(base64Hash);
 
-            var salt = new byte[SaltSize];
-            Array.Copy(hashBytes, 0, salt, 0, SaltSize);
+            var salt = new byte[_saltSize];
+            Array.Copy(hashBytes, 0, salt, 0, _saltSize);
 
-            var pbkdf2 = new Rfc2898DeriveBytes(password, salt, iterations);
-            byte[] hash = pbkdf2.GetBytes(HashSize);
+            var pbkdf2 = new Rfc2898DeriveBytes(password, salt, iterations, HashAlgorithmName.SHA256);
+            byte[] hash = pbkdf2.GetBytes(_hashSize);
 
-            for (var i = 0; i < HashSize; i++)
+            for (var i = 0; i < _hashSize; i++)
             {
-                if (hashBytes[i + SaltSize] != hash[i])
+                if (hashBytes[i + _saltSize] != hash[i])
                 {
                     return false;
                 }

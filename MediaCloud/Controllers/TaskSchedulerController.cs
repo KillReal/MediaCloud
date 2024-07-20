@@ -1,5 +1,4 @@
 ﻿using MediaCloud.TaskScheduler;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MediaCloud.WebApp.Controllers

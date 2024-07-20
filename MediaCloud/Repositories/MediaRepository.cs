@@ -1,18 +1,11 @@
-﻿using DynamicExpression.Extensions;
-using MediaCloud.Builders.List;
-using MediaCloud.Data;
+﻿using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.Services;
-using MediaCloud.WebApp.Services;
 using MediaCloud.WebApp.Services.ActorProvider;
-using MediaCloud.WebApp.Services.ConfigProvider;
 using MediaCloud.WebApp.Services.Statistic;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using NLog;
 using SixLabors.ImageSharp;
 using System.Data;
-using System.IO;
 
 namespace MediaCloud.Repositories
 {

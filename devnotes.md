@@ -7,7 +7,7 @@
 
 # Publishing
 
-`dotnet publish -r linux-x64 -p:PublishSingleFile=true --no-self-contained -o D:/Development/MediaCloud-Prod`
+`dotnet publish -r linux-x64 -p:PublishSingleFile=true --no-self-contained -o D:/Development/MediaCloud-Deploy`
 
 
 # Next release - 1.7.0       
@@ -22,7 +22,10 @@ TODO:
 - Show first uploaded image on uploade page
 - Fix autotagging task stuck when service doesn't respond
 - Fix statistic recalculation when only 1 day recorded
+- Add logging to JoyTag AI server
 
+DONE:
+- Upgraged .NET from 6.0 to 8.0
 
 # Changelog				   
 

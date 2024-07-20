@@ -2,11 +2,8 @@
 using MediaCloud.Builders.List;
 using MediaCloud.Data;
 using MediaCloud.Data.Models;
-using MediaCloud.Extensions;
 using MediaCloud.WebApp.Services.ActorProvider;
 using MediaCloud.WebApp.Services.Statistic;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
 using NLog;
 
 namespace MediaCloud.Repositories

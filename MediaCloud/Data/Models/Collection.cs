@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace MediaCloud.Data.Models
+﻿namespace MediaCloud.Data.Models
 {
     public class Collection : Entity
     {

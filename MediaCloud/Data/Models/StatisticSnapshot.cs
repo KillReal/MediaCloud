@@ -1,6 +1,4 @@
-﻿using System.Security.AccessControl;
-
-namespace MediaCloud.Data.Models
+﻿namespace MediaCloud.Data.Models
 {
     public class StatisticSnapshot : Entity
     {

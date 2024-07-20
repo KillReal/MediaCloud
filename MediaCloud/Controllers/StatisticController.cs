@@ -1,8 +1,5 @@
-﻿using MediaCloud.Data.Models;
-using MediaCloud.Extensions;
+﻿using MediaCloud.Extensions;
 using MediaCloud.TaskScheduler;
-using MediaCloud.Pages.Actors;
-using MediaCloud.Services;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
