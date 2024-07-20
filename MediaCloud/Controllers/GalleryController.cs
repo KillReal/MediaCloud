@@ -10,28 +10,17 @@ using Microsoft.AspNetCore.Mvc;
 namespace MediaCloud.WebApp.Controllers
 {
     [Authorize]
-    public class GalleryController : Controller
+    public class GalleryController(IConfigProvider configProvider, TagRepository tagRepository,
+        PreviewRepository previewRepository, CollectionRepository collectionRepository,
+        ITaskScheduler taskScheduler, IActorProvider actorProvider, IAutotagService actorService) : Controller
     {
-        private readonly IConfigProvider _configProvider;
-        private readonly TagRepository _tagRepository;
-        private readonly PreviewRepository _previewRepository;
-        private readonly ITaskScheduler _taskScheduler;
-        private readonly IActorProvider _actorProvider;
-        private readonly IAutotagService _autotagService;
-        private readonly CollectionRepository _collectionRepository;
-
-        public GalleryController(IConfigProvider configProvider, TagRepository tagRepository, 
-            PreviewRepository previewRepository, CollectionRepository collectionRepository, 
-            ITaskScheduler taskScheduler, IActorProvider actorProvider, IAutotagService actorService)
-        {
-            _configProvider = configProvider;
-            _tagRepository = tagRepository;
-            _previewRepository = previewRepository;
-            _taskScheduler = taskScheduler;
-            _actorProvider = actorProvider;
-            _autotagService = actorService;
-            _collectionRepository = collectionRepository;
-        }
+        private readonly IConfigProvider _configProvider = configProvider;
+        private readonly TagRepository _tagRepository = tagRepository;
+        private readonly PreviewRepository _previewRepository = previewRepository;
+        private readonly ITaskScheduler _taskScheduler = taskScheduler;
+        private readonly IActorProvider _actorProvider = actorProvider;
+        private readonly IAutotagService _autotagService = actorService;
+        private readonly CollectionRepository _collectionRepository = collectionRepository;
 
         public List<string> GetSuggestions(string searchString, int limit = 10)
         {
@@ -100,7 +89,7 @@ namespace MediaCloud.WebApp.Controllers
 
         public Guid AutocompleteTagForMedia(Guid previewId)
         {
-            var task = new AutotagPreviewTask(_actorProvider.GetCurrent(), new() { previewId });
+            var task = new AutotagPreviewTask(_actorProvider.GetCurrent(), [previewId]);
 
             return _taskScheduler.AddTask(task);
         }

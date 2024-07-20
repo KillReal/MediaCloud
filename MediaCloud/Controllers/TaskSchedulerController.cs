@@ -3,18 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MediaCloud.WebApp.Controllers
 {
-    public class TaskSchedulerController : Controller
+    public class TaskSchedulerController(ITaskScheduler taskScheduler) : Controller
     {
-        private readonly ITaskScheduler _taskScheduler;
+        private readonly ITaskScheduler _taskScheduler = taskScheduler;
 
         public IActionResult Index()
         {
             return View();
-        }
-
-        public TaskSchedulerController(ITaskScheduler taskScheduler)
-        {
-            _taskScheduler = taskScheduler;
         }
 
         public TaskScheduler.TaskStatus GetTaskStatus(Guid id)

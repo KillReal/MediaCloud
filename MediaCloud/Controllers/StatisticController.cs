@@ -7,20 +7,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace MediaCloud.WebApp.Controllers
 {
     [Authorize]
-    public class StatisticController : Controller
+    public class StatisticController(StatisticProvider statisticProvider, ITaskScheduler uploader) : Controller
     {
-        private readonly StatisticProvider _statisticProvider;
-        private readonly ITaskScheduler _uploader;
+        private readonly StatisticProvider _statisticProvider = statisticProvider;
+        private readonly ITaskScheduler _uploader = uploader;
 
         public IActionResult Index()
         {
             return View();
-        }
-
-        public StatisticController(StatisticProvider statisticProvider, ITaskScheduler uploader)
-        {
-            _statisticProvider = statisticProvider;
-            _uploader = uploader;
         }
 
         public dynamic GetCurrent()

@@ -15,7 +15,7 @@ namespace MediaCloud.Pages.Medias
         private readonly PreviewRepository _previewRepository;
 
         [BindProperty]
-        public List<Preview> Previews { get; set; } = new();
+        public List<Preview> Previews { get; set; } = [];
 
         [BindProperty]
         public ListBuilder<Preview> ListBuilder { get; set; }

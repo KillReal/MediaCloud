@@ -11,29 +11,22 @@ namespace MediaCloud.Builders.List
     /// List builder of entities with sortings, filtering and pagination.
     /// </summary>
     /// <typeparam name="T"><see cref="Record"/></typeparam>
-    public class ListBuilder<T> where T : Record
+    /// <remarks>
+    /// Init list builder via list request.
+    /// </remarks>
+    /// <param name="request"> List request. </param>
+    /// <param name="configProvider"> Config provider for current user <see cref="IDataService"/>. </param>
+    public class ListBuilder<T>(ListRequest request, ActorSettings actorSettings) where T : Record
     {
-        public Sorting Sorting { get; init; }
+        public Sorting Sorting { get; init; } = new Sorting(request.Sort ?? "UpdatedAtDesc");
 
-        public Filtering Filtering { get; init; }
+        public Filtering Filtering { get; init; } = new Filtering((request.Filter ?? "").ToLower());
 
-        public Pagination Pagination { get; init; }
-
-        /// <summary>
-        /// Init list builder via list request.
-        /// </summary>
-        /// <param name="request"> List request. </param>
-        /// <param name="configProvider"> Config provider for current user <see cref="IDataService"/>. </param>
-        public ListBuilder(ListRequest request, ActorSettings actorSettings)
-        {
-            Sorting = new Sorting(request.Sort ?? "UpdatedAtDesc");
-            Filtering = new Filtering((request.Filter ?? "").ToLower());
-            Pagination = new Pagination(request.Count == 0 
+        public Pagination Pagination { get; init; } = new Pagination(request.Count == 0
                 ? actorSettings.ListMaxEntitiesCount
-                : request.Count, 
+                : request.Count,
                 request.Offset,
                 actorSettings.ListMaxPageCount);
-        }
 
         /// <summary>
         /// Build the entity list by <see cref="BaseRepository{T}"/> querying from db.

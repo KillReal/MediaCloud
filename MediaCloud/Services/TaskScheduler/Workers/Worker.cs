@@ -50,7 +50,7 @@ namespace MediaCloud.TaskScheduler
             _queue = queue;
             _scheduler = scheduler;
             _serviceScopeFactory = serviceScopeFactory;
-            _taskTypes = new() { taskType };
+            _taskTypes = [taskType];
         }
 
         /// <summary>

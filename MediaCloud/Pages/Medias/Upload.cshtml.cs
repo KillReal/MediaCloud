@@ -7,25 +7,19 @@ using MediaCloud.WebApp.Services.ActorProvider;
 
 namespace MediaCloud.Pages.Medias
 {
-    public class MediaUploadModel : AuthorizedPageModel
+    public class MediaUploadModel(IActorProvider actorProvider, ITaskScheduler taskScheduler) : AuthorizedPageModel(actorProvider)
     {
-        private readonly Actor? _actor;
-        private readonly ITaskScheduler _taskScheduler;
+        private readonly Actor? _actor = actorProvider.GetCurrent();
+        private readonly ITaskScheduler _taskScheduler = taskScheduler;
 
         [BindProperty]
-        public List<IFormFile> Files { get; set; } = new();
+        public List<IFormFile> Files { get; set; } = [];
         [BindProperty]
         public string? Tags { get; set; }
         [BindProperty]
         public bool IsCollection { get; set; }
         [BindProperty]
         public string ReturnUrl { get; set; } = "/Medias";
-
-        public MediaUploadModel(IActorProvider actorProvider, ITaskScheduler taskScheduler) : base(actorProvider)
-        {
-            _actor = actorProvider.GetCurrent();
-            _taskScheduler = taskScheduler;
-        }
 
         public IActionResult OnGet(string returnUrl = "/Medias")
         {

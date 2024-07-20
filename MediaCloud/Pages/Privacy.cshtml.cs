@@ -5,15 +5,10 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace MediaCloud.Pages
 {
-    public class ChangelogModel : PageModel
+    public class ChangelogModel(IActorProvider actorProvider) : PageModel
     {
         [BindProperty]
-        public Actor? CurrentActor { get; set; }
-
-        public ChangelogModel(IActorProvider actorProvider)
-        { 
-            CurrentActor = actorProvider.GetCurrentOrDefault();
-        }
+        public Actor? CurrentActor { get; set; } = actorProvider.GetCurrentOrDefault();
 
         public IActionResult OnGet()
         {

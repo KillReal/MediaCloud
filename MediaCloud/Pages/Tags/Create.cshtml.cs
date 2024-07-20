@@ -6,18 +6,12 @@ using MediaCloud.WebApp.Services.ActorProvider;
 
 namespace MediaCloud.Pages.Tags
 {
-    public class TagCreateModel : AuthorizedPageModel
+    public class TagCreateModel(IActorProvider actorProvider, TagRepository tagRepository) : AuthorizedPageModel(actorProvider)
     {
-        private readonly TagRepository _tagRepository;
+        private readonly TagRepository _tagRepository = tagRepository;
 
         [BindProperty]
         public Tag Tag { get; set; } = new();
-
-        public TagCreateModel(IActorProvider actorProvider, TagRepository tagRepository) 
-            : base(actorProvider)
-        {
-            _tagRepository = tagRepository;
-        }
 
         public IActionResult OnGet(string ReturnUrl = "/Tags")
         {

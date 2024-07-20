@@ -12,7 +12,7 @@ namespace MediaCloud.WebApp;
 public class AutotagService : IAutotagService
 {
     private readonly ILogger _logger = LogManager.GetLogger("AutotagService");
-    private readonly List<Guid> _proceededPreviewIds = new();
+    private readonly List<Guid> _proceededPreviewIds = [];
     private readonly HttpClient _httpClient;
     private readonly Mutex _mutex = new();
     private readonly Semaphore _semaphore;
@@ -56,7 +56,7 @@ public class AutotagService : IAutotagService
     {
         if (preview == null)
         {
-            return new();
+            return [];
         }
         
         try {
@@ -76,7 +76,7 @@ public class AutotagService : IAutotagService
 
             if (string.IsNullOrWhiteSpace(result))
             {
-                return new();
+                return [];
             }
 
             var suggestedTags = result.Split("\n")
@@ -117,7 +117,7 @@ public class AutotagService : IAutotagService
         {
             _proceededPreviewIds.Remove(preview.Id);
             _logger.Error(ex, "Failed to process autotagging for image");
-            return new();
+            return [];
         }
     }
 
@@ -127,7 +127,7 @@ public class AutotagService : IAutotagService
 
         if (previews.Any() == false || collectionId == null)
         {
-            return new();
+            return [];
         }
 
         try {
@@ -135,7 +135,7 @@ public class AutotagService : IAutotagService
             
             _logger.Info("Executed AI tag autocompletion for Collection: {collection.Id}", collectionId);
 
-            List<Tag> tags = new();
+            List<Tag> tags = [];
 
             var options = new ParallelOptions { MaxDegreeOfParallelism = _maxParralelDegree};
             Parallel.ForEach(previews, options, preview => 
@@ -156,7 +156,7 @@ public class AutotagService : IAutotagService
         catch (Exception ex)
         {
             _logger.Error(ex, "Failed to process autotagging for image");
-            return new();
+            return [];
         }
     }
 
@@ -174,15 +174,15 @@ public class AutotagService : IAutotagService
 
             if (string.IsNullOrWhiteSpace(result))
             {
-                return new();
+                return [];
             }
 
-            return JsonConvert.DeserializeObject<List<string>>(result) ?? new List<string>();
+            return JsonConvert.DeserializeObject<List<string>>(result) ?? [];
         }
         catch (Exception ex)
         {
             _logger.Error(ex, "Failed to get tag aliases");
-            return new();
+            return [];
         }
     }
 

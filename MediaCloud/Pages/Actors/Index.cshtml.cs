@@ -24,7 +24,7 @@ namespace MediaCloud.Pages.Actors
         }
 
         [BindProperty]
-        public List<Actor> Actors { get; set; } = new();
+        public List<Actor> Actors { get; set; } = [];
         [BindProperty]
         public ListBuilder<Actor> ListBuilder { get; set; }
 

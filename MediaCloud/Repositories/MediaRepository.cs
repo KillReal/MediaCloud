@@ -9,9 +9,9 @@ using System.Data;
 
 namespace MediaCloud.Repositories
 {
-    public class MediaRepository : BaseRepository<Media>
+    public class MediaRepository(AppDbContext context, StatisticProvider statisticProvider, IActorProvider actorProvider, IPictureService pictureService) : BaseRepository<Media>(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider)
     {
-        private IPictureService _pictureService;
+        private IPictureService _pictureService = pictureService;
 
         private Media CreateMediaFromFile(byte[] file)
         {
@@ -28,12 +28,6 @@ namespace MediaCloud.Repositories
             media.Preview.Updator = media.Creator;
 
             return media;
-        }
-
-        public MediaRepository(AppDbContext context, StatisticProvider statisticProvider, IActorProvider actorProvider, IPictureService pictureService) 
-            : base(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider)
-        {
-            _pictureService = pictureService;
         }
 
         public override void Remove(Media entity)
@@ -69,7 +63,7 @@ namespace MediaCloud.Repositories
 
             if (files.Count == 1)
             {
-                return new() { Create(files[0]) };
+                return [Create(files[0])];
             }
 
             var medias = GetMediasRange(files);
@@ -102,7 +96,7 @@ namespace MediaCloud.Repositories
 
             if (files.Count == 1)
             {
-                return new() { Create(files[0]) };
+                return [Create(files[0])];
             }
 
             var medias = GetMediasRange(files);

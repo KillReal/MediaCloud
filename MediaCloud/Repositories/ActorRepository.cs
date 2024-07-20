@@ -7,14 +7,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MediaCloud.Repositories
 {
-    public class ActorRepository : IListBuildable<Actor>
+    public class ActorRepository(AppDbContext context) : IListBuildable<Actor>
     {
-        private readonly AppDbContext _context;
-
-        public ActorRepository(AppDbContext context)
-        {
-            _context = context;
-        }
+        private readonly AppDbContext _context = context;
 
         public bool Create(Actor actor)
         {

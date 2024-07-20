@@ -9,9 +9,9 @@ using Task = MediaCloud.TaskScheduler.Tasks.Task;
 
 namespace MediaCloud.WebApp;
 
-public class AutotagCollectionTask : Task, ITask
+public class AutotagCollectionTask(Actor actor, Guid collectionId) : Task(actor), ITask
 {
-    private readonly Guid _collectionId = Guid.Empty;
+    private readonly Guid _collectionId = collectionId;
     private double _aproximateExecutionTime;
 
     public override int GetWorkCount() 
@@ -33,10 +33,6 @@ public class AutotagCollectionTask : Task, ITask
         return (int)Math.Clamp(progress, 0, 100);
     }
 
-    public AutotagCollectionTask(Actor actor, Guid collectionId) : base(actor)
-    {
-        _collectionId = collectionId;
-    }
     public override void DoTheTask(IServiceProvider serviceProvider, IActorProvider actorProvider)
     {
         var context = serviceProvider.GetRequiredService<AppDbContext>();

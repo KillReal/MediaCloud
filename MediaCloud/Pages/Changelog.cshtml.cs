@@ -5,15 +5,10 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace MediaCloud.Pages
 {
-    public class PrivacyModel : PageModel
+    public class PrivacyModel(IActorProvider actorProvider) : PageModel
     {
         [BindProperty]
-        public Actor? CurrentActor { get; set; }
-
-        public PrivacyModel(IActorProvider actorProvider)
-        { 
-            CurrentActor = actorProvider.GetCurrentOrDefault();
-        }
+        public Actor? CurrentActor { get; set; } = actorProvider.GetCurrentOrDefault();
 
         public IActionResult OnGet()
         {

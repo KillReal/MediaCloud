@@ -6,21 +6,12 @@ using ILogger = NLog.ILogger;
 
 namespace MediaCloud.Repositories
 {
-    public class BaseRepository<T> where T : Entity
+    public class BaseRepository<T>(AppDbContext context, StatisticProvider statisticProvider, ILogger logger, IActorProvider actorProvider) where T : Entity
     {
-        protected StatisticProvider _statisticProvider;
-        protected AppDbContext _context;
-        protected ILogger _logger;
-        protected Actor _actor;
-
-        public BaseRepository(AppDbContext context, StatisticProvider statisticProvider, ILogger logger, IActorProvider actorProvider)
-        {
-            _statisticProvider = statisticProvider;
-            _context = context;
-            _logger = logger;
-
-            _actor = actorProvider.GetCurrent();
-        }
+        protected StatisticProvider _statisticProvider = statisticProvider;
+        protected AppDbContext _context = context;
+        protected ILogger _logger = logger;
+        protected Actor _actor = actorProvider.GetCurrent();
 
         public virtual T? Get(Guid id)
         {

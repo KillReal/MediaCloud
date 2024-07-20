@@ -2,7 +2,7 @@
 {
     public class Collection : Entity
     {
-        public virtual List<Preview> Previews { get; set; } = new();
+        public virtual List<Preview> Previews { get; set; } = [];
 
         public int Count { get; set; }
 

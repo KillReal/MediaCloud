@@ -7,19 +7,20 @@ using MediaCloud.WebApp.Services.ActorProvider;
 
 namespace MediaCloud.Pages.Medias
 {
-    public class MediaDetailModel : AuthorizedPageModel
+    public class MediaDetailModel(IActorProvider actorProvider, IPictureService pictureService, TagRepository tagRepository,
+        PreviewRepository previewRepository, MediaRepository mediaRepository) : AuthorizedPageModel(actorProvider)
     {
-        private readonly IPictureService _pictureService;
-        private readonly TagRepository _tagRepository;
-        private readonly PreviewRepository _previewRepository;
-        private readonly MediaRepository _mediaRepository;
+        private readonly IPictureService _pictureService = pictureService;
+        private readonly TagRepository _tagRepository = tagRepository;
+        private readonly PreviewRepository _previewRepository = previewRepository;
+        private readonly MediaRepository _mediaRepository = mediaRepository;
 
         [BindProperty]
         public Guid PreviewId { get; set; }
         [BindProperty]
         public Media Media { get; set; } = new();
         [BindProperty]
-        public List<Tag> Tags { get; set; } = new();
+        public List<Tag> Tags { get; set; } = [];
         [BindProperty]
         public string? TagsString { get; set; } = "";
         [BindProperty]
@@ -32,15 +33,6 @@ namespace MediaCloud.Pages.Medias
         public Guid? NextPreviewId { get; set; } = null;
         [BindProperty]
         public int RotationDegree {get; set;} = 0;
-
-        public MediaDetailModel(IActorProvider actorProvider, IPictureService pictureService, TagRepository tagRepository,
-            PreviewRepository previewRepository, MediaRepository mediaRepository) : base(actorProvider)
-        {
-            _pictureService = pictureService;
-            _tagRepository = tagRepository;
-            _previewRepository = previewRepository;
-            _mediaRepository = mediaRepository;
-        }
 
         public IActionResult OnGet(Guid id, string returnUrl = "/Medias", string rootReturnUrl = "/")
         {

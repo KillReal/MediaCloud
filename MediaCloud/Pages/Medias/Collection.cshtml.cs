@@ -8,17 +8,17 @@ using MediaCloud.WebApp.Services.ActorProvider;
 
 namespace MediaCloud.Pages.Medias
 {
-    public class CollectionModel : AuthorizedPageModel
+    public class CollectionModel(IActorProvider actorProvider, CollectionRepository collectionRepository, TagRepository tagRepository) : AuthorizedPageModel(actorProvider)
     {
-        private readonly CollectionRepository _collectionRepository;
-        private readonly TagRepository _tagRepository;
+        private readonly CollectionRepository _collectionRepository = collectionRepository;
+        private readonly TagRepository _tagRepository = tagRepository;
 
         [BindProperty]
         public Collection Collection { get; set; } = new();
         [BindProperty]
         public string ReturnUrl { get; set; } = "/Medias";
         [BindProperty]
-        public List<Tag> Tags { get; set; } = new();
+        public List<Tag> Tags { get; set; } = [];
         [BindProperty]
         public string? TagsString { get; set; }
         [BindProperty]
@@ -28,15 +28,9 @@ namespace MediaCloud.Pages.Medias
         [BindProperty]
         public int TotalCount { get; set; }
         [BindProperty]
-        public List<int> Orders { get; set; } = new();
+        public List<int> Orders { get; set; } = [];
         [BindProperty]
         public string? CollectionSizeInfo { get; set; }
-
-        public CollectionModel(IActorProvider actorProvider, CollectionRepository collectionRepository, TagRepository tagRepository) : base(actorProvider)
-        {
-            _collectionRepository = collectionRepository;
-            _tagRepository = tagRepository;
-        }
 
         public IActionResult OnGet(Guid id, string returnUrl = "/Medias")
         {

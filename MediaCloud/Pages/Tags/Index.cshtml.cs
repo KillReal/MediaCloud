@@ -14,7 +14,7 @@ namespace MediaCloud.Pages.Tags
         private readonly IConfigProvider _configProvider;
 
         [BindProperty]
-        public List<Tag> Tags { get; set; } = new();
+        public List<Tag> Tags { get; set; } = [];
         [BindProperty]
         public ListBuilder<Tag> ListBuilder { get; set; }
         [BindProperty]

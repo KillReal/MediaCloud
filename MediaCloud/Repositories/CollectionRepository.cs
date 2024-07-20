@@ -8,13 +8,8 @@ using NLog;
 
 namespace MediaCloud.Repositories
 {
-    public class CollectionRepository : BaseRepository<Collection>
+    public class CollectionRepository(AppDbContext context, StatisticProvider statisticProvider, IActorProvider actorProvider) : BaseRepository<Collection>(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider)
     {
-        public CollectionRepository(AppDbContext context, StatisticProvider statisticProvider, IActorProvider actorProvider) 
-            : base(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider)
-        {
-        }
-
         public override Collection? Get(Guid id)
         {
             var collection = _context.Collections.Find(id);
@@ -45,7 +40,7 @@ namespace MediaCloud.Repositories
 
             if (collection == null || collection.CreatorId != _actor.Id)
             {
-                return new();
+                return [];
             }
 
             _statisticProvider.ActivityFactorRaised.Invoke();

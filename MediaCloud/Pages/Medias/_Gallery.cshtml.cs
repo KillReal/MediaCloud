@@ -3,13 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MediaCloud.WebApp;
 
-public class _GalleryPageModel
+public class _GalleryPageModel(List<Preview> previews)
 {
     [BindProperty]
-    public List<Preview> Previews { get; set; }
-
-    public _GalleryPageModel(List<Preview> previews)
-    {
-        Previews = previews;
-    }
+    public List<Preview> Previews { get; set; } = previews;
 }

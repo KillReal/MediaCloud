@@ -5,18 +5,12 @@ using MediaCloud.WebApp.Services.Statistic;
 
 namespace MediaCloud.TaskScheduler.Tasks
 {
-    public class RecalculateTask : Task, ITask
+    public class RecalculateTask(Actor actor, DateTime startDate) : Task(actor), ITask
     {
-        private readonly DateTime _startDate;
+        private readonly DateTime _startDate = startDate;
         private int _workCount;
 
         public override int GetWorkCount() => _workCount;
-
-        public RecalculateTask(Actor actor, DateTime startDate) 
-            : base(actor)
-        {
-            _startDate = startDate;
-        }
 
         public override void DoTheTask(IServiceProvider serviceProvider, IActorProvider actorProvider)
         {

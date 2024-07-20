@@ -7,10 +7,10 @@ using ILogger = NLog.ILogger;
 
 namespace MediaCloud.WebApp.Pages
 {
-    public class LoginModel : PageModel
+    public class LoginModel(IActorProvider actorProvider) : PageModel
     {
-        private readonly IActorProvider _actorProvider;
-        private readonly ILogger _logger;
+        private readonly IActorProvider _actorProvider = actorProvider;
+        private readonly ILogger _logger = LogManager.GetLogger("Actor");
 
         [BindProperty]
         public bool IsFailed { get; set; } = false;
@@ -20,12 +20,6 @@ namespace MediaCloud.WebApp.Pages
         public Actor? CurrentActor { get; set; } = null;
         [BindProperty]
         public string ReturnUrl { get; set; } = "/";
-
-        public LoginModel(IActorProvider actorProvider)
-        {
-            _actorProvider = actorProvider;
-            _logger = LogManager.GetLogger("Actor");
-        }
 
         public IActionResult OnGet(string returnUrl = "/")
         {

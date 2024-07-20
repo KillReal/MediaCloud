@@ -11,7 +11,7 @@ using Preview = MediaCloud.Data.Models.Preview;
 
 namespace MediaCloud.Repositories
 {
-    public class TagRepository : BaseRepository<Tag>, IListBuildable<Tag>
+    public class TagRepository(AppDbContext context, StatisticProvider statisticProvider, IActorProvider actorProvider) : BaseRepository<Tag>(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider), IListBuildable<Tag>
     {
         private static string DeduplicateTagString(string tagString)
         {
@@ -23,11 +23,6 @@ namespace MediaCloud.Repositories
             }
 
             return string.Join(' ', tags.Distinct());
-        }
-
-        public TagRepository(AppDbContext context, StatisticProvider statisticProvider, IActorProvider actorProvider)
-        : base(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider)
-        {
         }
 
         public bool Create(Tag tag)
@@ -94,7 +89,7 @@ namespace MediaCloud.Repositories
         {
             if (string.IsNullOrEmpty(tagsString))
             {
-                return new();
+                return [];
             }
             tagsString = DeduplicateTagString(tagsString).ToLower();
             var tags = tagsString.ToLower().Split(' ');
@@ -107,7 +102,7 @@ namespace MediaCloud.Repositories
         {
             if (string.IsNullOrEmpty(aliasesString))
             {
-                return new();
+                return [];
             }
             aliasesString = DeduplicateTagString(aliasesString).ToLower();
             var aliases = aliasesString.ToLower().Split(' ');

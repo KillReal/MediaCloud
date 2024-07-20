@@ -6,7 +6,7 @@
         public int MediaCount { get; set; }
         public int WorkersActive { get; set; }
         public int MaxWorkersAvailable { get; set; }
-        public List<TaskStatus> TaskStatuses { get; set; } = new();
+        public List<TaskStatus> TaskStatuses { get; set; } = [];
 
         public TaskSchedulerStatus(Queue currentQueue, TaskScheduler scheduler)
         {

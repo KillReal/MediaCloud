@@ -6,14 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace MediaCloud.WebApp.Controllers
 {
     [Authorize]
-    public class CollectionController : Controller
+    public class CollectionController(CollectionRepository collectionRepository) : Controller
     {
-        private readonly CollectionRepository _collectionRepository;
-
-        public CollectionController(CollectionRepository collectionRepository)
-        {
-            _collectionRepository = collectionRepository;
-        }
+        private readonly CollectionRepository _collectionRepository = collectionRepository;
 
         public List<object> PreviewsBatch(Guid id, ListRequest listRequest)
         {

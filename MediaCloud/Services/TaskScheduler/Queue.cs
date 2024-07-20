@@ -4,7 +4,7 @@ namespace MediaCloud.TaskScheduler
 {
     public class Queue
     {
-        private readonly List<Task> _tasks = new();
+        private readonly List<Task> _tasks = [];
 
         public Action<Task> OnTaskComplete;
 

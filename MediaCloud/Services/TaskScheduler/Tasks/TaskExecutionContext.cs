@@ -3,15 +3,10 @@ using MediaCloud.WebApp.Services.ActorProvider;
 
 namespace MediaCloud.TaskScheduler.Tasks
 {
-    public class TaskExecutionContext
+    public class TaskExecutionContext(ITask task)
     {
-        private ITask _task;
+        private ITask _task = task;
 
-        public TaskExecutionContext(ITask task)
-        {
-            _task = task;
-        }
-        
         public virtual void DoTheTask(IServiceProvider serviceProvider)
         {
             var actorRepository = serviceProvider.GetRequiredService<ActorRepository>();

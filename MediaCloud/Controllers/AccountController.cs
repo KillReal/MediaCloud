@@ -7,16 +7,10 @@ using ILogger = NLog.ILogger;
 namespace MediaCloud.WebApp.Controllers
 {
     [Authorize]
-    public class AccountController : Controller
+    public class AccountController(IActorProvider actorProvider) : Controller
     {
-        private readonly ILogger _logger;
-        private readonly IActorProvider _actorProvider;
-
-        public AccountController(IActorProvider actorProvider)
-        {
-            _logger = LogManager.GetLogger("Actor");
-            _actorProvider = actorProvider;
-        }
+        private readonly ILogger _logger = LogManager.GetLogger("Actor");
+        private readonly IActorProvider _actorProvider = actorProvider;
 
         public IActionResult Logout()
         {

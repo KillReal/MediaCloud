@@ -9,31 +9,22 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MediaCloud.Pages
 {
-    public class StatisticModel : AuthorizedPageModel
+    public class StatisticModel(IActorProvider actorProvider, IConfigProvider configProvider, StatisticProvider statisticProvider,
+        TagRepository tagRepository, AppDbContext context) : AuthorizedPageModel(actorProvider)
     {
-        private readonly StatisticProvider _statisticProvider;
-        private readonly IConfigProvider _configProvider;
-        private readonly TagRepository _tagRepository;
-        private readonly AppDbContext _context;
+        private readonly StatisticProvider _statisticProvider = statisticProvider;
+        private readonly IConfigProvider _configProvider = configProvider;
+        private readonly TagRepository _tagRepository = tagRepository;
+        private readonly AppDbContext _context = context;
 
         [BindProperty]
         public double SizeTargetError { get; set; }
         [BindProperty]
         public int ActivityBacktrackDayCount { get; set; }
         [BindProperty]
-        public List<StatisticSnapshot> Snapshots { get; set; } = new();
+        public List<StatisticSnapshot> Snapshots { get; set; } = [];
         [BindProperty]
-        public List<Tag> Tags { get; set; } = new();
-
-        public StatisticModel(IActorProvider actorProvider, IConfigProvider configProvider, StatisticProvider statisticProvider,
-            TagRepository tagRepository, AppDbContext context) 
-            : base(actorProvider)
-        {
-            _statisticProvider = statisticProvider;
-            _configProvider = configProvider;
-            _tagRepository = tagRepository;
-            _context = context;
-        }
+        public List<Tag> Tags { get; set; } = [];
 
         public IActionResult OnGet()
         {

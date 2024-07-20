@@ -12,7 +12,7 @@ using NLog;
 
 namespace MediaCloud.Repositories
 {
-    public class PreviewRepository : BaseRepository<Preview>, IListBuildable<Preview>
+    public class PreviewRepository(AppDbContext context, StatisticProvider statisticProvider, IActorProvider actorProvider) : BaseRepository<Preview>(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider), IListBuildable<Preview>
     {
         private static string DeduplicateTagString(string tagString)
         {
@@ -86,11 +86,6 @@ namespace MediaCloud.Repositories
             }
 
             return query;
-        }
-
-        public PreviewRepository(AppDbContext context, StatisticProvider statisticProvider, IActorProvider actorProvider) 
-        : base(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider)
-        {
         }
 
         public override Preview? Get(Guid id)

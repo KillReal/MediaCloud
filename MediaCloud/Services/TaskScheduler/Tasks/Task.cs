@@ -6,17 +6,21 @@ namespace MediaCloud.TaskScheduler.Tasks
     /// <summary>
     /// Abstract Task with unique id and <see cref="Actor"/>.
     /// </summary>
-    public class Task : ITask
+    /// <remarks>
+    /// Task init.
+    /// </remarks>
+    /// <param name="actor"> Customer of task. </param>
+    public class Task(Actor actor) : ITask
     {
         /// <summary>
         /// Unique identificator.
         /// </summary>
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
 
         /// <summary>
         /// Customer.
         /// </summary>
-        public Actor Actor { get; set; }
+        public Actor Actor { get; set; } = actor;
 
         /// <summary>
         /// Wether the task can be executed.
@@ -24,16 +28,6 @@ namespace MediaCloud.TaskScheduler.Tasks
         public bool IsWaiting { get; set; } = true;
 
         public DateTime ExecutedAt {get; set;}
-
-        /// <summary>
-        /// Task init.
-        /// </summary>
-        /// <param name="actor"> Customer of task. </param>
-        public Task(Actor actor)
-        {
-            Id = Guid.NewGuid();
-            Actor = actor;
-        }
 
         /// <summary>
         /// Check work count to process.

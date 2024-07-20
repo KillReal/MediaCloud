@@ -14,7 +14,7 @@ namespace MediaCloud.TaskScheduler
     {
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly ILogger _logger;
-        private readonly List<Worker> _workers = new();
+        private readonly List<Worker> _workers = [];
         private readonly Queue _queue;
         
         public readonly int MaxWorkersCount;
@@ -29,7 +29,7 @@ namespace MediaCloud.TaskScheduler
         {
             _serviceScopeFactory = serviceScopeFactory;
             _logger = LogManager.GetLogger("Scheduler");
-            _workers = new List<Worker>();
+            _workers = [];
             _queue = new Queue();
 
             var workersCount = configProvider.EnvironmentSettings.TaskSchedulerWorkerCount;
