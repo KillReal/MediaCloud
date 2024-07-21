@@ -1,17 +1,17 @@
 
 # Infrastructure             
 
-- 1.6.2 mediacloud
-- 1.6.2 mediacloud-dev
+- 1.6.3 mediacloud
+- 1.6.3 mediacloud-dev
 
 
 # Publishing
 
 `dotnet publish -r linux-x64 -p:PublishSingleFile=true --no-self-contained -o D:/Development/MediaCloud-Deploy`
-
+1`
 
 # Next release - 1.7.0       
-# Next minor - 1.6.3   
+# Next minor - 1.6.4   
 
 
 TODO:

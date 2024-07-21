@@ -9,6 +9,7 @@ import json
 import os
 import base64
 from io import BytesIO
+from log import Log
 
 urls = (
 	'/predictTags', 'predictTags',
@@ -28,7 +29,7 @@ with open(Path(path) / 'top_tags.txt', 'r') as f:
 
 if __name__ == "__main__":
     app = web.application(urls, globals())
-    app.run()
+    app.run(Log)
 
 class suggestedTags:
 	def POST(self):
