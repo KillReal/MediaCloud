@@ -26,6 +26,9 @@ TODO:
 
 DONE:
 - Upgraged .NET from 6.0 to 8.0
+- Upgraded Npgsql.EntityFrameworkCore.PostgreSQL from 6.0.7 to 8.0.4
+- Upgraded bootstrap from 5.2.1 to 5.3.3
+- More Other packages upgraded to upstream versions
 
 # Changelog				   
 
