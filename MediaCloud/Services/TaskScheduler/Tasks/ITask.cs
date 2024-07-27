@@ -1,13 +1,13 @@
 ﻿using MediaCloud.Data.Models;
-using MediaCloud.WebApp.Services.ActorProvider;
+using MediaCloud.WebApp.Services.UserProvider;
 
 namespace MediaCloud.TaskScheduler.Tasks
 {
     public interface ITask
     {
         public int GetWorkCount();
-        public Actor GetAuthor();
+        public User GetAuthor();
 
-        public void DoTheTask(IServiceProvider serviceProvider, IActorProvider actorProvider);
+        public void DoTheTask(IServiceProvider serviceProvider, IUserProvider actorProvider);
     }
 }

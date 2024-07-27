@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MediaCloud.Repositories
 {
-    public class ActorRepository(AppDbContext context) : IListBuildable<Actor>
+    public class UserRepository(AppDbContext context) : IListBuildable<User>
     {
         private readonly AppDbContext _context = context;
 
-        public bool Create(Actor actor)
+        public bool Create(User actor)
         {
             if (actor == null)
             {
@@ -20,7 +20,7 @@ namespace MediaCloud.Repositories
 
             try
             {
-                _context.Actors?.Add(actor);
+                _context.Users?.Add(actor);
                 _context.SaveChanges();
 
                 return true;
@@ -31,13 +31,13 @@ namespace MediaCloud.Repositories
             }
         }
 
-        public Actor? Get(string? actorName) 
-            => _context.Actors.FirstOrDefault(x => x.Name == actorName);
+        public User? Get(string? actorName) 
+            => _context.Users.FirstOrDefault(x => x.Name == actorName);
 
-        public Actor Get(Guid id) 
-            => _context.Actors.Find(id) ?? new();
+        public User Get(Guid id) 
+            => _context.Users.Find(id) ?? new();
 
-        public void Update(Actor actor)
+        public void Update(User actor)
         {
             _context.Update(actor);
             _context.SaveChanges();
@@ -52,21 +52,20 @@ namespace MediaCloud.Repositories
                 return false;
             }
 
-            _context.Actors.Remove(actor);
+            _context.Users.Remove(actor);
             _context.SaveChanges();
 
             return true;
         }
 
-        public List<Actor> GetList(ListBuilder<Actor> listBuilder)
+        public List<User> GetList(ListBuilder<User> listBuilder)
         {
-            return _context.Actors.AsNoTracking().Order(listBuilder.Sorting.GetOrder())
+            return [.. _context.Users.AsNoTracking().Order(listBuilder.Sorting.GetOrder())
                                                  .Skip(listBuilder.Pagination.Offset)
-                                                 .Take(listBuilder.Pagination.Count)
-                                                 .ToList();
+                                                 .Take(listBuilder.Pagination.Count)];
         }
 
-        public async Task<int> GetListCountAsync(ListBuilder<Actor> listBuilder)
-            => await _context.Actors.AsNoTracking().CountAsync();
+        public async Task<int> GetListCountAsync(ListBuilder<User> listBuilder)
+            => await _context.Users.AsNoTracking().CountAsync();
     }
 }

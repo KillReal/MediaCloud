@@ -2,14 +2,14 @@
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Pages;
-using MediaCloud.WebApp.Services.ActorProvider;
+using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp.Services.ConfigProvider;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MediaCloud.Pages
 {
-    public class StatisticModel(IActorProvider actorProvider, IConfigProvider configProvider, StatisticProvider statisticProvider,
+    public class StatisticModel(IUserProvider actorProvider, IConfigProvider configProvider, StatisticProvider statisticProvider,
         TagRepository tagRepository, AppDbContext context) : AuthorizedPageModel(actorProvider)
     {
         private readonly StatisticProvider _statisticProvider = statisticProvider;

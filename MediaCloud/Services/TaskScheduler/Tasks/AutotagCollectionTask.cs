@@ -2,14 +2,14 @@
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
 using MediaCloud.TaskScheduler.Tasks;
-using MediaCloud.WebApp.Services.ActorProvider;
+using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp.Services.ConfigProvider;
 using MediaCloud.WebApp.Services.Statistic;
 using Task = MediaCloud.TaskScheduler.Tasks.Task;
 
 namespace MediaCloud.WebApp;
 
-public class AutotagCollectionTask(Actor actor, Guid collectionId) : Task(actor), ITask
+public class AutotagCollectionTask(User actor, Guid collectionId) : Task(actor), ITask
 {
     private readonly Guid _collectionId = collectionId;
     private double _aproximateExecutionTime;
@@ -33,7 +33,7 @@ public class AutotagCollectionTask(Actor actor, Guid collectionId) : Task(actor)
         return (int)Math.Clamp(progress, 0, 100);
     }
 
-    public override void DoTheTask(IServiceProvider serviceProvider, IActorProvider actorProvider)
+    public override void DoTheTask(IServiceProvider serviceProvider, IUserProvider actorProvider)
     {
         var context = serviceProvider.GetRequiredService<AppDbContext>();
         

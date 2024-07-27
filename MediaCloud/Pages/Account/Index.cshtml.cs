@@ -1,5 +1,5 @@
 using MediaCloud.Data.Models;
-using MediaCloud.WebApp.Services.ActorProvider;
+using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp.Services.ConfigProvider;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
@@ -12,7 +12,7 @@ namespace MediaCloud.WebApp.Pages
         private readonly IConfigProvider _configProvider;
 
         [BindProperty]
-        public Actor Actor { get; set; }
+        public User Actor { get; set; }
         [BindProperty]
         public ActorSettings ActorSettings { get; set; }
         [BindProperty]
@@ -23,7 +23,7 @@ namespace MediaCloud.WebApp.Pages
         [BindProperty]
         public string ReturnUrl { get; set; } = "/";
 
-        public IndexModel(IActorProvider actorProvider, IConfigProvider configProvider) : base(actorProvider)
+        public IndexModel(IUserProvider actorProvider, IConfigProvider configProvider) : base(actorProvider)
         {
             _logger = LogManager.GetLogger("Actor");
             _configProvider = configProvider;

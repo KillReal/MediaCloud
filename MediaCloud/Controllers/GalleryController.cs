@@ -2,23 +2,24 @@
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
 using MediaCloud.TaskScheduler;
-using MediaCloud.WebApp.Services.ActorProvider;
+using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp.Services.ConfigProvider;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.IO.Compression;
 
 namespace MediaCloud.WebApp.Controllers
 {
     [Authorize]
     public class GalleryController(IConfigProvider configProvider, TagRepository tagRepository,
         PreviewRepository previewRepository, CollectionRepository collectionRepository,
-        ITaskScheduler taskScheduler, IActorProvider actorProvider, IAutotagService actorService) : Controller
+        ITaskScheduler taskScheduler, IUserProvider actorProvider, IAutotagService actorService) : Controller
     {
         private readonly IConfigProvider _configProvider = configProvider;
         private readonly TagRepository _tagRepository = tagRepository;
         private readonly PreviewRepository _previewRepository = previewRepository;
         private readonly ITaskScheduler _taskScheduler = taskScheduler;
-        private readonly IActorProvider _actorProvider = actorProvider;
+        private readonly IUserProvider _actorProvider = actorProvider;
         private readonly IAutotagService _autotagService = actorService;
         private readonly CollectionRepository _collectionRepository = collectionRepository;
 
@@ -72,7 +73,7 @@ namespace MediaCloud.WebApp.Controllers
                 return new FileContentResult(preview.Content, "image/jpeg");
             }
 
-            return new FileContentResult(System.IO.File.ReadAllBytes("wwwroot/noimg.jpg"), "image/jpeg");
+            return new FileContentResult(System.IO.File.ReadAllBytes("wwwroot/img/types/noimg.jpg"), "image/jpeg");
         }
 
         public FileContentResult Source(Guid id)
@@ -81,13 +82,59 @@ namespace MediaCloud.WebApp.Controllers
 
             if (preview != null)
             {
-                return new FileContentResult(preview.Media.Content, "image/jpeg");
+                return new FileContentResult(preview.Blob.Content, preview.BlobType);
             }
 
-            return new FileContentResult(System.IO.File.ReadAllBytes("wwwroot/noimg.jpg"), "image/jpeg");
+            return new FileContentResult(System.IO.File.ReadAllBytes("wwwroot/img/types/noimg.jpg"), "image/jpeg");
         }
 
-        public Guid AutocompleteTagForMedia(Guid previewId)
+        public IActionResult Download(Guid id)
+        {
+            var preview = _previewRepository.Get(id);
+
+            if (preview != null)
+            {
+                if (preview.BlobName == "")
+                {
+                    preview.BlobName = preview.Id.ToString() + '.' + preview.BlobType.Split('/').Last();
+                }
+
+                return File(preview.Blob.Content, "application/octet-stream", preview.BlobName);
+            }
+
+            return new FileContentResult(System.IO.File.ReadAllBytes("wwwroot/img/types/noimg.jpg"), "image/jpeg");
+        }
+
+        public IActionResult DownloadCollection(Guid id)
+        {
+            var collection = _collectionRepository.Get(id);
+
+            if (collection != null)
+            {
+                var fileName = collection.Id.ToString() + ".zip";
+                using var stream = new MemoryStream();
+                using (var zip = new ZipArchive(stream, ZipArchiveMode.Create, true))
+                {
+                    foreach (var preview in collection.Previews)
+                    {
+                        if (preview.BlobName == "")
+                        {
+                            preview.BlobName = preview.Id.ToString() + '.' + preview.BlobType.Split('/').Last();
+                        }
+
+                        var entry = zip.CreateEntry(preview.BlobName, CompressionLevel.Optimal);
+                        using var file = entry.Open();
+                        file.Write(preview.Blob.Content, 0, preview.Blob.Content.Length);
+                    }
+                }
+                stream.Position = 0;
+                return File(stream.ToArray(), "application/zip", fileName);
+            }
+
+            return new FileContentResult(System.IO.File.ReadAllBytes("wwwroot/img/types/noimg.jpg"), "image/jpeg");
+        }
+
+        public Guid AutocompleteTag(Guid previewId)
         {
             var task = new AutotagPreviewTask(_actorProvider.GetCurrent(), [previewId]);
 

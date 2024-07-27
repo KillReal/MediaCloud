@@ -3,11 +3,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MediaCloud.Data.Models
 {
-    public class Media : Entity
+    public class Blob : Entity
     {
         public virtual Preview Preview { get; set; } = null!;
 
-        public byte[] Content { get; set; } = Array.Empty<byte>();
+        public byte[] Content { get; set; } = [];
 
         public string Resolution { get; set; } = "0x0";
 
@@ -22,7 +22,15 @@ namespace MediaCloud.Data.Models
             set => Size = long.Parse(value);
         }
 
-        public Media(byte[] file, int width, int height)
+        public Blob(byte[] file)
+        {
+            Content = file;
+            Resolution = $"-";
+            Size = Content.Length;
+            Rate = 0;
+        }
+
+        public Blob(byte[] file, int width, int height)
         {
             Content = file;
             Resolution = $"{width}x{height}";
@@ -30,7 +38,7 @@ namespace MediaCloud.Data.Models
             Rate = 0;
         }
 
-        public Media()
+        public Blob()
         {
 
         }

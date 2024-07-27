@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using MediaCloud.WebApp.Services.Statistic;
-using MediaCloud.WebApp.Services.ActorProvider;
+using MediaCloud.WebApp.Services.UserProvider;
 using NLog.Web;
 using NLog;
 using MediaCloud.WebApp.Services.ConfigProvider;
@@ -32,15 +32,15 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 builder.Services.AddSingleton<IConfigProvider, ConfigProvider>();
-builder.Services.AddSingleton<IActorProvider, ActorProvider>();
+builder.Services.AddSingleton<IUserProvider, UserProvider>();
 builder.Services.AddSingleton<ITaskScheduler, MediaCloud.TaskScheduler.TaskScheduler>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<IAutotagService, AutotagService>();
 builder.Services.AddScoped<StatisticProvider>();
-builder.Services.AddScoped<ActorRepository>();
+builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<PreviewRepository>();
-builder.Services.AddScoped<MediaRepository>();
+builder.Services.AddScoped<BlobRepository>();
 builder.Services.AddScoped<CollectionRepository>();
 builder.Services.AddScoped<TagRepository>();
 builder.Services.AddSingleton<IPictureService, PictureService>();

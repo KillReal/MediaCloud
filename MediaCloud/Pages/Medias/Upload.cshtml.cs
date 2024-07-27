@@ -3,13 +3,15 @@ using Microsoft.AspNetCore.Mvc;
 using MediaCloud.TaskScheduler;
 using MediaCloud.TaskScheduler.Tasks;
 using MediaCloud.WebApp.Pages;
-using MediaCloud.WebApp.Services.ActorProvider;
+using MediaCloud.WebApp.Services.UserProvider;
+using MediaCloud.WebApp;
+using MediaCloud.Extensions;
 
 namespace MediaCloud.Pages.Medias
 {
-    public class MediaUploadModel(IActorProvider actorProvider, ITaskScheduler taskScheduler) : AuthorizedPageModel(actorProvider)
+    public class MediaUploadModel(IUserProvider actorProvider, ITaskScheduler taskScheduler) : AuthorizedPageModel(actorProvider)
     {
-        private readonly Actor? _actor = actorProvider.GetCurrent();
+        private readonly User? _actor = actorProvider.GetCurrent();
         private readonly ITaskScheduler _taskScheduler = taskScheduler;
 
         [BindProperty]
@@ -35,7 +37,18 @@ namespace MediaCloud.Pages.Medias
                 return Redirect("/Login");
             }
 
-            var task = new UploadTask(_actor, Files, IsCollection, Tags);
+            var uploadedFiles = new List<UploadedFile>();
+            foreach (var file in Files)
+            {
+                uploadedFiles.Add(new UploadedFile()
+                {
+                    Name = file.FileName,
+                    Type = file.ContentType,
+                    Content = file.GetBytes()
+                });
+            }
+
+            var task = new UploadTask(_actor, uploadedFiles, IsCollection, Tags);
             var taskId = _taskScheduler.AddTask(task);
 
             return Redirect($"/TaskScheduler/GetTaskStatus?id={taskId}");

@@ -4,7 +4,7 @@ using MediaCloud.Builders.List;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Pages;
 using MediaCloud.WebApp.Services.ConfigProvider;
-using MediaCloud.WebApp.Services.ActorProvider;
+using MediaCloud.WebApp.Services.UserProvider;
 
 namespace MediaCloud.Pages.Tags
 {
@@ -20,7 +20,7 @@ namespace MediaCloud.Pages.Tags
         [BindProperty]
         public bool IsAutoloadEnabled { get; set; } = false;
 
-        public TagListModel(IActorProvider actorProvider, IConfigProvider configProvider, TagRepository tagRepository) 
+        public TagListModel(IUserProvider actorProvider, IConfigProvider configProvider, TagRepository tagRepository) 
             : base(actorProvider)
         {
             _configProvider = configProvider;

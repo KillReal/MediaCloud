@@ -1,5 +1,5 @@
 using MediaCloud.Data.Models;
-using MediaCloud.WebApp.Services.ActorProvider;
+using MediaCloud.WebApp.Services.UserProvider;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using NLog;
@@ -7,9 +7,9 @@ using ILogger = NLog.ILogger;
 
 namespace MediaCloud.WebApp.Pages
 {
-    public class LoginModel(IActorProvider actorProvider) : PageModel
+    public class LoginModel(IUserProvider actorProvider) : PageModel
     {
-        private readonly IActorProvider _actorProvider = actorProvider;
+        private readonly IUserProvider _actorProvider = actorProvider;
         private readonly ILogger _logger = LogManager.GetLogger("Actor");
 
         [BindProperty]
@@ -17,7 +17,7 @@ namespace MediaCloud.WebApp.Pages
         [BindProperty]
         public AuthData AuthData { get; set; } = new();
         [BindProperty]
-        public Actor? CurrentActor { get; set; } = null;
+        public User? CurrentActor { get; set; } = null;
         [BindProperty]
         public string ReturnUrl { get; set; } = "/";
 

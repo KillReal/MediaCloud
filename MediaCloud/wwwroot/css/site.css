@@ -80,6 +80,7 @@ body {
     align-items: center !important;
     flex-wrap: wrap;
     padding-top: 2rem;
+    justify-content: space-between;
 }
 
 .picture-controls-container {
@@ -191,6 +192,20 @@ body {
     margin-bottom: 1.85rem; 
     margin-right: 0.25rem; 
     font-size: 1.5rem;
+}
+
+.filename-container {
+    position: absolute;
+    left: 0.75rem;
+    bottom: 0.75rem;
+    background: cornflowerblue;
+    border-radius: 1.5rem;
+    padding: 1rem;
+}
+
+.filename {
+    font-size: xx-large;
+    color: black;
 }
 
 .list-clickable {

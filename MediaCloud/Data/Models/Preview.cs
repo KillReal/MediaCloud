@@ -1,4 +1,4 @@
-﻿using MediaCloud.Data.Types;
+﻿using MediaCloud.WebApp;
 using MediaCloud.WebApp.Data.Models.Interfaces;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -6,10 +6,11 @@ namespace MediaCloud.Data.Models
 {
     public class Preview : Entity, ITaggable
     {
-        [ForeignKey("MediaId")]
-        public virtual Media Media { get; set; }
+        [ForeignKey("BlobId")]
+        public virtual Blob Blob { get; set; }
 
-        public MediaType MediaType { get; set; }
+        public string BlobType { get; set; }
+        public string BlobName { get; set; }
 
         public byte[] Content { get; set; }
 
@@ -20,18 +21,21 @@ namespace MediaCloud.Data.Models
 
         public int Order { get; set; }
 
-        public Preview(Media media, byte[] content)
+        public Preview(Blob file, UploadedFile uploadedFile)
         {
-            Media = media;
-            MediaType = MediaType.JPG;
-            Content = content;
+            Blob = file;
+            BlobName = uploadedFile.Name;
+            BlobType = uploadedFile.Type;
+            Content = uploadedFile.Content;
             Order = 0;
         }
 
         public Preview()
         {
-            Media = new();
-            Content = Array.Empty<byte>();
+            Blob = new();
+            BlobName = "unknown";
+            BlobType = "unknown";
+            Content = [];
         }
     }
 }

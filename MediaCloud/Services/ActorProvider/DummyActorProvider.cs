@@ -3,24 +3,24 @@ using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services.ConfigProvider;
 using NLog;
 
-namespace MediaCloud.WebApp.Services.ActorProvider
+namespace MediaCloud.WebApp.Services.UserProvider
 {
-    public class DummyActorProvider : IActorProvider
+    public class DummyUserProvider : IUserProvider
     {
-        private readonly ActorRepository _actorRepository;
-        private readonly Actor _currentActor;
+        private readonly UserRepository _userRepository;
+        private readonly User _currentUser;
 
-        public DummyActorProvider(Actor actor, ActorRepository actorRepository)
+        public DummyUserProvider(User user, UserRepository userRepository)
         {
-            _actorRepository = actorRepository;
-            _currentActor = actor;
+            _userRepository = userRepository;
+            _currentUser = user;
 
             LogManager.GetLogger("ActorProvider").Debug("DummyActorProvider initialized");
         }
 
-        public Actor GetCurrent() => _currentActor;
+        public User GetCurrent() => _currentUser;
         
-        public Actor? GetCurrentOrDefault() => _currentActor;
+        public User? GetCurrentOrDefault() => _currentUser;
 
         public bool Authorize(AuthData data, HttpContext httpContext) => false;
 
@@ -34,8 +34,8 @@ namespace MediaCloud.WebApp.Services.ActorProvider
 
         public bool SaveSettings(string jsonSettings)
         {
-             _currentActor.PersonalSettings = jsonSettings;
-            _actorRepository.Update(_currentActor);
+            _currentUser.PersonalSettings = jsonSettings;
+            _userRepository.Update(_currentUser);
 
             return true;
         }

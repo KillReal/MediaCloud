@@ -1,6 +1,6 @@
 ﻿namespace MediaCloud.Data.Models
 {
-    public class Actor : Record
+    public class User : Record
     {
         public string? Name { get; set; }
         public string? PasswordHash { get; set; }

@@ -2,7 +2,7 @@
 using MediaCloud.Builders.List;
 using MediaCloud.Data;
 using MediaCloud.Data.Models;
-using MediaCloud.WebApp.Services.ActorProvider;
+using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp.Services.Data.Repositories.Interfaces;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +11,7 @@ using Preview = MediaCloud.Data.Models.Preview;
 
 namespace MediaCloud.Repositories
 {
-    public class TagRepository(AppDbContext context, StatisticProvider statisticProvider, IActorProvider actorProvider) : BaseRepository<Tag>(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider), IListBuildable<Tag>
+    public class TagRepository(AppDbContext context, StatisticProvider statisticProvider, IUserProvider actorProvider) : BaseRepository<Tag>(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider), IListBuildable<Tag>
     {
         private static string DeduplicateTagString(string tagString)
         {
@@ -29,7 +29,7 @@ namespace MediaCloud.Repositories
         {
             try
             {
-                tag.Creator = _context.Actors.First(x => x.Id == _actor.Id);
+                tag.Creator = _context.Users.First(x => x.Id == _actor.Id);
                 tag.Updator = tag.Creator;
 
                 _context.Tags.Add(tag);
@@ -93,9 +93,8 @@ namespace MediaCloud.Repositories
             }
             tagsString = DeduplicateTagString(tagsString).ToLower();
             var tags = tagsString.ToLower().Split(' ');
-            return _context.Tags.Where(x => tags.Any(y => y == x.Name.ToLower())
-                                         && x.CreatorId == _actor.Id)
-                                .ToList();
+            return [.. _context.Tags.Where(x => tags.Any(y => y == x.Name.ToLower())
+                                         && x.CreatorId == _actor.Id)];
         }
 
         public List<Tag> GetRangeByAliasString(string? aliasesString)
@@ -124,11 +123,10 @@ namespace MediaCloud.Repositories
 
         public List<Tag> GetList(ListBuilder<Tag> listBuilder)
         {
-            return _context.Tags.AsNoTracking().Order(listBuilder.Sorting.GetOrder())
+            return [.. _context.Tags.AsNoTracking().Order(listBuilder.Sorting.GetOrder())
                                                .Where(x => x.CreatorId == _actor.Id)
                                                .Skip(listBuilder.Pagination.Offset)
-                                               .Take(listBuilder.Pagination.Count)
-                                               .ToList();
+                                               .Take(listBuilder.Pagination.Count)];
         }
 
         public async Task<int> GetListCountAsync(ListBuilder<Tag> listBuilder)
@@ -141,19 +139,17 @@ namespace MediaCloud.Repositories
         /// <returns> List of tags. </returns>
         public List<Tag> GetTopUsed(int limit)
         {
-            return _context.Tags.OrderByDescending(x => x.PreviewsCount)
+            return [.. _context.Tags.OrderByDescending(x => x.PreviewsCount)
                                 .Where(x => x.CreatorId == _actor.Id)
-                                .Take(limit)
-                                .ToList();
+                                .Take(limit)];
         }
 
         public List<string> GetSuggestionsByString(string searchString, int limit = 10)
         {
-            return _context.Tags.Where(x => x.Name.ToLower().StartsWith(searchString.ToLower()) && x.CreatorId == _actor.Id)
+            return [.. _context.Tags.Where(x => x.Name.ToLower().StartsWith(searchString.ToLower()) && x.CreatorId == _actor.Id)
                                 .OrderByDescending(x => x.PreviewsCount)
                                 .Select(x => x.Name)
-                                .Take(limit)
-                                .ToList();
+                                .Take(limit)];
         }
     }
 }

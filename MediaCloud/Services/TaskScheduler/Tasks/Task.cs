@@ -1,5 +1,5 @@
 ﻿using MediaCloud.Data.Models;
-using MediaCloud.WebApp.Services.ActorProvider;
+using MediaCloud.WebApp.Services.UserProvider;
 
 namespace MediaCloud.TaskScheduler.Tasks
 {
@@ -10,7 +10,7 @@ namespace MediaCloud.TaskScheduler.Tasks
     /// Task init.
     /// </remarks>
     /// <param name="actor"> Customer of task. </param>
-    public class Task(Actor actor) : ITask
+    public class Task(User actor) : ITask
     {
         /// <summary>
         /// Unique identificator.
@@ -20,7 +20,7 @@ namespace MediaCloud.TaskScheduler.Tasks
         /// <summary>
         /// Customer.
         /// </summary>
-        public Actor Actor { get; set; } = actor;
+        public User Actor { get; set; } = actor;
 
         /// <summary>
         /// Wether the task can be executed.
@@ -45,12 +45,12 @@ namespace MediaCloud.TaskScheduler.Tasks
         /// <param name="serviceProvider"> Used for creation of needed repositories. </param>
         /// <param name="actorProvider"> Used to set the current actor for repositories. </param>
         /// <exception cref="NotImplementedException"></exception>
-        public virtual void DoTheTask(IServiceProvider serviceProvider, IActorProvider actorProvider)
+        public virtual void DoTheTask(IServiceProvider serviceProvider, IUserProvider actorProvider)
         {
             throw new NotImplementedException();
         }
 
-        public Actor GetAuthor()
+        public User GetAuthor()
         {
             return Actor;
         }

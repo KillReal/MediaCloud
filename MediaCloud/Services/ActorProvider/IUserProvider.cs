@@ -1,12 +1,12 @@
 ﻿using MediaCloud.Data.Models;
 using MediaCloud.WebApp.Services.ConfigProvider;
 
-namespace MediaCloud.WebApp.Services.ActorProvider
+namespace MediaCloud.WebApp.Services.UserProvider
 {
-    public interface IActorProvider
+    public interface IUserProvider
     {
-        public Actor GetCurrent();
-        public Actor? GetCurrentOrDefault();
+        public User GetCurrent();
+        public User? GetCurrentOrDefault();
         public bool Authorize(AuthData data, HttpContext httpContext);
         public void Logout(HttpContext httpContext);
         public RegistrationResult Register(IConfigProvider configProvider, AuthData data, string inviteCode);

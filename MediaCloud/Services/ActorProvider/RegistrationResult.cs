@@ -1,4 +1,4 @@
-﻿namespace MediaCloud.WebApp.Services.ActorProvider
+﻿namespace MediaCloud.WebApp.Services.UserProvider
 {
     public class RegistrationResult
     {

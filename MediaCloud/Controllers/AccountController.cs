@@ -1,4 +1,4 @@
-using MediaCloud.WebApp.Services.ActorProvider;
+using MediaCloud.WebApp.Services.UserProvider;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
@@ -7,10 +7,10 @@ using ILogger = NLog.ILogger;
 namespace MediaCloud.WebApp.Controllers
 {
     [Authorize]
-    public class AccountController(IActorProvider actorProvider) : Controller
+    public class AccountController(IUserProvider actorProvider) : Controller
     {
         private readonly ILogger _logger = LogManager.GetLogger("Actor");
-        private readonly IActorProvider _actorProvider = actorProvider;
+        private readonly IUserProvider _actorProvider = actorProvider;
 
         public IActionResult Logout()
         {

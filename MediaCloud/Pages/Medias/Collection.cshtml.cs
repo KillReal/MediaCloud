@@ -4,11 +4,11 @@ using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Pages;
 using MediaCloud.Extensions;
-using MediaCloud.WebApp.Services.ActorProvider;
+using MediaCloud.WebApp.Services.UserProvider;
 
 namespace MediaCloud.Pages.Medias
 {
-    public class CollectionModel(IActorProvider actorProvider, CollectionRepository collectionRepository, TagRepository tagRepository) : AuthorizedPageModel(actorProvider)
+    public class CollectionModel(IUserProvider actorProvider, CollectionRepository collectionRepository, TagRepository tagRepository) : AuthorizedPageModel(actorProvider)
     {
         private readonly CollectionRepository _collectionRepository = collectionRepository;
         private readonly TagRepository _tagRepository = tagRepository;
@@ -46,7 +46,7 @@ namespace MediaCloud.Pages.Medias
             CollectionSizeInfo = collectionSize.FormatSize();
             TotalCount = _collectionRepository.GetListCount(id).Result;
 
-            Tags = preview.Tags.OrderBy(x => x.Type).ToList();
+            Tags = [.. preview.Tags.OrderBy(x => x.Type)];
             TagsString = string.Join(" ", Tags.Select(x => x.Name.ToLower()));
             ReturnUrl = returnUrl.Replace("$", "&");
 

@@ -1,5 +1,5 @@
 ﻿using MediaCloud.Data.Models;
-using MediaCloud.WebApp.Services.ActorProvider;
+using MediaCloud.WebApp.Services.UserProvider;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -11,13 +11,13 @@ namespace MediaCloud.WebApp.Pages
     [Authorize]
     public class AuthorizedPageModel : PageModel
     {   
-        protected IActorProvider _actorProvider;
+        protected IUserProvider _actorProvider;
         protected ILogger _logger;
 
         [BindProperty]
-        public Actor? CurrentActor { get; set; }
+        public User? CurrentActor { get; set; }
 
-        public AuthorizedPageModel(IActorProvider actorProvider) 
+        public AuthorizedPageModel(IUserProvider actorProvider) 
         {
             _actorProvider = actorProvider;
             _logger = LogManager.GetLogger("PageModel");

@@ -3,22 +3,26 @@ using MediaCloud.Data.Models;
 using MediaCloud.Services;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Pages;
-using MediaCloud.WebApp.Services.ActorProvider;
+using MediaCloud.WebApp.Services.UserProvider;
 
 namespace MediaCloud.Pages.Medias
 {
-    public class MediaDetailModel(IActorProvider actorProvider, IPictureService pictureService, TagRepository tagRepository,
-        PreviewRepository previewRepository, MediaRepository mediaRepository) : AuthorizedPageModel(actorProvider)
+    public class MediaDetailModel(IUserProvider actorProvider, IPictureService pictureService, TagRepository tagRepository,
+        PreviewRepository previewRepository, BlobRepository blobRepository) : AuthorizedPageModel(actorProvider)
     {
         private readonly IPictureService _pictureService = pictureService;
         private readonly TagRepository _tagRepository = tagRepository;
         private readonly PreviewRepository _previewRepository = previewRepository;
-        private readonly MediaRepository _mediaRepository = mediaRepository;
+        private readonly BlobRepository _blobRepository = blobRepository;
 
         [BindProperty]
         public Guid PreviewId { get; set; }
         [BindProperty]
-        public Media Media { get; set; } = new();
+        public string BlobName {get; set; }
+        [BindProperty]
+        public string BlobType {get; set; }
+        [BindProperty]
+        public Blob Blob { get; set; } = new();
         [BindProperty]
         public List<Tag> Tags { get; set; } = [];
         [BindProperty]
@@ -44,7 +48,9 @@ namespace MediaCloud.Pages.Medias
             }
 
             PreviewId = preview.Id;
-            Media = preview.Media;
+            BlobName = preview.BlobName;
+            BlobType = preview.BlobType;
+            Blob = preview.Blob;
 
             if (preview.Collection != null)
             {
@@ -53,7 +59,7 @@ namespace MediaCloud.Pages.Medias
                 NextPreviewId = collectionPreviews.FirstOrDefault(x => x.Order > preview.Order)?.Id;
             }
 
-            Tags = preview.Tags.OrderBy(x => x.Type).ToList();
+            Tags = [.. preview.Tags.OrderBy(x => x.Type)];
 
             ReturnUrl = returnUrl.Replace("$", "&");
             RootReturnUrl = rootReturnUrl.Replace("$", "&");
@@ -66,7 +72,7 @@ namespace MediaCloud.Pages.Medias
         {
             var preview = _previewRepository.Get(PreviewId);
 
-            if (preview == null || Media == null)
+            if (preview == null || Blob == null)
             {
                 return Redirect("/Error");
             }
@@ -74,18 +80,17 @@ namespace MediaCloud.Pages.Medias
             var tags = _tagRepository.GetRangeByString(TagsString);
             _tagRepository.UpdatePreviewLinks(tags, preview);
             
-            var media = preview.Media;
-            media.Rate = Media.Rate;
-            media.UpdatedAt = DateTime.UtcNow;
+            var blob = preview.Blob;
+            blob.Rate = Blob.Rate;
+            blob.UpdatedAt = DateTime.UtcNow;
 
             if (RotationDegree != 0)
             {
-                media.Preview.Content = _pictureService.Rotate(preview.Content, RotationDegree);
-                media.Content = _pictureService.Rotate(media.Content, RotationDegree);
-                
+                blob.Preview.Content = _pictureService.Rotate(preview.Content, RotationDegree);
+                blob.Content = _pictureService.Rotate(blob.Content, RotationDegree);
             }
             
-            _mediaRepository.Update(media); 
+            _blobRepository.Update(blob); 
 
             return Redirect(ReturnUrl.Replace("$", "&"));
         }

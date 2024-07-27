@@ -1,5 +1,5 @@
 using MediaCloud.Repositories;
-using MediaCloud.WebApp.Services.ActorProvider;
+using MediaCloud.WebApp.Services.UserProvider;
 
 namespace MediaCloud.TaskScheduler.Tasks
 {
@@ -9,9 +9,9 @@ namespace MediaCloud.TaskScheduler.Tasks
 
         public virtual void DoTheTask(IServiceProvider serviceProvider)
         {
-            var actorRepository = serviceProvider.GetRequiredService<ActorRepository>();
+            var actorRepository = serviceProvider.GetRequiredService<UserRepository>();
 
-            _task.DoTheTask(serviceProvider, new DummyActorProvider(_task.GetAuthor(), actorRepository));
+            _task.DoTheTask(serviceProvider, new DummyUserProvider(_task.GetAuthor(), actorRepository));
         }
     }
 }

@@ -4,16 +4,16 @@ using MediaCloud.Builders.List;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Pages;
 using MediaCloud.WebApp.Services.ConfigProvider;
-using MediaCloud.WebApp.Services.ActorProvider;
+using MediaCloud.WebApp.Services.UserProvider;
 
 namespace MediaCloud.Pages.Actors
 {
     public class ActorListModel : AuthorizedPageModel
     {
         private IConfigProvider _configProvider;
-        private readonly ActorRepository _actorRepository;
+        private readonly UserRepository _actorRepository;
 
-        public ActorListModel(IActorProvider actorProvider, IConfigProvider configProvider, ActorRepository actorRepository) 
+        public ActorListModel(IUserProvider actorProvider, IConfigProvider configProvider, UserRepository actorRepository) 
             : base(actorProvider)
         {
             _configProvider = configProvider;
@@ -24,9 +24,9 @@ namespace MediaCloud.Pages.Actors
         }
 
         [BindProperty]
-        public List<Actor> Actors { get; set; } = [];
+        public List<User> Actors { get; set; } = [];
         [BindProperty]
-        public ListBuilder<Actor> ListBuilder { get; set; }
+        public ListBuilder<User> ListBuilder { get; set; }
 
         public async Task<IActionResult> OnGetAsync(ListRequest request)
         {

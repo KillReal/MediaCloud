@@ -1,7 +1,7 @@
 ﻿using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.TaskScheduler.Tasks;
-using MediaCloud.WebApp.Services.ActorProvider;
+using MediaCloud.WebApp.Services.UserProvider;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using NLog;
 using ILogger = NLog.ILogger;
@@ -12,9 +12,9 @@ namespace MediaCloud.WebApp.Services.Statistic
     {
         private readonly ILogger _logger;
         private readonly AppDbContext _context;
-        private readonly Actor _actor;
+        private readonly User _actor;
 
-        public StatisticProvider(AppDbContext context, IActorProvider actorProvider)
+        public StatisticProvider(AppDbContext context, IUserProvider actorProvider)
         {
             _logger = LogManager.GetLogger("StatisticProvider");
             _context = context;
@@ -56,7 +56,7 @@ namespace MediaCloud.WebApp.Services.Statistic
 
             if (_actor.IsAdmin)
             {
-                dates.Add(_context.Actors.OrderBy(x => x.CreatedAt).FirstOrDefault()?.CreatedAt);
+                dates.Add(_context.Users.OrderBy(x => x.CreatedAt).FirstOrDefault()?.CreatedAt);
             }
 
             DateTime minDate = dates.Where(x => x != DateTime.MinValue.ToUniversalTime()).Min()
@@ -146,10 +146,10 @@ namespace MediaCloud.WebApp.Services.Statistic
         {
             return new()
             {
-                Creator = _context.Actors.First(x => x.Id == _actor.Id),
-                Updator = _context.Actors.First(x => x.Id == _actor.Id),
+                Creator = _context.Users.First(x => x.Id == _actor.Id),
+                Updator = _context.Users.First(x => x.Id == _actor.Id),
                 TakenAt = date,
-                ActorsCount = _context.Actors.Where(x => x.CreatedAt.Date == date.Date
+                ActorsCount = _context.Users.Where(x => x.CreatedAt.Date == date.Date
                                                         && _actor.IsAdmin)
                                                     .Count(),
                 TagsCount = _context.Tags.Where(x => x.CreatedAt.Date == date.Date
@@ -158,7 +158,7 @@ namespace MediaCloud.WebApp.Services.Statistic
                 MediasCount = _context.Previews.Where(x => x.CreatedAt.Date == date.Date
                                                         && x.CreatorId == _actor.Id)
                                                     .Count(),
-                MediasSize = _context.Medias.Where(x => x.CreatedAt.Date == date.Date
+                MediasSize = _context.Blobs.Where(x => x.CreatedAt.Date == date.Date
                                                 && x.CreatorId == _actor.Id)
                                             .Select(x => x.Size)
                                             .ToList()
@@ -175,7 +175,7 @@ namespace MediaCloud.WebApp.Services.Statistic
                 UpdatedAt = DateTime.Now.Date,
                 CreatedAt = DateTime.Now.Date,
 
-                Creator = _context.Actors.First(x => x.Id == _actor.Id)
+                Creator = _context.Users.First(x => x.Id == _actor.Id)
             };
             snapshot.Updator = snapshot.Creator;
 

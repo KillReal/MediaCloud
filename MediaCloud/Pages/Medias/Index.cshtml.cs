@@ -4,7 +4,7 @@ using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Pages;
 using MediaCloud.WebApp.Services.ConfigProvider;
-using MediaCloud.WebApp.Services.ActorProvider;
+using MediaCloud.WebApp.Services.UserProvider;
 
 namespace MediaCloud.Pages.Medias
 {
@@ -26,7 +26,7 @@ namespace MediaCloud.Pages.Medias
         [BindProperty]
         public bool IsAutoloadEnabled { get; set; } = true;
 
-        public MediaListModel(IActorProvider actorProvider, IConfigProvider configProvider, TagRepository tagRepository, 
+        public MediaListModel(IUserProvider actorProvider, IConfigProvider configProvider, TagRepository tagRepository, 
             PreviewRepository previewRepository) : base(actorProvider)
         {
             _configProvider = configProvider;

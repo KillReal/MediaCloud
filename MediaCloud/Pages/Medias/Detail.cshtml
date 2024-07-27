@@ -10,11 +10,13 @@
     <h1>Details</h1>
 
     <div class="button-panel">
-        <div>
-           <a onclick="history.back();" class="btn btn-info">
+        <a onclick="history.back();" class="btn btn-info">
 				Back
 			</a>
-        </div>
+            <a class="btn btn-success btn-rounded me-1 mb-2" 
+                href="@Url.Action("Download", "Gallery", new { id = Model.PreviewId })">
+                Download
+            </a>
 	</div>
 
     <hr />
@@ -30,9 +32,23 @@
         }
         
         <div class="picture-viewport w-100 shadow-1-strong mb-4">
-            <img class="picture-viewer h-100 shadow-1-strong mb-2 me-3 rounded" id="picture"
-                src="data:image/png;base64,@Convert.ToBase64String(Model.Media.Content)"
+            @if (Model.BlobType.Contains("image"))
+            {
+                <img class="picture-viewer h-100 shadow-1-strong mb-2 me-3 rounded" id="picture"
+                src="data:image/png;base64,@Convert.ToBase64String(Model.Blob.Content)"
             />
+            }
+            else if (Model.BlobType.Contains("text"))
+            {
+                <div class="form-group mb-3 col">
+                    <label class="col-form-label">
+                        @Model.BlobName
+                    </label>
+                    <textarea class="form-control">
+                        @System.Text.Encoding.UTF8.GetString(Model.Blob.Content);
+                    </textarea>
+                </div>
+            }
         </div>
 
         @if (Model.NextPreviewId != null)
@@ -44,15 +60,18 @@
             />
         }
 
-        <div class="picture-controls-container text-black">
-            Rotation:
-            <button class="btn btn-info btn-rounded rotate-button" style="height: 2rem" onclick="rotatePicture(-90);">
-                <img class="h-100" src="/img/rotating-arrow-left.png">
-            </button>
-            <button class="btn btn-info btn-rounded rotate-button" style="height: 2rem" onclick="rotatePicture(90);">
-                <img class="h-100" src="/img/rotating-arrow-right.png">
-            </button>
-        </div>
+        @if (Model.BlobType.Contains("image"))
+        {
+            <div class="picture-controls-container text-black">
+                Rotation:
+                <button class="btn btn-info btn-rounded rotate-button" style="height: 2rem" onclick="rotatePicture(-90);">
+                    <img class="h-100" src="/img/rotating-arrow-left.png">
+                </button>
+                <button class="btn btn-info btn-rounded rotate-button" style="height: 2rem" onclick="rotatePicture(90);">
+                    <img class="h-100" src="/img/rotating-arrow-right.png">
+                </button>
+            </div>
+        }
     </div>
 
     <div class="row">
@@ -60,8 +79,8 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control">
             <input type="hidden" asp-for=@(Model.PreviewId) class="form-control">
-            <input type="hidden" asp-for=@(Model.Media.Preview.Id) class="form-control">
-            <input type="hidden" asp-for=@(Model.Media.Id) class="form-control">
+            <input type="hidden" asp-for=@(Model.Blob.Preview.Id) class="form-control">
+            <input type="hidden" asp-for=@(Model.Blob.Id) class="form-control">
             <input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control">
             <input type="hidden" asp-for=@(Model.RotationDegree) class="form-control" id="modelRotationDegree">
             <div class="row">
@@ -75,12 +94,15 @@
             </div>
             <div class="form-group mb-3 d-flex justify-content-between">
                 <input type="submit" value="Edit" class="btn btn-success" />
-                <input class="btn btn-success btn-rounded" 
-                    type="button" 
-                    value="Autotag ✨" 
-                    id="autotagButton" 
-                    onclick="autocompleteTags('@Model.PreviewId')" 
-                />
+                @if (Model.BlobType.Contains("image"))
+                {
+                    <input class="btn btn-success btn-rounded" 
+                        type="button" 
+                        value="Autotag ✨" 
+                        id="autotagButton" 
+                        onclick="autocompleteTags('@Model.PreviewId')" 
+                    />
+                }
                 <a class="btn btn-info btn-rounded text-nowrap" 
                     asp-page="Index" 
                     asp-route-filter=@(Model.TagsString) 
@@ -99,13 +121,15 @@
     <div class="row">
         <div class="col-sm pt-3">
             <ul class="list-group">
-            <li class="list-group-item">Id: @Model.Media.Id</li>  
-            <li class="list-group-item">Resolution: @Model.Media.Resolution</li>
-            <li class="list-group-item">Size: @Model.Media.SizeInfo</li>
-            <li class="list-group-item">Creator: @Model.Media.Creator.Name</li>
-            <li class="list-group-item">Updator: @Model.Media.Updator.Name</li>
-            <li class="list-group-item">Time of create: @Model.Media.CreatedAt</li>
-            <li class="list-group-item">Time of update: @Model.Media.UpdatedAt</li>
+            <li class="list-group-item">Id: @Model.Blob.Id</li>  
+            <li class="list-group-item">Resolution: @Model.Blob.Resolution</li>
+            <li class="list-group-item">File name: @Model.BlobName</li>
+            <li class="list-group-item">File type: @Model.BlobType</li>
+            <li class="list-group-item">Size: @Model.Blob.SizeInfo</li>
+            <li class="list-group-item">Creator: @Model.Blob.Creator.Name</li>
+            <li class="list-group-item">Updator: @Model.Blob.Updator.Name</li>
+            <li class="list-group-item">Time of create: @Model.Blob.CreatedAt</li>
+            <li class="list-group-item">Time of update: @Model.Blob.UpdatedAt</li>
         </ul>
         </div>
         <div class="col-sm pt-3">

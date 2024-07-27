@@ -1,17 +1,17 @@
 ﻿using MediaCloud.Data;
 using MediaCloud.Data.Models;
-using MediaCloud.WebApp.Services.ActorProvider;
+using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp.Services.Statistic;
 using ILogger = NLog.ILogger;
 
 namespace MediaCloud.Repositories
 {
-    public class BaseRepository<T>(AppDbContext context, StatisticProvider statisticProvider, ILogger logger, IActorProvider actorProvider) where T : Entity
+    public class BaseRepository<T>(AppDbContext context, StatisticProvider statisticProvider, ILogger logger, IUserProvider actorProvider) where T : Entity
     {
         protected StatisticProvider _statisticProvider = statisticProvider;
         protected AppDbContext _context = context;
         protected ILogger _logger = logger;
-        protected Actor _actor = actorProvider.GetCurrent();
+        protected User _actor = actorProvider.GetCurrent();
 
         public virtual T? Get(Guid id)
         {

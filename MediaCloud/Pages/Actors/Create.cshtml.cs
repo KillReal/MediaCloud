@@ -4,18 +4,18 @@ using MediaCloud.WebApp;
 using MediaCloud.Repositories;
 using NLog;
 using MediaCloud.WebApp.Pages;
-using MediaCloud.WebApp.Services.ActorProvider;
+using MediaCloud.WebApp.Services.UserProvider;
 
 namespace MediaCloud.Pages.Actors
 {
     public class ActorCreateModel : AuthorizedPageModel
     {
-        private readonly ActorRepository _actorRepository;
+        private readonly UserRepository _actorRepository;
 
         [BindProperty]
-        public Actor Actor { get; set; } = new();
+        public User Actor { get; set; } = new();
 
-        public ActorCreateModel(IActorProvider actorProvider, ActorRepository actorRepository) : base(actorProvider)
+        public ActorCreateModel(IUserProvider actorProvider, UserRepository actorRepository) : base(actorProvider)
         {
             _logger = LogManager.GetLogger("Actors.Create");
             _actorRepository = actorRepository;

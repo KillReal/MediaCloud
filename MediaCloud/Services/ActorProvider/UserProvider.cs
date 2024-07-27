@@ -8,9 +8,9 @@ using NLog;
 using System.Security.Claims;
 using Newtonsoft.Json;
 
-namespace MediaCloud.WebApp.Services.ActorProvider
+namespace MediaCloud.WebApp.Services.UserProvider
 {
-    public class ActorProvider : IActorProvider
+    public class UserProvider : IUserProvider
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly AppDbContext _context;
@@ -19,7 +19,7 @@ namespace MediaCloud.WebApp.Services.ActorProvider
 
         private readonly MemoryCacheEntryOptions _memoryCacheOptions;
 
-        public ActorProvider(IServiceScopeFactory scopeFactory, IHttpContextAccessor httpContextAccessor, 
+        public UserProvider(IServiceScopeFactory scopeFactory, IHttpContextAccessor httpContextAccessor, 
             IMemoryCache memoryCache, IConfiguration configuration)
         {
             var scope = scopeFactory.CreateScope();
@@ -33,7 +33,7 @@ namespace MediaCloud.WebApp.Services.ActorProvider
             LogManager.GetLogger("ActorProvider").Debug("ActorProvider initialized");
         }
 
-        public Actor GetCurrent()
+        public User GetCurrent()
         {
             var httpContext = _httpContextAccessor.HttpContext ?? 
                 throw new ArgumentException("Cannot get actor without HttpContext");
@@ -45,22 +45,22 @@ namespace MediaCloud.WebApp.Services.ActorProvider
                 throw new ArgumentException("Cannot get actor without HttpContext");
             }
 
-            if (_memoryCache.TryGetValue(identity.Name, out Actor? actor) && actor != null)
+            if (_memoryCache.TryGetValue(identity.Name, out User? actor) && actor != null)
             {
                 return actor;
             }
 
             _mutex.WaitOne();
 
-            var cachedActor = _context.Actors.First(x => x.Name == identity.Name);
-            _memoryCache.Set(identity.Name, cachedActor, _memoryCacheOptions);
+            var cachedUser = _context.Users.First(x => x.Name == identity.Name);
+            _memoryCache.Set(identity.Name, cachedUser, _memoryCacheOptions);
 
             _mutex.ReleaseMutex();
 
-            return cachedActor;
+            return cachedUser;
         }
 
-        public Actor? GetCurrentOrDefault()
+        public User? GetCurrentOrDefault()
         {
             var httpContext = _httpContextAccessor.HttpContext;
 
@@ -76,22 +76,22 @@ namespace MediaCloud.WebApp.Services.ActorProvider
                 return null;
             }
 
-            if (_memoryCache.TryGetValue(identity.Name, out Actor? actor))
+            if (_memoryCache.TryGetValue(identity.Name, out User? user))
             {
-                return actor;
+                return user;
             }
 
-            var cachedActor = _context.Actors.First(x => x.Name == identity.Name);
-            _memoryCache.Set(identity.Name, cachedActor, _memoryCacheOptions);
+            var cachedUser = _context.Users.First(x => x.Name == identity.Name);
+            _memoryCache.Set(identity.Name, cachedUser, _memoryCacheOptions);
 
-            return cachedActor;
+            return cachedUser;
         }
 
         public bool Authorize(AuthData data, HttpContext httpContext)
         {
-            var actor = _context.Actors.FirstOrDefault(x => x.Name == data.Name && x.IsActivated);
+            var user = _context.Users.FirstOrDefault(x => x.Name == data.Name && x.IsActivated);
 
-            if (actor == null || actor.PasswordHash == null || SecureHash.Verify(data.Password, actor.PasswordHash) == false)
+            if (user == null || user.PasswordHash == null || SecureHash.Verify(data.Password, user.PasswordHash) == false)
             {
                 return false;
             }
@@ -104,12 +104,12 @@ namespace MediaCloud.WebApp.Services.ActorProvider
 
             httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
-            actor.UpdatedAt = actor.UpdatedAt.ToUniversalTime();
-            actor.CreatedAt = actor.CreatedAt.ToUniversalTime();
-            actor.LastLoginAt = DateTime.Now.ToUniversalTime();
+            user.UpdatedAt = user.UpdatedAt.ToUniversalTime();
+            user.CreatedAt = user.CreatedAt.ToUniversalTime();
+            user.LastLoginAt = DateTime.Now.ToUniversalTime();
             
-            _context.Actors.Update(actor);
-            _memoryCache.Set(data.Name, actor, _memoryCacheOptions);
+            _context.Users.Update(user);
+            _memoryCache.Set(data.Name, user, _memoryCacheOptions);
 
             return true;
         }
@@ -125,7 +125,7 @@ namespace MediaCloud.WebApp.Services.ActorProvider
                 throw new ArgumentException("Cannot get actor without HttpContext");
             }
 
-            if (_memoryCache.TryGetValue(identity.Name, out Actor? _))
+            if (_memoryCache.TryGetValue(identity.Name, out User? _))
             {
                 _memoryCache.Remove(identity.Name);
             }
@@ -133,14 +133,14 @@ namespace MediaCloud.WebApp.Services.ActorProvider
 
         public RegistrationResult Register(IConfigProvider configProvider, AuthData data, string inviteCode)
         {
-            var actor = _context.Actors.FirstOrDefault(x => x.InviteCode == inviteCode && x.IsActivated == false);
+            var user = _context.Users.FirstOrDefault(x => x.InviteCode == inviteCode && x.IsActivated == false);
 
-            if (actor == null)
+            if (user == null)
             {
                 return new(false, $"Join attempt failed due to incorrect invite code: {inviteCode}");
             }
 
-            if (_context.Actors.Any(x => x.Name == data.Name))
+            if (_context.Users.Any(x => x.Name == data.Name))
             {
                 return new(false, $"Join attempt failed due to already existing name: {data.Name}");
             }
@@ -155,11 +155,11 @@ namespace MediaCloud.WebApp.Services.ActorProvider
                 return new(false, $"Join attempt failed due to week password, it must contain at least one symbol");
             }
 
-            actor.Name = data.Name;
-            actor.PasswordHash = SecureHash.Hash(data.Password);
-            actor.IsActivated = true;
+            user.Name = data.Name;
+            user.PasswordHash = SecureHash.Hash(data.Password);
+            user.IsActivated = true;
 
-            _context.Actors.Update(actor);
+            _context.Users.Update(user);
             _context.SaveChanges();
 
             return new(true, $"Joined in by {data.Name} and invite code: {inviteCode}");
@@ -167,11 +167,11 @@ namespace MediaCloud.WebApp.Services.ActorProvider
 
         public ActorSettings? GetSettings()
         {
-            var currentActor = GetCurrent();
+            var currentUser = GetCurrent();
 
-            if (currentActor != null && currentActor.PersonalSettings != null)
+            if (currentUser != null && currentUser.PersonalSettings != null)
             {
-                return JsonConvert.DeserializeObject<ActorSettings>(currentActor.PersonalSettings);
+                return JsonConvert.DeserializeObject<ActorSettings>(currentUser.PersonalSettings);
             }
 
             return null;
@@ -179,11 +179,11 @@ namespace MediaCloud.WebApp.Services.ActorProvider
 
         public bool SaveSettings(string jsonSettings)
         {
-            var currentActor = GetCurrent();
+            var currentUser = GetCurrent();
 
-            if (currentActor != null) {
-                currentActor.PersonalSettings = jsonSettings;
-                _context.Actors.Update(currentActor);
+            if (currentUser != null) {
+                currentUser.PersonalSettings = jsonSettings;
+                _context.Users.Update(currentUser);
                 _context.SaveChanges();
 
                 return true;
