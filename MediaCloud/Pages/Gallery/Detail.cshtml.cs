@@ -18,9 +18,9 @@ namespace MediaCloud.Pages.Gallery
         [BindProperty]
         public Guid PreviewId { get; set; }
         [BindProperty]
-        public string BlobName {get; set; }
+        public string BlobName {get; set; } = "unknown";
         [BindProperty]
-        public string BlobType {get; set; }
+        public string BlobType {get; set; } = "unknown";
         [BindProperty]
         public Blob Blob { get; set; } = new();
         [BindProperty]

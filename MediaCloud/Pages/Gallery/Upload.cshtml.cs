@@ -21,9 +21,9 @@ namespace MediaCloud.Pages.Gallery
         [BindProperty]
         public bool IsCollection { get; set; }
         [BindProperty]
-        public string ReturnUrl { get; set; } = "/Medias";
+        public string ReturnUrl { get; set; } = "/Gallery";
 
-        public IActionResult OnGet(string returnUrl = "/Medias")
+        public IActionResult OnGet(string returnUrl = "/Gallery")
         {
             ReturnUrl = returnUrl.Replace("$", "&");
 
