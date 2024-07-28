@@ -2,15 +2,15 @@
 # Infrastructure             
 
 - 1.6.3 mediacloud
-- 1.6.3 mediacloud-dev
+- 2.0.0 mediacloud-dev
 
 
 # Publishing
 
 `dotnet publish -r linux-x64 -p:PublishSingleFile=true --no-self-contained -o D:/Development/MediaCloud-Deploy`
 
-# Next release - 1.7.0       
-# Next minor - 1.6.4   
+# Next release - 2.0.0       
+# Next minor - 2.0.1   
 
 
 TODO:
@@ -18,18 +18,24 @@ TODO:
 - Admin check for display actors in Statistic
 - Implement all actors statistic dashboards for Admin
 - Write unit tests 
-- Show first uploaded image on uploade page
+- Show first uploaded image on upload page
 - Fix autotagging task stuck when service doesn't respond
 - Fix statistic recalculation when only 1 day recorded
-- Add logging to JoyTag AI server
 
 DONE:
+- Implemented universal file uploading
+- Medias renamed to Blob
+- Actors renamed to Users
+- Add logging to JoyTag AI server
+- Upgraded SixLabors.ImageSharp from 3.1.4 to 3.1.5
+
+# Changelog
+
+### Version 1.6.3 - 25th Jul, 2024
 - Upgraged .NET from 6.0 to 8.0
 - Upgraded Npgsql.EntityFrameworkCore.PostgreSQL from 6.0.7 to 8.0.4
 - Upgraded bootstrap from 5.2.1 to 5.3.3
 - More Other packages upgraded to upstream versions
-
-# Changelog				   
 
 ### Version 1.6.2 - 13th Jul, 2024
 - Added new animations for gallery cards
