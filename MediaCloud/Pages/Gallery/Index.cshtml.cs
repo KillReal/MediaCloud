@@ -6,7 +6,7 @@ using MediaCloud.WebApp.Pages;
 using MediaCloud.WebApp.Services.ConfigProvider;
 using MediaCloud.WebApp.Services.UserProvider;
 
-namespace MediaCloud.Pages.Medias
+namespace MediaCloud.Pages.Gallery
 {
     public class MediaListModel : AuthorizedPageModel
     {

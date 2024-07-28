@@ -1,6 +1,6 @@
 ﻿@page
 @using MediaCloud.WebApp
-@model MediaCloud.Pages.Medias.MediaListModel
+@model MediaCloud.Pages.Gallery.MediaListModel
 
 @{
     ViewData["Title"] = "Gallery";
@@ -52,7 +52,7 @@
         <div class="form-group align-self-center d-flex flex-wrap">   
             <a class="btn btn-success btn-rounded me-3 mt-3" 
                 asp-page="Upload"
-                asp-route-returnUrl="/Medias?count=@(Model.ListBuilder.Pagination.Count)$offset=@(Model.ListBuilder.Pagination.Offset)$sort=@(Model.ListBuilder.Sorting.PropertyName)$filter=@(Model.ListBuilder.Filtering.Filter)$isUseAutoload=@(Model.IsAutoloadEnabled)">
+                asp-route-returnUrl="/Gallery?count=@(Model.ListBuilder.Pagination.Count)$offset=@(Model.ListBuilder.Pagination.Offset)$sort=@(Model.ListBuilder.Sorting.PropertyName)$filter=@(Model.ListBuilder.Filtering.Filter)$isUseAutoload=@(Model.IsAutoloadEnabled)">
                     Upload
                 </a>
             <div class="vr me-3 mt-3">
@@ -115,7 +115,7 @@
     <hr style="margin-bottom: 2rem"/>
     <partial name="~/Pages/Shared/_Pagination.cshtml" />
     <div class="row image-row gallery" id="gallery">
-        <partial name="~/Pages/Medias/_Gallery.cshtml" model=@(new _GalleryPageModel(Model.Previews))/>
+        <partial name="~/Pages/Gallery/_Gallery.cshtml" model=@(new _GalleryPageModel(Model.Previews))/>
         
         @if (Model.Previews.Count == 0)
         {
@@ -168,8 +168,8 @@
 
     function GetPostUrl(entityType, dataId)
     {
-        return "Medias/" + entityType +"?id=" + dataId +
-            "&returnUrl=/Medias?count=" + @Model.ListBuilder.Pagination.Count + 
+        return "Gallery/" + entityType +"?id=" + dataId +
+            "&returnUrl=/Gallery?count=" + @Model.ListBuilder.Pagination.Count + 
             "$offset=" + @Model.ListBuilder.Pagination.Offset +
             "$sort=" + '@Model.ListBuilder.Sorting.PropertyName' + 
             "$filter=" + '@Model.ListBuilder.Filtering.Filter' + 
@@ -215,7 +215,7 @@
     function filterClicked()
     {
         var filter = document.getElementById("filterGrab").value;
-        window.location.href = "/Medias?filter=" + filter + "&sort=@(Model.ListBuilder.Sorting.PropertyName)&isUseAutoload=@(Model.IsAutoloadEnabled)";
+        window.location.href = "/Gallery?filter=" + filter + "&sort=@(Model.ListBuilder.Sorting.PropertyName)&isUseAutoload=@(Model.IsAutoloadEnabled)";
     };
 
 </script>

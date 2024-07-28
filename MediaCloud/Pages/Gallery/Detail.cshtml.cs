@@ -5,7 +5,7 @@ using MediaCloud.Repositories;
 using MediaCloud.WebApp.Pages;
 using MediaCloud.WebApp.Services.UserProvider;
 
-namespace MediaCloud.Pages.Medias
+namespace MediaCloud.Pages.Gallery
 {
     public class MediaDetailModel(IUserProvider actorProvider, IPictureService pictureService, TagRepository tagRepository,
         PreviewRepository previewRepository, BlobRepository blobRepository) : AuthorizedPageModel(actorProvider)

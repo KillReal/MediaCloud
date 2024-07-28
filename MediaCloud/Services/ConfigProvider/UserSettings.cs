@@ -1,14 +1,14 @@
 namespace MediaCloud.WebApp.Services.ConfigProvider 
 {
     [Serializable]
-    public class ActorSettings
+    public class UserSettings
     {
         public int ListMaxEntitiesCount { get; set; }
         public int ListMaxPageCount { get; set; }
         public int StatisticActivityBacktrackDayCount { get; set; }
         public bool ListAutoloadingEnabled { get; set; }
 
-        public ActorSettings(IConfiguration configuration)
+        public UserSettings(IConfiguration configuration)
         {   
             ListMaxEntitiesCount = configuration.GetValue<int>("ListMaxEntitiesCount");
             ListMaxPageCount = configuration.GetValue<int>("ListMaxPageCount");
@@ -16,7 +16,7 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
             StatisticActivityBacktrackDayCount = configuration.GetValue<int>("StatisticActivityBacktrackDayCount");
         }
 
-        public ActorSettings()
+        public UserSettings()
         {
 
         }

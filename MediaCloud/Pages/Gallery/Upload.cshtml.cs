@@ -7,7 +7,7 @@ using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp;
 using MediaCloud.Extensions;
 
-namespace MediaCloud.Pages.Medias
+namespace MediaCloud.Pages.Gallery
 {
     public class MediaUploadModel(IUserProvider actorProvider, ITaskScheduler taskScheduler) : AuthorizedPageModel(actorProvider)
     {

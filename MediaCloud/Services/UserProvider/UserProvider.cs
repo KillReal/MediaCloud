@@ -165,13 +165,13 @@ namespace MediaCloud.WebApp.Services.UserProvider
             return new(true, $"Joined in by {data.Name} and invite code: {inviteCode}");
         }
 
-        public ActorSettings? GetSettings()
+        public UserSettings? GetSettings()
         {
             var currentUser = GetCurrent();
 
             if (currentUser != null && currentUser.PersonalSettings != null)
             {
-                return JsonConvert.DeserializeObject<ActorSettings>(currentUser.PersonalSettings);
+                return JsonConvert.DeserializeObject<UserSettings>(currentUser.PersonalSettings);
             }
 
             return null;

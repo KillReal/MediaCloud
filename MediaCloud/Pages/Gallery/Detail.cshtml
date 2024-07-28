@@ -1,6 +1,6 @@
 ﻿@page
 @using MediaCloud.Data.Types
-@model MediaCloud.Pages.Medias.MediaDetailModel
+@model MediaCloud.Pages.Gallery.MediaDetailModel
 
 @{
     ViewData["Title"] = "Details";
@@ -27,7 +27,7 @@
             <img id="left-arrow" 
                 src="/img/arrow-left.svg" 
                 class="arrow-button-left" 
-                onclick="window.location='/Medias/Detail/?id=@(Model.PrevPreviewId)&returnUrl=@(Model.ReturnUrl)'"
+                onclick="window.location='/Gallery/Detail/?id=@(Model.PrevPreviewId)&returnUrl=@(Model.ReturnUrl)'"
             />
         }
         
@@ -56,7 +56,7 @@
             <img id="right-arrow" 
                 src="/img/arrow-right.svg" 
                 class="arrow-button-right"
-                onclick="window.location='/Medias/Detail/?id=@(Model.NextPreviewId)&returnUrl=@(Model.ReturnUrl)'"
+                onclick="window.location='/Gallery/Detail/?id=@(Model.NextPreviewId)&returnUrl=@(Model.ReturnUrl)'"
             />
         }
 

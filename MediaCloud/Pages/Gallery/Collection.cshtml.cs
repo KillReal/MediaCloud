@@ -6,7 +6,7 @@ using MediaCloud.WebApp.Pages;
 using MediaCloud.Extensions;
 using MediaCloud.WebApp.Services.UserProvider;
 
-namespace MediaCloud.Pages.Medias
+namespace MediaCloud.Pages.Gallery
 {
     public class CollectionModel(IUserProvider actorProvider, CollectionRepository collectionRepository, TagRepository tagRepository) : AuthorizedPageModel(actorProvider)
     {

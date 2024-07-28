@@ -14,7 +14,7 @@ namespace MediaCloud.WebApp.Pages
         [BindProperty]
         public User Actor { get; set; }
         [BindProperty]
-        public ActorSettings ActorSettings { get; set; }
+        public UserSettings UserSettings { get; set; }
         [BindProperty]
         public EnvironmentSettings? EnvironmentSettings { get; set; }
         [BindProperty]
@@ -30,7 +30,7 @@ namespace MediaCloud.WebApp.Pages
 
             Actor = actorProvider.GetCurrent();
 
-            ActorSettings = _configProvider.ActorSettings;
+            UserSettings = _configProvider.ActorSettings;
             EnvironmentSettings = Actor.IsAdmin 
                 ? _configProvider.EnvironmentSettings 
                 : null;
@@ -44,7 +44,7 @@ namespace MediaCloud.WebApp.Pages
 
         public IActionResult OnPost()
         {
-            _configProvider.ActorSettings = ActorSettings;
+            _configProvider.ActorSettings = UserSettings;
 
             var actualActor = _actorProvider.GetCurrent();
 

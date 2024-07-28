@@ -32,7 +32,17 @@ namespace MediaCloud.WebApp.Builders.Blob
                     return new(blob, new Preview(blob, file));
                 default:
                     blob = new MediaCloud.Data.Models.Blob(file.Content);
-                    file.Content = File.ReadAllBytes("wwwroot/img/types/file.png");
+                    
+                    var extension = file.Type.Split("/").Last();
+
+                    try 
+                    {
+                        file.Content = File.ReadAllBytes($"wwwroot/img/types/{extension}.png");
+                    }
+                    catch {
+                        file.Content = File.ReadAllBytes("wwwroot/img/types/file.png");
+                    }
+
                     return new(blob, new Preview(blob, file));
             }
         }

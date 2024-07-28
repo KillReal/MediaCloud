@@ -1,7 +1,7 @@
 ﻿@page
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @using MediaCloud.Data.Types
-@model MediaCloud.Pages.Medias.CollectionModel
+@model MediaCloud.Pages.Gallery.CollectionModel
 
 @{
     ViewData["Title"] = "Collection";
@@ -34,8 +34,8 @@
             <div class="col-sm pt-3" style="margin-right: -1rem">
                 <ul class="list-group">
                     <li class="list-group-item">Id: @Model.Collection.Id</li>
-                    <li class="list-group-item">Medias Size: @Model.CollectionSizeInfo</li>
-                    <li class="list-group-item">Medias count: @Model.TotalCount</li>
+                    <li class="list-group-item">Files size: @Model.CollectionSizeInfo</li>
+                    <li class="list-group-item">Files count: @Model.TotalCount</li>
                     <li class="list-group-item">Tags count: @Model.Tags.Count</li>
                     
                 </ul>
@@ -179,7 +179,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script src="~/js/html5sortable.js"></script>
 <script src="~/js/tagAutocompletion.js"></script>
-<script src="~/Pages/Medias/Collection.cshtml.js"></script>
+<script src="~/Pages/Gallery/Collection.cshtml.js"></script>
 
 <script type="text/javascript">
     autocomplete(document.getElementById("filterGrab"));

@@ -16,7 +16,7 @@ namespace MediaCloud.Builders.List
     /// </remarks>
     /// <param name="request"> List request. </param>
     /// <param name="configProvider"> Config provider for current user <see cref="IDataService"/>. </param>
-    public class ListBuilder<T>(ListRequest request, ActorSettings actorSettings) where T : Record
+    public class ListBuilder<T>(ListRequest request, UserSettings actorSettings) where T : Record
     {
         public Sorting Sorting { get; init; } = new Sorting(request.Sort ?? "UpdatedAtDesc");
 

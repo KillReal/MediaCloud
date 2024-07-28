@@ -40,7 +40,7 @@ namespace MediaCloud.WebApp.Services.UserProvider
             return true;
         }
 
-        public ActorSettings? GetSettings()
+        public UserSettings? GetSettings()
         {
             throw new NotImplementedException();
         }

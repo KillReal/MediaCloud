@@ -25,7 +25,7 @@
                 <div class="navbar-collapse collapse justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="/Medias">Gallery</a>
+                            <a class="nav-link text-white" href="/Gallery">Gallery</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-white" href="/Tags">Tags</a>
@@ -33,7 +33,7 @@
                         @if (Model.GetType().IsSubclassOf(typeof(AuthorizedPageModel)) && Model.CurrentActor != null && Model.CurrentActor.IsAdmin)
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-white" href="/Actors">Actors</a>
+                                <a class="nav-link text-white" href="/Users">Users</a>
                             </li>
                         }
                         <li class="nav-item">
