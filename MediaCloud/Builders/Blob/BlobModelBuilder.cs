@@ -28,18 +28,20 @@ namespace MediaCloud.WebApp.Builders.Blob
                     return new(blob, new Preview(blob, file));
                 case "text/plain":
                     blob = new MediaCloud.Data.Models.Blob(file.Content);
-                    file.Content = File.ReadAllBytes("wwwroot/img/types/text.png");
+                    file.Content = File.ReadAllBytes("wwwroot/img/types/txt.png");
                     return new(blob, new Preview(blob, file));
                 default:
                     blob = new MediaCloud.Data.Models.Blob(file.Content);
                     
                     var extension = file.Type.Split("/").Last();
 
-                    try 
+                    if (File.Exists($"wwwroot/img/types/{extension}.png"))
                     {
+                        File.Exists($"wwwroot/img/types/{extension}.png");
                         file.Content = File.ReadAllBytes($"wwwroot/img/types/{extension}.png");
                     }
-                    catch {
+                    else 
+                    {
                         file.Content = File.ReadAllBytes("wwwroot/img/types/file.png");
                     }
 

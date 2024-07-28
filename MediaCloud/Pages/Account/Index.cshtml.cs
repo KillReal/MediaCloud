@@ -12,7 +12,7 @@ namespace MediaCloud.WebApp.Pages
         private readonly IConfigProvider _configProvider;
 
         [BindProperty]
-        public User Actor { get; set; }
+        public User User { get; set; }
         [BindProperty]
         public UserSettings UserSettings { get; set; }
         [BindProperty]
@@ -23,15 +23,15 @@ namespace MediaCloud.WebApp.Pages
         [BindProperty]
         public string ReturnUrl { get; set; } = "/";
 
-        public IndexModel(IUserProvider actorProvider, IConfigProvider configProvider) : base(actorProvider)
+        public IndexModel(IUserProvider userProvider, IConfigProvider configProvider) : base(userProvider)
         {
             _logger = LogManager.GetLogger("Actor");
             _configProvider = configProvider;
 
-            Actor = actorProvider.GetCurrent();
+            User = userProvider.GetCurrent();
 
-            UserSettings = _configProvider.ActorSettings;
-            EnvironmentSettings = Actor.IsAdmin 
+            UserSettings = _configProvider.UserSettings;
+            EnvironmentSettings = User.IsAdmin 
                 ? _configProvider.EnvironmentSettings 
                 : null;
         }
@@ -44,9 +44,9 @@ namespace MediaCloud.WebApp.Pages
 
         public IActionResult OnPost()
         {
-            _configProvider.ActorSettings = UserSettings;
+            _configProvider.UserSettings = UserSettings;
 
-            var actualActor = _actorProvider.GetCurrent();
+            var actualActor = _userProvider.GetCurrent();
 
             if (IsEnvironmentSettingsChanged && EnvironmentSettings != null && actualActor.IsAdmin)
             {

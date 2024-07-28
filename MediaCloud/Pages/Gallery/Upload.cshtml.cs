@@ -9,9 +9,9 @@ using MediaCloud.Extensions;
 
 namespace MediaCloud.Pages.Gallery
 {
-    public class MediaUploadModel(IUserProvider actorProvider, ITaskScheduler taskScheduler) : AuthorizedPageModel(actorProvider)
+    public class UploadModel(IUserProvider userProvider, ITaskScheduler taskScheduler) : AuthorizedPageModel(userProvider)
     {
-        private readonly User? _actor = actorProvider.GetCurrent();
+        private readonly User? _user = userProvider.GetCurrent();
         private readonly ITaskScheduler _taskScheduler = taskScheduler;
 
         [BindProperty]
@@ -32,7 +32,7 @@ namespace MediaCloud.Pages.Gallery
 
         public IActionResult OnPost()
         {
-            if (_actor == null)
+            if (_user == null)
             {
                 return Redirect("/Login");
             }
@@ -48,7 +48,7 @@ namespace MediaCloud.Pages.Gallery
                 });
             }
 
-            var task = new UploadTask(_actor, uploadedFiles, IsCollection, Tags);
+            var task = new UploadTask(_user, uploadedFiles, IsCollection, Tags);
             var taskId = _taskScheduler.AddTask(task);
 
             return Redirect($"/TaskScheduler/GetTaskStatus?id={taskId}");

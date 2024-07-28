@@ -7,9 +7,9 @@ using ILogger = NLog.ILogger;
 
 namespace MediaCloud.WebApp.Pages
 {
-    public class LoginModel(IUserProvider actorProvider) : PageModel
+    public class LoginModel(IUserProvider userProvider) : PageModel
     {
-        private readonly IUserProvider _actorProvider = actorProvider;
+        private readonly IUserProvider _userProvider = userProvider;
         private readonly ILogger _logger = LogManager.GetLogger("Actor");
 
         [BindProperty]
@@ -17,7 +17,7 @@ namespace MediaCloud.WebApp.Pages
         [BindProperty]
         public AuthData AuthData { get; set; } = new();
         [BindProperty]
-        public User? CurrentActor { get; set; } = null;
+        public User? CurrentUser { get; set; } = null;
         [BindProperty]
         public string ReturnUrl { get; set; } = "/";
 
@@ -25,7 +25,7 @@ namespace MediaCloud.WebApp.Pages
         {
             ReturnUrl = returnUrl;
 
-            if (_actorProvider.GetCurrentOrDefault() != null)
+            if (_userProvider.GetCurrentOrDefault() != null)
             {
                 return Redirect(ReturnUrl);
             }
@@ -36,9 +36,9 @@ namespace MediaCloud.WebApp.Pages
         public IActionResult OnPost()
         {
 
-            if (_actorProvider.Authorize(AuthData, HttpContext) == false)
+            if (_userProvider.Authorize(AuthData, HttpContext) == false)
             {
-                CurrentActor = null;
+                CurrentUser = null;
                 _logger.Error("Failed sign attempt by name: {AuthData.Name}", AuthData.Name);
                 IsFailed = true;
                 

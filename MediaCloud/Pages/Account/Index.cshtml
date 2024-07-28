@@ -25,18 +25,18 @@
 				<form enctype="multipart/form-data" method="post">
 					<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-					@if (Model.Actor.IsAdmin)
+					@if (Model.User.IsAdmin)
 					{
 						<input type="hidden" asp-for=@(Model.IsEnvironmentSettingsChanged) class="form-control" id="IsEnvironmentSettingsChanged">
 					}
-					<input type="hidden" asp-for=@(Model.Actor.Id) class="form-control">
+					<input type="hidden" asp-for=@(Model.User.Id) class="form-control">
 					<input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control">
 
 					<div>
-						Name: @Html.DisplayTextFor(x => x.Actor.Name)
+						Name: @Html.DisplayTextFor(x => x.User.Name)
 					</div>
 					<div>
-						Last login at: @Html.DisplayTextFor(x => x.Actor.LastLoginAt)
+						Last login at: @Html.DisplayTextFor(x => x.User.LastLoginAt)
 					</div>
 
 					<h5 class="mt-5">User settings</h5>
@@ -70,7 +70,7 @@
 						<input class="form-control" asp-for="@Model.UserSettings.StatisticActivityBacktrackDayCount" />
 					</div>
 
-					@if (Model.Actor.IsAdmin && Model.EnvironmentSettings != null) {
+					@if (Model.User.IsAdmin && Model.EnvironmentSettings != null) {
 						<h5 class="pt-5">
 							Environment settings:
 						</h5>
@@ -135,7 +135,7 @@
 
 </div>
 
-@if (Model.Actor.IsAdmin) {
+@if (Model.User.IsAdmin) {
 	<script>
 		function environmentSettingsChanged() {
 			var element = document.getElementById("IsEnvironmentSettingsChanged");

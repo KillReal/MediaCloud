@@ -18,7 +18,7 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
         /// Does not save changes to database implicitly. 
         /// Use <see cref="SaveActorSettings()"/> for explicit save.
         /// </summary>
-        public UserSettings ActorSettings
+        public UserSettings UserSettings
         { 
             get 
             { 

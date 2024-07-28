@@ -5,10 +5,10 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace MediaCloud.Pages
 {
-    public class IndexModel(IUserProvider actorProvider) : PageModel
+    public class IndexModel(IUserProvider userProvider) : PageModel
     {
         [BindProperty]
-        public User? CurrentActor { get; set; } = actorProvider.GetCurrentOrDefault();
+        public User? CurrentUser { get; set; } = userProvider.GetCurrentOrDefault();
 
         public IActionResult OnGet()
         {

@@ -8,7 +8,7 @@ using MediaCloud.WebApp.Services.UserProvider;
 
 namespace MediaCloud.Pages.Gallery
 {
-    public class MediaListModel : AuthorizedPageModel
+    public class ListModel : AuthorizedPageModel
     {
         private readonly IConfigProvider _configProvider;
         private readonly TagRepository _tagRepository;
@@ -26,7 +26,7 @@ namespace MediaCloud.Pages.Gallery
         [BindProperty]
         public bool IsAutoloadEnabled { get; set; } = true;
 
-        public MediaListModel(IUserProvider actorProvider, IConfigProvider configProvider, TagRepository tagRepository, 
+        public ListModel(IUserProvider actorProvider, IConfigProvider configProvider, TagRepository tagRepository, 
             PreviewRepository previewRepository) : base(actorProvider)
         {
             _configProvider = configProvider;
@@ -43,13 +43,13 @@ namespace MediaCloud.Pages.Gallery
                 ExampleFilter = "Create more tags to filtering";
             }
 
-            ListBuilder = new ListBuilder<Preview>(new(), _configProvider.ActorSettings);
-            IsAutoloadEnabled = _configProvider.ActorSettings.ListAutoloadingEnabled;
+            ListBuilder = new ListBuilder<Preview>(new(), _configProvider.UserSettings);
+            IsAutoloadEnabled = _configProvider.UserSettings.ListAutoloadingEnabled;
         }
 
         public async Task<IActionResult> OnGetAsync(ListRequest request)
         {
-            ListBuilder = new ListBuilder<Preview>(request, _configProvider.ActorSettings);
+            ListBuilder = new ListBuilder<Preview>(request, _configProvider.UserSettings);
             Previews = await ListBuilder.BuildAsync(_previewRepository);
             IsAutoloadEnabled = request.IsUseAutoload ?? IsAutoloadEnabled;
 

@@ -11,15 +11,15 @@ namespace MediaCloud.WebApp.Pages
     [Authorize]
     public class AuthorizedPageModel : PageModel
     {   
-        protected IUserProvider _actorProvider;
+        protected IUserProvider _userProvider;
         protected ILogger _logger;
 
         [BindProperty]
-        public User? CurrentActor { get; set; }
+        public User? CurrentUser { get; set; }
 
         public AuthorizedPageModel(IUserProvider actorProvider) 
         {
-            _actorProvider = actorProvider;
+            _userProvider = actorProvider;
             _logger = LogManager.GetLogger("PageModel");
 
             LogPageInit();
@@ -27,11 +27,11 @@ namespace MediaCloud.WebApp.Pages
 
         private void LogPageInit()
         {
-            CurrentActor = _actorProvider.GetCurrent();
+            CurrentUser = _userProvider.GetCurrent();
 
             var url = GetType().Name;
 
-            _logger.Debug("Page: {url} initialized by {CurrentActor.Name}", url, CurrentActor.Name);
+            _logger.Debug("Page: {url} initialized by {CurrentActor.Name}", url, CurrentUser.Name);
         }
     }
 }

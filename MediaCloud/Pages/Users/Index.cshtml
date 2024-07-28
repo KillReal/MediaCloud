@@ -1,10 +1,10 @@
 ﻿@page
-@model MediaCloud.Pages.Actors.ActorListModel
+@model MediaCloud.Pages.Users.ListModel
 @using MediaCloud.Extensions
 @using MediaCloud.Data.Types
 
 @{
-    ViewData["Title"] = "Actor list";
+    ViewData["Title"] = "Users list";
 
     var nameSortType = "NameDesc";
     var nameSortSymbol = "";
@@ -52,10 +52,10 @@
 
 <div class="page-container">
     <h1>
-        Actor list
+        User list
     </h1>
 
-    <div class="button-panel">
+    <div class="button-panel justify-content-start">
         <div>
             <a class="btn btn-success btn-rounded me-3 mt-3" asp-page="Create">
                 Create
@@ -95,29 +95,29 @@
         <thead>
             <tr>
                 <th class="table-item-padding">
-                    @Html.DisplayNameFor(model => model.Actors[0].Name)
+                    @Html.DisplayNameFor(model => model.Users[0].Name)
                 </th>
                 <th class="table-item-padding">
-                    @Html.DisplayNameFor(model => model.Actors[0].IsAdmin)
+                    @Html.DisplayNameFor(model => model.Users[0].IsAdmin)
                 </th>
                 <th class="table-item-padding">
-                    @Html.DisplayNameFor(model => model.Actors[0].IsPublic)
+                    @Html.DisplayNameFor(model => model.Users[0].IsPublic)
                 </th>
                 <th class="table-item-padding">
-                    @Html.DisplayNameFor(model => model.Actors[0].IsActivated)
+                    @Html.DisplayNameFor(model => model.Users[0].IsActivated)
                 </th>
                 <th class="table-item-padding">
-                    @Html.DisplayNameFor(model => model.Actors[0].LastLoginAt)
+                    @Html.DisplayNameFor(model => model.Users[0].LastLoginAt)
                 </th>
                 <th class="table-item-padding">
-                    @Html.DisplayNameFor(model => model.Actors[0].InviteCode)
+                    @Html.DisplayNameFor(model => model.Users[0].InviteCode)
                 </th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model.Actors) {
+            @foreach (var item in Model.Users) {
                 <tr class="list-clickable" 
-                    onclick="document.location='/Actors/Detail?id=@item.Id&returnUrl=/Actors/Index?sort=@Model.ListBuilder.Sorting.PropertyName';">
+                    onclick="document.location='/Users/Detail?id=@item.Id&returnUrl=/Users/Index?sort=@Model.ListBuilder.Sorting.PropertyName';">
                     <td class="table-item-padding">
                         @Html.DisplayFor(modelItem => item.Name)
                     </td>

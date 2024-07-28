@@ -8,7 +8,7 @@ using MediaCloud.WebApp.Services.UserProvider;
 
 namespace MediaCloud.Pages.Gallery
 {
-    public class CollectionModel(IUserProvider actorProvider, CollectionRepository collectionRepository, TagRepository tagRepository) : AuthorizedPageModel(actorProvider)
+    public class CollectionModel(IUserProvider userProvider, CollectionRepository collectionRepository, TagRepository tagRepository) : AuthorizedPageModel(userProvider)
     {
         private readonly CollectionRepository _collectionRepository = collectionRepository;
         private readonly TagRepository _tagRepository = tagRepository;

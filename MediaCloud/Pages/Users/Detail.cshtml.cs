@@ -6,80 +6,80 @@ using NLog;
 using MediaCloud.WebApp.Pages;
 using MediaCloud.WebApp.Services.UserProvider;
 
-namespace MediaCloud.Pages.Actors
+namespace MediaCloud.Pages.Users
 {
-    public class ActorDetailModel : AuthorizedPageModel
+    public class DetailModel : AuthorizedPageModel
     {
-        private readonly UserRepository _actorRepository;
+        private readonly UserRepository _userRepository;
 
         [BindProperty]
-        public User Actor { get; set; }
+        public new User User { get; set; }
 
         [BindProperty]
-        public string ReturnUrl { get; set; } = "/Actors";
+        public string ReturnUrl { get; set; } = "/Users";
 
-        public ActorDetailModel(IUserProvider actorProvider, UserRepository actorRepository) : base(actorProvider)
+        public DetailModel(IUserProvider userProvider, UserRepository userRepository) : base(userProvider)
         {
-            _logger = LogManager.GetLogger("Actor.Detail");
-            _actorRepository = actorRepository;
+            _logger = LogManager.GetLogger("User.Detail");
+            _userRepository = userRepository;
 
-            Actor =  _actorProvider.GetCurrent();
+            User =  _userProvider.GetCurrent();
         }
 
-        public IActionResult OnGet(Guid id, string returnUrl = "/Actors")
+        public IActionResult OnGet(Guid id, string returnUrl = "/Users")
         {
-            if (Actor.IsAdmin == false)
+            if (User.IsAdmin == false)
             {
                 return Redirect("/Account/Login");
             }
 
             ReturnUrl = returnUrl.Replace("$", "&");  
-            Actor = _actorRepository.Get(id) ?? new();
-            Actor.PasswordHash = string.Empty;
+            User = _userRepository.Get(id) ?? new();
+            User.PasswordHash = string.Empty;
 
             return Page();
         }   
 
         public IActionResult OnPost()
         {
-            var currentActor = _actorProvider.GetCurrent();
+            var currentActor = _userProvider.GetCurrent();
 
             if (currentActor.IsAdmin == false)
             {
-                _logger.Error("Fail attempt to access to Actor/Detail by: {Actor.Id}", Actor.Id);
+                _logger.Error("Fail attempt to access to User/Detail by: {User.Id}", User.Id);
                 return Redirect("/Account/Login");
             }
 
-            var referenceActor = _actorRepository.Get(Actor.Id);
+            var referenceUser = _userRepository.Get(User.Id);
 
-            if (string.IsNullOrEmpty(Actor.PasswordHash) == false)
+            if (string.IsNullOrEmpty(User.PasswordHash) == false)
             {
-                referenceActor.PasswordHash = SecureHash.Hash(Actor.PasswordHash);
+                referenceUser.PasswordHash = SecureHash.Hash(User.PasswordHash);
             }
 
-            if (string.IsNullOrEmpty(Actor.InviteCode) == false)
+            if (string.IsNullOrEmpty(User.InviteCode) == false)
             {
-                referenceActor.InviteCode = SecureHash.HashMD5(Actor.InviteCode);
+                referenceUser.InviteCode = SecureHash.HashMD5(User.InviteCode);
             }
 
-            referenceActor.Name = Actor.Name;
-            referenceActor.IsPublic = Actor.IsPublic;
-            referenceActor.IsAdmin = Actor.IsAdmin;
-            referenceActor.IsActivated = Actor.IsActivated;
-            referenceActor.InviteCode = Actor.InviteCode;
+            referenceUser.Name = User.Name;
+            referenceUser.IsPublic = User.IsPublic;
+            referenceUser.IsAdmin = User.IsAdmin;
+            referenceUser.IsActivated = User.IsActivated;
+            referenceUser.InviteCode = User.InviteCode;
 
-            _actorRepository.Update(referenceActor);
+            _userRepository.Update(referenceUser);
 
             return Redirect(ReturnUrl.Replace("$", "&"));
         }
 
         public IActionResult OnPostDelete(Guid id)
         {
-            Actor = _actorProvider.GetCurrent();
+            User = _userProvider.GetCurrent();
 
-            if (Actor.IsAdmin == false || _actorRepository.TryRemove(id) == false)
+            if (User.IsAdmin == false || _userRepository.TryRemove(id) == false)
             {
-                _logger.Error("Fail attempt to access to Actor/Detail?action=Delete by: {Actor.Id}", Actor.Id);
+                _logger.Error("Fail attempt to access to User/Detail?action=Delete by: {User.Id}", User.Id);
                 return Redirect("/Account/Login");
             }
 

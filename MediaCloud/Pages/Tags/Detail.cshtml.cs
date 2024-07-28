@@ -6,7 +6,7 @@ using MediaCloud.WebApp.Services.UserProvider;
 
 namespace MediaCloud.Pages.Tags
 {
-    public class TagDetailModel(IUserProvider actorProvider, TagRepository tagRepository) : AuthorizedPageModel(actorProvider)
+    public class DetailModel(IUserProvider userProvider, TagRepository tagRepository) : AuthorizedPageModel(userProvider)
     {
         private readonly TagRepository _tagRepository = tagRepository;
 

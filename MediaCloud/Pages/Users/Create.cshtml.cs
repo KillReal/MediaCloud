@@ -6,28 +6,28 @@ using NLog;
 using MediaCloud.WebApp.Pages;
 using MediaCloud.WebApp.Services.UserProvider;
 
-namespace MediaCloud.Pages.Actors
+namespace MediaCloud.Pages.Users
 {
-    public class ActorCreateModel : AuthorizedPageModel
+    public class CreateModel : AuthorizedPageModel
     {
         private readonly UserRepository _actorRepository;
 
         [BindProperty]
-        public User Actor { get; set; } = new();
+        public new User User { get; set; } = new();
 
-        public ActorCreateModel(IUserProvider actorProvider, UserRepository actorRepository) : base(actorProvider)
+        public CreateModel(IUserProvider userProvider, UserRepository userRepository) : base(userProvider)
         {
-            _logger = LogManager.GetLogger("Actors.Create");
-            _actorRepository = actorRepository;
+            _logger = LogManager.GetLogger("Users.Create");
+            _actorRepository = userRepository;
         }
 
         public IActionResult OnGet()
         {
-            var currentActor = _actorProvider.GetCurrent();
+            var currentActor = _userProvider.GetCurrent();
 
             if (currentActor.IsAdmin == false)
             {
-                _logger.Error("Fail attempt to access to Actor/Create by: {currentActor.Id}", currentActor.Id);
+                _logger.Error("Fail attempt to access to Actor/Create by: {currentUser.Id}", currentActor.Id);
                 return Redirect("/Account/Login");
             }
 
@@ -36,27 +36,27 @@ namespace MediaCloud.Pages.Actors
 
         public IActionResult OnPost()
         {
-            var currentActor = _actorProvider.GetCurrent();
+            var currentUser = _userProvider.GetCurrent();
 
-            if (currentActor.IsAdmin == false)
+            if (currentUser.IsAdmin == false)
             {
-                _logger.Error("Fail attempt to access to Actor/Create by: {currentActor.Id}", currentActor.Id);
+                _logger.Error("Fail attempt to access to Actor/Create by: {currentUser.Id}", currentUser.Id);
                 return Redirect("/Account/Login");
             }
 
-            if (string.IsNullOrEmpty(Actor.PasswordHash) == false)
+            if (string.IsNullOrEmpty(User.PasswordHash) == false)
             {
-                Actor.PasswordHash = SecureHash.Hash(Actor.PasswordHash);
+                User.PasswordHash = SecureHash.Hash(User.PasswordHash);
             }
 
-            if (string.IsNullOrEmpty(Actor.InviteCode) == false)
+            if (string.IsNullOrEmpty(User.InviteCode) == false)
             {
-                Actor.InviteCode = SecureHash.HashMD5(Actor.InviteCode);
+                User.InviteCode = SecureHash.HashMD5(User.InviteCode);
             }
 
-            _actorRepository.Create(Actor);
+            _actorRepository.Create(User);
 
-            return RedirectToPage("/Actors/Index");
+            return RedirectToPage("/Users/Index");
         }
     }
 }

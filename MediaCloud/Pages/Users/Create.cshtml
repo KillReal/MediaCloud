@@ -1,13 +1,13 @@
 ﻿@page
-@model MediaCloud.Pages.Actors.ActorCreateModel
+@model MediaCloud.Pages.Users.CreateModel
 @using MediaCloud.Data.Types
 
 @{
-    ViewData["Title"] = "Actor create";
+    ViewData["Title"] = "User create";
 }
 
 <div class="page-container">
-	<h1>Actor create</h1>
+	<h1>User create</h1>
 
 	<div class="button-panel">
         <div>
@@ -26,34 +26,34 @@
 				</div>
 				<div class="form-group mb-3">
 					<label class="col-form-label">Enter name</label>
-					<input asp-for="@Model.Actor.Name" class="form-control" />
+					<input asp-for="@Model.User.Name" class="form-control" />
 				</div>
 				<div class="form-group mb-3">
 					<label class="col-form-label">Enter password</label>
-					<textarea asp-for="@Model.Actor.PasswordHash" class="form-control">
+					<textarea asp-for="@Model.User.PasswordHash" class="form-control">
 					</textarea>
 				</div>
 				<div class="form-group mb-3 form-check">
-					<input class="form-check-input" type="checkbox" asp-for=Actor.IsAdmin>
-					<label class="form-check-label" asp-for=Actor.IsAdmin>
+					<input class="form-check-input" type="checkbox" asp-for=User.IsAdmin>
+					<label class="form-check-label" asp-for=User.IsAdmin>
 					It's a admin
 					</label>
 				</div>
 				<div class="form-group mb-3 form-check">
-					<input class="form-check-input" type="checkbox" asp-for=Actor.IsPublic>
-					<label class="form-check-label" asp-for=Actor.IsPublic>
+					<input class="form-check-input" type="checkbox" asp-for=User.IsPublic>
+					<label class="form-check-label" asp-for=User.IsPublic>
 						It's a public
 					</label>
 				</div>
 				<div class="form-group mb-3 form-check">
-					<input class="form-check-input" type="checkbox" asp-for=Actor.IsActivated>
-					<label class="form-check-label" asp-for=Actor.IsActivated>
+					<input class="form-check-input" type="checkbox" asp-for=User.IsActivated>
+					<label class="form-check-label" asp-for=User.IsActivated>
 						It's activated (leave unchecked if need invite activation)
 					</label>
 				</div>
 				<div class="form-group mb-3">
 					<label class="col-form-label">Enter invite code</label>
-					<input asp-for="@Model.Actor.InviteCode" class="form-control">
+					<input asp-for="@Model.User.InviteCode" class="form-control">
 				</div>
 				<div class="form-group mb-3">
 					<input type="submit" value="Create" class="btn btn-success" />

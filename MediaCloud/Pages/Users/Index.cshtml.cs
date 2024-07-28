@@ -6,37 +6,37 @@ using MediaCloud.WebApp.Pages;
 using MediaCloud.WebApp.Services.ConfigProvider;
 using MediaCloud.WebApp.Services.UserProvider;
 
-namespace MediaCloud.Pages.Actors
+namespace MediaCloud.Pages.Users
 {
-    public class ActorListModel : AuthorizedPageModel
+    public class ListModel : AuthorizedPageModel
     {
         private IConfigProvider _configProvider;
-        private readonly UserRepository _actorRepository;
+        private readonly UserRepository _userRepository;
 
-        public ActorListModel(IUserProvider actorProvider, IConfigProvider configProvider, UserRepository actorRepository) 
-            : base(actorProvider)
+        public ListModel(IUserProvider userProvider, IConfigProvider configProvider, UserRepository userRepository) 
+            : base(userProvider)
         {
             _configProvider = configProvider;
-            _actorRepository = actorRepository;
+            _userRepository = userRepository;
 
-            CurrentActor = _actorProvider.GetCurrent();
-            ListBuilder = new(new(), _configProvider.ActorSettings);
+            CurrentUser = _userProvider.GetCurrent();
+            ListBuilder = new(new(), _configProvider.UserSettings);
         }
 
         [BindProperty]
-        public List<User> Actors { get; set; } = [];
+        public List<User> Users { get; set; } = [];
         [BindProperty]
         public ListBuilder<User> ListBuilder { get; set; }
 
         public async Task<IActionResult> OnGetAsync(ListRequest request)
         {
-            if (CurrentActor == null || CurrentActor.IsAdmin == false)
+            if (CurrentUser == null || CurrentUser.IsAdmin == false)
             {
                 return Redirect("/Account/Login");
             }
 
-            ListBuilder = new(request, _configProvider.ActorSettings);
-            Actors = await ListBuilder.BuildAsync(_actorRepository);
+            ListBuilder = new(request, _configProvider.UserSettings);
+            Users = await ListBuilder.BuildAsync(_userRepository);
 
             return Page();
         }

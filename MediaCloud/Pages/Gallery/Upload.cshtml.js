@@ -1,5 +1,5 @@
 var orderPosElem = document.getElementById('orderPos');
-var mediaCountElem = document.getElementById('mediasCount');
+var mediaCountElem = document.getElementById('blobsCount');
 var modalTitle = document.getElementById('modalTitle');
 var modalBody = document.getElementById("modalBody");
 var loadSpinner = document.getElementById("loadingSpinner");
@@ -7,11 +7,11 @@ var loadSpinner = document.getElementById("loadingSpinner");
 function updateModalLoadBody(data) {
     if (data == undefined) {
         orderPosElem.innerHTML = 'Your position in order: updating...';
-        mediaCountElem.innerHTML = 'Medias count: updating...';
+        mediaCountElem.innerHTML = 'Gallery count: updating...';
     }
     else {
         orderPosElem.innerHTML = 'Your position in order: ' + data.queuePosition;
-        mediaCountElem.innerHTML = 'Medias count: ' + data.workCount;
+        mediaCountElem.innerHTML = 'Gallery count: ' + data.workCount;
     }
 }
 
@@ -41,7 +41,7 @@ function formSubmit(event) {
     updateModalLoadBody();
     $('#loadingModal').modal('show');
 
-    var url = "/Medias/Upload";
+    var url = "/Gallery/Upload";
     var request = new XMLHttpRequest();
     request.open('POST', url, true);
     request.onload = function() { // request successful
@@ -70,7 +70,7 @@ function formSubmit(event) {
                         showLoadSpinner();
                     }
                     else if (data.workCount == 0 && data.isExist == false) {
-                        setModalTitle('Media successfully uploaded!');
+                        setModalTitle('File(-s) successfully uploaded!');
                         hideModalBody();
                         hideLoadSpinner();
 

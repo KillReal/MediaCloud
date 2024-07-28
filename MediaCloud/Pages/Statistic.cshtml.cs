@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MediaCloud.Pages
 {
-    public class StatisticModel(IUserProvider actorProvider, IConfigProvider configProvider, StatisticProvider statisticProvider,
-        TagRepository tagRepository, AppDbContext context) : AuthorizedPageModel(actorProvider)
+    public class StatisticModel(IUserProvider userProvider, IConfigProvider configProvider, StatisticProvider statisticProvider,
+        TagRepository tagRepository, AppDbContext context) : AuthorizedPageModel(userProvider)
     {
         private readonly StatisticProvider _statisticProvider = statisticProvider;
         private readonly IConfigProvider _configProvider = configProvider;
@@ -28,7 +28,7 @@ namespace MediaCloud.Pages
 
         public IActionResult OnGet()
         {
-            ActivityBacktrackDayCount = _configProvider.ActorSettings.StatisticActivityBacktrackDayCount;
+            ActivityBacktrackDayCount = _configProvider.UserSettings.StatisticActivityBacktrackDayCount;
             Snapshots = _statisticProvider.GetAllSnapshots();
             Tags = _tagRepository.GetTopUsed(15).Where(x => x.PreviewsCount > 0).ToList();
 

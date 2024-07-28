@@ -35,7 +35,7 @@ namespace MediaCloud.WebApp.Controllers
 
         public async Task<List<object>> PreviewsBatchAsync(ListRequest listRequest)
         {
-            var ListBuilder = new ListBuilder<Preview>(listRequest, _configProvider.ActorSettings);
+            var ListBuilder = new ListBuilder<Preview>(listRequest, _configProvider.UserSettings);
             var previews = await ListBuilder.BuildAsync(_previewRepository);
 
             var jsonPreviews = new List<object>();
@@ -58,7 +58,7 @@ namespace MediaCloud.WebApp.Controllers
 
         public async Task<ActionResult> GetBatchAsync(ListRequest listRequest)
         {
-            var ListBuilder = new ListBuilder<Preview>(listRequest, _configProvider.ActorSettings);
+            var ListBuilder = new ListBuilder<Preview>(listRequest, _configProvider.UserSettings);
             var previews = await ListBuilder.BuildAsync(_previewRepository);
 
             return PartialView("/Pages/Medias/_Gallery.cshtml", new _GalleryPageModel(previews));
