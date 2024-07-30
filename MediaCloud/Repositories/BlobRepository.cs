@@ -9,7 +9,7 @@ using NLog;
 using SixLabors.ImageSharp;
 using System.Data;
 using Blob = MediaCloud.Data.Models.Blob;
-using MediaCloud.WebApp.Builders.Blob;
+using MediaCloud.WebApp.Builders.BlobModel;
 
 namespace MediaCloud.Repositories
 {
@@ -74,7 +74,7 @@ namespace MediaCloud.Repositories
             _context.AddRange(blobs);
             SaveChanges();
 
-            _logger.Info("Created <{medias.Count}> new medias by: {_actor.Name}", blobs.Count, _actor.Name);
+            _logger.Info("Created <{blobs.Count}> new blobs by: {_actor.Name}", blobs.Count, _actor.Name);
             _statisticProvider.MediasCountChanged.Invoke(blobs.Count, blobs.Sum(x => x.Size));
             return blobs;
         }

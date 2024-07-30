@@ -61,7 +61,7 @@ namespace MediaCloud.WebApp.Controllers
             var ListBuilder = new ListBuilder<Preview>(listRequest, _configProvider.UserSettings);
             var previews = await ListBuilder.BuildAsync(_previewRepository);
 
-            return PartialView("/Pages/Medias/_Gallery.cshtml", new _GalleryPageModel(previews));
+            return PartialView("/Pages/Gallery/_Gallery.cshtml", new _GalleryPageModel(previews));
         }
 
         public FileContentResult Preview(Guid id)

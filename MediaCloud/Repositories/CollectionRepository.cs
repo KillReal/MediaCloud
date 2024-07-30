@@ -111,11 +111,11 @@ namespace MediaCloud.Repositories
             }
 
             var collectionId = collection.Id;
-            var medias = collection.Previews.Select(x => x.Blob).ToList();
-            var count = medias.Count;
-            var size = medias.Sum(x => x.Size);
+            var blobs = collection.Previews.Select(x => x.Blob).ToList();
+            var count = blobs.Count;
+            var size = blobs.Sum(x => x.Size);
 
-            _context.Blobs.RemoveRange(medias);
+            _context.Blobs.RemoveRange(blobs);
             _statisticProvider.MediasCountChanged(-count, -size);
 
             Remove(collection);

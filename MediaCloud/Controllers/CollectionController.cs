@@ -22,6 +22,8 @@ namespace MediaCloud.WebApp.Controllers
                     preview.Id,
                     preview.Content,
                     preview.Order,
+                    preview.BlobName,
+                    preview.BlobType
                 });
             }
 
