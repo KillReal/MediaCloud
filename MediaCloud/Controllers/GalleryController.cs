@@ -167,7 +167,7 @@ namespace MediaCloud.WebApp.Controllers
         {
             var previewIds = _collectionRepository.Get(collectionId)?.Previews.Select(x => x.Id).ToList();
 
-            if (previewIds == null || previewIds.Any() == false)
+            if (previewIds == null || previewIds.Count == 0)
             {
                 return false;
             }

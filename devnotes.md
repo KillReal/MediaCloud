@@ -28,6 +28,7 @@ DONE:
 - Actors renamed to Users
 - Add logging to JoyTag AI server
 - Upgraded SixLabors.ImageSharp from 3.1.4 to 3.1.5
+- Improved page layouts for mobile devices
 
 # Changelog
 

@@ -5,7 +5,7 @@ namespace MediaCloud.TaskScheduler.Tasks
 {
     public class TaskExecutionContext(ITask task)
     {
-        private ITask _task = task;
+        private readonly ITask _task = task;
 
         public virtual void DoTheTask(IServiceProvider serviceProvider)
         {

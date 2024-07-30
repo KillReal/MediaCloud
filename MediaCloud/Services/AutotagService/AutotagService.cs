@@ -5,13 +5,13 @@ using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services.ConfigProvider;
 using Newtonsoft.Json;
 using NLog;
-using ILogger = NLog.ILogger;
+using Logger = NLog.ILogger;
 
 namespace MediaCloud.WebApp;
 
 public class AutotagService : IAutotagService
 {
-    private readonly ILogger _logger = LogManager.GetLogger("AutotagService");
+    private readonly Logger _logger = LogManager.GetLogger("AutotagService");
     private readonly List<Guid> _proceededPreviewIds = [];
     private readonly HttpClient _httpClient;
     private readonly Mutex _mutex = new();
@@ -125,7 +125,7 @@ public class AutotagService : IAutotagService
     {
         var collectionId = previews.First().Collection?.Id;
 
-        if (previews.Any() == false || collectionId == null)
+        if (previews.Count == 0 || collectionId == null)
         {
             return [];
         }

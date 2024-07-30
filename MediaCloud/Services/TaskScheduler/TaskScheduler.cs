@@ -1,7 +1,6 @@
 ﻿using MediaCloud.TaskScheduler.Tasks;
 using MediaCloud.WebApp.Services.ConfigProvider;
 using NLog;
-using ILogger = NLog.ILogger;
 using Task = MediaCloud.TaskScheduler.Tasks.Task;
 using MediaCloud.WebApp;
 
@@ -13,7 +12,7 @@ namespace MediaCloud.TaskScheduler
     public partial class TaskScheduler : ITaskScheduler
     {
         private readonly IServiceScopeFactory _serviceScopeFactory;
-        private readonly ILogger _logger;
+        private readonly Logger _logger;
         private readonly List<Worker> _workers = [];
         private readonly Queue _queue;
         

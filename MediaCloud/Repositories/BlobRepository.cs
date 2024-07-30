@@ -69,7 +69,7 @@ namespace MediaCloud.Repositories
                 return [Create(files[0])];
             }
 
-            var blobs = GetFilesRange(files);
+            var blobs = GetBlobsRange(files);
 
             _context.AddRange(blobs);
             SaveChanges();
@@ -79,7 +79,7 @@ namespace MediaCloud.Repositories
             return blobs;
         }
 
-        private List<Blob> GetFilesRange(List<UploadedFile> files)
+        private List<Blob> GetBlobsRange(List<UploadedFile> files)
         {
             var blobs = new List<Blob>();
 
@@ -102,7 +102,7 @@ namespace MediaCloud.Repositories
                 return [Create(files[0])];
             }
 
-            var blobs = GetFilesRange(files);
+            var blobs = GetBlobsRange(files);
             var previews = blobs.Select(x => x.Preview).ToList();
             var collection = new Collection(previews)
             {

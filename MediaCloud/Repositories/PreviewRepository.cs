@@ -44,9 +44,9 @@ namespace MediaCloud.Repositories
                 positiveTags.Add(tag);
             }
 
-            var positiveTagIds = _context.Tags.Where(x => positiveTags.Any(y => y == x.Name.ToLower()))
+            var positiveTagIds = _context.Tags.Where(x => positiveTags.Any(y => y.Equals(x.Name, StringComparison.CurrentCultureIgnoreCase)))
                                               .Select(x => x.Id);
-            var negativeTagIds = _context.Tags.Where(x => negativeTags.Any(y => y == x.Name.ToLower()))
+            var negativeTagIds = _context.Tags.Where(x => negativeTags.Any(y => y.Equals(x.Name, StringComparison.CurrentCultureIgnoreCase)))
                                               .Select(x => x.Id);
 
             return new([.. positiveTagIds], [.. negativeTagIds]);
@@ -61,7 +61,7 @@ namespace MediaCloud.Repositories
 
                 if (filter.Contains("notag"))
                 {
-                    return query.Where(x => x.Tags.Any() == false);
+                    return query.Where(x => x.Tags.Count == 0);
                 }
 
                 if (filter.Contains("!character") || filter.Contains("!char"))

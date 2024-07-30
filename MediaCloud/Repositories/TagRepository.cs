@@ -93,7 +93,7 @@ namespace MediaCloud.Repositories
             }
             tagsString = DeduplicateTagString(tagsString).ToLower();
             var tags = tagsString.ToLower().Split(' ');
-            return [.. _context.Tags.Where(x => tags.Any(y => y == x.Name.ToLower())
+            return [.. _context.Tags.Where(x => tags.Any(y => y.Equals(x.Name, StringComparison.CurrentCultureIgnoreCase))
                                          && x.CreatorId == _actor.Id)];
         }
 
@@ -146,7 +146,7 @@ namespace MediaCloud.Repositories
 
         public List<string> GetSuggestionsByString(string searchString, int limit = 10)
         {
-            return [.. _context.Tags.Where(x => x.Name.ToLower().StartsWith(searchString.ToLower()) && x.CreatorId == _actor.Id)
+            return [.. _context.Tags.Where(x => x.Name.StartsWith(searchString, StringComparison.CurrentCultureIgnoreCase) && x.CreatorId == _actor.Id)
                                 .OrderByDescending(x => x.PreviewsCount)
                                 .Select(x => x.Name)
                                 .Take(limit)];
