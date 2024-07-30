@@ -22,13 +22,23 @@ function CreateActualCard(data, id, collectionId) {
     cardDiv.id = id;
     cardDiv.onclick = function (e) {
         var id = e.currentTarget.id;
-        window.location = "Detail?id=" + data[id].id + "&returnUrl=/Medias/Collection?id=" + collectionId + "&rootReturnUrl=" + rootReturnUrl;
+        window.location = "Detail?id=" + data[id].id + "&returnUrl=/Gallery/Collection?id=" + collectionId + "&rootReturnUrl=" + rootReturnUrl;
     }
 
     // With image
     var img = CreateImg(data[id].content);
-
     cardDiv.appendChild(img);
+
+    // Add filename container if non image item
+    if (data[id].blobType.includes("image") == false) {
+        var filenameContainer = document.createElement('div');
+        filenameContainer.className = "filename-container";
+        var filename = document.createElement('div');
+        filename.className = "filename";
+        filename.innerText = data[id].blobName;
+        filenameContainer.appendChild(filename);
+        cardDiv.appendChild(filenameContainer);
+    }
 
     return cardDiv;
 }
@@ -52,6 +62,17 @@ function CreateSortCard(data, id, orderId) {
     sortInput.id = "Orders_" + orderId;
     sortInput.name = "Orders[" + orderId + "]";
     sortInput.value = data[id].order;
+
+    if (data[id].blobType.includes("image") == false) {
+        var filenameContainer = document.createElement('div');
+        filenameContainer.className = "filename-container";
+        filenameContainer.style = "bottom: 1rem"
+        var filename = document.createElement('div');
+        filename.className = "filename fs-5";
+        filename.innerText = data[id].blobName;
+        filenameContainer.appendChild(filename);
+        sortCardInnerDiv.appendChild(filenameContainer);
+    }
 
     sortCardInnerDiv.appendChild(img);
     sortCardInnerDiv.appendChild(sortInput);

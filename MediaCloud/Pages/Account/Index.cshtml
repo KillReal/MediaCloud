@@ -18,9 +18,8 @@
 	</div>
 
 	<hr>
-
-    <div class="page-center-container">
-		<div class="card w-50" style="border-radius: 1rem;">
+	<div class="card-container w-100">
+		<div class="card" style="border-radius: 1rem;">
 			<div class="card-body p-5 text-left text-black">
 				<form enctype="multipart/form-data" method="post">
 					<div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -132,7 +131,6 @@
 			</div>
 		</div>
 	</div>
-
 </div>
 
 @if (Model.User.IsAdmin) {

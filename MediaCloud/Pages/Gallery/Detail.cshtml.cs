@@ -20,7 +20,7 @@ namespace MediaCloud.Pages.Gallery
         [BindProperty]
         public string BlobName {get; set; } = "unknown";
         [BindProperty]
-        public string BlobType {get; set; } = "unknown";
+        public string BlobType {get; set; } = "unknown";    
         [BindProperty]
         public Blob Blob { get; set; } = new();
         [BindProperty]
@@ -38,7 +38,7 @@ namespace MediaCloud.Pages.Gallery
         [BindProperty]
         public int RotationDegree {get; set;} = 0;
 
-        public IActionResult OnGet(Guid id, string returnUrl = "/Medias", string rootReturnUrl = "/")
+        public IActionResult OnGet(Guid id, string returnUrl = "/Blobs", string rootReturnUrl = "/")
         {
             var preview = _previewRepository.Get(id);
 

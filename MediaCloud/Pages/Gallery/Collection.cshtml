@@ -14,7 +14,7 @@
         <a onclick="history.back();" class="btn btn-info">
             Back
         </a>
-        <a class="btn btn-success btn-rounded me-1 mb-2" 
+        <a class="btn btn-success btn-rounded" 
             href="@Url.Action("DownloadCollection", "Gallery", new { id = Model.Collection.Id })">
             Download
         </a>
@@ -26,10 +26,7 @@
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control">
         <input type="hidden" asp-for=@(Model.IsOrderChanged) class="form-control" id="order-changed">
-        <input type="hidden" asp-for=@(Model.Collection.Id) class="form-control">
-        <div class="row thumbnail-sortable" id="sortable-gallery" style="display: none"> 
-        </div>
-        
+        <input type="hidden" asp-for=@(Model.Collection.Id) class="form-control">        
         <div class="row">
             <div class="col-sm pt-3" style="margin-right: -1rem">
                 <ul class="list-group">
@@ -54,7 +51,6 @@
             <div class="form-group mb-3 col-sm h-100 autocomplete-list autocomplete">
                 <label class="col-form-label">Enter tags with spaces between</label>
                 <textarea asp-for="@Model.TagsString" class="form-control" style="height: 100%" id="filterGrab">
-
                 </textarea>
             </div>
             <div class="col-sm">
@@ -108,12 +104,17 @@
 
         <div class="form-group control-button-panel mt-3">
             <input type="submit" value="Edit" class="btn btn-success" />
-            <input class="btn btn-success btn-rounded" 
+
+            @if (Model.IsAutotaggingAvailable) 
+            {
+                <input class="btn btn-success btn-rounded" 
                     type="button" 
                     value="Autotag ✨" 
                     id="autotagButton" 
                     onclick="autocompleteTags('@Model.Collection.Id')" 
                 />
+            }
+
             <a class="btn btn-info btn-rounded me-1 ms-2" onclick="startReorder();" id="reorder-button">
                 Reorder
             </a>
@@ -130,8 +131,10 @@
             </button>
         </div>
 
-        <div class="row gallery" id="gallery">   
-                
+        <div class="row thumbnail-sortable" id="sortable-gallery" style="display: none"> 
+        </div>
+
+        <div class="row gallery" id="gallery">           
         </div>
 
         <div class="d-flex justify-content-center">

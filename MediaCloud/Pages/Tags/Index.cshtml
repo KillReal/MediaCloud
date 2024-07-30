@@ -70,39 +70,38 @@
     </h1>
 
     <div class="button-panel justify-content-start">
-        <div>
-            <a class="btn btn-success btn-rounded me-3 mt-3" asp-page="Create">
+        <div class="button-group">
+             <a class="btn btn-success btn-rounded" asp-page="Create">
                 Create
             </a>
+            <div class="separator"></div>
         </div>
 
-        <div class="vr me-3 mt-3">
+        <div class="button-group">
+            <div class="descriptor">
+                Sorting:
+            </div>
+            <a class="btn @nameButtonStyle btn-rounded text-nowrap" 
+                asp-page="Index" 
+                asp-route-sort=@(nameSortType)>
+                Name @(nameSortSymbol)
+            </a>
+            <a class="btn @updatedAtButtonStyle btn-rounded text-nowrap" 
+                asp-page="Index" 
+                asp-route-sort=@(updatedAtSortType)>
+                Date @(updatedAtSortSymbol)
+            </a>
+            <a class="btn @typeButtonStyle btn-rounded text-nowrap" 
+                asp-page="Index" 
+                asp-route-sort=@(typeSortType)>
+                Type @(typeSortSymbol)
+            </a>
+            <a class="btn @previewsCountButtonStyle btn-rounded text-nowrap" 
+                asp-page="Index" 
+                asp-route-sort=@(previewsCountSortType)>
+                Media count @(previewsCountSortSymbol)
+            </a>
         </div>
-
-        <div class="align-self-center me-3 mt-3 text-white ">
-            Sorting:
-        </div>
-
-        <a class="btn @nameButtonStyle btn-rounded me-3 mt-3 text-nowrap" 
-            asp-page="Index" 
-            asp-route-sort=@(nameSortType)>
-            Name @(nameSortSymbol)
-        </a>
-        <a class="btn @updatedAtButtonStyle btn-rounded me-3 mt-3 text-nowrap" 
-            asp-page="Index" 
-            asp-route-sort=@(updatedAtSortType)>
-            Date @(updatedAtSortSymbol)
-        </a>
-        <a class="btn @typeButtonStyle btn-rounded me-3 mt-3 text-nowrap" 
-            asp-page="Index" 
-            asp-route-sort=@(typeSortType)>
-            Type @(typeSortSymbol)
-        </a>
-        <a class="btn @previewsCountButtonStyle btn-rounded me-3 mt-3 text-nowrap" 
-            asp-page="Index" 
-            asp-route-sort=@(previewsCountSortType)>
-            Media count @(previewsCountSortSymbol)
-        </a>
 
     </div>  
     <hr class="text-white"/>
@@ -146,5 +145,7 @@
     }
         </tbody>
     </table>
+
+    <partial name="~/Pages/Shared/_Pagination.cshtml" />
 </div>
- <partial name="~/Pages/Shared/_Pagination.cshtml" />
+

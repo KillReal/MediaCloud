@@ -15,21 +15,23 @@
 
 <hr style="color: white"/>
 
-<div>
-    <div class="row" style="justify-content: space-around;">
-        <div class="col whiteback-bar">
-            <canvas class="chart-canvas" id="CountChart"></canvas>
+<div class="page-container">
+    <div class="overflow-scroll">
+        <div class="row" style="justify-content: space-around; min-width: 45rem;">
+            <div class="col whiteback-bar">
+                <canvas class="chart-canvas" id="CountChart"></canvas>
+            </div>
+            <div class="col whiteback-bar">
+                <canvas class="chart-canvas" id="SizeChart"></canvas>
+            </div>
         </div>
-        <div class="col whiteback-bar">
-            <canvas class="chart-canvas" id="SizeChart"></canvas>
-        </div>
-    </div>
-    <div class="row" style="justify-content: space-around;">
-        <div class="col-4 whiteback-bar" style="justify-content: space-around;">
-            <canvas class="chart-canvas-block" style="max-height: 45rem" id="TagsChart"></canvas>
-        </div>
-        <div class="col whiteback-bar">
-            <canvas class="chart-canvas" id="ActivityChart"></canvas>
+        <div class="row" style="justify-content: space-around; min-width: 45rem;">
+            <div class="col whiteback-bar" style="justify-content: space-around;">
+                <canvas class="chart-canvas-block" style="max-height: 35rem" id="TagsChart"></canvas>
+            </div>
+            <div class="col whiteback-bar">
+                <canvas class="chart-canvas" id="ActivityChart"></canvas>
+            </div>
         </div>
     </div>
 </div>

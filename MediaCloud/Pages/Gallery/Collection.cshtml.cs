@@ -16,13 +16,15 @@ namespace MediaCloud.Pages.Gallery
         [BindProperty]
         public Collection Collection { get; set; } = new();
         [BindProperty]
-        public string ReturnUrl { get; set; } = "/Medias";
+        public string ReturnUrl { get; set; } = "/Gallery";
         [BindProperty]
         public List<Tag> Tags { get; set; } = [];
         [BindProperty]
         public string? TagsString { get; set; }
         [BindProperty]
         public bool IsOrderChanged { get; set; } = false;
+        [BindProperty]
+        public bool IsAutotaggingAvailable { get; set; } = false;
         [BindProperty]
         public ListRequest ListRequest { get; set; } = new() { Count = 42};
         [BindProperty]
@@ -32,7 +34,7 @@ namespace MediaCloud.Pages.Gallery
         [BindProperty]
         public string? CollectionSizeInfo { get; set; }
 
-        public IActionResult OnGet(Guid id, string returnUrl = "/Medias")
+        public IActionResult OnGet(Guid id, string returnUrl = "/Gallery")
         {
             Collection = _collectionRepository.Get(id) ?? new();
 
@@ -45,6 +47,7 @@ namespace MediaCloud.Pages.Gallery
             var collectionSize = _collectionRepository.GetSize(id);
             CollectionSizeInfo = collectionSize.FormatSize();
             TotalCount = _collectionRepository.GetListCount(id).Result;
+            IsAutotaggingAvailable = Collection.Previews.Select(x => x.BlobType).Any(x => x.Contains("image"));
 
             Tags = [.. preview.Tags.OrderBy(x => x.Type)];
             TagsString = string.Join(" ", Tags.Select(x => x.Name.ToLower()));
@@ -80,7 +83,7 @@ namespace MediaCloud.Pages.Gallery
 
             if (IsOrderChanged)
             {
-                return Redirect($"/Medias/Collection?id={collection.Id}&returnUrl={ReturnUrl.Replace("&", "$")}");
+                return Redirect($"/Gallery/Collection?id={collection.Id}&returnUrl={ReturnUrl.Replace("&", "$")}");
             }
 
             return Redirect(ReturnUrl.Replace("$", "&"));

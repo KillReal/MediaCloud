@@ -20,24 +20,34 @@ html {
 }
 
 body {
-    margin-bottom: 60px;
+    min-width: 500px
 }
 
-.background-image {
+.main-background {
     overflow: hidden;
     display: flex;
     justify-content: center;
     position: fixed;
-    margin-left: -3rem;
     width: 100%;
 }
 
-.gradient-main {
-    /* fallback for old browsers */
+.main-background img {
+    padding-top: 4rem; 
+    min-width: 60rem
+}
+
+.main-frame {
+    display: flex;
+    justify-content: center;
     background: #5063b9;
     height: 100%;
     min-height: 77.8vmax;
     transition: all 1.5s ease-out allow-discrete;
+}
+
+.main-container {
+    width: 100%;
+    max-width: 2200px;
 }
 
 .navbar {
@@ -67,6 +77,9 @@ body {
     padding: 1rem !important;
     --bs-text-opacity: 1;
     color: rgba(var(--bs-white-rgb), var(--bs-text-opacity)) !important;
+    margin-bottom: 1rem;
+    overflow-x: auto;
+    min-height: 90vmax;
 }
 
 .page-center-container {
@@ -79,8 +92,40 @@ body {
     flex-direction: row !important;
     align-items: center !important;
     flex-wrap: wrap;
-    padding-top: 2rem;
     justify-content: space-between;
+}
+
+.button-group {
+    display: flex;
+    margin-top: 1rem;
+}
+
+.button-panel .btn {
+    margin-right: 0.25rem;
+    margin-left: 0.25rem;
+}
+
+.button-group-input {
+    margin-right: 0.25rem;
+    margin-left: 0.25rem;
+}
+
+.button-group .separator {
+    display: inline-block;
+    align-self: stretch;
+    width: 1px;
+    min-height: 1em;
+    background-color: currentColor;
+    opacity: .25;
+    margin-right: 0.5rem;
+    margin-left: 0.5rem;
+}
+
+.button-group .descriptor {
+    margin-right: 0.5rem;
+    margin-left: 0.5rem;
+    white-space: nowrap;
+    align-self: center;
 }
 
 .picture-controls-container {
@@ -129,15 +174,6 @@ body {
     margin-bottom: 1rem !important;
 }
 
-.picture {
-    transition: transform .3s; /* Animation */
-}
-
-.picture:hover {
-    transform: scale(1.11);
-    cursor: pointer;
-}
-
 .picture-image {
     transition: border-radius 0.6s; /* Animation */
     border-radius: 0.25rem;
@@ -165,8 +201,7 @@ body {
 
 .gallery {
    display: flex;
-   margin-top: 2rem!important;
-   margin-bottom: 2rem!important;
+   margin-top: 1rem!important;
 }
 
 @keyframes smooth-appear {
@@ -185,6 +220,11 @@ body {
     transform: translateY(5rem);
     animation: smooth-appear 0.7s ease forwards;
     animation-iteration-count: 1;
+}
+
+.gallery-item:hover {
+    transform: scale(1.11);
+    cursor: pointer;
 }
 
 .gallery-item-bubble {
@@ -211,6 +251,7 @@ body {
 }
 
 .list-clickable {
+    border-style: hidden;
     transition: Background-color 0.6s
 }
 
@@ -229,6 +270,16 @@ body {
 
 .table-item-padding {
     padding: 0.75rem!important;
+}
+
+.card {
+    align-self: center;
+    max-width: 700px;
+}
+
+.card-container {
+    display: flex;
+    justify-content: center;
 }
 
 .picture-card {
