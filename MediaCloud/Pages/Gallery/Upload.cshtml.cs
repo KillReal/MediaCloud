@@ -30,7 +30,7 @@ namespace MediaCloud.Pages.Gallery
             return Page();
         }
 
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPost()
         {
             if (_user == null)
             {
@@ -42,9 +42,9 @@ namespace MediaCloud.Pages.Gallery
             {
                 uploadedFiles.Add(new UploadedFile()
                 {
-                    Name = file.FileName,
+                    Name = Path.GetFileName(file.FileName),
                     Type = file.ContentType,
-                    Content = file.GetBytes()
+                    Content = await file.GetBytesAsync()
                 });
             }
 

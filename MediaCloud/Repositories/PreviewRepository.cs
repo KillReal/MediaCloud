@@ -108,7 +108,7 @@ namespace MediaCloud.Repositories
                                                                     .CountAsync();
         }
 
-        public List<Preview> GetList(ListBuilder<Preview> listBuilder)
+        public async Task<List<Preview>> GetListAsync(ListBuilder<Preview> listBuilder)
         {
             var query = _context.Previews.AsNoTracking().Where(x => x.Order == 0);
             query = SetFilterToQuery(query, listBuilder.Filtering.Filter);
@@ -123,21 +123,23 @@ namespace MediaCloud.Repositories
                                                       .Shuffle(seed)
                                                       .ToList();
 
-                return query.Where(x => previewIdsList.Any(id => id == x.Id) 
-                                     && x.CreatorId == _actor.Id)
-                            .Include(x => x.Collection)
-                            .ToList()
-                            .OrderBy(x => previewIdsList.IndexOf(x.Id))
+                var list = await query.Where(x => previewIdsList.Any(id => id == x.Id) 
+                                            && x.CreatorId == _actor.Id)
+                                        .Include(x => x.Collection)
+                                        .ToListAsync();
+
+                return list.OrderBy(x => previewIdsList.IndexOf(x.Id))
                             .Skip(listBuilder.Pagination.Offset)
                             .Take(listBuilder.Pagination.Count)
                             .ToList();
             }  
 
-            return [.. query.Order(listBuilder.Sorting.GetOrder())
+            return await query.Order(listBuilder.Sorting.GetOrder())
                         .Where(x => x.CreatorId == _actor.Id)
                         .Skip(listBuilder.Pagination.Offset)
                         .Take(listBuilder.Pagination.Count)
-                        .Include(x => x.Collection)];
+                        .Include(x => x.Collection)
+                        .ToListAsync();
         }
 
         public override bool TryRemove(Guid id)

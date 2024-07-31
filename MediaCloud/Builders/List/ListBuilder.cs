@@ -35,9 +35,10 @@ namespace MediaCloud.Builders.List
         /// <returns>List of selected entities.</returns>
         public async Task<List<T>> BuildAsync(IListBuildable<T> repository)
         {
+            var list = await repository.GetListAsync(this);
             Pagination.SetTotalCount(await repository.GetListCountAsync(this));
 
-            return repository.GetList(this);
+            return list;
         }
     }
 }

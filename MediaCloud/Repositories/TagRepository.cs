@@ -121,7 +121,7 @@ namespace MediaCloud.Repositories
             return selectedTags;
         }
 
-        public List<Tag> GetList(ListBuilder<Tag> listBuilder)
+        public List<Tag> GetListAsync(ListBuilder<Tag> listBuilder)
         {
             return [.. _context.Tags.AsNoTracking().Order(listBuilder.Sorting.GetOrder())
                                                .Where(x => x.CreatorId == _actor.Id)

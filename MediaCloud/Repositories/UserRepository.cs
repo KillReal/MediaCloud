@@ -58,7 +58,7 @@ namespace MediaCloud.Repositories
             return true;
         }
 
-        public List<User> GetList(ListBuilder<User> listBuilder)
+        public List<User> GetListAsync(ListBuilder<User> listBuilder)
         {
             return [.. _context.Users.AsNoTracking().Order(listBuilder.Sorting.GetOrder())
                                                  .Skip(listBuilder.Pagination.Offset)
