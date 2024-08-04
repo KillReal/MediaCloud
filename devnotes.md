@@ -21,6 +21,7 @@ TODO:
 - Show first uploaded image on upload page
 - Fix autotagging task stuck when service doesn't respond
 - Fix statistic recalculation when only 1 day recorded
+- Rewrite collection gallery to _CollectionGallery.cshtml
 
 DONE:
 - Implemented universal file uploading

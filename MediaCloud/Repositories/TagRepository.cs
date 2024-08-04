@@ -93,7 +93,7 @@ namespace MediaCloud.Repositories
             }
             tagsString = DeduplicateTagString(tagsString).ToLower();
             var tags = tagsString.ToLower().Split(' ');
-            return [.. _context.Tags.Where(x => tags.Any(y => y.Equals(x.Name, StringComparison.CurrentCultureIgnoreCase))
+            return [.. _context.Tags.Where(x => tags.Any(y => y.ToLower() == x.Name.ToLower())
                                          && x.CreatorId == _actor.Id)];
         }
 
@@ -121,12 +121,13 @@ namespace MediaCloud.Repositories
             return selectedTags;
         }
 
-        public List<Tag> GetListAsync(ListBuilder<Tag> listBuilder)
+        public async Task<List<Tag>> GetListAsync(ListBuilder<Tag> listBuilder)
         {
-            return [.. _context.Tags.AsNoTracking().Order(listBuilder.Sorting.GetOrder())
+            return await _context.Tags.AsNoTracking().Order(listBuilder.Sorting.GetOrder())
                                                .Where(x => x.CreatorId == _actor.Id)
                                                .Skip(listBuilder.Pagination.Offset)
-                                               .Take(listBuilder.Pagination.Count)];
+                                               .Take(listBuilder.Pagination.Count)
+                                               .ToListAsync();
         }
 
         public async Task<int> GetListCountAsync(ListBuilder<Tag> listBuilder)
@@ -146,7 +147,7 @@ namespace MediaCloud.Repositories
 
         public List<string> GetSuggestionsByString(string searchString, int limit = 10)
         {
-            return [.. _context.Tags.Where(x => x.Name.StartsWith(searchString, StringComparison.CurrentCultureIgnoreCase) && x.CreatorId == _actor.Id)
+            return [.. _context.Tags.Where(x => x.Name.ToLower().StartsWith(searchString.ToLower()) && x.CreatorId == _actor.Id)
                                 .OrderByDescending(x => x.PreviewsCount)
                                 .Select(x => x.Name)
                                 .Take(limit)];

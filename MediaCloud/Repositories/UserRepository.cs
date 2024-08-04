@@ -58,11 +58,12 @@ namespace MediaCloud.Repositories
             return true;
         }
 
-        public List<User> GetListAsync(ListBuilder<User> listBuilder)
+        public async Task<List<User>> GetListAsync(ListBuilder<User> listBuilder)
         {
-            return [.. _context.Users.AsNoTracking().Order(listBuilder.Sorting.GetOrder())
-                                                 .Skip(listBuilder.Pagination.Offset)
-                                                 .Take(listBuilder.Pagination.Count)];
+            return await _context.Users.AsNoTracking().Order(listBuilder.Sorting.GetOrder())
+                                                    .Skip(listBuilder.Pagination.Offset)
+                                                    .Take(listBuilder.Pagination.Count)
+                                                    .ToListAsync();
         }
 
         public async Task<int> GetListCountAsync(ListBuilder<User> listBuilder)

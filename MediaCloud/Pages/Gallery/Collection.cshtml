@@ -11,13 +11,15 @@
     <h1>Collection</h1>
 
     <div class="button-panel">
-        <a onclick="history.back();" class="btn btn-info">
-            Back
-        </a>
-        <a class="btn btn-success btn-rounded" 
-            href="@Url.Action("DownloadCollection", "Gallery", new { id = Model.Collection.Id })">
-            Download
-        </a>
+        <div class="button-group">
+            <a onclick="history.back();" class="btn btn-info">
+                Back
+            </a>
+            <a class="btn btn-success btn-rounded" 
+                href="@Url.Action("DownloadCollection", "Gallery", new { id = Model.Collection.Id })">
+                Download
+            </a>
+        </div>
 	</div>
 
     <hr />
@@ -28,7 +30,7 @@
         <input type="hidden" asp-for=@(Model.IsOrderChanged) class="form-control" id="order-changed">
         <input type="hidden" asp-for=@(Model.Collection.Id) class="form-control">        
         <div class="row">
-            <div class="col-sm pt-3" style="margin-right: -1rem">
+            <div class="col-sm">
                 <ul class="list-group">
                     <li class="list-group-item">Id: @Model.Collection.Id</li>
                     <li class="list-group-item">Files size: @Model.CollectionSizeInfo</li>
@@ -37,7 +39,7 @@
                     
                 </ul>
             </div>
-            <div class="col-sm pt-3" style="margin-left: -1rem">
+            <div class="col-sm">
                 <ul class="list-group">
                     <li class="list-group-item">Creator: @Model.Collection.Creator.Name</li>
                     <li class="list-group-item">Updator: @Model.Collection.Updator.Name</li>
@@ -48,13 +50,19 @@
         </div>
 
         <div class="row">
-            <div class="form-group mb-3 col-sm h-100 autocomplete-list autocomplete">
+            <div class="form-group col-sm h-100 autocomplete-list autocomplete">
                 <label class="col-form-label">Enter tags with spaces between</label>
+            </div>
+            <div class="col-sm">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm mb-3">
                 <textarea asp-for="@Model.TagsString" class="form-control" style="height: 100%" id="filterGrab">
                 </textarea>
             </div>
             <div class="col-sm">
-                <label class="col-form-label" style="visibility: hidden">List of existed tags</label>
                 <ul class="list-group">
                     <li class="list-group-item h-100">
                         Related tags:

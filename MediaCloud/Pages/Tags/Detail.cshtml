@@ -13,7 +13,7 @@
     </h1>
 
     <div class="button-panel">
-        <div>
+        <div class="button-group">
            <a onclick="history.back();" class="btn btn-info">
 				Back
 			</a>
@@ -22,7 +22,7 @@
 
     <hr />
     <div class="row">
-        <div class="col-md-4 text-white">
+        <div class="col-lg-4 text-white">
             <form enctype="multipart/form-data" method="post">
                 <div asp-validation-summary="ModelOnly" class="text-danger">
                 </div>
@@ -61,16 +61,18 @@
                         </textarea>
                     </div>
                 </div>
-                <div class="form-group mb-3 d-flex justify-content-between">
-                    <input type="submit" value="Edit" class="btn btn-success" />
-                    <a href="/Gallery/Index?filter=@Model.Tag.Name" class="btn btn-info">
-                        Show related files
-                    </a>
-                    <button class="btn btn-danger btn-rounded" 
-                        asp-page-handler="Delete" 
-                        asp-route-id=@(Model.Tag.Id)>
-                        Remove
-                    </button>
+                <div class="form-group button-panel">
+                    <div class="button-group d-flex justify-content-between w-100">
+                        <input type="submit" value="Edit" class="btn btn-success" />
+                        <a href="/Gallery/Index?filter=@Model.Tag.Name" class="btn btn-info text-nowrap">
+                            Show related files
+                        </a>
+                        <button class="btn btn-danger btn-rounded" 
+                            asp-page-handler="Delete" 
+                            asp-route-id=@(Model.Tag.Id)>
+                            Remove
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
