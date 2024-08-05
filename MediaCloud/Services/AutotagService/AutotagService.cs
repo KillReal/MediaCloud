@@ -204,7 +204,7 @@ public class AutotagService : IAutotagService
 
         if (result.StatusCode != HttpStatusCode.OK)
         {
-            throw new HttpRequestException("Request to JoyTag AI failed");
+            throw new HttpRequestException($"Request to JoyTag AI failed with code {result.StatusCode}");
         }
 
         return result.Content.ReadAsStringAsync()
