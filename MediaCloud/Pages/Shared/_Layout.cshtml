@@ -23,7 +23,7 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                    <ul class="navbar-nav">
                         <li class="nav-item">
                             <a class="nav-link text-white" href="/Gallery">Gallery</a>
                         </li>
@@ -42,31 +42,27 @@
                         <li class="nav-item">
                             <a class="nav-link text-white" href="/Changelog">Changelog</a>
                         </li>
+                    </ul>
+                    <ul class="navbar-nav">
                         <li class="nav-item flex-grow-1">
-                            <div class="me-3 collapse navbar-collapse collapse d-sm-inline-flex justify-content-end text-right" id="myNavbar">
-                                @if (Model.CurrentUser != null)
-                                {
-                                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 text-nowrap">
-                                        <li class="nav-item">
-                                        <a class="nav-link text-white">Hello, @Model.CurrentUser.Name!</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="btn btn-info ms-2 me-2 navbar-right" href="/Account?returnUrl=@Context.Request.Path" method="post">Settings</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="btn btn-danger ms-2 ms-2 navbar-right" href="/Account/Logout" method="post" id="logoutForm">Logout</a>
-                                        </li>
-                                    </ul>
-                                }
-                                else
-                                {
-                                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                                        <li class="nav-item">
-                                            <a class="nav-link text-white" href="/Account/Login">Sign In</a>
-                                        </li>
-                                    </ul>
-                                }
-                            </div>
+                            @if (Model.CurrentUser != null)
+                            {
+                                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 text-nowrap">
+                                    <li class="nav-item d-flex">
+                                         <a class="nav-link text-white">Hello, @Model.CurrentUser.Name!</a>
+                                        <a class="btn btn-info ms-2 me-2 navbar-right" href="/Account?returnUrl=@Context.Request.Path" method="post">Settings</a>
+                                        <a class="btn btn-danger ms-2 ms-2 navbar-right" href="/Account/Logout" method="post" id="logoutForm">Logout</a>
+                                    </li>
+                                </ul>
+                            }
+                            else
+                            {
+                                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                                    <li class="nav-item d-flex">
+                                        <a class="nav-link text-white" href="/Account/Login">Sign In</a>
+                                    </li>
+                                </ul>
+                            }
                         </li>
                     </ul>
                 </div>
@@ -87,7 +83,7 @@
                 </main>
             </div>
         </div>
-        <footer class="footer text-white" style="min-width: 500px">
+        <footer class="footer text-white">
             <div class="container mb-2 mt-2">
                 &copy; 2022 - MediaCloud - <a asp-area="" asp-page="/Privacy">Privacy</a>
             </div>

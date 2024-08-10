@@ -24,8 +24,9 @@ body {
     overflow: hidden;
     display: flex;
     justify-content: center;
-    position: fixed;
+    position: absolute;
     width: 100%;
+    left: 0;
 }
 
 .main-background img {
@@ -62,7 +63,6 @@ body {
     background: -webkit-linear-gradient(to bottom, rgba(130, 84, 248, 1), rgba(77, 37, 116, 1));
     /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
     background: linear-gradient(to bottom, rgba(130, 84, 248, 1), rgba(77, 37, 116, 1));
-    min-width: 450px;
     position: absolute;
     bottom: 0;
     width: 100%;
@@ -76,7 +76,7 @@ body {
     margin-bottom: 1rem;
     overflow-x: auto;
     overflow-y: hidden;
-    min-height: 95vmax;
+    min-height: 95vh;
 }
 
 .page-center-container {
@@ -203,7 +203,7 @@ body {
     display: flex;
     justify-content: end;
     align-items: end;
-    min-width: 25rem;
+    min-width: 20rem;
     opacity: 0;
     transform: translateY(5rem);
     animation: smooth-appear 0.7s ease forwards;
@@ -244,17 +244,25 @@ body {
 }
 
 .filename-container {
-    position: absolute;
+    position: fixed;
     left: 1rem;
     bottom: 1.75rem;
-    background: rgb(162, 159, 239);
+    background: rgb(115, 113, 185);
     border-radius: 1.5rem;
     padding: 0.5rem;
+    text-wrap: nowrap;
+    max-width: 93%;
+    border: #5063b9;
+    border-style: solid;
+    border-width: 0.03rem;
+    border-color: rgb(19, 19, 86);
 }
 
 .filename {
-    font-size: xx-large;
-    color: black;
+    font-size: large;
+    color: white;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .list-clickable {

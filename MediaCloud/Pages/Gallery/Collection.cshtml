@@ -110,33 +110,37 @@
             </div>
         </div>
 
-        <div class="form-group control-button-panel mt-3">
-            <input type="submit" value="Edit" class="btn btn-success" />
+        <div class="form-group button-panel">
+            <div class="button-group">
+                <input type="submit" value="Edit" class="btn btn-success" />
 
-            @if (Model.IsAutotaggingAvailable) 
-            {
-                <input class="btn btn-success btn-rounded" 
-                    type="button" 
-                    value="Autotag ✨" 
-                    id="autotagButton" 
-                    onclick="autocompleteTags('@Model.Collection.Id')" 
-                />
-            }
+                @if (Model.IsAutotaggingAvailable) 
+                {
+                    <input class="btn btn-success btn-rounded" 
+                        type="button" 
+                        value="Autotag ✨" 
+                        id="autotagButton" 
+                        onclick="autocompleteTags('@Model.Collection.Id')" 
+                    />
+                }
+            </div>
 
-            <a class="btn btn-info btn-rounded me-1 ms-2" onclick="startReorder();" id="reorder-button">
-                Reorder
-            </a>
-            <a class="btn btn-info btn-rounded me-1 ms-2 text-nowrap" 
-                asp-page="Index" 
-                asp-route-filter=@(Model.TagsString) 
-                asp-route-sort=@("UpdatedAtDesc")>
-                Show similar
-            </a>
-            <button class="btn btn-danger btn-rounded" 
-                asp-page-handler="Delete" 
-                asp-route-id=@(Model.Collection.Id)>
-                Remove
-            </button>
+            <div class="button-group">
+                <a class="btn btn-info btn-rounded" onclick="startReorder();" id="reorder-button">
+                    Reorder
+                </a>
+                <a class="btn btn-info btn-rounded text-nowrap" 
+                    asp-page="Index" 
+                    asp-route-filter=@(Model.TagsString) 
+                    asp-route-sort=@("UpdatedAtDesc")>
+                    Show similar
+                </a>
+                <button class="btn btn-danger btn-rounded" 
+                    asp-page-handler="Delete" 
+                    asp-route-id=@(Model.Collection.Id)>
+                    Remove
+                </button>
+            </div>
         </div>
 
         <div class="row thumbnail-sortable" id="sortable-gallery" style="display: none"> 

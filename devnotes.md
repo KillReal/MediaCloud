@@ -7,7 +7,9 @@
 
 # Publishing
 
-`dotnet publish -r linux-x64 -p:PublishSingleFile=true --no-self-contained -o D:/Development/MediaCloud-Deploy`
+```bash
+dotnet publish -r linux-x64 -p:PublishSingleFile=true --no-self-contained -o D:/Development/MediaCloud-Deploy
+```
 
 # Next release - 2.0.0       
 # Next minor - 2.0.1   
@@ -22,16 +24,21 @@ TODO:
 - Fix autotagging task stuck when service doesn't respond
 - Fix statistic recalculation when only 1 day recorded
 - Rewrite collection gallery to _CollectionGallery.cshtml
+- Fix collection autotagging (autotag suggestions popup appears in wrong place)
+- Fix negative tags filtering
 
 DONE:
-- Implemented universal file uploading
-- Medias renamed to Blob
-- Actors renamed to Users
-- Add logging to JoyTag AI server
-- Upgraded SixLabors.ImageSharp from 3.1.4 to 3.1.5
-- Improved page layouts for mobile devices
+- Fix single button group layout (justify-space-between w-100)
+- Fix button panel aligment and wrapping in details and collections
+- Fix buttons aligment in Tag, User, Collection, Gallery Details
 
 # Changelog
+
+### Version 2.0.0 - ???
+- Implemented file uploading with any extension support
+- Added logging to JoyTag AI server
+- Upgraded SixLabors.ImageSharp from 3.1.4 to 3.1.5
+- Improved page layouts for mobile devices
 
 ### Version 1.6.3 - 25th Jul, 2024
 - Upgraged .NET from 6.0 to 8.0
@@ -40,7 +47,7 @@ DONE:
 - More Other packages upgraded to upstream versions
 
 ### Version 1.6.2 - 13th Jul, 2024
-- Added new animations for gallery cards
+- Added new animations for gallerPy cards
 - Changed back buttons logic to use native browser history
 - Improvements in autotagging logger format
 - Fixed slow statistic loading
