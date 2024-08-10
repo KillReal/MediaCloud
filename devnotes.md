@@ -24,13 +24,13 @@ TODO:
 - Fix autotagging task stuck when service doesn't respond
 - Fix statistic recalculation when only 1 day recorded
 - Rewrite collection gallery to _CollectionGallery.cshtml
-- Fix collection autotagging (autotag suggestions popup appears in wrong place)
-- Fix negative tags filtering
 
 DONE:
 - Fix single button group layout (justify-space-between w-100)
 - Fix button panel aligment and wrapping in details and collections
 - Fix buttons aligment in Tag, User, Collection, Gallery Details
+- Fix negative tags filtering
+- Fix collection autotagging (autotag suggestions popup appears in wrong place)
 
 # Changelog
 

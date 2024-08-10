@@ -11,7 +11,7 @@
     <h1>Collection</h1>
 
     <div class="button-panel">
-        <div class="button-group">
+        <div class="button-group justify-content-between w-100">
             <a onclick="history.back();" class="btn btn-info">
                 Back
             </a>
@@ -58,7 +58,7 @@
         </div>
 
         <div class="row">
-            <div class="col-sm mb-3">
+            <div class="col-sm mb-3 autocomplete">
                 <textarea asp-for="@Model.TagsString" class="form-control" style="height: 100%" id="filterGrab">
                 </textarea>
             </div>

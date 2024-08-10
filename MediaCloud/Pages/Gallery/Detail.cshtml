@@ -24,7 +24,7 @@
     <hr />
 
     <div class="picture-container">
-        @if (Model.PrevPreviewId != null)
+        @if (Model.PrevPreviewId != null && Model.BlobType.Contains("image"))
         {
             <img id="left-arrow" 
                 src="/img/arrow-left.svg" 
@@ -36,9 +36,8 @@
         <div class="picture-viewport w-100 shadow-1-strong">
             @if (Model.BlobType.Contains("image"))
             {
-                <img class="picture-viewer shadow-1-strong mb-4 me-2 ms-2 rounded" id="picture"
-                src="data:image/png;base64,@Convert.ToBase64String(Model.Blob.Content)"
-            />
+                <img class="picture-viewer shadow-1-strong mb-4 me-2 ms-2 rounded" id="picture" src="data:image/png;base64,@Convert.ToBase64String(Model.Blob.Content)"
+                />
             }
             else if (Model.BlobType.Contains("text") || Model.BlobName.Contains("md"))
             {
@@ -46,7 +45,7 @@
                     <label class="col-form-label">
                         @Model.BlobName
                     </label>
-                    <textarea class="form-control" style="resize: none; height: 98%;">@System.Text.Encoding.Default.GetString(Model.Blob.Content);</textarea>
+                    <textarea readonly class="form-control" style="resize: none">@System.Text.Encoding.Default.GetString(Model.Blob.Content)</textarea>
                 </div>
             }
             else 
@@ -57,7 +56,7 @@
             }
         </div>
 
-        @if (Model.NextPreviewId != null)
+        @if (Model.NextPreviewId != null && Model.BlobType.Contains("image"))
         {
             <img id="right-arrow" 
                 src="/img/arrow-right.svg" 
