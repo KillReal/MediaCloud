@@ -46,7 +46,7 @@ namespace MediaCloud.Repositories
 
             var positiveTagIds = _context.Tags.Where(x => positiveTags.Any(y => y.ToLower() == x.Name.ToLower()))
                                               .Select(x => x.Id);
-            var negativeTagIds = _context.Tags.Where(x => negativeTags.Any(y => y.ToLower() == x.Name))
+            var negativeTagIds = _context.Tags.Where(x => negativeTags.Any(y => y.ToLower() == x.Name.ToLower()))
                                               .Select(x => x.Id);
 
             return new([.. positiveTagIds], [.. negativeTagIds]);
