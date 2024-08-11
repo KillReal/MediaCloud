@@ -20,10 +20,13 @@ TODO:
 - Admin check for display actors in Statistic
 - Implement all actors statistic dashboards for Admin
 - Write unit tests 
+- Implement JoyTag garbage collection (unload model if not used for long time)
 - Show first uploaded image on upload page
 - Fix autotagging task stuck when service doesn't respond
 - Fix statistic recalculation when only 1 day recorded
 - Rewrite collection gallery to _CollectionGallery.cshtml
+- Implement multiple workers statistic for TaskSchedulerStatus
+- Remove Tag Types
 
 DONE:
 - Fix single button group layout (justify-space-between w-100)

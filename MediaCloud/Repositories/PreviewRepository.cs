@@ -58,6 +58,7 @@ namespace MediaCloud.Repositories
             {
                 // TODO: rework tag type to complete db model with TagTypeDataService.
                 // Rework TagType filtering
+                // Or exclude TagTypes at all...
 
                 if (filter.Contains("notag"))
                 {

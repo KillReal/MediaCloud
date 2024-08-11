@@ -171,6 +171,7 @@ namespace MediaCloud.WebApp.Services.UserProvider
 
             if (currentUser != null && currentUser.PersonalSettings != null)
             {
+                // TODO: deserialize settings once in CachedUser entity.
                 return JsonConvert.DeserializeObject<UserSettings>(currentUser.PersonalSettings);
             }
 
