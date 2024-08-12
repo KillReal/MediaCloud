@@ -50,7 +50,7 @@ DONE:
 - More Other packages upgraded to upstream versions
 
 ### Version 1.6.2 - 13th Jul, 2024
-- Added new animations for gallerPy cards
+- Added new animations for gallerPy cardsKawabi
 - Changed back buttons logic to use native browser history
 - Improvements in autotagging logger format
 - Fixed slow statistic loading

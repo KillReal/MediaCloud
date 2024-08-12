@@ -1,14 +1,19 @@
-﻿using System.Text.RegularExpressions;
-using MediaCloud.Data.Models;
-using MediaCloud.Extensions;
+﻿using MediaCloud.Data.Models;
 using MediaCloud.Services;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Webp;
 
 namespace MediaCloud.WebApp.Builders.BlobModel
 {
     public class BlobModelBuilder(IPictureService pictureService)
     {
         private readonly IPictureService _pictureService = pictureService;
+
+        private readonly WebpEncoder _webpEncoder = new() 
+        {
+            Quality = 70,
+            Method = WebpEncodingMethod.Level5
+        };
 
         public FileModel Build(UploadedFile file)
         {
@@ -23,9 +28,20 @@ namespace MediaCloud.WebApp.Builders.BlobModel
                 case "gif":
                 case "tiff":
                 case "webp":
-                    var convertedImage = Image.Load(file.Content);
-                    blob = new(file.Content, convertedImage.Width, convertedImage.Height);
-                    file.Content = _pictureService.LowerResolution(convertedImage, blob.Content);
+                    var image = Image.Load(file.Content);
+
+                    if (extension != "webp")
+                    {
+                        var webpStream = new MemoryStream();
+                        image.SaveAsWebp(webpStream, _webpEncoder);
+                        image = Image.Load(webpStream.ToArray());
+                        file.Type = "image/webp";
+                        file.Name = file.Name.Split('.').First() + ".webp";
+                        file.Content = webpStream.ToArray();
+                    }
+
+                    blob = new(file.Content, image.Width, image.Height);
+                    file.Content = _pictureService.LowerResolution(image, blob.Content);
                     break;
                 case "xlsx":
                 case "xls":
