@@ -13,15 +13,23 @@ namespace MediaCloud.WebApp.Controllers
     [Authorize]
     public class GalleryController(IConfigProvider configProvider, TagRepository tagRepository,
         PreviewRepository previewRepository, CollectionRepository collectionRepository,
-        ITaskScheduler taskScheduler, IUserProvider actorProvider, IAutotagService actorService) : Controller
+        ITaskScheduler taskScheduler, IUserProvider userProvider, IAutotagService actorService) : Controller
     {
         private readonly IConfigProvider _configProvider = configProvider;
         private readonly TagRepository _tagRepository = tagRepository;
         private readonly PreviewRepository _previewRepository = previewRepository;
         private readonly ITaskScheduler _taskScheduler = taskScheduler;
-        private readonly IUserProvider _actorProvider = actorProvider;
+        private readonly IUserProvider _userProvider = userProvider;
         private readonly IAutotagService _autotagService = actorService;
         private readonly CollectionRepository _collectionRepository = collectionRepository;
+
+        public bool StartUserImagesUpgrade()
+        {
+            var task = new TaskScheduler.Tasks.UpgradeUserImagesTask(_userProvider.GetCurrent(), 100);
+            _taskScheduler.AddTask(task);
+
+            return true;
+        }
 
         public List<string> GetSuggestions(string searchString, int limit = 10)
         {
@@ -134,16 +142,16 @@ namespace MediaCloud.WebApp.Controllers
             return new FileContentResult(System.IO.File.ReadAllBytes("wwwroot/img/types/noimg.jpg"), "image/jpeg");
         }
 
-        public Guid AutocompleteTag(Guid previewId)
+        public Guid AutocompleteTagForPreview(Guid previewId)
         {
-            var task = new AutotagPreviewTask(_actorProvider.GetCurrent(), [previewId]);
+            var task = new AutotagPreviewTask(_userProvider.GetCurrent(), [previewId]);
 
             return _taskScheduler.AddTask(task);
         }
 
         public Guid AutocompleteTagForCollection(Guid collectionId)
         {
-            var task = new AutotagCollectionTask(_actorProvider.GetCurrent(), collectionId);
+            var task = new AutotagCollectionTask(_userProvider.GetCurrent(), collectionId);
 
             return _taskScheduler.AddTask(task);
         }
