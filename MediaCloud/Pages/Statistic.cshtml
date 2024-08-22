@@ -68,7 +68,6 @@
 <script src="~/js/chartjs-adapter-luxon.js"></script>
 
 <script type="text/javascript">
-    var targetSizeError = @Model.SizeTargetError.ToString(System.Globalization.CultureInfo.InvariantCulture);
     var dayDisplayFormat = 'DD'
 
     function formatBytes(bytes, decimals = 2) {
@@ -113,14 +112,13 @@
                 },
                 title: {
                     display: true,
-                    text: 'Medias size total uploaded (' + (100 - targetSizeError * 100).toFixed(1) 
-                        + '% of database)',
+                    text: 'Medias size total uploaded',
                 },
                 tooltip: {
                     callbacks: {
                         label: function (context) {
                             let label = context.dataset.label || '';
-                            return formatBytes(context.parsed.y + context.parsed.y * targetSizeError, 1);
+                            return formatBytes(context.parsed.y, 1);
                         }
                     }
                 }
@@ -150,7 +148,7 @@
                     },
                     ticks: {
                         callback: function (value, index, ticks) {
-                            return formatBytes(value + value * targetSizeError, 1);
+                            return formatBytes(value, 1);
                         }
                     }
                 }

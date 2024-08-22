@@ -18,8 +18,6 @@ namespace MediaCloud.Pages
         private readonly AppDbContext _context = context;
 
         [BindProperty]
-        public double SizeTargetError { get; set; }
-        [BindProperty]
         public int ActivityBacktrackDayCount { get; set; }
         [BindProperty]
         public List<StatisticSnapshot> Snapshots { get; set; } = [];
@@ -34,8 +32,6 @@ namespace MediaCloud.Pages
 
             var actualSize = _context.GetDbSize();
             var aproximateSize = Snapshots.Last().MediasSize;
-
-            SizeTargetError = (actualSize - aproximateSize) / (double)aproximateSize;
 
             return Page();
         }
