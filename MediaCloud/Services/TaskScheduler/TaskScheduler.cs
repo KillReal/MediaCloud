@@ -38,7 +38,8 @@ namespace MediaCloud.TaskScheduler
                 {
                     typeof(Task), 
                     typeof(RecalculateTask), 
-                    typeof(UploadTask)
+                    typeof(UploadTask),
+                    typeof(UpgradeUserImagesTask)
                 };
                 _workers.Add(new Worker(_queue, this, _serviceScopeFactory, types));
             }
