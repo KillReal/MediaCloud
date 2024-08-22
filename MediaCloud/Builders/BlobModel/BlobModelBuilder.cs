@@ -11,7 +11,16 @@ namespace MediaCloud.WebApp.Builders.BlobModel
 
         private readonly WebpEncoder _webpEncoder = new() 
         {
-            Quality = 70,
+            Quality = 75,
+            Method = WebpEncodingMethod.Level5,
+            
+        };
+
+        private const long _lowQualitySize = 512_000; 
+
+        private readonly WebpEncoder _highQualityWebpEncoder = new()
+        {
+            Quality = 90,
             Method = WebpEncodingMethod.Level5
         };
 
@@ -33,7 +42,16 @@ namespace MediaCloud.WebApp.Builders.BlobModel
                     if (extension != "webp")
                     {
                         var webpStream = new MemoryStream();
-                        image.SaveAsWebp(webpStream, _webpEncoder);
+
+                        if (file.Content.Length < _lowQualitySize)
+                        {
+                            image.SaveAsWebp(webpStream, _highQualityWebpEncoder);
+                        }
+                        else
+                        {
+                            image.SaveAsWebp(webpStream, _webpEncoder);
+                        }
+
                         image = Image.Load(webpStream.ToArray());
                         file.Type = "image/webp";
                         file.Name = file.Name.Split('.').First() + ".webp";
