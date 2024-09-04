@@ -1,20 +1,14 @@
-﻿using MediaCloud.Data;
-using MediaCloud.Data.Models;
-using MediaCloud.WebApp.Services.ActorProvider;
+﻿using MediaCloud.Data.Models;
+using MediaCloud.WebApp.Services.UserProvider;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace MediaCloud.Pages
 {
-    public class PrivacyModel : PageModel
+    public class PrivacyModel(IUserProvider userProvider) : PageModel
     {
         [BindProperty]
-        public Actor? CurrentActor { get; set; }
-
-        public PrivacyModel(IActorProvider actorProvider)
-        { 
-            CurrentActor = actorProvider.GetCurrentOrDefault();
-        }
+        public User? CurrentUser { get; set; } = userProvider.GetCurrentOrDefault();
 
         public IActionResult OnGet()
         {

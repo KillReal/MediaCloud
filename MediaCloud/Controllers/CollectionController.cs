@@ -1,21 +1,14 @@
 ﻿using MediaCloud.Builders.List;
-using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
-using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MediaCloud.WebApp.Controllers
 {
     [Authorize]
-    public class CollectionController : Controller
+    public class CollectionController(CollectionRepository collectionRepository) : Controller
     {
-        private readonly CollectionRepository _collectionRepository;
-
-        public CollectionController(CollectionRepository collectionRepository)
-        {
-            _collectionRepository = collectionRepository;
-        }
+        private readonly CollectionRepository _collectionRepository = collectionRepository;
 
         public List<object> PreviewsBatch(Guid id, ListRequest listRequest)
         {
@@ -29,6 +22,8 @@ namespace MediaCloud.WebApp.Controllers
                     preview.Id,
                     preview.Content,
                     preview.Order,
+                    preview.BlobName,
+                    preview.BlobType
                 });
             }
 

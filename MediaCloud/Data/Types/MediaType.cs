@@ -2,7 +2,7 @@
 
 namespace MediaCloud.Data.Types
 {
-    public enum MediaType
+    public enum FileType
     {
         [Display(Name = "unknown")]
         Unknown = 0,

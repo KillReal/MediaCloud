@@ -1,13 +1,4 @@
-﻿using MediaCloud.Data;
-using MediaCloud.Data.Models;
-using MediaCloud.TaskScheduler.Tasks;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MediaCloud.TaskScheduler.Tasks;
 using Task = MediaCloud.TaskScheduler.Tasks.Task;
 
 namespace MediaCloud.TaskScheduler
@@ -59,7 +50,7 @@ namespace MediaCloud.TaskScheduler
             _queue = queue;
             _scheduler = scheduler;
             _serviceScopeFactory = serviceScopeFactory;
-            _taskTypes = new() { taskType };
+            _taskTypes = [taskType];
         }
 
         /// <summary>

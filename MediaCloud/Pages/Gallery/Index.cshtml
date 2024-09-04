@@ -1,0 +1,236 @@
+﻿@page
+@using MediaCloud.WebApp
+@model MediaCloud.Pages.Gallery.ListModel
+
+@{
+    ViewData["Title"] = "Gallery";
+
+    var updatedAtSortType = "UpdatedAtDesc";
+    var updatedAtSortSymbol = "";
+    var updatedAtButtonStyle = "btn-info";
+    var createdAtSortType = "CreatedAtDesc";
+    var createdAtSortSymbol = "";
+    var createdAtButtonStyle = "btn-info";
+
+    if (Model.ListBuilder.Sorting.PropertyName == "UpdatedAtDesc"){
+        updatedAtSortType = "UpdatedAt";
+        updatedAtSortSymbol = "↓";
+        updatedAtButtonStyle = "btn-warning";
+    }
+    else if (Model.ListBuilder.Sorting.PropertyName == "UpdatedAt"){
+        updatedAtSortType = "UpdatedAtDesc";
+        updatedAtSortSymbol = "↑";
+        updatedAtButtonStyle = "btn-warning";
+    }
+
+    if (Model.ListBuilder.Sorting.PropertyName == "CreatedAtDesc"){
+        createdAtSortType = "CreatedAt";
+        createdAtSortSymbol = "↓";
+        createdAtButtonStyle = "btn-warning";
+    }
+    else if (Model.ListBuilder.Sorting.PropertyName == "CreatedAt"){
+        createdAtSortType = "CreatedAtDesc";
+        createdAtSortSymbol = "↑";
+        createdAtButtonStyle = "btn-warning";
+    }
+
+    var randomButtonStyle = Model.ListBuilder.Sorting.PropertyName.Contains("Random") 
+        ? "btn-warning"
+        : "btn-info";
+    var autoloadingButtonStyle = Model.IsAutoloadEnabled 
+        ? "btn-info"
+        : "btn-secondary";
+    var autoloadingButtonSymbol = Model.IsAutoloadEnabled
+        ? "✔️"
+        : "❌";
+}
+
+<div class="page-container">
+    <h1>Gallery</h1>
+
+    <div class="button-panel">
+        <div class="align-self-center d-flex flex-wrap">   
+            <div class="button-group">
+                <a class="btn btn-success btn-rounded" 
+                    asp-page="Upload"
+                    asp-route-returnUrl="/Gallery?count=@(Model.ListBuilder.Pagination.Count)$offset=@(Model.ListBuilder.Pagination.Offset)$sort=@(Model.ListBuilder.Sorting.PropertyName)$filter=@(Model.ListBuilder.Filtering.Filter)$isUseAutoload=@(Model.IsAutoloadEnabled)">
+                        Upload
+                </a>
+            </div>
+
+            <div class="button-group">
+                <div class="separator"></div>
+                <div class="descriptor">
+                    Sort:
+                </div>
+                <a class="btn @updatedAtButtonStyle btn-rounded text-nowrap" 
+                    asp-page="Index" 
+                    asp-route-filter=@(Model.ListBuilder.Filtering.Filter) 
+                    asp-route-sort=@(updatedAtSortType) 
+                    asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>
+                    Updated @(updatedAtSortSymbol)
+                </a>
+            </div>
+
+           <div class="button-group">
+                <a class="btn @createdAtButtonStyle btn-rounded text-nowrap" 
+                    asp-page="Index" 
+                    asp-route-filter=@(Model.ListBuilder.Filtering.Filter) 
+                    asp-route-sort=@(createdAtSortType) 
+                    asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>
+                    Created @(createdAtSortSymbol)
+                </a>   
+           </div>
+
+            <div class="button-group">
+                <a class="btn @randomButtonStyle btn-rounded text-nowrap" 
+                    asp-page="Index" 
+                    asp-route-filter=@(Model.ListBuilder.Filtering.Filter) 
+                    asp-route-sort=@($"Random_{new Random().Next(int.MaxValue)}") 
+                    asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>
+                    Random
+                </a>
+                <div class="separator"></div>
+            </div>
+
+            <div class="button-group">
+                <a class="btn @autoloadingButtonStyle btn-rounded text-nowrap" 
+                    asp-page="Index" 
+                    asp-route-filter=@(Model.ListBuilder.Filtering.Filter) 
+                    asp-route-sort=@(Model.ListBuilder.Sorting.PropertyName) 
+                    asp-route-isUseAutoload=@(!Model.IsAutoloadEnabled)>
+                    Autoload @autoloadingButtonSymbol
+                </a>
+
+                <div class="separator"></div>
+            </div>
+        </div>
+        <div class="align-self-center d-flex flex-grow-1">
+            <div class="button-group w-100">
+                <div class="descriptor">
+                    Tag filter:
+                </div>
+                <div class="button-group-input autocomplete-list autocomplete flex-grow-1">
+                    <input asp-for=@Model.ListBuilder.Filtering.Filter 
+                        class="form-control" 
+                        id="filterGrab" 
+                        placeholder="example: @Model.ExampleFilter"/>
+                </div>
+                <a class="btn btn-info btn-rounded me-0" onclick="filterClicked()">
+                    Filter
+                </a>
+            </div>
+        </div>
+    </div>  
+
+    <hr style="margin-bottom: 1rem"/>
+    <partial name="~/Pages/Shared/_Pagination.cshtml" />
+    <div class="row image-row gallery" id="gallery">
+        <partial name="~/Pages/Gallery/_Gallery.cshtml" model=@(new _GalleryPageModel(Model.Previews))/>
+        
+        @if (Model.Previews.Count == 0)
+        {
+            <h1 style="text-align: center">
+                There is nothing here 😥
+            </h1>
+        }
+        
+    </div>
+    <div class="d-flex justify-content-center">
+        @if (Model.Previews.Count >= Model.ListBuilder.Pagination.Count && Model.IsAutoloadEnabled)
+        {
+            <div class="oad-spinner spinner-border" 
+                role="status" 
+                id="loadingSpinner">
+            </div>
+        }
+        <h1 class="page-autoload-notifier" id="loadingDone">
+            Your are reached the end 😮
+        </h1>
+    </div>
+    @if (Model.IsAutoloadEnabled == false)
+    {
+        <partial name="~/Pages/Shared/_Pagination.cshtml" />
+    }
+</div>
+
+<script src="~/js/tagAutocompletion.js"></script>
+
+<script type="text/javascript">
+    autocomplete(document.getElementById("filterGrab"));
+    
+    var isAutoLoadingEnabled = @Model.IsAutoloadEnabled.ToString().ToLower();
+    var elem = document.getElementById("filterGrab");
+    elem.onkeyup = function(e){
+        if(e.keyCode == 13){
+            filterClicked();
+        }
+    }
+
+    function OnCardClick(entityType, dataId)
+    {
+        window.location = GetPostUrl(entityType, dataId);
+    }
+
+    function OnCardInNewWindowClick(entityType, dataId) 
+    {
+        window.open(GetPostUrl(entityType, dataId));
+    }
+
+    function GetPostUrl(entityType, dataId)
+    {
+        return "Gallery/" + entityType +"?id=" + dataId +
+            "&returnUrl=/Gallery?count=" + @Model.ListBuilder.Pagination.Count + 
+            "$offset=" + @Model.ListBuilder.Pagination.Offset +
+            "$sort=" + '@Model.ListBuilder.Sorting.PropertyName' + 
+            "$filter=" + '@Model.ListBuilder.Filtering.Filter' + 
+            "$isUseAutoload=@Model.IsAutoloadEnabled";
+    }
+
+    var currentOffset = @Model.ListBuilder.Pagination.Offset;
+    var nextOffset = @Model.ListBuilder.Pagination.Offset + @Model.ListBuilder.Pagination.Count;
+
+    if (isAutoLoadingEnabled) {
+        window.addEventListener("scroll", function(e) {
+            if ((window.innerHeight + window.scrollY + 1000) >= document.body.offsetHeight) {
+                enrichGallery();
+            }
+        });
+    }
+
+    function enrichGallery() {
+        if (currentOffset == nextOffset || currentOffset > @Model.ListBuilder.Pagination.TotalCount) {
+                if (currentOffset > @Model.ListBuilder.Pagination.TotalCount) {
+                    document.getElementById('loadingSpinner').style = "display: none";
+                    document.getElementById('loadingDone').style = "text-align: center; display: block";
+                }
+                return;
+        }
+        currentOffset += @Model.ListBuilder.Pagination.Count;
+
+        var url = "/Gallery/GetBatch?count=" + @Model.ListBuilder.Pagination.Count + "&offset=" + nextOffset 
+            + "&sort=" + '@(Model.ListBuilder.Sorting.PropertyName)' + "&filter=" + '@(Model.ListBuilder.Filtering.Filter)';
+        fetch(url).then(function(response) {
+            return response.text();
+        }).then(function(data) {
+            var gallery = document.getElementById('gallery');
+
+            console.log(data);
+
+            gallery.insertAdjacentHTML('beforeend', data);
+            nextOffset += @Model.ListBuilder.Pagination.Count;
+        }).catch(function(err) {
+            console.log('Fetch Error :-S', err);
+        });
+    }
+    function filterClicked()
+    {
+        var filter = document.getElementById("filterGrab").value;
+        window.location.href = "/Gallery?filter=" + filter + "&sort=@(Model.ListBuilder.Sorting.PropertyName)&isUseAutoload=@(Model.IsAutoloadEnabled)";
+    };
+
+</script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -4,7 +4,7 @@ using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.Extensions;
 using MediaCloud.WebApp.Repositories.Base;
-using MediaCloud.WebApp.Services.ActorProvider;
+using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp.Services.Data.Repositories.Interfaces;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +12,7 @@ using NLog;
 
 namespace MediaCloud.Repositories
 {
-    public class PreviewRepository : BaseRepository<Preview>, IListBuildable<Preview>
+    public class PreviewRepository(AppDbContext context, StatisticProvider statisticProvider, IUserProvider actorProvider) : BaseRepository<Preview>(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider), IListBuildable<Preview>
     {
         private static string DeduplicateTagString(string tagString)
         {
@@ -44,12 +44,12 @@ namespace MediaCloud.Repositories
                 positiveTags.Add(tag);
             }
 
-            var positiveTagIds = _context.Tags.Where(x => positiveTags.Any(y => y == x.Name.ToLower()))
+            var positiveTagIds = _context.Tags.Where(x => positiveTags.Any(y => y.ToLower() == x.Name.ToLower()))
                                               .Select(x => x.Id);
-            var negativeTagIds = _context.Tags.Where(x => negativeTags.Any(y => y == x.Name.ToLower()))
+            var negativeTagIds = _context.Tags.Where(x => negativeTags.Any(y => y.ToLower() == x.Name.ToLower()))
                                               .Select(x => x.Id);
 
-            return new(positiveTagIds.ToList(), negativeTagIds.ToList());
+            return new([.. positiveTagIds], [.. negativeTagIds]);
         }
 
         private IQueryable<Preview> SetFilterToQuery(IQueryable<Preview> query, string filter)
@@ -58,10 +58,11 @@ namespace MediaCloud.Repositories
             {
                 // TODO: rework tag type to complete db model with TagTypeDataService.
                 // Rework TagType filtering
+                // Or exclude TagTypes at all...
 
                 if (filter.Contains("notag"))
                 {
-                    return query.Where(x => x.Tags.Any() == false);
+                    return query.Where(x => x.Tags.Count == 0);
                 }
 
                 if (filter.Contains("!character") || filter.Contains("!char"))
@@ -88,11 +89,6 @@ namespace MediaCloud.Repositories
             return query;
         }
 
-        public PreviewRepository(AppDbContext context, StatisticProvider statisticProvider, IActorProvider actorProvider) 
-        : base(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider)
-        {
-        }
-
         public override Preview? Get(Guid id)
         {
             var preview = base.Get(id);
@@ -113,7 +109,7 @@ namespace MediaCloud.Repositories
                                                                     .CountAsync();
         }
 
-        public List<Preview> GetList(ListBuilder<Preview> listBuilder)
+        public async Task<List<Preview>> GetListAsync(ListBuilder<Preview> listBuilder)
         {
             var query = _context.Previews.AsNoTracking().Where(x => x.Order == 0);
             query = SetFilterToQuery(query, listBuilder.Filtering.Filter);
@@ -128,22 +124,23 @@ namespace MediaCloud.Repositories
                                                       .Shuffle(seed)
                                                       .ToList();
 
-                return query.Where(x => previewIdsList.Any(id => id == x.Id) 
-                                     && x.CreatorId == _actor.Id)
-                            .Include(x => x.Collection)
-                            .ToList()
-                            .OrderBy(x => previewIdsList.IndexOf(x.Id))
+                var list = await query.Where(x => previewIdsList.Any(id => id == x.Id) 
+                                            && x.CreatorId == _actor.Id)
+                                        .Include(x => x.Collection)
+                                        .ToListAsync();
+
+                return list.OrderBy(x => previewIdsList.IndexOf(x.Id))
                             .Skip(listBuilder.Pagination.Offset)
                             .Take(listBuilder.Pagination.Count)
                             .ToList();
             }  
 
-            return query.Order(listBuilder.Sorting.GetOrder())
+            return await query.Order(listBuilder.Sorting.GetOrder())
                         .Where(x => x.CreatorId == _actor.Id)
                         .Skip(listBuilder.Pagination.Offset)
                         .Take(listBuilder.Pagination.Count)
                         .Include(x => x.Collection)
-                        .ToList();
+                        .ToListAsync();
         }
 
         public override bool TryRemove(Guid id)
@@ -155,12 +152,11 @@ namespace MediaCloud.Repositories
                 return false;
             }
 
-            var size = preview.Media.Size;
+            var size = preview.Blob.Size;
             
             if (preview.Collection != null)
             {
-                preview.Collection.Previews = preview.Collection.Previews.OrderBy(x => x.Order)
-                                                                         .ToList();
+                preview.Collection.Previews = [.. preview.Collection.Previews.OrderBy(x => x.Order)];
                 if (preview.Order == 0)
                 {
                     if (preview.Collection.Previews.Count > 1)
@@ -170,7 +166,7 @@ namespace MediaCloud.Repositories
                         preview.Collection.Count--;
 
                         _context.Collections.Update(preview.Collection);
-                        _context.Medias.Remove(preview.Media);
+                        _context.Blobs.Remove(preview.Blob);
                         SaveChanges();
                         _logger.Info("Removed Media in Collection with id: {preview.Collection.Id} by: {_actor.Name}", 
                             preview.Collection.Id, _actor.Name);
@@ -181,7 +177,7 @@ namespace MediaCloud.Repositories
 
                     var collectionId = preview.Collection.Id;
 
-                    _context.Medias.Remove(preview.Media);
+                    _context.Blobs.Remove(preview.Blob);
                     _context.Collections.Remove(preview.Collection);
                     SaveChanges();
                     _logger.Info("Removed Collection with id: {collectionId} by: {_actor.Name}", collectionId, _actor.Name);
@@ -191,9 +187,9 @@ namespace MediaCloud.Repositories
                 }
             }
 
-            var mediaId = preview.Media.Id;
+            var mediaId = preview.Blob.Id;
 
-            _context.Medias.Remove(preview.Media);
+            _context.Blobs.Remove(preview.Blob);
             SaveChanges();
             _logger.Info("Removed Media  with id: {mediaId} by: {_actor.Name}", mediaId, _actor.Name);
             _statisticProvider.MediasCountChanged.Invoke(-1, -size);

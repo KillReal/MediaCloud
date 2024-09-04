@@ -1,18 +1,9 @@
-using MediaCloud.Data;
 using MediaCloud.Data.Models;
-using MediaCloud.Repositories;
-using MediaCloud.WebApp.Services.ActorProvider;
+using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp.Services.ConfigProvider;
-using MediaCloud.WebApp.Services.Statistic;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using NLog;
-using SixLabors.ImageSharp.Advanced;
-using System.Security.Claims;
 using IConfigProvider = MediaCloud.WebApp.Services.ConfigProvider.IConfigProvider;
-using ILogger = NLog.ILogger;
 
 namespace MediaCloud.WebApp.Pages
 {
@@ -21,9 +12,9 @@ namespace MediaCloud.WebApp.Pages
         private readonly IConfigProvider _configProvider;
 
         [BindProperty]
-        public Actor Actor { get; set; }
+        public User User { get; set; }
         [BindProperty]
-        public ActorSettings ActorSettings { get; set; }
+        public UserSettings UserSettings { get; set; }
         [BindProperty]
         public EnvironmentSettings? EnvironmentSettings { get; set; }
         [BindProperty]
@@ -32,15 +23,15 @@ namespace MediaCloud.WebApp.Pages
         [BindProperty]
         public string ReturnUrl { get; set; } = "/";
 
-        public IndexModel(IActorProvider actorProvider, IConfigProvider configProvider) : base(actorProvider)
+        public IndexModel(IUserProvider userProvider, IConfigProvider configProvider) : base(userProvider)
         {
             _logger = LogManager.GetLogger("Actor");
             _configProvider = configProvider;
 
-            Actor = actorProvider.GetCurrent();
+            User = userProvider.GetCurrent();
 
-            ActorSettings = _configProvider.ActorSettings;
-            EnvironmentSettings = Actor.IsAdmin 
+            UserSettings = _configProvider.UserSettings;
+            EnvironmentSettings = User.IsAdmin 
                 ? _configProvider.EnvironmentSettings 
                 : null;
         }
@@ -53,9 +44,9 @@ namespace MediaCloud.WebApp.Pages
 
         public IActionResult OnPost()
         {
-            _configProvider.ActorSettings = ActorSettings;
+            _configProvider.UserSettings = UserSettings;
 
-            var actualActor = _actorProvider.GetCurrent();
+            var actualActor = _userProvider.GetCurrent();
 
             if (IsEnvironmentSettingsChanged && EnvironmentSettings != null && actualActor.IsAdmin)
             {

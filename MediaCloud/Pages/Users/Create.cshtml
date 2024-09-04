@@ -1,0 +1,68 @@
+﻿@page
+@model MediaCloud.Pages.Users.CreateModel
+@using MediaCloud.Data.Types
+
+@{
+    ViewData["Title"] = "User create";
+}
+
+<div class="page-container">
+	<h1>User create</h1>
+
+	<div class="button-panel">
+        <div>
+           <a onclick="history.back();" class="btn btn-info">
+				Back
+			</a>
+        </div>
+	</div>
+
+	<hr />
+
+	<div class="row">
+		<div class="col-md-4 text-white">
+			<form enctype="multipart/form-data" method="post">
+				<div asp-validation-summary="ModelOnly" class="text-danger"><
+				</div>
+				<div class="form-group mb-3">
+					<label class="col-form-label">Enter name</label>
+					<input asp-for="@Model.User.Name" class="form-control" />
+				</div>
+				<div class="form-group mb-3">
+					<label class="col-form-label">Enter password</label>
+					<textarea asp-for="@Model.User.PasswordHash" class="form-control">
+					</textarea>
+				</div>
+				<div class="form-group mb-3 form-check">
+					<input class="form-check-input" type="checkbox" asp-for=User.IsAdmin>
+					<label class="form-check-label" asp-for=User.IsAdmin>
+					It's a admin
+					</label>
+				</div>
+				<div class="form-group mb-3 form-check">
+					<input class="form-check-input" type="checkbox" asp-for=User.IsPublic>
+					<label class="form-check-label" asp-for=User.IsPublic>
+						It's a public
+					</label>
+				</div>
+				<div class="form-group mb-3 form-check">
+					<input class="form-check-input" type="checkbox" asp-for=User.IsActivated>
+					<label class="form-check-label" asp-for=User.IsActivated>
+						It's activated (leave unchecked if need invite activation)
+					</label>
+				</div>
+				<div class="form-group mb-3">
+					<label class="col-form-label">Enter invite code</label>
+					<input asp-for="@Model.User.InviteCode" class="form-control">
+				</div>
+				<div class="form-group mb-3">
+					<input type="submit" value="Create" class="btn btn-success" />
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

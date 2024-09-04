@@ -17,9 +17,10 @@
       "commandName": "Project",
       "workingDirectory": "D:\\Development\\MediaCloud\\MediaCloud",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation"
       },
-      "applicationUrl": "http://localhost:5020",
+      "applicationUrl": "http://0.0.0.0:5020",
       "dotnetRunMessages": true
     },
     "Production": {

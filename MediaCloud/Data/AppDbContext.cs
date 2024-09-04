@@ -1,5 +1,4 @@
 ﻿using MediaCloud.Data.Models;
-using MediaCloud.WebApp;
 using Microsoft.EntityFrameworkCore;
 using NLog;
 
@@ -14,7 +13,7 @@ namespace MediaCloud.Data
         {
             if (Database.EnsureCreated())
             {
-                var admin = new Actor()
+                var admin = new User()
                 {
                     Name = "Admin",
                     PasswordHash = _superAdminHash,
@@ -24,7 +23,7 @@ namespace MediaCloud.Data
                     UpdatedAt = DateTime.UtcNow,
                 };
 
-                Actors.Add(admin);
+                Users.Add(admin);
                 SaveChangesAsync();
 
                 LogManager.GetLogger("AppDbContext").Warn("Initial admin had inserted");
@@ -70,9 +69,9 @@ namespace MediaCloud.Data
             return reader.GetInt64(0);
         }
 
-        public DbSet<Actor> Actors { get; set; } = null!;
+        public DbSet<User> Users { get; set; } = null!;
         public DbSet<Preview> Previews { get; set; } = null!;
-        public DbSet<Media> Medias { get; set; } = null!;
+        public DbSet<Blob> Blobs { get; set; } = null!;
         public DbSet<Tag> Tags { get; set; } = null!;
         public DbSet<Collection> Collections { get; set; } = null!;
         public DbSet<StatisticSnapshot> StatisticSnapshots { get; set; } = null!;

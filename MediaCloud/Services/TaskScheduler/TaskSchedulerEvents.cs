@@ -1,11 +1,4 @@
-﻿using MediaCloud.Data;
-using MediaCloud.TaskScheduler.Tasks;
-using MediaCloud.Repositories;
-using MediaCloud.WebApp.Services;
-using MediaCloud.WebApp.Services.ConfigProvider;
-using NLog;
-using ILogger = NLog.ILogger;
-using Task = MediaCloud.TaskScheduler.Tasks.Task;
+﻿using Task = MediaCloud.TaskScheduler.Tasks.Task;
 
 namespace MediaCloud.TaskScheduler
 {

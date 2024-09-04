@@ -1,8 +1,6 @@
 ﻿using MediaCloud.Data.Models;
-using MediaCloud.WebApp.Services.ActorProvider;
-using MediaCloud.WebApp.Services.ConfigProvider;
+using MediaCloud.WebApp.Services.UserProvider;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using NLog;
@@ -13,15 +11,15 @@ namespace MediaCloud.WebApp.Pages
     [Authorize]
     public class AuthorizedPageModel : PageModel
     {   
-        protected IActorProvider _actorProvider;
+        protected IUserProvider _userProvider;
         protected ILogger _logger;
 
         [BindProperty]
-        public Actor? CurrentActor { get; set; }
+        public User? CurrentUser { get; set; }
 
-        public AuthorizedPageModel(IActorProvider actorProvider) 
+        public AuthorizedPageModel(IUserProvider actorProvider) 
         {
-            _actorProvider = actorProvider;
+            _userProvider = actorProvider;
             _logger = LogManager.GetLogger("PageModel");
 
             LogPageInit();
@@ -29,11 +27,11 @@ namespace MediaCloud.WebApp.Pages
 
         private void LogPageInit()
         {
-            CurrentActor = _actorProvider.GetCurrent();
+            CurrentUser = _userProvider.GetCurrent();
 
             var url = GetType().Name;
 
-            _logger.Debug("Page: {url} initialized by {CurrentActor.Name}", url, CurrentActor.Name);
+            _logger.Debug("Page: {url} initialized by {CurrentActor.Name}", url, CurrentUser.Name);
         }
     }
 }

@@ -1,18 +1,16 @@
 ﻿using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
-using MediaCloud.Services;
 using MediaCloud.TaskScheduler.Tasks;
-using MediaCloud.WebApp.Services.ActorProvider;
-using MediaCloud.WebApp.Services.ConfigProvider;
+using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp.Services.Statistic;
 using Task = MediaCloud.TaskScheduler.Tasks.Task;
 
 namespace MediaCloud.WebApp;
 
-public class AutotagPreviewTask : Task, ITask
+public class AutotagPreviewTask(User actor, List<Guid> previewsIds) : Task(actor), ITask
 {
-    private readonly List<Guid> _previewIds = new();
+    private readonly List<Guid> _previewIds = previewsIds;
     private double _aproximateExecutionTime;
     
     public override int GetWorkCount() 
@@ -34,12 +32,7 @@ public class AutotagPreviewTask : Task, ITask
         return (int)Math.Clamp(progress, 0, 100);
     }
 
-    public AutotagPreviewTask(Actor actor, List<Guid> previewsIds) 
-        : base(actor)
-    {
-        _previewIds = previewsIds;
-    }
-    public override void DoTheTask(IServiceProvider serviceProvider, IActorProvider actorProvider)
+    public override void DoTheTask(IServiceProvider serviceProvider, IUserProvider actorProvider)
     {
         var context = serviceProvider.GetRequiredService<AppDbContext>();
         

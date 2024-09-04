@@ -1,0 +1,144 @@
+﻿@page
+@model MediaCloud.Pages.Users.ListModel
+@using MediaCloud.Extensions
+@using MediaCloud.Data.Types
+
+@{
+    ViewData["Title"] = "Users list";
+
+    var nameSortType = "NameDesc";
+    var nameSortSymbol = "";
+    var nameButtonStyle = "btn-info";
+    var updatedAtSortType = "UpdatedAtDesc";
+    var updatedAtSortSymbol = "";
+    var updatedAtButtonStyle = "btn-info";
+    var lastLoginAtSortType = "LastLoginAtDesc";
+    var lastLoginAtSortSymbol = "";
+    var lastLoginAtButtonStyle = "btn-info";
+
+     @if (@Model.ListBuilder.Sorting.PropertyName == "NameDesc"){
+        nameSortType = "Name";
+        nameSortSymbol = "↓";
+        nameButtonStyle = "btn-warning";
+    }
+    else if (@Model.ListBuilder.Sorting.PropertyName == "Name"){
+        nameSortType = "NameDesc";
+        nameSortSymbol = "↑";
+        nameButtonStyle = "btn-warning";
+    }
+
+    @if (@Model.ListBuilder.Sorting.PropertyName == "UpdatedAtDesc"){
+        updatedAtSortType = "UpdatedAt";
+        updatedAtSortSymbol = "↓";
+        updatedAtButtonStyle = "btn-warning";
+    }
+    else if (@Model.ListBuilder.Sorting.PropertyName == "UpdatedAt"){
+        updatedAtSortType = "UpdatedAtDesc";
+        updatedAtSortSymbol = "↑";
+        updatedAtButtonStyle = "btn-warning";
+    }
+
+    @if (@Model.ListBuilder.Sorting.PropertyName == "LastLoginAtDesc"){
+        lastLoginAtSortType = "LastLoginAt";
+        lastLoginAtSortSymbol = "↓";
+        lastLoginAtButtonStyle = "btn-warning";
+    }
+    else if (@Model.ListBuilder.Sorting.PropertyName == "LastLoginAt"){
+        lastLoginAtSortType = "LastLoginAtDesc";
+        lastLoginAtSortSymbol = "↑";
+        lastLoginAtButtonStyle = "btn-warning";
+    }
+}
+
+<div class="page-container">
+    <h1>
+        User list
+    </h1>
+
+    <div class="button-panel justify-content-start">
+        <div class="button-group">
+            <a class="btn btn-success btn-rounded" asp-page="Create">
+                Create
+            </a>
+            <div class="separator"></div>
+        </div>
+
+        <div class="button-group">
+            <div class="descriptor">
+                Sorting:
+            </div>
+            <a class="btn @nameButtonStyle btn-rounded text-nowrap" 
+                asp-page="Index" 
+                asp-route-sort=@(nameSortType)>
+                Name @(nameSortSymbol)
+            </a>
+            <a class="btn @updatedAtButtonStyle btn-rounded text-nowrap" 
+                asp-page="Index" 
+                asp-route-sort=@(updatedAtSortType)>
+                Date @(updatedAtSortSymbol)
+            </a>
+            <a class="btn @lastLoginAtButtonStyle btn-rounded text-nowrap" 
+                asp-page="Index" 
+                asp-route-sort=@(lastLoginAtSortType)>
+                Last login at @(lastLoginAtSortSymbol)
+            </a>
+        </div>
+    </div>  
+    <hr class="text-white"/>
+
+    <partial name="~/Pages/Shared/_Pagination.cshtml" />
+
+    <div class="table-responsive">
+        <table class="table" style="background-color: white; border-radius: 1rem;">
+            <thead>
+                <tr>
+                    <th class="table-item-padding">
+                        @Html.DisplayNameFor(model => model.Users[0].Name)
+                    </th>
+                    <th class="table-item-padding">
+                        @Html.DisplayNameFor(model => model.Users[0].IsAdmin)
+                    </th>
+                    <th class="table-item-padding">
+                        @Html.DisplayNameFor(model => model.Users[0].IsPublic)
+                    </th>
+                    <th class="table-item-padding">
+                        @Html.DisplayNameFor(model => model.Users[0].IsActivated)
+                    </th>
+                    <th class="table-item-padding">
+                        @Html.DisplayNameFor(model => model.Users[0].LastLoginAt)
+                    </th>
+                    <th class="table-item-padding">
+                        @Html.DisplayNameFor(model => model.Users[0].InviteCode)
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Users) {
+                    <tr class="list-clickable" 
+                        onclick="document.location='/Users/Detail?id=@item.Id&returnUrl=/Users/Index?sort=@Model.ListBuilder.Sorting.PropertyName';">
+                        <td class="table-item-padding">
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td class="table-item-padding">
+                            @((bool)item.IsAdmin ? "Yes" : "No")
+                        </td>
+                        <td class="table-item-padding">
+                            @((bool)item.IsPublic ? "Yes" : "No")
+                        </td>
+                        <td class="table-item-padding">
+                            @((bool)item.IsActivated ? "Yes" : "No")
+                        </td>
+                        <td class="table-item-padding">
+                            @Html.DisplayFor(modelItem => item.LastLoginAt)
+                        </td>
+                        <td class="table-item-padding">
+                            @Html.DisplayFor(modelItem => item.InviteCode)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+ <partial name="~/Pages/Shared/_Pagination.cshtml" />

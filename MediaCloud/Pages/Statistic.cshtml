@@ -8,6 +8,9 @@
 <h1 class="pt-3 text-white">Statistic</h1>
 
 <div class="button-panel d-flex flex-row align-items-center mt-3">
+    <a onclick="history.back();" class="btn btn-info">
+        Back
+    </a>
     <div>
         <a id="recalculateButton" class="btn btn-info">Recalculate</a>
     </div>
@@ -15,21 +18,23 @@
 
 <hr style="color: white"/>
 
-<div>
-    <div class="row" style="justify-content: space-around;">
-        <div class="col whiteback-bar">
-            <canvas class="chart-canvas" id="CountChart"></canvas>
+<div class="page-container">
+    <div class="overflow-scroll">
+        <div class="row" style="justify-content: space-around; min-width: 45rem;">
+            <div class="col whiteback-bar">
+                <canvas class="chart-canvas" id="CountChart"></canvas>
+            </div>
+            <div class="col whiteback-bar">
+                <canvas class="chart-canvas" id="SizeChart"></canvas>
+            </div>
         </div>
-        <div class="col whiteback-bar">
-            <canvas class="chart-canvas" id="SizeChart"></canvas>
-        </div>
-    </div>
-    <div class="row" style="justify-content: space-around;">
-        <div class="col-4 whiteback-bar" style="justify-content: space-around;">
-            <canvas class="chart-canvas-block" style="max-height: 45rem" id="TagsChart"></canvas>
-        </div>
-        <div class="col whiteback-bar">
-            <canvas class="chart-canvas" id="ActivityChart"></canvas>
+        <div class="row" style="justify-content: space-around; min-width: 45rem;">
+            <div class="col whiteback-bar" style="justify-content: space-around;">
+                <canvas class="chart-canvas-block" style="max-height: 35rem" id="TagsChart"></canvas>
+            </div>
+            <div class="col whiteback-bar">
+                <canvas class="chart-canvas" id="ActivityChart"></canvas>
+            </div>
         </div>
     </div>
 </div>
@@ -57,13 +62,12 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
-<script src="https://cdn.jsdelivr.net/npm/luxon"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
+<script src="~/js/chart.js"></script>
+<script src="~/js/chartjs-plugin-datalabels.js"></script>
+<script src="~/js/luxon.js"></script>
+<script src="~/js/chartjs-adapter-luxon.js"></script>
 
 <script type="text/javascript">
-    var targetSizeError = @Model.SizeTargetError.ToString(System.Globalization.CultureInfo.InvariantCulture);
     var dayDisplayFormat = 'DD'
 
     function formatBytes(bytes, decimals = 2) {
@@ -108,14 +112,13 @@
                 },
                 title: {
                     display: true,
-                    text: 'Medias size total uploaded (' + (100 - targetSizeError * 100).toFixed(1) 
-                        + '% of database)',
+                    text: 'Medias size total uploaded',
                 },
                 tooltip: {
                     callbacks: {
                         label: function (context) {
                             let label = context.dataset.label || '';
-                            return formatBytes(context.parsed.y + context.parsed.y * targetSizeError, 1);
+                            return formatBytes(context.parsed.y, 1);
                         }
                     }
                 }
@@ -145,7 +148,7 @@
                     },
                     ticks: {
                         callback: function (value, index, ticks) {
-                            return formatBytes(value + value * targetSizeError, 1);
+                            return formatBytes(value, 1);
                         }
                     }
                 }
@@ -402,19 +405,15 @@
                         if (data.queuePosition > 1) {
                             setModalTitle('Waiting queue for processing...');
                         }
-                        else if (data.queuePosition = 0 && data.workCount > 0) {
+                        else if (data.queuePosition == 1) {
                             setModalTitle('Server processing...');
                         }
-                        else if (data.workCount == 0 && data.isInProgress == false) {
-                            setModalTitle('Recalculation successfully uploaded!');
+                        else if (data.workCount == 0 && data.isExist == false) {
+                            setModalTitle('Recalculation successfully completed!');
                             hideModalBody();
                             hideLoadSpinner();
 
                             clearInterval(loadingUpdateInterval);
-                        }
-                        else if (data.workCount == 0) {
-                            setModalTitle('Saving in database...');
-                            showLoadSpinner();
                         }
                     })
             }

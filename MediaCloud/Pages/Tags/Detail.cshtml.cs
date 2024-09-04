@@ -1,36 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using MediaCloud.Data;
-using MediaCloud.Services;
+﻿using Microsoft.AspNetCore.Mvc;
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
 using MediaCloud.WebApp.Pages;
-using Microsoft.AspNetCore.Mvc.Abstractions;
-using MediaCloud.WebApp.Services.ActorProvider;
+using MediaCloud.WebApp.Services.UserProvider;
 
 namespace MediaCloud.Pages.Tags
 {
-    public class TagDetailModel : AuthorizedPageModel
+    public class DetailModel(IUserProvider userProvider, TagRepository tagRepository) : AuthorizedPageModel(userProvider)
     {
-        private readonly TagRepository _tagRepository;
+        private readonly TagRepository _tagRepository = tagRepository;
 
         [BindProperty]
         public Tag Tag { get; set; } = new();
 
         [BindProperty]
         public string ReturnUrl { get; set; } = "/Tags";
-
-        public TagDetailModel(IActorProvider actorProvider, TagRepository tagRepository) : base(actorProvider)
-        {
-            _tagRepository = tagRepository;
-        }
 
         public IActionResult OnGet(Guid id, string returnUrl = "/Tags/Index")
         {

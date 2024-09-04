@@ -1,23 +1,14 @@
-﻿using MediaCloud.Data;
-using MediaCloud.Data.Models;
-using MediaCloud.WebApp.Pages;
-using MediaCloud.WebApp.Services;
-using MediaCloud.WebApp.Services.ActorProvider;
-using Microsoft.AspNetCore.Authorization;
+﻿using MediaCloud.Data.Models;
+using MediaCloud.WebApp.Services.UserProvider;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace MediaCloud.Pages
 {
-    public class IndexModel : PageModel
+    public class IndexModel(IUserProvider userProvider) : PageModel
     {
         [BindProperty]
-        public Actor? CurrentActor { get; set; }
-
-        public IndexModel(IActorProvider actorProvider)
-        { 
-            CurrentActor = actorProvider.GetCurrentOrDefault();
-        }
+        public User? CurrentUser { get; set; } = userProvider.GetCurrentOrDefault();
 
         public IActionResult OnGet()
         {

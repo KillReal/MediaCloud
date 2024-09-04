@@ -2,22 +2,14 @@
 using MediaCloud.Builders.List;
 using MediaCloud.Data;
 using MediaCloud.Data.Models;
-using MediaCloud.Extensions;
-using MediaCloud.WebApp.Services.ActorProvider;
+using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp.Services.Statistic;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
 using NLog;
 
 namespace MediaCloud.Repositories
 {
-    public class CollectionRepository : BaseRepository<Collection>
+    public class CollectionRepository(AppDbContext context, StatisticProvider statisticProvider, IUserProvider actorProvider) : BaseRepository<Collection>(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider)
     {
-        public CollectionRepository(AppDbContext context, StatisticProvider statisticProvider, IActorProvider actorProvider) 
-            : base(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider)
-        {
-        }
-
         public override Collection? Get(Guid id)
         {
             var collection = _context.Collections.Find(id);
@@ -48,16 +40,15 @@ namespace MediaCloud.Repositories
 
             if (collection == null || collection.CreatorId != _actor.Id)
             {
-                return new();
+                return [];
             }
 
             _statisticProvider.ActivityFactorRaised.Invoke();
 
-            return _context.Previews.Where(x => x.Collection == collection)
+            return [.. _context.Previews.Where(x => x.Collection == collection)
                                     .OrderBy(x => x.Order)
                                     .Skip(listRequest.Offset)
-                                    .Take(listRequest.Count)
-                                    .ToList();
+                                    .Take(listRequest.Count)];
         }
 
         public long GetSize(Guid id)
@@ -69,7 +60,7 @@ namespace MediaCloud.Repositories
                 return 0;
             }
 
-            return _context.Medias.Where(x => collection.Previews.Contains(x.Preview)).Sum(x => x.Size);
+            return _context.Blobs.Where(x => collection.Previews.Contains(x.Preview)).Sum(x => x.Size);
         }
 
         public bool TryUpdateOrder(Guid id, List<int> orders)
@@ -90,7 +81,7 @@ namespace MediaCloud.Repositories
                 previews[i].Order = orders[i];
                 if (previews[i].Tags.Count > 0)
                 {
-                    tags = previews[i].Tags.ToList();
+                    tags = [.. previews[i].Tags];
                     previews[i].Tags.Clear();
                 }
             }
@@ -120,11 +111,11 @@ namespace MediaCloud.Repositories
             }
 
             var collectionId = collection.Id;
-            var medias = collection.Previews.Select(x => x.Media).ToList();
-            var count = medias.Count;
-            var size = medias.Sum(x => x.Size);
+            var blobs = collection.Previews.Select(x => x.Blob).ToList();
+            var count = blobs.Count;
+            var size = blobs.Sum(x => x.Size);
 
-            _context.Medias.RemoveRange(medias);
+            _context.Blobs.RemoveRange(blobs);
             _statisticProvider.MediasCountChanged(-count, -size);
 
             Remove(collection);

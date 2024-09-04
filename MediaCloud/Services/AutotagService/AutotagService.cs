@@ -1,26 +1,18 @@
-﻿using System.Buffers.Text;
-using System.Diagnostics;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http.Headers;
-using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
-using MediaCloud.Services;
-using MediaCloud.WebApp.Controllers;
-using MediaCloud.WebApp.Services.ActorProvider;
 using MediaCloud.WebApp.Services.ConfigProvider;
-using Microsoft.AspNetCore.Routing.Constraints;
-using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using NLog;
-using ILogger = NLog.ILogger;
+using Logger = NLog.ILogger;
 
 namespace MediaCloud.WebApp;
 
 public class AutotagService : IAutotagService
 {
-    private readonly ILogger _logger = LogManager.GetLogger("AutotagService");
-    private readonly List<Guid> _proceededPreviewIds = new();
+    private readonly Logger _logger = LogManager.GetLogger("AutotagService");
+    private readonly List<Guid> _proceededPreviewIds = [];
     private readonly HttpClient _httpClient;
     private readonly Mutex _mutex = new();
     private readonly Semaphore _semaphore;
@@ -64,7 +56,7 @@ public class AutotagService : IAutotagService
     {
         if (preview == null)
         {
-            return new();
+            return [];
         }
         
         try {
@@ -84,7 +76,7 @@ public class AutotagService : IAutotagService
 
             if (string.IsNullOrWhiteSpace(result))
             {
-                return new();
+                return [];
             }
 
             var suggestedTags = result.Split("\n")
@@ -125,7 +117,7 @@ public class AutotagService : IAutotagService
         {
             _proceededPreviewIds.Remove(preview.Id);
             _logger.Error(ex, "Failed to process autotagging for image");
-            return new();
+            return [];
         }
     }
 
@@ -133,9 +125,9 @@ public class AutotagService : IAutotagService
     {
         var collectionId = previews.First().Collection?.Id;
 
-        if (previews.Any() == false || collectionId == null)
+        if (previews.Count == 0 || collectionId == null)
         {
-            return new();
+            return [];
         }
 
         try {
@@ -143,7 +135,7 @@ public class AutotagService : IAutotagService
             
             _logger.Info("Executed AI tag autocompletion for Collection: {collection.Id}", collectionId);
 
-            List<Tag> tags = new();
+            List<Tag> tags = [];
 
             var options = new ParallelOptions { MaxDegreeOfParallelism = _maxParralelDegree};
             Parallel.ForEach(previews, options, preview => 
@@ -164,7 +156,7 @@ public class AutotagService : IAutotagService
         catch (Exception ex)
         {
             _logger.Error(ex, "Failed to process autotagging for image");
-            return new();
+            return [];
         }
     }
 
@@ -182,15 +174,15 @@ public class AutotagService : IAutotagService
 
             if (string.IsNullOrWhiteSpace(result))
             {
-                return new();
+                return [];
             }
 
-            return JsonConvert.DeserializeObject<List<string>>(result) ?? new List<string>();
+            return JsonConvert.DeserializeObject<List<string>>(result) ?? [];
         }
         catch (Exception ex)
         {
             _logger.Error(ex, "Failed to get tag aliases");
-            return new();
+            return [];
         }
     }
 
@@ -212,7 +204,7 @@ public class AutotagService : IAutotagService
 
         if (result.StatusCode != HttpStatusCode.OK)
         {
-            throw new HttpRequestException("Request to JoyTag AI failed");
+            throw new HttpRequestException($"Request to JoyTag AI failed with code {result.StatusCode}");
         }
 
         return result.Content.ReadAsStringAsync()

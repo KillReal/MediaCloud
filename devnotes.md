@@ -1,42 +1,61 @@
 
 # Infrastructure             
 
-- 1.6.1 mediacloud
-- 1.6.1 mediacloud-dev
+- 2.0.0 mediacloud
+- 2.0.0 mediacloud-dev
+
 
 # Publishing
-`
-`dotnet publish -r linux-x64 -p:PublishSingleFile=true --no-self-contained -o D:/Development/MediaCloud-Prod`
 
-# JoyTag
-https://github.com/fpgaminer/joytag
-Need to download model before using
+```bash
+dotnet publish -r linux-x64 -p:PublishSingleFile=true --no-self-contained -o D:/Development/MediaCloud-Deploy
+```
 
-# Next release - 1.7.0       
-# Next minor - 1.6.2   
+# Next release - 2.0.0       
+# Next minor - 2.0.1   
 
-Todo:
+
+TODO:
 - Review sql requests (Accordingly to ActorProvider staff)
 - Admin check for display actors in Statistic
 - Implement all actors statistic dashboards for Admin
 - Write unit tests 
-- Show first upltioaded image on uploade page
-- Update zabbix metrics from Uploader to TaskScheduler
-- Review creator updator linking when updating entities.
-- Remove unnecessary dependencies in python .venv on prod
-- Implement in task time execution measuring
+- Implement JoyTag garbage collection (unload model if not used for long time)
+- Show first uploaded image on upload page
 - Fix autotagging task stuck when service doesn't respond
-- Move Autotagging loging to another log file
-- Change autotag actual tag alias log to debug
-- Fix collection autotagging progress
+- Fix statistic recalculation when only 1 day recorded
+- Rewrite collection gallery to _CollectionGallery.cshtml
+- Implement multiple workers statistic for TaskSchedulerStatus
+- Remove Tag Types
 
-Done:
-- Fix personal account settings
-- Change back buttons in page layouts to window.history.back
-- Round autotag execution time in logging to seconds
-- Fix workers count in logs
+# Changelog
 
-# Changelog				   
+### Version 2.0.0 - 04th Sep, 2024
+- Implemented file uploading with any extension support
+- Added logging to JoyTag AI server
+- Upgraded SixLabors.ImageSharp from 3.1.4 to 3.1.5
+- Improved page layouts for mobile devices
+- Converting uploaded images to webp
+- Fix single button group layout (justify-space-between w-100)
+- Fix button panel aligment and wrapping in details and collections
+- Fix buttons aligment in Tag, User, Collection, Gallery Details
+- Fix negative tags filtering
+- Fix collection autotagging (autotag suggestions popup appears in wrong place)
+
+### Version 1.6.3 - 25th Jul, 2024
+- Upgraged .NET from 6.0 to 8.0
+- Upgraded Npgsql.EntityFrameworkCore.PostgreSQL from 6.0.7 to 8.0.4
+- Upgraded bootstrap from 5.2.1 to 5.3.3
+- More Other packages upgraded to upstream versions
+
+### Version 1.6.2 - 13th Jul, 2024
+- Added new animations for gallerPy cardsKawabi
+- Changed back buttons logic to use native browser history
+- Improvements in autotagging logger format
+- Fixed slow statistic loading
+- Fixed collection autotagging progress
+- Fixed personal account settings
+- Fixed statistic recalculation task waiting
 
 ### Version 1.6.1 - 12th Jun, 2024
 - Tag alias not required parameter anymore

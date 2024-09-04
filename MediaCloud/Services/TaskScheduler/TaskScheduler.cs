@@ -1,10 +1,6 @@
-﻿using MediaCloud.Data;
-using MediaCloud.TaskScheduler.Tasks;
-using MediaCloud.Repositories;
-using MediaCloud.WebApp.Services;
+﻿using MediaCloud.TaskScheduler.Tasks;
 using MediaCloud.WebApp.Services.ConfigProvider;
 using NLog;
-using ILogger = NLog.ILogger;
 using Task = MediaCloud.TaskScheduler.Tasks.Task;
 using MediaCloud.WebApp;
 
@@ -16,8 +12,8 @@ namespace MediaCloud.TaskScheduler
     public partial class TaskScheduler : ITaskScheduler
     {
         private readonly IServiceScopeFactory _serviceScopeFactory;
-        private readonly ILogger _logger;
-        private readonly List<Worker> _workers = new();
+        private readonly Logger _logger;
+        private readonly List<Worker> _workers = [];
         private readonly Queue _queue;
         
         public readonly int MaxWorkersCount;
@@ -32,7 +28,7 @@ namespace MediaCloud.TaskScheduler
         {
             _serviceScopeFactory = serviceScopeFactory;
             _logger = LogManager.GetLogger("Scheduler");
-            _workers = new List<Worker>();
+            _workers = [];
             _queue = new Queue();
 
             var workersCount = configProvider.EnvironmentSettings.TaskSchedulerWorkerCount;
@@ -42,7 +38,8 @@ namespace MediaCloud.TaskScheduler
                 {
                     typeof(Task), 
                     typeof(RecalculateTask), 
-                    typeof(UploadTask)
+                    typeof(UploadTask),
+                    typeof(UpgradeUserImagesTask)
                 };
                 _workers.Add(new Worker(_queue, this, _serviceScopeFactory, types));
             }

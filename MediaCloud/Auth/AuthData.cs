@@ -1,7 +1,4 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using System.Text;
-
-namespace MediaCloud.WebApp
+﻿namespace MediaCloud.WebApp
 {
     public class AuthData
     {

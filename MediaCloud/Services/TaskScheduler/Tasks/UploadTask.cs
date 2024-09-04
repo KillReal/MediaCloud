@@ -3,17 +3,11 @@ using MediaCloud.Data.Models;
 using MediaCloud.Extensions;
 using MediaCloud.Repositories;
 using MediaCloud.Services;
-using MediaCloud.WebApp.Services.ActorProvider;
+using MediaCloud.WebApp;
+using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp.Services.Statistic;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
+using Blob = MediaCloud.Data.Models.Blob;
 
 namespace MediaCloud.TaskScheduler.Tasks
 {
@@ -52,49 +46,40 @@ namespace MediaCloud.TaskScheduler.Tasks
         }
     }
 
-    public class UploadTask : Task, ITask
+    public class UploadTask(User actor, List<UploadedFile> uploadedFiles, bool isCollection, string? tagString) 
+        : Task(actor), ITask
     {
-        public List<byte[]> Content { get; set; }
+        public List<UploadedFile> UploadedFiles { get; set; } = [.. uploadedFiles.OrderByDescending(x => x.Name, new FileNameComparer())];
 
-        public bool IsCollection { get; set; }
+        public bool IsCollection { get; set; } = isCollection;
 
-        public string TagString { get; set; }
+        public string TagString { get; set; } = tagString ?? "";
 
-        public override int GetWorkCount() => Content.Count;
+        public override int GetWorkCount() => UploadedFiles.Count;
 
-        public UploadTask(Actor actor, List<IFormFile> content, bool isCollection, string? tagString) 
-            : base(actor)
-        {
-            var orderedContent = content.OrderByDescending(x => x.FileName, new FileNameComparer());
-            Content = orderedContent.Where(x => x.FileName.Contains("mp4") == false)
-                                                      .Select(x => x.GetBytes())
-                                                      .ToList();
-            IsCollection = isCollection;
-            TagString = tagString ?? "";
-        }
-
-        public override void DoTheTask(IServiceProvider serviceProvider, IActorProvider actorProvider)
+        public override void DoTheTask(IServiceProvider serviceProvider, IUserProvider actorProvider)
         {
             var context = serviceProvider.GetRequiredService<AppDbContext>();
             var statisticProvider = new StatisticProvider(context, actorProvider);
             var pictureService = serviceProvider.GetRequiredService<IPictureService>();
 
             var tagRepository = new TagRepository(context, statisticProvider, actorProvider);
-            var mediasRepository = new MediaRepository(context, statisticProvider, actorProvider, pictureService);
+            var fileRepository = new BlobRepository(context, statisticProvider, actorProvider, pictureService);
 
             var foundTags = tagRepository.GetRangeByString(TagString);
-            var medias = new List<Media>();
+            
+            var files = new List<Blob>();
 
             if (IsCollection)
             {
-                medias = mediasRepository.CreateCollection(Content);
+                files = fileRepository.CreateCollection(UploadedFiles);
             }
             else
             {
-                medias = mediasRepository.CreateRange(Content);
+                files = fileRepository.CreateRange(UploadedFiles);
             }
 
-            var preview = medias.Select(x => x.Preview).Where(x => x.Order == 0).First();
+            var preview = files.Select(x => x.Preview).Where(x => x.Order == 0).First();
             tagRepository.UpdatePreviewLinks(foundTags, preview);
         }
     }

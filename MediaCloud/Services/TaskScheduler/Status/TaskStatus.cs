@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MediaCloud.TaskScheduler
+﻿namespace MediaCloud.TaskScheduler
 {
     public class TaskStatus
     {
@@ -13,5 +7,6 @@ namespace MediaCloud.TaskScheduler
         public bool IsInProgress { get; set; }
         public int WorkCount { get; set; }
         public bool IsExist { get; set; }
+        public DateTime ExecutedAt { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-using MediaCloud.WebApp.Services.ActorProvider;
+using MediaCloud.WebApp.Services.UserProvider;
 using Newtonsoft.Json;
 using NLog;
 using ILogger = NLog.ILogger;
@@ -7,7 +7,7 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
 {
     public class ConfigProvider : IConfigProvider
     {
-        private readonly IActorProvider _actorProvider;
+        private readonly IUserProvider _actorProvider;
         private readonly IConfiguration _configuration;
         private readonly ILogger _logger;
 
@@ -18,7 +18,7 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
         /// Does not save changes to database implicitly. 
         /// Use <see cref="SaveActorSettings()"/> for explicit save.
         /// </summary>
-        public ActorSettings ActorSettings
+        public UserSettings UserSettings
         { 
             get 
             { 
@@ -49,7 +49,7 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
         }
 
 
-        public ConfigProvider(IConfiguration configuration, IActorProvider actorProvider)
+        public ConfigProvider(IConfiguration configuration, IUserProvider actorProvider)
         {
             _actorProvider = actorProvider;
             _configuration = configuration;
@@ -73,7 +73,7 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
         /// Implicitly saves changes to database in json format.
         /// </summary>
         /// <returns> Result of operation. </returns>
-        public bool SaveActorSettings(ActorSettings settings)
+        public bool SaveActorSettings(UserSettings settings)
         {
             var jsonSettings = JsonConvert.SerializeObject(settings, Formatting.Indented);
             return _actorProvider.SaveSettings(jsonSettings);

@@ -1,15 +1,10 @@
-﻿using MediaCloud.TaskScheduler.Tasks;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Task = MediaCloud.TaskScheduler.Tasks.Task;
+﻿using Task = MediaCloud.TaskScheduler.Tasks.Task;
 
 namespace MediaCloud.TaskScheduler
 {
     public class Queue
     {
-        private readonly List<Task> _tasks = new();
+        private readonly List<Task> _tasks = [];
 
         public Action<Task> OnTaskComplete;
 
@@ -60,11 +55,16 @@ namespace MediaCloud.TaskScheduler
                 QueuePosition = GetTaskPosition(taskId)
             };
             var task = GetTask(taskId);
-            taskStatus.IsInProgress = task != null && !task.IsWaiting;
-            taskStatus.IsExist = task != null;
-            taskStatus.WorkCount = task == null 
-                ? 0 
-                : task.GetWorkCount();
+
+            if (task == null)
+            {
+                return new();
+            }
+
+            taskStatus.IsInProgress = !task.IsWaiting;
+            taskStatus.IsExist = true;
+            taskStatus.WorkCount = task.GetWorkCount();
+            taskStatus.ExecutedAt = task.ExecutedAt;
 
             return taskStatus;
         }

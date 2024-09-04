@@ -1,6 +1,6 @@
 ﻿@using System.Reflection
 @using MediaCloud.WebApp.Pages;
-@using MediaCloud.WebApp.Services.ActorProvider;
+@using MediaCloud.WebApp.Services.UserProvider;
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
-<body  bg-secondary class="mb-0" style="min-width: 500px">
+<body class="body">
     <header>
         <nav class="navbar navbar-expand-lg navbar-light box-shadow">
             <div class="container-fluid ps-5 pe-5">
@@ -23,17 +23,17 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                    <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="/Medias">Gallery</a>
+                            <a class="nav-link text-white" href="/Gallery">Gallery</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-white" href="/Tags">Tags</a>
                         </li>
-                        @if (Model.GetType().IsSubclassOf(typeof(AuthorizedPageModel)) && Model.CurrentActor != null && Model.CurrentActor.IsAdmin)
+                        @if (Model.GetType().IsSubclassOf(typeof(AuthorizedPageModel)) && Model.CurrentUser != null && Model.CurrentUser.IsAdmin)
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-white" href="/Actors">Actors</a>
+                                <a class="nav-link text-white" href="/Users">Users</a>
                             </li>
                         }
                         <li class="nav-item">
@@ -42,34 +42,27 @@
                         <li class="nav-item">
                             <a class="nav-link text-white" href="/Changelog">Changelog</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="/Privacy">Privacy</a>
-                        </li>
+                    </ul>
+                    <ul class="navbar-nav">
                         <li class="nav-item flex-grow-1">
-                            <div class="me-3 collapse navbar-collapse collapse d-sm-inline-flex justify-content-end text-right" id="myNavbar">
-                                @if (Model.CurrentActor != null)
-                                {
-                                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 text-nowrap">
-                                        <li class="nav-item">
-                                        <a class="nav-link text-white">Hello, @Model.CurrentActor.Name!</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="btn btn-info ms-2 me-2 navbar-right" href="/Account?returnUrl=@Context.Request.Path" method="post">Settings</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="btn btn-danger ms-2 ms-2 navbar-right" href="/Account/Logout" method="post" id="logoutForm">Logout</a>
-                                        </li>
-                                    </ul>
-                                }
-                                else
-                                {
-                                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                                        <li class="nav-item">
-                                            <a class="nav-link text-white" href="/Account/Login">Sign In</a>
-                                        </li>
-                                    </ul>
-                                }
-                            </div>
+                            @if (Model.CurrentUser != null)
+                            {
+                                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 text-nowrap">
+                                    <li class="nav-item d-flex">
+                                         <a class="nav-link text-white">Hello, @Model.CurrentUser.Name!</a>
+                                        <a class="btn btn-info ms-2 me-2 navbar-right" href="/Account?returnUrl=@Context.Request.Path" method="post">Settings</a>
+                                        <a class="btn btn-danger ms-2 ms-2 navbar-right" href="/Account/Logout" method="post" id="logoutForm">Logout</a>
+                                    </li>
+                                </ul>
+                            }
+                            else
+                            {
+                                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                                    <li class="nav-item d-flex">
+                                        <a class="nav-link text-white" href="/Account/Login">Sign In</a>
+                                    </li>
+                                </ul>
+                            }
                         </li>
                     </ul>
                 </div>
@@ -82,13 +75,15 @@
                 style="z-index: 1000; max-width: 5rem">
             <img style="width:100%" src="~/img/up.png">
         </button>
-    <div class="gradient-main" style="min-height: 140vh">
-         <div class="container-fluid mb-4 ps-5 pe-5">
-            <main role="main" class="pb-3">
-                @RenderBody()
-            </main>
+    <div class="main-frame">
+        <div class="main-container">
+            <div class="container-fluid">
+                <main role="main" class="pb-3">
+                    @RenderBody()
+                </main>
+            </div>
         </div>
-        <footer class="footer text-white" style="min-width: 500px">
+        <footer class="footer text-white">
             <div class="container mb-2 mt-2">
                 &copy; 2022 - MediaCloud - <a asp-area="" asp-page="/Privacy">Privacy</a>
             </div>

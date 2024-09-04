@@ -1,27 +1,20 @@
 ﻿using DynamicExpression.Entities;
-using DynamicExpression.Interfaces;
-using System.Reflection;
 
 namespace MediaCloud.WebApp.Builders.List.Components
 {
     /// <summary>
     /// Sort for <see cref="List.ListBuilder{T}"/>
     /// </summary>
-    public class Sorting
+    /// <remarks>
+    /// Init sorting with <see cref="PropertyName"/>.
+    /// </remarks>
+    /// <param name="propertyName">Property name. Use 'Desc'for <code>"PropertyNameDesc"</code> for descendation soring.</param>
+    public class Sorting(string propertyName)
     {
         /// <summary>
         /// Sort property name, use 'Desc' in value for descendation soring.
         /// </summary>
-        public string PropertyName { get; set; }
-
-        /// <summary>
-        /// Init sorting with <see cref="PropertyName"/>.
-        /// </summary>
-        /// <param name="propertyName">Property name. Use 'Desc'for <code>"PropertyNameDesc"</code> for descendation soring.</param>
-        public Sorting(string propertyName)
-        {
-            PropertyName = propertyName;
-        }
+        public string PropertyName { get; set; } = propertyName;
 
         /// <summary>
         /// Return ordering for querying entities.

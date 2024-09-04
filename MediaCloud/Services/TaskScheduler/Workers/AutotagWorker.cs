@@ -2,12 +2,8 @@
 
 namespace MediaCloud.WebApp;
 
-public class AutotagWorker : Worker
+public class AutotagWorker(Queue queue, TaskScheduler.TaskScheduler scheduler, IServiceScopeFactory serviceScopeFactory) : Worker(queue, scheduler, serviceScopeFactory,
+    [typeof(AutotagPreviewTask), typeof(AutotagCollectionTask)])
 {
-    public AutotagWorker(Queue queue, TaskScheduler.TaskScheduler scheduler, IServiceScopeFactory serviceScopeFactory)
-        : base(queue, scheduler, serviceScopeFactory,
-        new List<Type> { typeof(AutotagPreviewTask), typeof(AutotagCollectionTask) })
-    {
-    }
 }
 

@@ -1,5 +1,4 @@
 ﻿using MediaCloud.Data.Types;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MediaCloud.Data.Models
 {
@@ -14,7 +13,7 @@ namespace MediaCloud.Data.Models
 
         public int PreviewsCount { get; set; }
 
-        public virtual List<Preview> Previews { get; set; } = new();
+        public virtual List<Preview> Previews { get; set; } = [];
 
         public Tag(string name, string description, TagType type)
         {
