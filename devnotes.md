@@ -1,7 +1,7 @@
 
 # Infrastructure             
 
-- 1.6.3 mediacloud
+- 2.0.0 mediacloud
 - 2.0.0 mediacloud-dev
 
 
@@ -28,20 +28,19 @@ TODO:
 - Implement multiple workers statistic for TaskSchedulerStatus
 - Remove Tag Types
 
-DONE:
+# Changelog
+
+### Version 2.0.0 - 04th Sep, 2024
+- Implemented file uploading with any extension support
+- Added logging to JoyTag AI server
+- Upgraded SixLabors.ImageSharp from 3.1.4 to 3.1.5
+- Improved page layouts for mobile devices
+- Converting uploaded images to webp
 - Fix single button group layout (justify-space-between w-100)
 - Fix button panel aligment and wrapping in details and collections
 - Fix buttons aligment in Tag, User, Collection, Gallery Details
 - Fix negative tags filtering
 - Fix collection autotagging (autotag suggestions popup appears in wrong place)
-
-# Changelog
-
-### Version 2.0.0 - ???
-- Implemented file uploading with any extension support
-- Added logging to JoyTag AI server
-- Upgraded SixLabors.ImageSharp from 3.1.4 to 3.1.5
-- Improved page layouts for mobile devices
 
 ### Version 1.6.3 - 25th Jul, 2024
 - Upgraged .NET from 6.0 to 8.0

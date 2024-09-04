@@ -16,17 +16,17 @@ namespace MediaCloud.Builders.List
     /// </remarks>
     /// <param name="request"> List request. </param>
     /// <param name="configProvider"> Config provider for current user <see cref="IDataService"/>. </param>
-    public class ListBuilder<T>(ListRequest request, UserSettings actorSettings) where T : Record
+    public class ListBuilder<T>(ListRequest request, UserSettings userSettings) where T : Record
     {
         public Sorting Sorting { get; init; } = new Sorting(request.Sort ?? "UpdatedAtDesc");
 
         public Filtering Filtering { get; init; } = new Filtering((request.Filter ?? "").ToLower());
 
         public Pagination Pagination { get; init; } = new Pagination(request.Count == 0
-                ? actorSettings.ListMaxEntitiesCount
+                ? userSettings.ListMaxEntitiesCount
                 : request.Count,
                 request.Offset,
-                actorSettings.ListMaxPageCount);
+                userSettings.ListMaxPageCount);
 
         /// <summary>
         /// Build the entity list by <see cref="BaseRepository{T}"/> querying from db.

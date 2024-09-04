@@ -309,7 +309,7 @@
 
     function autocompleteTags(previewId, isExecuted = false) {
         
-        var url = "/Gallery/AutocompleteTagsForPreview?previewId=" + previewId;
+        var url = "/Gallery/AutocompleteTagForPreview?previewId=" + previewId;
 
         var request = new XMLHttpRequest();
         request.open('POST', url, true);
