@@ -1,8 +1,6 @@
-﻿using MediaCloud.TaskScheduler.Tasks;
-using MediaCloud.WebApp.Services.ConfigProvider;
+﻿using MediaCloud.WebApp.Services.ConfigProvider;
 using NLog;
 using Task = MediaCloud.TaskScheduler.Tasks.Task;
-using MediaCloud.WebApp;
 
 namespace MediaCloud.TaskScheduler
 {
@@ -34,20 +32,7 @@ namespace MediaCloud.TaskScheduler
             var workersCount = configProvider.EnvironmentSettings.TaskSchedulerWorkerCount;
             for (int i = 0; i < workersCount; i++)
             {
-                var types = new List<Type>() 
-                {
-                    typeof(Task), 
-                    typeof(RecalculateTask), 
-                    typeof(UploadTask),
-                    typeof(UpgradeUserImagesTask)
-                };
-                _workers.Add(new Worker(_queue, this, _serviceScopeFactory, types));
-            }
-
-            var autotaggingWorkersCount = configProvider.EnvironmentSettings.TaskSchedulerAutotaggingWorkerCount;
-            for (int i = 0; i < autotaggingWorkersCount; i++)
-            {
-                _workers.Add(new AutotagWorker(_queue, this, _serviceScopeFactory));
+                _workers.Add(new Worker(_queue, this, _serviceScopeFactory));
             }
 
             MaxWorkersCount = _workers.Count;
@@ -86,13 +71,7 @@ namespace MediaCloud.TaskScheduler
                 return;
             }
 
-            var taskTypes = _queue.GetWaitingTaskTypes();
-            taskTypes.ForEach(type => 
-            {
-                _workers.Where(worker => worker.IsAbleToExecute(type) && worker.IsReady)
-                                                .FirstOrDefault()
-                                                ?.Run();
-            });
+            _workers.Where(worker => worker.IsReady).FirstOrDefault()?.Run();
         }
 
         /// <summary>
