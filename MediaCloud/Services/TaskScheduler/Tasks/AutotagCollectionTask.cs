@@ -18,7 +18,7 @@ public class AutotagCollectionTask(User actor, Guid collectionId) : Task(actor),
     {
         if (ExecutedAt == DateTime.MinValue)
         {
-            return 0;
+            return 100;
         }
 
         var time = (DateTime.Now - ExecutedAt).TotalSeconds;

@@ -338,10 +338,10 @@
                     .then(function (data) {
                         var progress = 100 - data.workCount;
 
-                        if (data.isInProgress == false) {
+                       if (data.isExist && data.isInProgress == false) {
                             setModalTitle('Waiting queue for processing...');
                         }
-                        else if (data.isInProgress) {
+                        else if (data.isExist && data.isInProgress) {
                             setModalTitle('Autotagging in progress...');
                             setModalProgress(progress, averageExecutionTime);
                             timerCounter += updateInterval;
