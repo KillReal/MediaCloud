@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services.ConfigProvider;
+using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using NLog;
 using Logger = NLog.ILogger;
@@ -16,6 +17,8 @@ public class AutotagService : IAutotagService
     private readonly HttpClient _httpClient;
     private readonly Mutex _mutex = new();
     private readonly Semaphore _semaphore;
+    private MemoryCache _memoryCache;
+    private MemoryCacheEntryOptions _memoryCacheOptions;
 
     private readonly int _maxParralelDegree = 1;
     private const double _defaultExecutionTime = 45.0;
@@ -45,6 +48,8 @@ public class AutotagService : IAutotagService
         var parralelDegree = configProvider.EnvironmentSettings.TaskSchedulerAutotaggingWorkerCount;
         _semaphore = new(parralelDegree, parralelDegree);
         _maxParralelDegree = parralelDegree;
+        _memoryCacheOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromMinutes(30));
 
         _httpClient = new HttpClient
         {
@@ -152,6 +157,11 @@ public class AutotagService : IAutotagService
 
     public List<string> GetSuggestionsByString(string searchString, int limit = 10)
     {
+        if (_memoryCache.TryGetValue("aliases", out List<string>? aliases))
+        {
+            return aliases ?? [];
+        }
+
         try 
         {
             object data = new
@@ -167,7 +177,11 @@ public class AutotagService : IAutotagService
                 return [];
             }
 
-            return JsonConvert.DeserializeObject<List<string>>(result) ?? [];
+            aliases = JsonConvert.DeserializeObject<List<string>>(result);
+
+            _memoryCache.Set("aliases", aliases, _memoryCacheOptions);
+
+            return aliases ?? [];
         }
         catch (Exception ex)
         {
