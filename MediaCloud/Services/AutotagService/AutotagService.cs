@@ -17,7 +17,7 @@ public class AutotagService : IAutotagService
     private readonly HttpClient _httpClient;
     private readonly Mutex _mutex = new();
     private readonly Semaphore _semaphore;
-    private MemoryCache _memoryCache;
+    private IMemoryCache _memoryCache;
     private MemoryCacheEntryOptions _memoryCacheOptions;
 
     private readonly int _maxParralelDegree = 1;
@@ -40,7 +40,7 @@ public class AutotagService : IAutotagService
         return approximateTime ?? _defaultExecutionTime * batchCount;
     }
 
-    public AutotagService(IConfigProvider configProvider)
+    public AutotagService(IConfigProvider configProvider, IMemoryCache memoryCache)
     {
         _joyTagConnectionString = configProvider.EnvironmentSettings.AiJoyTagConnectionString ?? 
             throw new Exception("AI JoyTag Connection String is not set");
@@ -48,6 +48,7 @@ public class AutotagService : IAutotagService
         var parralelDegree = configProvider.EnvironmentSettings.TaskSchedulerAutotaggingWorkerCount;
         _semaphore = new(parralelDegree, parralelDegree);
         _maxParralelDegree = parralelDegree;
+        _memoryCache = memoryCache;
         _memoryCacheOptions = new MemoryCacheEntryOptions()
                 .SetAbsoluteExpiration(TimeSpan.FromMinutes(30));
 
@@ -157,17 +158,17 @@ public class AutotagService : IAutotagService
 
     public List<string> GetSuggestionsByString(string searchString, int limit = 10)
     {
-        if (_memoryCache.TryGetValue("aliases", out List<string>? aliases))
+        if (_memoryCache.TryGetValue("tagSuggestions", out List<string>? aliases))
         {
-            return aliases ?? [];
+            return aliases?.Where(x => x.StartsWith(searchString)).Take(limit).ToList() ?? [];
         }
 
         try 
         {
             object data = new
             {
-                searchString,
-                limit
+                searchString = "",
+                limit = -1
             };
 
             var result = Post("suggestedTags", data);
@@ -178,8 +179,9 @@ public class AutotagService : IAutotagService
             }
 
             aliases = JsonConvert.DeserializeObject<List<string>>(result);
+            _memoryCache.Set("tagSuggestions", aliases, _memoryCacheOptions);
 
-            _memoryCache.Set("aliases", aliases, _memoryCacheOptions);
+            aliases = aliases?.Where(x => x.StartsWith(searchString)).Take(limit).ToList();
 
             return aliases ?? [];
         }

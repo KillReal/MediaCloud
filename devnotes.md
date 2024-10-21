@@ -32,13 +32,13 @@ TODO:
 - Fix JoyTag server error on long run (Server got itself in trouble application.py line: 337)
 - Rename TaskSchedulerAutotaggingWorkerCount
 - Implement autotagging result in AutotaggingService (when autotagging failed shouldn't updates anything)
-- Cache suggestedTags
 
 # Changelog
 
 ### Version 2.0.1 - ? Nov, 2024
 - Implement anti-bruteforce login delaing in UserProvider
 - Fix autotagging status when several tag tasks in process. Now it's updates only when other tasks completed.
+- Cache suggestedTags
 
 ### Version 2.0.0 - 04th Sep, 2024
 - Implemented file uploading with any extension support
