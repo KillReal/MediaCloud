@@ -16,7 +16,7 @@ dotnet publish -r linux-x64 -p:PublishSingleFile=true --no-self-contained -o D:/
 
 
 TODO:
-- Review sql requests (Accordingly to ActorProvider staff)
+- Review sql requests (Accordingly to UserProvider staff)
 - Admin check for display actors in Statistic
 - Implement all actors statistic dashboards for Admin
 - Write unit tests 
@@ -27,6 +27,11 @@ TODO:
 - Rewrite collection gallery to _CollectionGallery.cshtml
 - Implement multiple workers statistic for TaskSchedulerStatus
 - Remove Tag Types
+- Fix user cache cleanup on logout
+- Search by file name?
+- Fix autotagging status when several tag tasks in process. Now it's updates only when other tasks completed.
+- Separate tasks by different queues in TaskScheduler
+- Implement anti-bruteforce login delaing in UserProvider
 
 # Changelog
 

@@ -39,7 +39,6 @@ body {
     justify-content: center;
     background: #5063b9;
     min-height: 95vh;
-    transition: all 1.5s ease-out allow-discrete;
 }
 
 .main-container {
