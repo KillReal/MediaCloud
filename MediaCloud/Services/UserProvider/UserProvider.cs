@@ -87,12 +87,40 @@ namespace MediaCloud.WebApp.Services.UserProvider
             return cachedUser;
         }
 
+        // TODO: Add loginResult with message
         public bool Authorize(AuthData data, HttpContext httpContext)
         {
             var user = _context.Users.FirstOrDefault(x => x.Name == data.Name && x.IsActivated);
 
-            if (user == null || user.PasswordHash == null || SecureHash.Verify(data.Password, user.PasswordHash) == false)
+            if (user == null || user.PasswordHash == null)
             {
+                return false;
+            }
+
+            if (user.NextLoginAttemptAt > DateTime.Now)
+            {
+                // TODO: return message
+                return false;
+            }
+
+            if (SecureHash.Verify(data.Password, user.PasswordHash) == false)
+            {
+                user.FailLoginAttemptCount += 1;
+
+                // TODO: Add env configuration params
+                var freeAttemptCount = 3;
+
+                // TODO: Add env configuration params
+                if (user.FailLoginAttemptCount >= freeAttemptCount) 
+                {
+                    // TODO: Add env configuration params
+                    var duration = Enumerable.Range(freeAttemptCount, freeAttemptCount + 1 - user.FailLoginAttemptCount).Sum();
+                    user.NextLoginAttemptAt = DateTime.Now.AddMinutes(duration);
+                }
+
+                _context.Users.Update(user);
+                _context.SaveChanges();
+                
                 return false;
             }
 
@@ -107,8 +135,11 @@ namespace MediaCloud.WebApp.Services.UserProvider
             user.UpdatedAt = user.UpdatedAt.ToUniversalTime();
             user.CreatedAt = user.CreatedAt.ToUniversalTime();
             user.LastLoginAt = DateTime.Now.ToUniversalTime();
+            user.FailLoginAttemptCount = 0;
+            user.NextLoginAttemptAt = null;
             
             _context.Users.Update(user);
+            _context.SaveChanges();
             _memoryCache.Set(data.Name, user, _memoryCacheOptions);
 
             return true;
