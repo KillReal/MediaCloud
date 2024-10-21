@@ -280,7 +280,7 @@
     }
 
     function setModalProgress(progress, executionTime) {
-        document.getElementById('progress').innerHTML = "Progress: " + parseInt(progress, 10)+ "%";
+        document.getElementById('progress').innerHTML = "Progress: " + parseInt(progress, 10) + "%";
         document.getElementById('executionTime').innerHTML = 'It may take some time (~' + parseInt(executionTime, 10) + ' sec)';
         document.getElementById('autotagButton').value = "Autotagging... " + parseInt(progress, 10)+ "%";
     }
@@ -325,12 +325,12 @@
                     .then((response) => response.json())
                     .then(function (data) {
 
-                        progress = data.workCount;
+                        progress = 100 - data.workCount;
 
-                        if (data.queuePosition > 1) {
+                        if (data.isInProgress == false) {
                             setModalTitle('Waiting queue for processing...');
                         }
-                        else if (data.queuePosition == 1) {
+                        else if (data.isInProgress) {
                             setModalTitle('Autotagging in progress...');
                             setModalProgress(progress, averageExecutionTime);
                             timerCounter += updateInterval;

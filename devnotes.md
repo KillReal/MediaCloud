@@ -11,7 +11,7 @@
 dotnet publish -r linux-x64 -p:PublishSingleFile=true --no-self-contained -o D:/Development/MediaCloud-Deploy
 ```
 
-# Next release - 2.0.0       
+# Next release - 2.1.0       
 # Next minor - 2.0.1   
 
 
@@ -30,10 +30,14 @@ TODO:
 - Fix user cache cleanup on logout
 - Search by file name?
 - Fix autotagging status when several tag tasks in process. Now it's updates only when other tasks completed.
-- Separate tasks by different queues in TaskScheduler
-- Implement anti-bruteforce login delaing in UserProvider
+- Fix JoyTag server error on long run (Server got itself in trouble application.py line: 337)
+- Rename TaskSchedulerAutotaggingWorkerCount
+- Implement autotagging result in AutotaggingService (when autotagging failed shouldn't updates anything)
 
 # Changelog
+
+### Version 2.0.1 - ? Nov, 2024
+- Implement anti-bruteforce login delaing in UserProvider
 
 ### Version 2.0.0 - 04th Sep, 2024
 - Implemented file uploading with any extension support

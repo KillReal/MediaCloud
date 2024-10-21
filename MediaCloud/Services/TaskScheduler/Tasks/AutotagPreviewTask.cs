@@ -29,7 +29,7 @@ public class AutotagPreviewTask(User actor, List<Guid> previewsIds) : Task(actor
 
         var progress = (double)(time / _aproximateExecutionTime) * 100;
 
-        return (int)Math.Clamp(progress, 0, 100);
+        return 100 - (int)Math.Clamp(progress, 0, 100);
     }
 
     public override void DoTheTask(IServiceProvider serviceProvider, IUserProvider actorProvider)
@@ -41,7 +41,7 @@ public class AutotagPreviewTask(User actor, List<Guid> previewsIds) : Task(actor
         var tagRepository = new TagRepository(context, statisticProvider, actorProvider);
         var autotagService = serviceProvider.GetRequiredService<IAutotagService>();
 
-        while (_previewIds.Any())
+        while (_previewIds.Count != 0)
         {
             _aproximateExecutionTime = autotagService.GetAverageExecutionTime();
             var preview = previewRepository.Get(_previewIds.First());
@@ -55,7 +55,7 @@ public class AutotagPreviewTask(User actor, List<Guid> previewsIds) : Task(actor
             ExecutedAt = DateTime.Now;
             var suggestedTags = autotagService.AutocompleteTagsForPreview(preview, tagRepository);
 
-            if (suggestedTags.Any())
+            if (suggestedTags.Count != 0)
             {
                 var tags = preview.Tags.Union(suggestedTags).ToList();
                 tagRepository.UpdatePreviewLinks(tags, preview);

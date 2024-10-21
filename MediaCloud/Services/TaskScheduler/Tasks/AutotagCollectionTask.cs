@@ -21,7 +21,7 @@ public class AutotagCollectionTask(User actor, Guid collectionId) : Task(actor),
             return 0;
         }
 
-        var time = (DateTime.Now - ExecutedAt).Seconds;
+        var time = (DateTime.Now - ExecutedAt).TotalSeconds;
 
         if (time > _aproximateExecutionTime)
         {
@@ -30,7 +30,7 @@ public class AutotagCollectionTask(User actor, Guid collectionId) : Task(actor),
 
         var progress = (double)(time / _aproximateExecutionTime) * 100;
 
-        return (int)Math.Clamp(progress, 0, 100);
+        return 100 - (int)Math.Clamp(progress, 0, 100);
     }
 
     public override void DoTheTask(IServiceProvider serviceProvider, IUserProvider actorProvider)

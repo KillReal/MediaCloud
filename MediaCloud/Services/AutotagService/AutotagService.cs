@@ -130,34 +130,24 @@ public class AutotagService : IAutotagService
             return [];
         }
 
-        try {
-            var stopwatch = DateTime.Now;
+        var stopwatch = DateTime.Now;
+        List<Tag> tags = [];
             
-            _logger.Info("Executed AI tag autocompletion for Collection: {collection.Id}", collectionId);
+        _logger.Info("Executed AI tag autocompletion for Collection: {collection.Id}", collectionId);
 
-            List<Tag> tags = [];
-
-            var options = new ParallelOptions { MaxDegreeOfParallelism = _maxParralelDegree};
-            Parallel.ForEach(previews, options, preview => 
-            {
-                var stags = AutocompleteTagsForPreview(preview, tagRepository);
-                var strtags = string.Join(" ", stags.Select(x => x.Name));
-
-                tags = tags.Union(stags).ToList();
-            });
-            
-            var elapsedTime = (DateTime.Now - stopwatch).TotalSeconds;
-            var tagsString = string.Join(" ", tags.Select(x => x.Name));
-
-            _logger.Debug("AI tag autocompletion for Preview: {previewId} successfully executed within: {elapsedTime} sec, suggested tags: {suggestedTagsString}", collectionId, elapsedTime.ToString("N0"), tagsString);
-            
-            return tags;
-        }
-        catch (Exception ex)
+        var options = new ParallelOptions { MaxDegreeOfParallelism = _maxParralelDegree};
+        Parallel.ForEach(previews, options, preview => 
         {
-            _logger.Error(ex, "Failed to process autotagging for image");
-            return [];
-        }
+            var tags = AutocompleteTagsForPreview(preview, tagRepository);
+            tags = tags.Union(tags).ToList();
+        });
+        
+        var elapsedTime = (DateTime.Now - stopwatch).TotalSeconds;
+        var tagsString = string.Join(" ", tags.Select(x => x.Name));
+
+        _logger.Debug("AI tag autocompletion for Preview: {previewId} successfully executed within: {elapsedTime} sec, suggested tags: {suggestedTagsString}", collectionId, elapsedTime.ToString("N0"), tagsString);
+        
+        return tags;
     }
 
     public List<string> GetSuggestionsByString(string searchString, int limit = 10)
@@ -202,13 +192,11 @@ public class AutotagService : IAutotagService
         var response = _httpClient.PostAsync(_joyTagConnectionString + "/" + method, contentBytes);
         var result = response.GetAwaiter().GetResult();
 
-        if (result.StatusCode != HttpStatusCode.OK)
+        if (response.IsFaulted || result.StatusCode != HttpStatusCode.OK)
         {
             throw new HttpRequestException($"Request to JoyTag AI failed with code {result.StatusCode}");
         }
 
-        return result.Content.ReadAsStringAsync()
-                                .GetAwaiter()
-                                .GetResult();
+        return result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
     }
 }
