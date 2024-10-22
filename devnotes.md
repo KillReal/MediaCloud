@@ -33,6 +33,7 @@ TODO:
 # Changelog
 
 ### Version 2.0.1 - ? Nov, 2024
+- New icons for list sortings
 - Implement anti-bruteforce login delaing in UserProvider
 - Fixed autotagging status when several tag tasks in process. Now it's updates only when other tasks completed.
 - Cache suggestedTags

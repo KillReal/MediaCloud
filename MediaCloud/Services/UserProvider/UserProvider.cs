@@ -88,19 +88,19 @@ namespace MediaCloud.WebApp.Services.UserProvider
         }
 
         // TODO: Add loginResult with message
-        public bool Authorize(AuthData data, HttpContext httpContext)
+        public AuthorizationResult Authorize(AuthData data, HttpContext httpContext)
         {
             var user = _context.Users.FirstOrDefault(x => x.Name == data.Name && x.IsActivated);
 
             if (user == null || user.PasswordHash == null)
             {
-                return false;
+                return new(false, "Invalid data.");
             }
 
             if (user.NextLoginAttemptAt > DateTime.Now)
             {
-                // TODO: return message
-                return false;
+                var time = (int)(user.NextLoginAttemptAt - DateTime.Now).Value.TotalMinutes;
+                return new(false, $"Account locked due to run out of attempts.\r\nNext attempt in {time} minutes.");
             }
 
             if (SecureHash.Verify(data.Password, user.PasswordHash) == false)
@@ -114,14 +114,14 @@ namespace MediaCloud.WebApp.Services.UserProvider
                 if (user.FailLoginAttemptCount >= freeAttemptCount) 
                 {
                     // TODO: Add env configuration params
-                    var duration = Enumerable.Range(freeAttemptCount, freeAttemptCount + 1 - user.FailLoginAttemptCount).Sum();
+                    var duration = Enumerable.Range(freeAttemptCount, freeAttemptCount + user.FailLoginAttemptCount).Sum();
                     user.NextLoginAttemptAt = DateTime.Now.AddMinutes(duration);
                 }
 
                 _context.Users.Update(user);
                 _context.SaveChanges();
                 
-                return false;
+                return new(false, $"Incorrect username or password.");
             }
 
             var claims = new List<Claim>
@@ -142,7 +142,7 @@ namespace MediaCloud.WebApp.Services.UserProvider
             _context.SaveChanges();
             _memoryCache.Set(data.Name, user, _memoryCacheOptions);
 
-            return true;
+            return new (true, $"Successfully authorized for {user.Name}");
         }
 
         public void Logout(HttpContext httpContext)
