@@ -2,6 +2,7 @@
 using System.Net.Http.Headers;
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
+using MediaCloud.WebApp.Services.AutotagService;
 using MediaCloud.WebApp.Services.ConfigProvider;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
@@ -45,7 +46,7 @@ public class AutotagService : IAutotagService
         _joyTagConnectionString = configProvider.EnvironmentSettings.AiJoyTagConnectionString ?? 
             throw new Exception("AI JoyTag Connection String is not set");
 
-        var parralelDegree = configProvider.EnvironmentSettings.TaskSchedulerAutotaggingWorkerCount;
+        var parralelDegree = configProvider.EnvironmentSettings.AutotaggingMaxParallelDegree;
         _semaphore = new(parralelDegree, parralelDegree);
         _maxParralelDegree = parralelDegree;
         _memoryCache = memoryCache;
@@ -58,11 +59,11 @@ public class AutotagService : IAutotagService
         };
     }
 
-    public List<Tag> AutocompleteTagsForPreview(Preview preview, TagRepository tagRepository)
+    public AutotagResult AutocompleteTagsForPreview(Preview preview, TagRepository tagRepository)
     {
         if (preview == null)
         {
-            return [];
+            return new([], true);
         }
         
         try {
@@ -82,7 +83,7 @@ public class AutotagService : IAutotagService
 
             if (string.IsNullOrWhiteSpace(result))
             {
-                return [];
+                return new([], false);
             }
 
             var suggestedTags = result.Split("\n")
@@ -117,23 +118,24 @@ public class AutotagService : IAutotagService
 
             _proceededPreviewIds.Remove(preview.Id);
 
-            return actualTags;
+            return new(actualTags, true);
         }
         catch (Exception ex)
         {
             _proceededPreviewIds.Remove(preview.Id);
             _logger.Error(ex, "Failed to process autotagging for image");
-            return [];
+            
+            return new([], false);
         }
     }
 
-    public List<Tag> AutocompleteTagsForCollection(List<Preview> previews, TagRepository tagRepository)
+    public AutotagResult AutocompleteTagsForCollection(List<Preview> previews, TagRepository tagRepository)
     {
         var collectionId = previews.First().Collection?.Id;
 
         if (previews.Count == 0 || collectionId == null)
         {
-            return [];
+            return new([], true);
         }
 
         var stopwatch = DateTime.Now;
@@ -142,18 +144,33 @@ public class AutotagService : IAutotagService
         _logger.Info("Executed AI tag autocompletion for Collection: {collection.Id}", collectionId);
 
         var options = new ParallelOptions { MaxDegreeOfParallelism = _maxParralelDegree};
+
+        bool isAtLeastOneSuccess = false;
+
         Parallel.ForEach(previews, options, preview => 
         {
-            var tags = AutocompleteTagsForPreview(preview, tagRepository);
-            tags = tags.Union(tags).ToList();
+            var result = AutocompleteTagsForPreview(preview, tagRepository);
+            
+            if (result.IsSuccess)
+            {
+                isAtLeastOneSuccess = true;
+                tags = tags.Union(result.Tags).ToList();
+            }
         });
         
-        var elapsedTime = (DateTime.Now - stopwatch).TotalSeconds;
-        var tagsString = string.Join(" ", tags.Select(x => x.Name));
+        if (isAtLeastOneSuccess) 
+        {
+            var elapsedTime = (DateTime.Now - stopwatch).TotalSeconds;
+            var tagsString = string.Join(" ", tags.Select(x => x.Name));
 
-        _logger.Debug("AI tag autocompletion for Preview: {previewId} successfully executed within: {elapsedTime} sec, suggested tags: {suggestedTagsString}", collectionId, elapsedTime.ToString("N0"), tagsString);
+            _logger.Debug("AI tag autocompletion for Collection: {collectionId} successfully executed within: {elapsedTime} sec, suggested tags: {suggestedTagsString}", collectionId, elapsedTime.ToString("N0"), tagsString);
+            
+            return new(tags, true);
+        }
+
+        _logger.Error("AI tag autocompletion for Collection: {collectionId} failed to execute due to non of previews processed", collectionId);
         
-        return tags;
+        return new([], false);
     }
 
     public List<string> GetSuggestionsByString(string searchString, int limit = 10)

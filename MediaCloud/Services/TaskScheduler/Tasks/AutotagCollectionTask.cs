@@ -54,8 +54,12 @@ public class AutotagCollectionTask(User actor, Guid collectionId) : Task(actor),
             _aproximateExecutionTime = autotagService.GetAverageExecutionTime(previews.Count);
 
             ExecutedAt = DateTime.Now;
-            tags = autotagService.AutocompleteTagsForCollection(collection.Previews, tagRepository);           
-            tagRepository.UpdatePreviewLinks(tags, titlePreview);
+            var result = autotagService.AutocompleteTagsForCollection(collection.Previews, tagRepository);
+
+            if (result.IsSuccess && result.Tags.Count != 0)
+            {
+                tagRepository.UpdatePreviewLinks(tags, titlePreview);
+            }
         }
     }
 

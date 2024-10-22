@@ -53,11 +53,11 @@ public class AutotagPreviewTask(User actor, List<Guid> previewsIds) : Task(actor
             }
 
             ExecutedAt = DateTime.Now;
-            var suggestedTags = autotagService.AutocompleteTagsForPreview(preview, tagRepository);
+            var result = autotagService.AutocompleteTagsForPreview(preview, tagRepository);
 
-            if (suggestedTags.Count != 0)
+            if (result.IsSuccess && result.Tags.Count != 0)
             {
-                var tags = preview.Tags.Union(suggestedTags).ToList();
+                var tags = preview.Tags.Union(result.Tags).ToList();
                 tagRepository.UpdatePreviewLinks(tags, preview);
             }
 

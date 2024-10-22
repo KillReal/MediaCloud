@@ -22,17 +22,13 @@ TODO:
 - Write unit tests 
 - Implement JoyTag garbage collection (unload model if not used for long time)
 - Show first uploaded image on upload page
-- Fix autotagging task stuck when service doesn't respond
 - Fix statistic recalculation when only 1 day recorded
 - Rewrite collection gallery to _CollectionGallery.cshtml
-- Implement multiple workers statistic for TaskSchedulerStatus
 - Remove Tag Types
 - Fix user cache cleanup on logout
 - Search by file name?
+- Fix autotagging task stuck when service doesn't respond
 - Fix JoyTag server error on long run (Server got itself in trouble application.py line: 337)
-- Rename TaskSchedulerAutotaggingWorkerCount
-- Implement autotagging result in AutotaggingService (when autotagging failed shouldn't updates anything)
-- Fix collection autotagging (timeout * 3)
 
 # Changelog
 
@@ -40,6 +36,8 @@ TODO:
 - Implement anti-bruteforce login delaing in UserProvider
 - Fix autotagging status when several tag tasks in process. Now it's updates only when other tasks completed.
 - Cache suggestedTags
+- Fix tags removing when autotagging predict empty tag collection
+- Fixed autotagging timeout when long task running
 
 ### Version 2.0.0 - 04th Sep, 2024
 - Implemented file uploading with any extension support

@@ -12,7 +12,7 @@ namespace MediaCloud.WebApp.Pages
         private readonly IConfigProvider _configProvider;
 
         [BindProperty]
-        public User User { get; set; }
+        public new User User { get; set; }
         [BindProperty]
         public UserSettings UserSettings { get; set; }
         [BindProperty]
