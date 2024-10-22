@@ -58,7 +58,7 @@ public class AutotagCollectionTask(User actor, Guid collectionId) : Task(actor),
 
             if (result.IsSuccess && result.Tags.Count != 0)
             {
-                tagRepository.UpdatePreviewLinks(tags, titlePreview);
+                tagRepository.UpdatePreviewLinks(result.Tags, titlePreview);
             }
         }
     }
