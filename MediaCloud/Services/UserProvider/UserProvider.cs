@@ -114,7 +114,7 @@ namespace MediaCloud.WebApp.Services.UserProvider
                 if (user.FailLoginAttemptCount >= freeAttemptCount) 
                 {
                     // TODO: Add env configuration params
-                    var duration = Enumerable.Range(freeAttemptCount, freeAttemptCount + user.FailLoginAttemptCount).Sum();
+                    var duration = Enumerable.Range(freeAttemptCount, user.FailLoginAttemptCount).Sum();
                     user.NextLoginAttemptAt = DateTime.Now.AddMinutes(duration);
                 }
 
