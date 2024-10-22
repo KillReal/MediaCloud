@@ -5,22 +5,23 @@
 @{
     ViewData["Title"] = "Gallery";
 
-    var updatedAtSortType = "UpdatedAtDesc";
-    var updatedAtSortSymbol = "";
-    var updatedAtButtonStyle = "btn-info";
+    var nameSortType = "BlobNameDesc";
+    var nameSortSymbol = "";
+    var nameButtonStyle = "btn-info";
+
     var createdAtSortType = "CreatedAtDesc";
     var createdAtSortSymbol = "";
     var createdAtButtonStyle = "btn-info";
 
-    if (Model.ListBuilder.Sorting.PropertyName == "UpdatedAtDesc"){
-        updatedAtSortType = "UpdatedAt";
-        updatedAtSortSymbol = "↓";
-        updatedAtButtonStyle = "btn-warning";
+    if (Model.ListBuilder.Sorting.PropertyName == "BlobNameDesc"){
+        nameSortType = "BlobName";
+        nameSortSymbol = "↓";
+        nameButtonStyle = "btn-warning";
     }
-    else if (Model.ListBuilder.Sorting.PropertyName == "UpdatedAt"){
-        updatedAtSortType = "UpdatedAtDesc";
-        updatedAtSortSymbol = "↑";
-        updatedAtButtonStyle = "btn-warning";
+    else if (Model.ListBuilder.Sorting.PropertyName == "BlobName"){
+        nameSortType = "BlobNameDesc";
+        nameSortSymbol = "↑";
+        nameButtonStyle = "btn-warning";
     }
 
     if (Model.ListBuilder.Sorting.PropertyName == "CreatedAtDesc"){
@@ -58,19 +59,19 @@
                 </a>
             </div>
 
-            <div class="button-group">
+           <div class="button-group">
                 <div class="separator"></div>
                 <div class="descriptor">
                     Sort:
                 </div>
-                <a class="btn @updatedAtButtonStyle btn-rounded text-nowrap" 
+                <a class="btn @nameButtonStyle btn-rounded text-nowrap" 
                     asp-page="Index" 
                     asp-route-filter=@(Model.ListBuilder.Filtering.Filter) 
-                    asp-route-sort=@(updatedAtSortType) 
+                    asp-route-sort=@(nameSortType) 
                     asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>
-                    Updated @(updatedAtSortSymbol)
-                </a>
-            </div>
+                    🅰️ @(nameSortSymbol)
+                </a>   
+           </div>
 
            <div class="button-group">
                 <a class="btn @createdAtButtonStyle btn-rounded text-nowrap" 
@@ -78,7 +79,7 @@
                     asp-route-filter=@(Model.ListBuilder.Filtering.Filter) 
                     asp-route-sort=@(createdAtSortType) 
                     asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>
-                    Created @(createdAtSortSymbol)
+                    📅 @(createdAtSortSymbol)
                 </a>   
            </div>
 
@@ -88,7 +89,7 @@
                     asp-route-filter=@(Model.ListBuilder.Filtering.Filter) 
                     asp-route-sort=@($"Random_{new Random().Next(int.MaxValue)}") 
                     asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>
-                    Random
+                    🎲
                 </a>
                 <div class="separator"></div>
             </div>

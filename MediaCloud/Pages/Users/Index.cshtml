@@ -65,22 +65,22 @@
 
         <div class="button-group">
             <div class="descriptor">
-                Sorting:
+                Sort:
             </div>
             <a class="btn @nameButtonStyle btn-rounded text-nowrap" 
                 asp-page="Index" 
                 asp-route-sort=@(nameSortType)>
-                Name @(nameSortSymbol)
+                🅰️ @(nameSortSymbol)
             </a>
             <a class="btn @updatedAtButtonStyle btn-rounded text-nowrap" 
                 asp-page="Index" 
                 asp-route-sort=@(updatedAtSortType)>
-                Date @(updatedAtSortSymbol)
+                📅 @(updatedAtSortSymbol)
             </a>
             <a class="btn @lastLoginAtButtonStyle btn-rounded text-nowrap" 
                 asp-page="Index" 
                 asp-route-sort=@(lastLoginAtSortType)>
-                Last login at @(lastLoginAtSortSymbol)
+                ⌚ @(lastLoginAtSortSymbol)
             </a>
         </div>
     </div>  

@@ -9,9 +9,9 @@
     var nameSortType = "NameDesc";
     var nameSortSymbol = "";
     var nameButtonStyle = "btn-info";
-    var updatedAtSortType = "UpdatedAtDesc";
-    var updatedAtSortSymbol = "";
-    var updatedAtButtonStyle = "btn-info";
+    var createdAtSortType = "CreatedAtDesc";
+    var createdAtSortSymbol = "";
+    var createdAtButtonStyle = "btn-info";
     var typeSortType = "TypeDesc";
     var typeSortSymbol = "";
     var typeButtonStyle = "btn-info";
@@ -30,15 +30,15 @@
         nameButtonStyle = "btn-warning";
     }
 
-    @if (@Model.ListBuilder.Sorting.PropertyName == "UpdatedAtDesc"){
-        updatedAtSortType = "UpdatedAt";
-        updatedAtSortSymbol = "↓";
-        updatedAtButtonStyle = "btn-warning";
+    @if (@Model.ListBuilder.Sorting.PropertyName == "CreatedAtDesc"){
+        createdAtSortType = "CreatedAt";
+        createdAtSortSymbol = "↓";
+        createdAtButtonStyle = "btn-warning";
     }
-    else if (@Model.ListBuilder.Sorting.PropertyName == "UpdatedAt"){
-        updatedAtSortType = "UpdatedAtDesc";
-        updatedAtSortSymbol = "↑";
-        updatedAtButtonStyle = "btn-warning";
+    else if (@Model.ListBuilder.Sorting.PropertyName == "CreatedAt"){
+        createdAtSortType = "CreatedAtDesc";
+        createdAtSortSymbol = "↑";
+        createdAtButtonStyle = "btn-warning";
     }
 
     @if (@Model.ListBuilder.Sorting.PropertyName == "TypeDesc"){
@@ -79,27 +79,27 @@
 
         <div class="button-group">
             <div class="descriptor">
-                Sorting:
+                Sort:
             </div>
             <a class="btn @nameButtonStyle btn-rounded text-nowrap" 
                 asp-page="Index" 
                 asp-route-sort=@(nameSortType)>
-                Name @(nameSortSymbol)
+                🅰️ @(nameSortSymbol)
             </a>
-            <a class="btn @updatedAtButtonStyle btn-rounded text-nowrap" 
+            <a class="btn @createdAtButtonStyle btn-rounded text-nowrap" 
                 asp-page="Index" 
-                asp-route-sort=@(updatedAtSortType)>
-                Date @(updatedAtSortSymbol)
+                asp-route-sort=@(createdAtSortType)>
+                📅 @(createdAtSortSymbol)
             </a>
             <a class="btn @typeButtonStyle btn-rounded text-nowrap" 
                 asp-page="Index" 
                 asp-route-sort=@(typeSortType)>
-                Type @(typeSortSymbol)
+                🔖 @(typeSortSymbol)
             </a>
             <a class="btn @previewsCountButtonStyle btn-rounded text-nowrap" 
                 asp-page="Index" 
                 asp-route-sort=@(previewsCountSortType)>
-                Media count @(previewsCountSortSymbol)
+                🗃️ @(previewsCountSortSymbol)
             </a>
         </div>
 
