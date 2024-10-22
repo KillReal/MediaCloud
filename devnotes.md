@@ -1,8 +1,8 @@
 
 # Infrastructure             
 
-- 2.0.0 mediacloud
-- 2.0.0 mediacloud-dev
+- 2.0.1 mediacloud
+- 2.0.1 mediacloud-dev
 
 
 # Publishing
@@ -34,10 +34,11 @@ TODO:
 
 ### Version 2.0.1 - ? Nov, 2024
 - Implement anti-bruteforce login delaing in UserProvider
-- Fix autotagging status when several tag tasks in process. Now it's updates only when other tasks completed.
+- Fixed autotagging status when several tag tasks in process. Now it's updates only when other tasks completed.
 - Cache suggestedTags
-- Fix tags removing when autotagging predict empty tag collection
+- Fixed tags removing when autotagging predict empty tag collection
 - Fixed autotagging timeout when long task running
+- Fixed image rotate
 
 ### Version 2.0.0 - 04th Sep, 2024
 - Implemented file uploading with any extension support

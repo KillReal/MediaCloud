@@ -335,8 +335,6 @@ body {
     object-fit: contain; 
     height: 80vh;
     max-width: 90vw;
-    transform: scale(0.7);
-    animation: smooth-appear-zoom 0.7s ease forwards;
     animation-iteration-count: 1;
 }
 
