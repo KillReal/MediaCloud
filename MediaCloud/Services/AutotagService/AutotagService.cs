@@ -54,7 +54,7 @@ public class AutotagService : IAutotagService
 
         _httpClient = new HttpClient
         {
-            Timeout = TimeSpan.FromSeconds(_defaultExecutionTime * 2)
+            Timeout = TimeSpan.FromSeconds(_defaultExecutionTime * 4)
         };
     }
 

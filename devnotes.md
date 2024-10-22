@@ -32,6 +32,7 @@ TODO:
 - Fix JoyTag server error on long run (Server got itself in trouble application.py line: 337)
 - Rename TaskSchedulerAutotaggingWorkerCount
 - Implement autotagging result in AutotaggingService (when autotagging failed shouldn't updates anything)
+- Fix collection autotagging (timeout * 3)
 
 # Changelog
 
