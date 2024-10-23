@@ -29,9 +29,7 @@ TODO:
 - Search by file name?
 - Fix autotagging task stuck when service doesn't respond
 - Fix JoyTag server error on long run (Server got itself in trouble application.py line: 337)
-- Implement upload size limits per user
 - Get rid of returnUrl in Urls
-- UserProvider has it's own DbContext. When user authorizing it's returns user state back to it's first auth state.
 
 # Changelog
 
@@ -43,6 +41,7 @@ TODO:
 - Fixed tags removing when autotagging predict empty tag collection
 - Fixed autotagging timeout when long task running
 - Fixed image rotate
+- Implemented per user upload size limits
 
 ### Version 2.0.0 - 04th Sep, 2024
 - Implemented file uploading with any extension support

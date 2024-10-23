@@ -16,6 +16,7 @@ namespace MediaCloud.Pages.Gallery
         private readonly IConfigProvider _configProvider;
         private readonly TagRepository _tagRepository;
         private readonly PreviewRepository _previewRepository;
+        private readonly int _spaceSizePresizion = 1;
 
         [BindProperty]
         public List<Preview> Previews { get; set; } = [];
@@ -53,11 +54,11 @@ namespace MediaCloud.Pages.Gallery
             IsAutoloadEnabled = _configProvider.UserSettings.ListAutoloadingEnabled;
 
             var currentUsedSpace = statisticProvider.GetTodaySnapshot().MediasSize;
-            SpaceUsage = $"{currentUsedSpace.FormatSize(false, 1)} / ";
+            SpaceUsage = $"{currentUsedSpace.FormatSize(true, _spaceSizePresizion)} / ";
 
             if (CurrentUser != null && CurrentUser.SpaceLimit > 0)
             {
-                SpaceUsage += CurrentUser.SpaceLimit + ",0 GB";
+                SpaceUsage += CurrentUser.SpaceLimitBytes.FormatSize(true, _spaceSizePresizion);
                 SpaceUsagePercent = Convert.ToInt32((double)currentUsedSpace / CurrentUser.SpaceLimitBytes) * 100;
             }
             else
