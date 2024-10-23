@@ -59,7 +59,7 @@ namespace MediaCloud.Pages.Gallery
             if (CurrentUser != null && CurrentUser.SpaceLimit > 0)
             {
                 SpaceUsage += CurrentUser.SpaceLimitBytes.FormatSize(true, _spaceSizePresizion);
-                SpaceUsagePercent = Convert.ToInt32((double)currentUsedSpace / CurrentUser.SpaceLimitBytes) * 100;
+                SpaceUsagePercent = Convert.ToInt32((double)currentUsedSpace / CurrentUser.SpaceLimitBytes * 100);
             }
             else
             {
