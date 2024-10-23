@@ -13,13 +13,11 @@ namespace MediaCloud.WebApp.Pages
     {   
         protected IUserProvider _userProvider;
         protected ILogger _logger;
-
-        [BindProperty]
         public User? CurrentUser { get; set; }
 
-        public AuthorizedPageModel(IUserProvider actorProvider) 
+        public AuthorizedPageModel(IUserProvider userProvider) 
         {
-            _userProvider = actorProvider;
+            _userProvider = userProvider;
             _logger = LogManager.GetLogger("PageModel");
 
             LogPageInit();

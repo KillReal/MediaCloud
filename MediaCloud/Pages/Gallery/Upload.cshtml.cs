@@ -31,6 +31,7 @@ namespace MediaCloud.Pages.Gallery
             return Page();
         }
 
+        // Move method to controller
         public async Task<IActionResult> OnPost()
         {
             if (CurrentUser == null)
