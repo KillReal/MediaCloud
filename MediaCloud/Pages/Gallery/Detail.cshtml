@@ -45,7 +45,7 @@
                     <label class="col-form-label">
                         @Model.BlobName
                     </label>
-                    <textarea readonly class="form-control" style="resize: none">@System.Text.Encoding.Default.GetString(Model.Blob.Content)</textarea>
+                    <textarea readonly class="form-control" style="resize: none; height: 60vh;">@System.Text.Encoding.Default.GetString(Model.Blob.Content)</textarea>
                 </div>
             }
             else 
