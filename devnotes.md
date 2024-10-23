@@ -12,7 +12,7 @@ dotnet publish -r linux-x64 -p:PublishSingleFile=true --no-self-contained -o D:/
 ```
 
 # Next release - 2.1.0       
-# Next minor - 2.0.1   
+# Next minor - 2.0.1
 
 
 TODO:
@@ -29,6 +29,9 @@ TODO:
 - Search by file name?
 - Fix autotagging task stuck when service doesn't respond
 - Fix JoyTag server error on long run (Server got itself in trouble application.py line: 337)
+- Implement upload size limits per user
+- Get rid of returnUrl in Urls
+- UserProvider has it's own DbContext. When user authorizing it's returns user state back to it's first auth state.
 
 # Changelog
 

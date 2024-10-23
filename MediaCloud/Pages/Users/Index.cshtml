@@ -110,6 +110,9 @@
                     <th class="table-item-padding">
                         @Html.DisplayNameFor(model => model.Users[0].InviteCode)
                     </th>
+                    <th class="table-item-padding">
+                        @Html.DisplayNameFor(model => model.Users[0].SpaceLimit)
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -133,6 +136,16 @@
                         </td>
                         <td class="table-item-padding">
                             @Html.DisplayFor(modelItem => item.InviteCode)
+                        </td>
+                        <td class="table-item-padding">
+                            @if (@item.SpaceLimit == 0)
+                            {
+                                <text>unlimited</text>
+                            }
+                            else 
+                            {
+                                @(Html.DisplayFor(modelItem => item.SpaceLimit))<text> Gb</text>
+                            }
                         </td>
                     </tr>
                 }

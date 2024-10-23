@@ -2,7 +2,7 @@ namespace MediaCloud.Extensions
 {
     public static class LongExtensions
     {
-         public static string FormatSize(this long bytes, bool useUnit = true)
+         public static string FormatSize(this long bytes, bool useUnit = true, int precision = 1)
         {
             string[] Suffix = [" B", " kB", " MB", " GB", " TB"];
 
@@ -16,7 +16,7 @@ namespace MediaCloud.Extensions
             {
                 dblSByte = bytes / 1024.0;
             }
-            return $"{sign}{dblSByte:0}{(useUnit ? Suffix[i] : null)}";
+            return $"{sign}{dblSByte.ToString($"n{precision}")}{(useUnit ? Suffix[i] : null)}";
         }
     }
 }

@@ -83,6 +83,28 @@ body {
     justify-content: center;
 }
 
+.page-header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.progress {
+    color: black;
+    background-color: rgb(38, 84, 112);
+    width: 25%;
+    height: 1.5rem;
+    border-radius: 2rem;
+}
+
+.progress-bar-value {
+    height: 100%;
+    vertical-align: middle;
+    line-height: 1.5rem;
+    font-size: small;
+    color: white;
+}
+
 .button-panel {
     display: flex !important;
     flex-direction: row !important;

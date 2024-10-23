@@ -1,4 +1,6 @@
-﻿namespace MediaCloud.Data.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace MediaCloud.Data.Models
 {
     public class User : Record
     {
@@ -12,5 +14,8 @@
         public int FailLoginAttemptCount {get; set;}
         public string? InviteCode { get; set; }
         public string? PersonalSettings { get; set; }
+        public long SpaceLimit {get; set;}
+        [NotMapped]
+        public long SpaceLimitBytes => SpaceLimit * 1_073_741_824;
     }
 }

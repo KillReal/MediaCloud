@@ -6,13 +6,14 @@ using MediaCloud.WebApp.Pages;
 using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp;
 using MediaCloud.Extensions;
+using MediaCloud.WebApp.Services.Statistic;
 
 namespace MediaCloud.Pages.Gallery
 {
-    public class UploadModel(IUserProvider userProvider, ITaskScheduler taskScheduler) : AuthorizedPageModel(userProvider)
+    public class UploadModel(IUserProvider userProvider, ITaskScheduler taskScheduler, StatisticProvider statisticProvider) : AuthorizedPageModel(userProvider)
     {
-        private readonly User? _user = userProvider.GetCurrent();
         private readonly ITaskScheduler _taskScheduler = taskScheduler;
+        private readonly StatisticProvider _statisticProvider = statisticProvider;
 
         [BindProperty]
         public List<IFormFile> Files { get; set; } = [];
@@ -32,7 +33,7 @@ namespace MediaCloud.Pages.Gallery
 
         public async Task<IActionResult> OnPost()
         {
-            if (_user == null)
+            if (CurrentUser == null)
             {
                 return Redirect("/Login");
             }
@@ -48,9 +49,19 @@ namespace MediaCloud.Pages.Gallery
                 });
             }
 
-            var task = new UploadTask(_user, uploadedFiles, IsCollection, Tags);
+            var sizeToUpload = uploadedFiles.Select(x => x.Content.Length).Sum();
+            var targetSize = _statisticProvider.GetTodaySnapshot().MediasSize + sizeToUpload;
+
+            if (targetSize > CurrentUser.SpaceLimitBytes)
+            {
+                // TODO: implement UploadPostResult
+                return Redirect("/Error");
+            }
+
+            var task = new UploadTask(CurrentUser, uploadedFiles, IsCollection, Tags);
             var taskId = _taskScheduler.AddTask(task);
 
+            // TODO: implement UploadPostResult
             return Redirect($"/TaskScheduler/GetTaskStatus?id={taskId}");
         }
     }

@@ -6,6 +6,8 @@ using MediaCloud.WebApp.Pages;
 using MediaCloud.WebApp.Services.ConfigProvider;
 using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp.Repositories;
+using MediaCloud.WebApp.Services.Statistic;
+using MediaCloud.Extensions;
 
 namespace MediaCloud.Pages.Gallery
 {
@@ -26,9 +28,12 @@ namespace MediaCloud.Pages.Gallery
 
         [BindProperty]
         public bool IsAutoloadEnabled { get; set; } = true;
+        [BindProperty]
+        public string SpaceUsage {get; set;}
+        [BindProperty]
+        public int SpaceUsagePercent {get; set;}
 
-        public ListModel(IUserProvider actorProvider, IConfigProvider configProvider, TagRepository tagRepository, 
-            PreviewRepository previewRepository) : base(actorProvider)
+        public ListModel(IUserProvider userProvider, IConfigProvider configProvider, TagRepository tagRepository, PreviewRepository previewRepository, StatisticProvider statisticProvider) : base(userProvider)
         {
             _configProvider = configProvider;
             _tagRepository = tagRepository;
@@ -46,6 +51,20 @@ namespace MediaCloud.Pages.Gallery
 
             ListBuilder = new ListBuilder<Preview>(new(), _configProvider.UserSettings);
             IsAutoloadEnabled = _configProvider.UserSettings.ListAutoloadingEnabled;
+
+            var currentUsedSpace = statisticProvider.GetTodaySnapshot().MediasSize;
+            SpaceUsage = $"{currentUsedSpace.FormatSize(false, 1)} / ";
+
+            if (CurrentUser != null && CurrentUser.SpaceLimit > 0)
+            {
+                SpaceUsage += CurrentUser.SpaceLimit + ",0 GB";
+                SpaceUsagePercent = Convert.ToInt32((double)currentUsedSpace / CurrentUser.SpaceLimitBytes) * 100;
+            }
+            else
+            {
+                SpaceUsage += "unlimited";
+                SpaceUsagePercent = 0;
+            }
         }
 
         public async Task<IActionResult> OnGetAsync(ListRequest request)

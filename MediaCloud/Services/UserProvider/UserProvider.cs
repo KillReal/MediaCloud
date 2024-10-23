@@ -97,10 +97,12 @@ namespace MediaCloud.WebApp.Services.UserProvider
                 return new(false, "Invalid data.");
             }
 
+            _context.Entry(user).Reload();
+
             if (user.NextLoginAttemptAt > DateTime.Now)
             {
-                var time = (int)(user.NextLoginAttemptAt - DateTime.Now).Value.TotalMinutes;
-                return new(false, $"Account locked due to run out of attempts.\r\nNext attempt in {time} minutes.");
+                var time = (int)(user.NextLoginAttemptAt - DateTime.Now).Value.TotalMinutes + 1;
+                return new(false, $"Account locked due to run out of attempts.\r\nNext attempt in {time} minute(-s).");
             }
 
             if (SecureHash.Verify(data.Password, user.PasswordHash) == false)
@@ -147,8 +149,6 @@ namespace MediaCloud.WebApp.Services.UserProvider
 
         public void Logout(HttpContext httpContext)
         {
-            _ = httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-
             var identity = httpContext.User.Identity;
 
             if (identity == null || identity.Name == null)
@@ -160,6 +160,8 @@ namespace MediaCloud.WebApp.Services.UserProvider
             {
                 _memoryCache.Remove(identity.Name);
             }
+
+            _ = httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         }
 
         public RegistrationResult Register(IConfigProvider configProvider, AuthData data, string inviteCode)

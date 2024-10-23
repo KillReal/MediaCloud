@@ -67,6 +67,7 @@ namespace MediaCloud.Pages.Users
             referenceUser.IsAdmin = User.IsAdmin;
             referenceUser.IsActivated = User.IsActivated;
             referenceUser.InviteCode = User.InviteCode;
+            referenceUser.SpaceLimit = User.SpaceLimit;
 
             _userRepository.Update(referenceUser);
 
