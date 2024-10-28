@@ -81,13 +81,16 @@ namespace MediaCloud.WebApp.Services.UserProvider
                 return user;
             }
 
+            _mutex.WaitOne();
+
             var cachedUser = _context.Users.First(x => x.Name == identity.Name);
             _memoryCache.Set(identity.Name, cachedUser, _memoryCacheOptions);
+
+            _mutex.ReleaseMutex();
 
             return cachedUser;
         }
 
-        // TODO: Add loginResult with message
         public AuthorizationResult Authorize(AuthData data, HttpContext httpContext)
         {
             var user = _context.Users.FirstOrDefault(x => x.Name == data.Name && x.IsActivated);
@@ -108,14 +111,10 @@ namespace MediaCloud.WebApp.Services.UserProvider
             if (SecureHash.Verify(data.Password, user.PasswordHash) == false)
             {
                 user.FailLoginAttemptCount += 1;
-
-                // TODO: Add env configuration params
                 var freeAttemptCount = 3;
 
-                // TODO: Add env configuration params
                 if (user.FailLoginAttemptCount >= freeAttemptCount) 
                 {
-                    // TODO: Add env configuration params
                     var duration = Enumerable.Range(freeAttemptCount, user.FailLoginAttemptCount - freeAttemptCount + 1).Sum();
                     user.NextLoginAttemptAt = DateTime.Now.AddMinutes(duration);
                 }
@@ -202,10 +201,17 @@ namespace MediaCloud.WebApp.Services.UserProvider
         {
             var currentUser = GetCurrent();
 
+            if (_memoryCache.TryGetValue($"settings-{currentUser.Id}", out UserSettings? settings))
+            {
+                return settings;
+            }
+
             if (currentUser != null && currentUser.PersonalSettings != null)
             {
-                // TODO: deserialize settings once in CachedUser entity.
-                return JsonConvert.DeserializeObject<UserSettings>(currentUser.PersonalSettings);
+                settings = JsonConvert.DeserializeObject<UserSettings>(currentUser.PersonalSettings);
+                _memoryCache.Set($"settings-{currentUser.Id}", settings, _memoryCacheOptions);
+
+                return settings;
             }
 
             return null;
