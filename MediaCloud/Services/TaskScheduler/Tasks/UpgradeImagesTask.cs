@@ -31,7 +31,7 @@ namespace MediaCloud.TaskScheduler.Tasks
 
             var statisticProvider = new StatisticProvider(context, userProvider);
 
-            var previewsCount = await context.Previews.Where(x => x.CreatorId == Actor.Id).CountAsync();
+            var previewsCount = await context.Previews.Where(x => x.CreatorId == User.Id).CountAsync();
             var blobModelBuilder = new BlobModelBuilder(pictureService);
 
             _workCount = previewsCount;
@@ -43,7 +43,7 @@ namespace MediaCloud.TaskScheduler.Tasks
 
             while (_workCount > 0)
             {
-                var previews = await context.Previews.Where(x => x.CreatorId == Actor.Id)
+                var previews = await context.Previews.Where(x => x.CreatorId == User.Id)
                     .OrderByDescending(x => x.CreatedAt)
                     .Skip(offset)
                     .Take(_batchSize)

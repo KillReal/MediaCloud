@@ -4,13 +4,13 @@ using MediaCloud.WebApp.Services.UserProvider;
 namespace MediaCloud.TaskScheduler.Tasks
 {
     /// <summary>
-    /// Abstract Task with unique id and <see cref="Actor"/>.
+    /// Abstract Task with unique id and <see cref="User"/>.
     /// </summary>
     /// <remarks>
     /// Task init.
     /// </remarks>
-    /// <param name="actor"> Customer of task. </param>
-    public class Task(User actor) : ITask
+    /// <param name="user"> Customer of task. </param>
+    public class Task(User user) : ITask
     {
         /// <summary>
         /// Unique identificator.
@@ -20,14 +20,32 @@ namespace MediaCloud.TaskScheduler.Tasks
         /// <summary>
         /// Customer.
         /// </summary>
-        public User Actor { get; set; } = actor;
+        public User User { get; set; } = user;
 
         /// <summary>
-        /// Wether the task can be executed.
+        /// Wether the task executed.
         /// </summary>
-        public bool IsWaiting { get; set; } = true;
+        public bool IsExecuted { get; set; }
 
+        /// <summary>
+        /// Wether the task was completed.
+        /// </summary>
+        public bool IsCompleted {get; set;}
+
+        /// <summary>
+        /// Completion message.
+        /// </summary>
+        public string CompletionMessage {get; set;}
+
+        /// <summary>
+        /// When task was executed.
+        /// </summary>
         public DateTime ExecutedAt {get; set;}
+
+        /// <summary>
+        /// When task was executed.
+        /// </summary>
+        public DateTime CompletedAt {get; set;}
 
         /// <summary>
         /// Check work count to process.
@@ -52,7 +70,7 @@ namespace MediaCloud.TaskScheduler.Tasks
 
         public User GetAuthor()
         {
-            return Actor;
+            return User;
         }
     }
 }

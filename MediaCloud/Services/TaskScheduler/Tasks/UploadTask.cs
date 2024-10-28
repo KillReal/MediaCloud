@@ -57,14 +57,23 @@ namespace MediaCloud.TaskScheduler.Tasks
 
         public override int GetWorkCount() => UploadedFiles.Count;
 
-        public override void DoTheTask(IServiceProvider serviceProvider, IUserProvider actorProvider)
+        public override void DoTheTask(IServiceProvider serviceProvider, IUserProvider userProvider)
         {
             var context = serviceProvider.GetRequiredService<AppDbContext>();
-            var statisticProvider = new StatisticProvider(context, actorProvider);
+            var statisticProvider = new StatisticProvider(context, userProvider);
             var pictureService = serviceProvider.GetRequiredService<IPictureService>();
 
-            var tagRepository = new TagRepository(context, statisticProvider, actorProvider);
-            var fileRepository = new BlobRepository(context, statisticProvider, actorProvider, pictureService);
+            var sizeToUpload = UploadedFiles.Select(x => x.Content.Length).Sum();
+            var targetSize = statisticProvider.GetTodaySnapshot().MediasSize + sizeToUpload;
+
+            if (targetSize > User.SpaceLimitBytes)
+            {
+                var delta = (targetSize - User.SpaceLimitBytes).FormatSize();
+                throw new Exception($"Uploading failed due to low space limit (need at least {delta} free space)");
+            }
+
+            var tagRepository = new TagRepository(context, statisticProvider, userProvider);
+            var fileRepository = new BlobRepository(context, statisticProvider, userProvider, pictureService);
 
             var foundTags = tagRepository.GetRangeByString(TagString);
             

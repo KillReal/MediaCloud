@@ -50,19 +50,9 @@ namespace MediaCloud.Pages.Gallery
                 });
             }
 
-            var sizeToUpload = uploadedFiles.Select(x => x.Content.Length).Sum();
-            var targetSize = _statisticProvider.GetTodaySnapshot().MediasSize + sizeToUpload;
-
-            if (targetSize > CurrentUser.SpaceLimitBytes)
-            {
-                // TODO: implement UploadPostResult
-                return Redirect("/Error");
-            }
-
             var task = new UploadTask(CurrentUser, uploadedFiles, IsCollection, Tags);
             var taskId = _taskScheduler.AddTask(task);
 
-            // TODO: implement UploadPostResult
             return Redirect($"/TaskScheduler/GetTaskStatus?id={taskId}");
         }
     }

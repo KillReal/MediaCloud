@@ -12,9 +12,9 @@ namespace MediaCloud.Extensions
 
             double dblSByte = Math.Abs(bytes);
             int i;
-            for (i = 0; i < Suffix.Length && bytes >= 1024; i++, bytes /= 1024)
+            for (i = 0; i < Suffix.Length && dblSByte >= 1024; i++)
             {
-                dblSByte = bytes / 1024.0;
+                dblSByte /= 1024.0;
             }
             return $"{sign}{dblSByte.ToString($"n{precision}")}{(useUnit ? Suffix[i] : null)}";
         }

@@ -23,14 +23,6 @@ namespace MediaCloud.WebApp.Controllers
         private readonly IAutotagService _autotagService = actorService;
         private readonly CollectionRepository _collectionRepository = collectionRepository;
 
-        public bool StartUserImagesUpgrade()
-        {
-            var task = new TaskScheduler.Tasks.UpgradeUserImagesTask(_userProvider.GetCurrent(), 100);
-            _taskScheduler.AddTask(task);
-
-            return true;
-        }
-
         public List<string> GetSuggestions(string searchString, int limit = 10)
         {
             return _tagRepository.GetSuggestionsByString(searchString, limit);
