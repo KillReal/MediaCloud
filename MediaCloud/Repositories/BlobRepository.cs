@@ -10,22 +10,24 @@ using SixLabors.ImageSharp;
 using System.Data;
 using Blob = MediaCloud.Data.Models.Blob;
 using MediaCloud.WebApp.Builders.BlobModel;
+using MediaCloud.WebApp.Services.ConfigProvider;
 
 namespace MediaCloud.Repositories
 {
     public class BlobRepository(AppDbContext context, StatisticProvider statisticProvider, 
-        IUserProvider actorProvider, IPictureService pictureService) : 
+        IUserProvider actorProvider, IPictureService pictureService, IConfigProvider configProvider) : 
         BaseRepository<Blob>(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider)
     {
         private BlobModelBuilder _fileModelBuilder = new(pictureService);
+        private IConfigProvider _configProvider = configProvider;
 
-        private Blob CreateFile(UploadedFile uploadedFile)
+        private Blob CreateFile(UploadedFile uploadedFile, User author)
         {
             var fileModel = _fileModelBuilder.Build(uploadedFile);
     
             Blob blob = fileModel.File;
             blob.Preview = fileModel.Preview;
-            blob.Creator = _context.Users.First(x => x.Id == _actor.Id);
+            blob.Creator = author;
             blob.Updator = blob.Creator;
             blob.Preview.Creator = blob.Creator;
             blob.Preview.Updator = blob.Creator;
@@ -50,7 +52,8 @@ namespace MediaCloud.Repositories
 
         public Blob Create(UploadedFile file)
         {
-            var blob = CreateFile(file);
+            var author = _context.Users.First(x => x.Id == _actor.Id);
+            var blob = CreateFile(file, author);
             _context.Add(blob);
             SaveChanges();
 
@@ -82,12 +85,30 @@ namespace MediaCloud.Repositories
         private List<Blob> GetBlobsRange(List<UploadedFile> files)
         {
             var blobs = new List<Blob>();
+            var author = _context.Users.First(x => x.Id == _actor.Id);
 
-            while (files.Count > 0)
+            if (_configProvider.EnvironmentSettings.UseParallelProcessingForUploading)
             {
-                var file = files.Last();
-                blobs.Add(CreateFile(file));
-                files.Remove(file);
+                var options = new ParallelOptions()
+                {
+                    MaxDegreeOfParallelism = _configProvider.EnvironmentSettings.UploadingMaxParallelDegree
+                };
+
+                Mutex mutex = new();
+
+                Parallel.ForEach(files, options, (file) => {
+                    blobs.Add(CreateFile(file, author));
+                    file.IsProcessed = true;
+                });
+            }
+            else 
+            {
+                while (files.Count > 0)
+                {
+                    var file = files.Last();
+                    blobs.Add(CreateFile(file, author));
+                    file.IsProcessed = true;
+                }
             }
 
             return blobs;

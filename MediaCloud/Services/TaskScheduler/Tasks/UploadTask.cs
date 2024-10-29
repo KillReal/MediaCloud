@@ -8,6 +8,7 @@ using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp.Services.Statistic;
 using System.Text;
 using Blob = MediaCloud.Data.Models.Blob;
+using MediaCloud.WebApp.Services.ConfigProvider;
 
 namespace MediaCloud.TaskScheduler.Tasks
 {
@@ -55,13 +56,14 @@ namespace MediaCloud.TaskScheduler.Tasks
 
         public string TagString { get; set; } = tagString ?? "";
 
-        public override int GetWorkCount() => UploadedFiles.Count;
+        public override int GetWorkCount() => UploadedFiles.Count(x => x.IsProcessed == false);
 
         public override void DoTheTask(IServiceProvider serviceProvider, IUserProvider userProvider)
         {
             var context = serviceProvider.GetRequiredService<AppDbContext>();
             var statisticProvider = new StatisticProvider(context, userProvider);
             var pictureService = serviceProvider.GetRequiredService<IPictureService>();
+            var configProvider = serviceProvider.GetRequiredService<IConfigProvider>();
 
             var sizeToUpload = UploadedFiles.Select(x => x.Content.Length).Sum();
             var targetSize = statisticProvider.GetTodaySnapshot().MediasSize + sizeToUpload;
@@ -73,7 +75,7 @@ namespace MediaCloud.TaskScheduler.Tasks
             }
 
             var tagRepository = new TagRepository(context, statisticProvider, userProvider);
-            var blobRepository = new BlobRepository(context, statisticProvider, userProvider, pictureService);
+            var blobRepository = new BlobRepository(context, statisticProvider, userProvider, pictureService, configProvider);
 
             var foundTags = tagRepository.GetRangeByString(TagString);
             
