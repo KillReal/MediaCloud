@@ -9,16 +9,9 @@ namespace MediaCloud.TaskScheduler
 
         private void RemoveOldCompletedTasks()
         {
-            var completedTasks = _tasks.Where(x => x.IsCompleted 
+            _tasks.RemoveAll(x => x.IsCompleted 
                 && DateTime.Now - x.CompletedAt > new TimeSpan(0, _completedTaskLifetimeMin, 0));
-
-            foreach (var task in completedTasks)
-            {
-                RemoveTask(task);
-            }
         }
-
-        private void RemoveTask(Task task) => _tasks.Remove(task);
 
         public Action<Task, string?> OnTaskComplete;
 
