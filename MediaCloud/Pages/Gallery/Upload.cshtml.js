@@ -65,7 +65,7 @@ function formSubmit(event) {
                 .then(function (data) {
                     updateModalLoadBody(data);
                     if (data.isCompleted == true) {
-                        if (data.completionMessage == "")
+                        if (data.completionMessage == null)
                         {
                             setModalTitle('File(-s) successfully uploaded!');
                             hideModalBody();

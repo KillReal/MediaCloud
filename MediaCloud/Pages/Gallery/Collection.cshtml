@@ -338,22 +338,21 @@
                     .then(function (data) {
                         var progress = 100 - data.workCount;
 
-                       if (data.isExist && data.isInProgress == false) {
-                            setModalTitle('Waiting queue for processing...');
-                        }
-                        else if (data.isExist && data.isInProgress) {
-                            setModalTitle('Autotagging in progress...');
-                            setModalProgress(progress, averageExecutionTime);
-                            timerCounter += updateInterval;
-                        }
-                        else if (data.workCount == 0 && data.isExist == false) {
+                       if (data.isCompleted == true) {
                             setModalTitle('Autotagging successfully completed!');
                             hideModalBody();
                             hideLoadSpinner();
 
                             location.reload();
-
                             clearInterval(loadingUpdateInterval);
+                        }
+                        else if (data.isInProgress == false) {
+                            setModalTitle('Waiting queue for processing...');
+                        }
+                        else {
+                            setModalTitle('Autotagging in progress...');
+                            setModalProgress(progress, averageExecutionTime);
+                            timerCounter += updateInterval;
                         }
                     })
                 }
