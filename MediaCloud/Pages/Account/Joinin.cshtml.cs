@@ -39,7 +39,7 @@ namespace MediaCloud.WebApp.Pages
 
         public IActionResult OnPost()
         {
-            Result = _actorProvider.Register(_configProvider, AuthData, InviteCode);
+            Result = _actorProvider.Register(AuthData, InviteCode);
 
             _logger.Info(Result.Message);
 

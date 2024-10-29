@@ -9,7 +9,7 @@ namespace MediaCloud.WebApp.Services.UserProvider
         public User? GetCurrentOrDefault();
         public AuthorizationResult Authorize(AuthData data, HttpContext httpContext);
         public void Logout(HttpContext httpContext);
-        public RegistrationResult Register(IConfigProvider configProvider, AuthData data, string inviteCode);
+        public RegistrationResult Register(AuthData data, string inviteCode);
          public UserSettings? GetSettings();
         public bool SaveSettings(string jsonSettings);
     }

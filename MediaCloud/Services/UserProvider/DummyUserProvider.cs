@@ -30,7 +30,7 @@ namespace MediaCloud.WebApp.Services.UserProvider
             throw new NotImplementedException($"Dummy provider cannot proceed logout");
         }
 
-        public RegistrationResult Register(IConfigProvider configProvider, AuthData data, string inviteCode) 
+        public RegistrationResult Register(AuthData data, string inviteCode) 
             => new(false, "Dummy provider cannot register an actor");
 
         public bool SaveSettings(string jsonSettings)
