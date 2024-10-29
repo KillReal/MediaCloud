@@ -52,7 +52,6 @@ public class AutotagPreviewTask(User actor, List<Guid> previewsIds) : Task(actor
                 continue;
             }
 
-            ExecutedAt = DateTime.Now;
             var result = autotagService.AutocompleteTagsForPreview(preview, tagRepository);
 
             if (result.IsSuccess && result.Tags.Count != 0)
@@ -62,6 +61,11 @@ public class AutotagPreviewTask(User actor, List<Guid> previewsIds) : Task(actor
             }
 
             _previewIds.Remove(_previewIds.First());
+
+            if (result.IsSuccess == false)
+            {
+                throw new Exception($"Autotagging failed due to: {result.ErrorMessage}");
+            }
         }
     }
 

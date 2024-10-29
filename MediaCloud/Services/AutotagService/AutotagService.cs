@@ -83,7 +83,7 @@ public class AutotagService : IAutotagService
 
             if (string.IsNullOrWhiteSpace(result))
             {
-                return new([], false);
+                return new([], false, "Autotagging service return empty result");
             }
 
             var suggestedTags = result.Split("\n")
@@ -125,7 +125,7 @@ public class AutotagService : IAutotagService
             _proceededPreviewIds.Remove(preview.Id);
             _logger.Error(ex, "Failed to process autotagging for image");
             
-            return new([], false);
+            return new([], false, ex.Message);
         }
     }
 
@@ -145,7 +145,7 @@ public class AutotagService : IAutotagService
 
         var options = new ParallelOptions { MaxDegreeOfParallelism = _maxParralelDegree};
 
-        bool isAtLeastOneSuccess = false;
+        var collectionAutotagResult = new AutotagResult([], false); 
 
         Parallel.ForEach(previews, options, preview => 
         {
@@ -153,24 +153,28 @@ public class AutotagService : IAutotagService
             
             if (result.IsSuccess)
             {
-                isAtLeastOneSuccess = true;
+                collectionAutotagResult.IsSuccess = true;
                 tags = tags.Union(result.Tags).ToList();
+            }
+            else if (result.ErrorMessage != null)
+            {
+                collectionAutotagResult.ErrorMessage = result.ErrorMessage;
             }
         });
         
-        if (isAtLeastOneSuccess) 
+        if (collectionAutotagResult.IsSuccess) 
         {
             var elapsedTime = (DateTime.Now - stopwatch).TotalSeconds;
             var tagsString = string.Join(" ", tags.Select(x => x.Name));
 
             _logger.Debug("AI tag autocompletion for Collection: {collectionId} successfully executed within: {elapsedTime} sec, suggested tags: {suggestedTagsString}", collectionId, elapsedTime.ToString("N0"), tagsString);
             
-            return new(tags, true);
+            return collectionAutotagResult;
         }
 
         _logger.Error("AI tag autocompletion for Collection: {collectionId} failed to execute due to non of previews processed", collectionId);
         
-        return new([], false);
+        return collectionAutotagResult;
     }
 
     public List<string> GetSuggestionsByString(string searchString, int limit = 10)

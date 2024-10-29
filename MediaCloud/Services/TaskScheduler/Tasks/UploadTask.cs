@@ -73,7 +73,7 @@ namespace MediaCloud.TaskScheduler.Tasks
             }
 
             var tagRepository = new TagRepository(context, statisticProvider, userProvider);
-            var fileRepository = new BlobRepository(context, statisticProvider, userProvider, pictureService);
+            var blobRepository = new BlobRepository(context, statisticProvider, userProvider, pictureService);
 
             var foundTags = tagRepository.GetRangeByString(TagString);
             
@@ -81,11 +81,11 @@ namespace MediaCloud.TaskScheduler.Tasks
 
             if (IsCollection)
             {
-                files = fileRepository.CreateCollection(UploadedFiles);
+                files = blobRepository.CreateCollection(UploadedFiles);
             }
             else
             {
-                files = fileRepository.CreateRange(UploadedFiles);
+                files = blobRepository.CreateRange(UploadedFiles);
             }
 
             var preview = files.Select(x => x.Preview).Where(x => x.Order == 0).First();

@@ -52,13 +52,15 @@ public class AutotagCollectionTask(User actor, Guid collectionId) : Task(actor),
             var tags = new List<Tag>();
 
             _aproximateExecutionTime = autotagService.GetAverageExecutionTime(previews.Count);
-
-            ExecutedAt = DateTime.Now;
             var result = autotagService.AutocompleteTagsForCollection(collection.Previews, tagRepository);
 
             if (result.IsSuccess && result.Tags.Count != 0)
             {
                 tagRepository.UpdatePreviewLinks(result.Tags, titlePreview);
+            }
+            else if (result.IsSuccess == false)
+            {
+                throw new Exception($"Autotagging failed due to: {result.ErrorMessage}");
             }
         }
     }
