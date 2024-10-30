@@ -58,10 +58,6 @@
         </div>
 
         <div class="row">
-            <div class="col-sm mb-3 autocomplete">
-                <textarea asp-for="@Model.TagsString" class="form-control" style="height: 100%" id="filterGrab">
-                </textarea>
-            </div>
             <div class="col-sm">
                 <ul class="list-group">
                     <li class="list-group-item h-100">
@@ -131,7 +127,7 @@
                 </a>
                 <a class="btn btn-info btn-rounded text-nowrap" 
                     asp-page="Index" 
-                    asp-route-filter=@(Model.TagsString) 
+                    asp-route-filter=@(string.Join(' ', Model.Tags.Select(x => x.Name)))) 
                     asp-route-sort=@("UpdatedAtDesc")>
                     Show similar
                 </a>
@@ -193,11 +189,9 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script src="~/js/html5sortable.js"></script>
-<script src="~/js/tagAutocompletion.js"></script>
 <script src="~/Pages/Gallery/Collection.cshtml.js"></script>
 
 <script type="text/javascript">
-    autocomplete(document.getElementById("filterGrab"));
     
     sortable('.thumbnail-sortable', {
         placeholderClass: 'col-md-2'

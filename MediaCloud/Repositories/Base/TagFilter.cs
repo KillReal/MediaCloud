@@ -12,10 +12,21 @@ namespace MediaCloud.WebApp.Repositories.Base
         {
             if (PositiveTagIds.Any() || NegativeTagIds.Any())
             {
+                return query.Where(x => (x.Tags.Concat(x.Collection.Previews.Where(x => x.Order != 0)
+                    .SelectMany(z => z.Tags))
+                        .Where(y => PositiveTagIds.Contains(y.Id))
+                        .Count() == PositiveTagIds.Count
+                )
+                && (x.Tags.Concat(x.Collection.Previews.Where(x => x.Order != 0)
+                    .SelectMany(z => z.Tags))
+                        .Where(y => NegativeTagIds.Contains(y.Id))
+                        .Any() == false));
+                
                 return query.Where(x => (x.Tags.Where(y => PositiveTagIds.Contains(y.Id))
                                                .Count() == PositiveTagIds.Count)
                                      && (x.Tags.Where(y => NegativeTagIds.Contains(y.Id))
                                                .Any() == false));
+
             }
 
             return query;

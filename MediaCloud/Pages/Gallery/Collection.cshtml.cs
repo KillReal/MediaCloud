@@ -20,8 +20,6 @@ namespace MediaCloud.Pages.Gallery
         [BindProperty]
         public List<Tag> Tags { get; set; } = [];
         [BindProperty]
-        public string? TagsString { get; set; }
-        [BindProperty]
         public bool IsOrderChanged { get; set; } = false;
         [BindProperty]
         public bool IsAutotaggingAvailable { get; set; } = false;
@@ -43,14 +41,22 @@ namespace MediaCloud.Pages.Gallery
                 return Redirect("/Error");
             }
 
-            var preview = Collection.Previews.OrderBy(x => x.Order).First();
+            var previewsTags = Collection.Previews.OrderBy(x => x.Order).Select(x => x.Tags);
+            IEnumerable<Tag>? tagsUnion = null;
+
+           foreach (var tags in previewsTags)
+           {
+                tagsUnion ??= tags;
+                tagsUnion = tagsUnion.Union(tags);
+           }
+
+            Tags = [.. tagsUnion?.OrderBy(x => x.Type)];
+            
             var collectionSize = _collectionRepository.GetSize(id);
             CollectionSizeInfo = collectionSize.FormatSize();
             TotalCount = _collectionRepository.GetListCount(id).Result;
             IsAutotaggingAvailable = Collection.Previews.Select(x => x.BlobType).Any(x => x.Contains("image"));
 
-            Tags = [.. preview.Tags.OrderBy(x => x.Type)];
-            TagsString = string.Join(" ", Tags.Select(x => x.Name.ToLower()));
             ReturnUrl = returnUrl.Replace("$", "&");
 
             return Page();
@@ -76,10 +82,6 @@ namespace MediaCloud.Pages.Gallery
             {
                 return Redirect("/Error");
             }
-
-            var preview = collection.Previews.OrderBy(x => x.Order).First();
-            var tags = _tagRepository.GetRangeByString(TagsString);
-            _tagRepository.UpdatePreviewLinks(tags, preview);
 
             if (IsOrderChanged)
             {

@@ -63,7 +63,12 @@ public class AutotagService : IAutotagService
     {
         if (preview == null)
         {
-            return new([], true);
+            return new() 
+            {
+                PreviewId = Guid.Empty,
+                Tags = [],
+                IsSuccess = true
+            };
         }
         
         try {
@@ -83,7 +88,13 @@ public class AutotagService : IAutotagService
 
             if (string.IsNullOrWhiteSpace(result))
             {
-                return new([], false, "Autotagging service return empty result");
+                return new() 
+                {
+                    PreviewId = preview.Id,
+                    Tags = [],
+                    IsSuccess = false,
+                    ErrorMessage = "Autotagging service return empty result"
+                };
             }
 
             var suggestedTags = result.Split("\n")
@@ -118,63 +129,62 @@ public class AutotagService : IAutotagService
 
             _proceededPreviewIds.Remove(preview.Id);
 
-            return new(actualTags, true);
+            return new() 
+            {
+                PreviewId = preview.Id,
+                Tags = actualTags,
+                IsSuccess = true
+            };
         }
         catch (Exception ex)
         {
             _proceededPreviewIds.Remove(preview.Id);
             _logger.Error(ex, "Failed to process autotagging for image");
             
-            return new([], false, ex.Message);
+            return new() 
+            {
+                PreviewId = preview.Id,
+                Tags = [],
+                IsSuccess = false,
+                ErrorMessage = ex.Message
+            };
         }
     }
 
-    public AutotagResult AutocompleteTagsForCollection(List<Preview> previews, TagRepository tagRepository)
+    public List<AutotagResult> AutocompleteTagsForCollection(List<Preview> previews, TagRepository tagRepository)
     {
         var collectionId = previews.First().Collection?.Id;
 
         if (previews.Count == 0 || collectionId == null)
         {
-            return new([], true);
+            return [];
         }
 
         var stopwatch = DateTime.Now;
-        List<Tag> tags = [];
             
         _logger.Info("Executed AI tag autocompletion for Collection: {collection.Id}", collectionId);
 
         var options = new ParallelOptions { MaxDegreeOfParallelism = _maxParralelDegree};
 
-        var collectionAutotagResult = new AutotagResult([], false); 
+        var autotagResult = new List<AutotagResult>(); 
 
         Parallel.ForEach(previews, options, preview => 
         {
-            var result = AutocompleteTagsForPreview(preview, tagRepository);
-            
-            if (result.IsSuccess)
-            {
-                collectionAutotagResult.IsSuccess = true;
-                tags = tags.Union(result.Tags).ToList();
-            }
-            else if (result.ErrorMessage != null)
-            {
-                collectionAutotagResult.ErrorMessage = result.ErrorMessage;
-            }
+            autotagResult.Add(AutocompleteTagsForPreview(preview, tagRepository));
         });
         
-        if (collectionAutotagResult.IsSuccess) 
+        if (autotagResult.Any(x => x.IsSuccess))
         {
             var elapsedTime = (DateTime.Now - stopwatch).TotalSeconds;
-            var tagsString = string.Join(" ", tags.Select(x => x.Name));
 
-            _logger.Debug("AI tag autocompletion for Collection: {collectionId} successfully executed within: {elapsedTime} sec, suggested tags: {suggestedTagsString}", collectionId, elapsedTime.ToString("N0"), tagsString);
+            _logger.Debug("AI tag autocompletion for Collection: {collectionId} successfully executed within: {elapsedTime} sec", collectionId, elapsedTime.ToString("N0"));
             
-            return collectionAutotagResult;
+            return autotagResult;
         }
 
         _logger.Error("AI tag autocompletion for Collection: {collectionId} failed to execute due to non of previews processed", collectionId);
         
-        return collectionAutotagResult;
+        return autotagResult;
     }
 
     public List<string> GetSuggestionsByString(string searchString, int limit = 10)

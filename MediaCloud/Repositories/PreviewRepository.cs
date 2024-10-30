@@ -105,8 +105,9 @@ namespace MediaCloud.Repositories
         {
             var query = _context.Previews.AsNoTracking().Where(x => x.Order == 0);
 
-            return await SetFilterToQuery(query, listBuilder.Filtering.Filter).Where(x => x.CreatorId == _actor.Id)
-                                                                    .CountAsync();
+            return await SetFilterToQuery(query, listBuilder.Filtering.Filter)
+                .Where(x => x.CreatorId == _actor.Id)
+                .CountAsync();
         }
 
         public async Task<List<Preview>> GetListAsync(ListBuilder<Preview> listBuilder)

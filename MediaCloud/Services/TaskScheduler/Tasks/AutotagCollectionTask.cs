@@ -33,13 +33,14 @@ public class AutotagCollectionTask(User actor, Guid collectionId) : Task(actor),
         return 100 - (int)Math.Clamp(progress, 0, 100);
     }
 
-    public override void DoTheTask(IServiceProvider serviceProvider, IUserProvider actorProvider)
+    public override void DoTheTask(IServiceProvider serviceProvider, IUserProvider userProvider)
     {
         var context = serviceProvider.GetRequiredService<AppDbContext>();
         
-        var statisticProvider = new StatisticProvider(context, actorProvider);
-        var collectionRepository = new CollectionRepository(context, statisticProvider, actorProvider);
-        var tagRepository = new TagRepository(context, statisticProvider, actorProvider);
+        var statisticProvider = new StatisticProvider(context, userProvider);
+        var previewRepository = new PreviewRepository(context, statisticProvider, userProvider);
+        var collectionRepository = new CollectionRepository(context, statisticProvider, userProvider);
+        var tagRepository = new TagRepository(context, statisticProvider, userProvider);
         var autotagService = serviceProvider.GetRequiredService<IAutotagService>();
         var configProvider = serviceProvider.GetRequiredService<IConfigProvider>();
 
@@ -52,15 +53,29 @@ public class AutotagCollectionTask(User actor, Guid collectionId) : Task(actor),
             var tags = new List<Tag>();
 
             _aproximateExecutionTime = autotagService.GetAverageExecutionTime(previews.Count);
-            var result = autotagService.AutocompleteTagsForCollection(collection.Previews, tagRepository);
+            var results = autotagService.AutocompleteTagsForCollection(collection.Previews, tagRepository);
 
-            if (result.IsSuccess && result.Tags.Count != 0)
+            if (results.Any(x => x.IsSuccess) && results.Any(x => x.Tags.Count != 0))
             {
-                tagRepository.UpdatePreviewLinks(result.Tags, titlePreview);
+                foreach (var result in results)
+                {
+                    var preview = previewRepository.Get(result.PreviewId);
+                    
+                    if (preview == null)
+                    {
+                        result.IsSuccess = false;
+                        result.ErrorMessage = $"Preview with id: {result.PreviewId} not found in database";
+                    }
+                    else 
+                    {
+                        tagRepository.UpdatePreviewLinks(result.Tags, preview);
+                    }
+                }
             }
-            else if (result.IsSuccess == false)
+            else if (results.Any(x => x.IsSuccess) == false)
             {
-                throw new Exception($"Autotagging failed due to: {result.ErrorMessage}");
+                var errorsListString = string.Join("], [", results.Select(x => x.ErrorMessage));
+                throw new Exception($"Autotagging failed due to errors: [{errorsListString}]");
             }
         }
     }

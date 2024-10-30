@@ -100,6 +100,8 @@ namespace MediaCloud.Repositories
                     blobs.Add(CreateFile(file, author));
                     file.IsProcessed = true;
                 });
+
+                blobs = [.. blobs.OrderBy(x => x.Preview.BlobName)];
             }
             else 
             {

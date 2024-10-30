@@ -30,6 +30,9 @@ TODO:
 - Fix autotagging task stuck when service doesn't respond
 - Fix JoyTag server error on long run (Server got itself in trouble application.py line: 337)
 - Get rid of returnUrl in Urls
+- Implement independant collection and previews tagging
+- Fix collection autotagging
+- Fix preview change while tag typing in details when preview owned by collection
 
 # Changelog
 
