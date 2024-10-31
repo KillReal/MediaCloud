@@ -59,7 +59,7 @@ public class AutotagService : IAutotagService
         };
     }
 
-    public AutotagResult AutocompleteTagsForPreview(Preview preview, TagRepository tagRepository)
+    public AutotagResult AutocompleteTags(Preview preview, TagRepository tagRepository)
     {
         if (preview == null)
         {
@@ -149,42 +149,6 @@ public class AutotagService : IAutotagService
                 ErrorMessage = ex.Message
             };
         }
-    }
-
-    public List<AutotagResult> AutocompleteTagsForCollection(List<Preview> previews, TagRepository tagRepository)
-    {
-        var collectionId = previews.First().Collection?.Id;
-
-        if (previews.Count == 0 || collectionId == null)
-        {
-            return [];
-        }
-
-        var stopwatch = DateTime.Now;
-            
-        _logger.Info("Executed AI tag autocompletion for Collection: {collection.Id}", collectionId);
-
-        var options = new ParallelOptions { MaxDegreeOfParallelism = _maxParralelDegree};
-
-        var autotagResult = new List<AutotagResult>(); 
-
-        Parallel.ForEach(previews, options, preview => 
-        {
-            autotagResult.Add(AutocompleteTagsForPreview(preview, tagRepository));
-        });
-        
-        if (autotagResult.Any(x => x.IsSuccess))
-        {
-            var elapsedTime = (DateTime.Now - stopwatch).TotalSeconds;
-
-            _logger.Debug("AI tag autocompletion for Collection: {collectionId} successfully executed within: {elapsedTime} sec", collectionId, elapsedTime.ToString("N0"));
-            
-            return autotagResult;
-        }
-
-        _logger.Error("AI tag autocompletion for Collection: {collectionId} failed to execute due to non of previews processed", collectionId);
-        
-        return autotagResult;
     }
 
     public List<string> GetSuggestionsByString(string searchString, int limit = 10)

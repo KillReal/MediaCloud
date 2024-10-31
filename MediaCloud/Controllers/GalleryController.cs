@@ -7,6 +7,7 @@ using MediaCloud.WebApp.Services.ConfigProvider;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IO.Compression;
+using MediaCloud.WebApp.Services.TaskScheduler.Tasks;
 
 namespace MediaCloud.WebApp.Controllers
 {
@@ -141,11 +142,33 @@ namespace MediaCloud.WebApp.Controllers
             return _taskScheduler.AddTask(task);
         }
 
-        public Guid AutocompleteTagForCollection(Guid collectionId)
+        public List<Guid> AutocompleteTagForCollection(Guid collectionId)
         {
-            var task = new AutotagCollectionTask(_userProvider.GetCurrent(), collectionId);
+            var previewIds = _collectionRepository.Get(collectionId)?.Previews.Select(x => x.Id);
+            
+            if (previewIds == null || !previewIds.Any())
+            {
+                return [];
+            }
 
-            return _taskScheduler.AddTask(task);
+            if (_configProvider.EnvironmentSettings.UseParallelProcessingForAutotagging)
+            {
+                var parts = _configProvider.EnvironmentSettings.AutotaggingMaxParallelDegree;
+                var chunks = previewIds.Chunk(parts);
+                var result = new List<Guid>();
+
+                foreach (var chunk in chunks)
+                {
+                    var task = new AutotagPreviewTask(_userProvider.GetCurrent(), [.. chunk]);
+                    result.Add(_taskScheduler.AddTask(task));
+                }
+
+                return result;
+            }
+            
+            var singleTask = new AutotagPreviewTask(_userProvider.GetCurrent(), previewIds.ToList());
+
+            return [_taskScheduler.AddTask(singleTask)];
         }
 
         public double GetAverageAutocompleteTagExecution()
