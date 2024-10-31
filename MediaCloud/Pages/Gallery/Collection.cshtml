@@ -258,6 +258,16 @@
         }
     });
 
+    fetch('/Gallery/IsCollectionAutotaggingExecuted?collectionId=' + '@Model.Collection.Id')
+        .then((response) => response.json())
+        .then(function (data) {
+            if (data == true) {
+                    document.getElementById('autotagButton').disabled = true;
+                    document.getElementById('autotagButton').value = "Autotagging... ";
+            }
+        }
+    )
+
     var averageExecutionTime = 45.0 * @Model.TotalCount;
 
     fetch('/Gallery/GetAverageAutocompleteTagForCollectionExecution?previewsCount=' + @Model.TotalCount)
