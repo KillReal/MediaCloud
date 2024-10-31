@@ -25,13 +25,9 @@ TODO:
 - Fix statistic recalculation when only 1 day recorded
 - Rewrite collection gallery to _CollectionGallery.cshtml
 - Remove Tag Types
-- Fix user cache cleanup on logout
 - Search by file name?
-- Fix autotagging task stuck when service doesn't respond
 - Fix JoyTag server error on long run (Server got itself in trouble application.py line: 337)
 - Get rid of returnUrl in Urls
-- Implement independant collection and previews tagging
-- Fix collection autotagging
 - Fix preview change while tag typing in details when preview owned by collection
 
 # Changelog
@@ -45,6 +41,8 @@ TODO:
 - Fixed autotagging timeout when long task running
 - Fixed image rotate
 - Implemented per user upload size limits
+- Fix autotagging task stuck when service doesn't respond
+- Fix user cache cleanup on logout
 
 ### Version 2.0.0 - 04th Sep, 2024
 - Implemented file uploading with any extension support

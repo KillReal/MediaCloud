@@ -11,6 +11,7 @@ using System.Data;
 using Blob = MediaCloud.Data.Models.Blob;
 using MediaCloud.WebApp.Builders.BlobModel;
 using MediaCloud.WebApp.Services.ConfigProvider;
+using MediaCloud.WebApp.Extensions;
 
 namespace MediaCloud.Repositories
 {
@@ -94,14 +95,12 @@ namespace MediaCloud.Repositories
                     MaxDegreeOfParallelism = _configProvider.EnvironmentSettings.UploadingMaxParallelDegree
                 };
 
-                Mutex mutex = new();
-
                 Parallel.ForEach(files, options, (file) => {
                     blobs.Add(CreateFile(file, author));
                     file.IsProcessed = true;
                 });
 
-                blobs = [.. blobs.OrderBy(x => x.Preview.BlobName)];
+                blobs = [.. blobs.OrderBy(x => x.Preview.BlobName, new FileComparer())];
             }
             else 
             {
