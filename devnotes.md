@@ -29,6 +29,7 @@ TODO:
 - Fix JoyTag server error on long run (Server got itself in trouble application.py line: 337)
 - Get rid of returnUrl in Urls
 - Fix preview change while tag typing in details when preview owned by collection
+- Implement Tasks page
 
 # Changelog
 

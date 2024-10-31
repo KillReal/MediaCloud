@@ -287,8 +287,9 @@
         modalTitle.innerHTML = title;
     }
 
-    function setModalProgress(progress, executionTime) {
-        document.getElementById('progress').innerHTML = "Progress: " + parseInt(progress, 10)+ "%";
+    function setModalProgress(taskCount, progress, executionTime) {
+        document.getElementById('progress').innerHTML = "Progress: " + parseInt(progress, 10)+ "% and " +
+            + taskCount + " more tasks left...";
         document.getElementById('executionTime').innerHTML = 'It may take some time (~' + parseInt(executionTime, 10) + ' sec)';
         document.getElementById('autotagButton').value = "Autotagging... " + parseInt(progress, 10)+ "%";
     }
@@ -322,22 +323,22 @@
         request.onload = function() { // request successful
             setModalTitle('Waiting queue for processing...');
             showModalBody();
-            var data = JSON.parse(request.response);
+            var taskIds = JSON.parse(request.response);
 
-            var url = "/TaskScheduler/GetTaskStatus?id=" + data;
+            var url = "/TaskScheduler/GetTaskStatus?id=" + taskIds[0];
 
-            const updator = function () {
-                fetch(url)
+            /*taskIds.forEach(x => {
+                const updator = function () {
+                    fetch(url)
                     .then((response) => response.json())
                     .then(function (data) {
                         var progress = 100 - data.workCount;
 
-                       if (data.isCompleted == true) {
+                    if (data.isCompleted == true) {
                             setModalTitle('Autotagging successfully completed!');
                             hideModalBody();
                             hideLoadSpinner();
 
-                            location.reload();
                             clearInterval(loadingUpdateInterval);
                         }
                         else if (data.isInProgress == false) {
@@ -345,7 +346,7 @@
                         }
                         else {
                             setModalTitle('Autotagging in progress...');
-                            setModalProgress(progress, averageExecutionTime);
+                            setModalProgress(taskIds.length, progress, averageExecutionTime);
                             timerCounter += updateInterval;
                         }
                     })
@@ -353,9 +354,11 @@
 
                 updator();
                 var loadingUpdateInterval = setInterval(updator, updateInterval);
-            };
-
-        request.send();
+            });*/
+            setModalTitle('Autotagging in progress...');
+            hideModalBody();
+        };
+        request.send(); 
     }
 
     window.scrollTo(0, 1);

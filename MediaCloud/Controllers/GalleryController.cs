@@ -154,7 +154,7 @@ namespace MediaCloud.WebApp.Controllers
             if (_configProvider.EnvironmentSettings.UseParallelProcessingForAutotagging)
             {
                 var parts = _configProvider.EnvironmentSettings.AutotaggingMaxParallelDegree;
-                var chunks = previewIds.Chunk(parts);
+                var chunks = previewIds.Chunk(previewIds.Count() / parts + 1);
                 var result = new List<Guid>();
 
                 foreach (var chunk in chunks)
