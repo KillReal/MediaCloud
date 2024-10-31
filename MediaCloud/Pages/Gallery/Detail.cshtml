@@ -214,13 +214,24 @@
 
 <script>
     autocomplete(document.getElementById("filterGrab"));
+    let isPreviewSwitchingEnabled = true;
+
+    document.getElementById("filterGrab").addEventListener("focusin", (event) => {
+        isPreviewSwitchingEnabled = false;
+    });
+
+    document.getElementById("filterGrab").addEventListener("focusout", (event) => {
+        isPreviewSwitchingEnabled = true;
+    });
 
     document.addEventListener('keydown', (event) => {
-        if ( event.code == 'ArrowLeft') {
-            document.getElementById("left-arrow").click();
-        }
-        if (event.code == 'ArrowRight') {
-            document.getElementById("right-arrow").click();
+        if (isPreviewSwitchingEnabled) {
+            if (event.code == 'ArrowLeft') {
+                document.getElementById("left-arrow").click();
+            }
+            if (event.code == 'ArrowRight') {
+                document.getElementById("right-arrow").click();
+            }
         }
     }, false);
 
