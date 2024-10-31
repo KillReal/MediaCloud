@@ -6,6 +6,7 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
         public string? DatabaseConnectionString {get; set;}
         public string? AiJoyTagConnectionString {get; set;}
         public int CookieExpireTime {get; set;}
+        public int TaskSchedulerQueueCleanupTime {get; set;}
         public int PreviewMaxHeight {get; set;}
         public int TaskSchedulerWorkerCount {get; set;}
 
@@ -33,6 +34,7 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
             UseParallelProcessingForAutotagging = configuration.GetValue<bool>("Autotagging:UseParallelProcessing");
             LimitLoginAttempts = configuration.GetValue<bool>("Security:LimitLoginAttempts");
             AutotaggingEnabled = configuration.GetValue<bool>("Autotagging:Enabled");
+            TaskSchedulerQueueCleanupTime = configuration.GetValue<int>("TaskSchedulerQueueCleanupTime");
         }
 
         public EnvironmentSettings()
@@ -55,6 +57,7 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
             configuration["Autotagging:UseParallelProcessing"] = AutotaggingEnabled.ToString();
             configuration["Security:LimitLoginAttempts"] = LimitLoginAttempts.ToString();
             configuration["Uploading:MaxParallelThreadCound"] = UploadingMaxParallelDegree.ToString();
+            configuration["TaskSchedulerQueueCleanupTime"] = TaskSchedulerQueueCleanupTime.ToString();
         }
     }
 }

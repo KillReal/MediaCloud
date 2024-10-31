@@ -1,4 +1,5 @@
-﻿using Task = MediaCloud.TaskScheduler.Tasks.Task;
+﻿using MediaCloud.WebApp.Services.ConfigProvider;
+using Task = MediaCloud.TaskScheduler.Tasks.Task;
 
 namespace MediaCloud.TaskScheduler
 {
@@ -15,12 +16,11 @@ namespace MediaCloud.TaskScheduler
 
         public Action<Task, string?> OnTaskComplete;
 
-        public Queue() 
+        public Queue(IConfigProvider configProvider) 
         {
             OnTaskComplete += CompleteTask;
 
-            //TODO: move to EnvironmentSettings
-            _completedTaskLifetimeMin = 30;
+            _completedTaskLifetimeMin = configProvider.EnvironmentSettings.TaskSchedulerQueueCleanupTime;
         }
 
         public bool IsEmpty => _tasks.Count == 0;

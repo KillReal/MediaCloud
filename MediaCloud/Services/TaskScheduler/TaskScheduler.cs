@@ -27,7 +27,7 @@ namespace MediaCloud.TaskScheduler
             _serviceScopeFactory = serviceScopeFactory;
             _logger = LogManager.GetLogger("Scheduler");
             _workers = [];
-            _queue = new Queue();
+            _queue = new Queue(configProvider);
 
             var workersCount = configProvider.EnvironmentSettings.TaskSchedulerWorkerCount;
             for (int i = 0; i < workersCount; i++)
