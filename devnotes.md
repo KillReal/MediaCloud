@@ -30,6 +30,8 @@ TODO:
 - Get rid of returnUrl in Urls
 - Fix preview change while tag typing in details when preview owned by collection
 - Implement Tasks page
+- Move preview autotagging check to galleryController, return true if tasks exist
+- Fix tag searching, if more than one preview in collection has same tag, search by it fails
 
 # Changelog
 
@@ -44,6 +46,7 @@ TODO:
 - Implemented per user upload size limits
 - Fix autotagging task stuck when service doesn't respond
 - Fix user cache cleanup on logout
+- Fix preview switching while typing in tag input in Details
 
 ### Version 2.0.0 - 04th Sep, 2024
 - Implemented file uploading with any extension support

@@ -14,11 +14,13 @@ namespace MediaCloud.WebApp.Repositories.Base
             {
                 return query.Where(x => (x.Tags.Concat(x.Collection.Previews.Where(x => x.Order != 0)
                     .SelectMany(z => z.Tags))
+                        .Distinct()
                         .Where(y => PositiveTagIds.Contains(y.Id))
                         .Count() == PositiveTagIds.Count
                 )
                 && (x.Tags.Concat(x.Collection.Previews.Where(x => x.Order != 0)
                     .SelectMany(z => z.Tags))
+                        .Distinct()
                         .Where(y => NegativeTagIds.Contains(y.Id))
                         .Any() == false));
                 
