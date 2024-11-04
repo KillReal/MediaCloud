@@ -10,7 +10,7 @@ namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
 {
     public class AutotagPreviewTask(User actor, List<Guid> previewsIds) : Task(actor), ITask
     {
-        private readonly List<Guid> _previewIds = previewsIds;
+        public new List<Guid> AffectedEntities = previewsIds;
         private double _aproximateExecutionTime;
 
         public override int GetWorkCount()
@@ -41,14 +41,14 @@ namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
             var tagRepository = new TagRepository(context, statisticProvider, actorProvider);
             var autotagService = serviceProvider.GetRequiredService<IAutotagService>();
 
-            while (_previewIds.Count != 0)
+            while (AffectedEntities.Count != 0)
             {
                 _aproximateExecutionTime = autotagService.GetAverageExecutionTime();
-                var preview = previewRepository.Get(_previewIds.First());
+                var preview = previewRepository.Get(AffectedEntities.First());
 
                 if (preview == null)
                 {
-                    _previewIds.Remove(_previewIds.First());
+                    AffectedEntities.Remove(AffectedEntities.First());
                     continue;
                 }
 
@@ -60,7 +60,7 @@ namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
                     tagRepository.UpdatePreviewLinks(tags, preview);
                 }
 
-                _previewIds.Remove(_previewIds.First());
+                AffectedEntities.Remove(AffectedEntities.First());
 
                 if (result.IsSuccess == false)
                 {

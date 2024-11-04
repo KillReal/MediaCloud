@@ -15,17 +15,17 @@ namespace MediaCloud.TaskScheduler.Tasks
         /// <summary>
         /// Unique identificator.
         /// </summary>
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid Id { get; set;} = Guid.NewGuid();
 
         /// <summary>
         /// Customer.
         /// </summary>
-        public User User { get; set; } = user;
+        public User User { get; set;} = user;
 
         /// <summary>
         /// Wether the task executed.
         /// </summary>
-        public bool IsExecuted { get; set; }
+        public bool IsExecuted { get; set;}
 
         /// <summary>
         /// Wether the task was completed.
@@ -47,6 +47,8 @@ namespace MediaCloud.TaskScheduler.Tasks
         /// </summary>
         public DateTime CompletedAt {get; set;}
 
+        public List<Guid> AffectedEntities {get; set;} = [];
+
         /// <summary>
         /// Check work count to process.
         /// </summary>
@@ -66,11 +68,6 @@ namespace MediaCloud.TaskScheduler.Tasks
         public virtual void DoTheTask(IServiceProvider serviceProvider, IUserProvider actorProvider)
         {
             throw new NotImplementedException();
-        }
-
-        public User GetAuthor()
-        {
-            return User;
         }
     }
 }

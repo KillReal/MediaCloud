@@ -14,7 +14,6 @@ namespace MediaCloud.WebApp;
 public class AutotagService : IAutotagService
 {
     private readonly Logger _logger = LogManager.GetLogger("AutotagService");
-    private readonly List<Guid> _proceededPreviewIds = [];
     private readonly HttpClient _httpClient;
     private readonly Mutex _mutex = new();
     private readonly Semaphore _semaphore;
@@ -73,7 +72,6 @@ public class AutotagService : IAutotagService
         
         try {
             var stopwatch = DateTime.Now;
-            _proceededPreviewIds.Add(preview.Id);
 
             _logger.Info("Executed AI tag autocompletion for Preview: {previewId}", preview.Id);
 
@@ -127,8 +125,6 @@ public class AutotagService : IAutotagService
 
             _logger.Debug("Existing tags for suggestion: {actualTagsString}", actualTagsString);
 
-            _proceededPreviewIds.Remove(preview.Id);
-
             return new() 
             {
                 PreviewId = preview.Id,
@@ -138,7 +134,6 @@ public class AutotagService : IAutotagService
         }
         catch (Exception ex)
         {
-            _proceededPreviewIds.Remove(preview.Id);
             _logger.Error(ex, "Failed to process autotagging for image");
             
             return new() 
@@ -185,11 +180,6 @@ public class AutotagService : IAutotagService
             _logger.Error(ex, "Failed to get tag aliases");
             return [];
         }
-    }
-
-    public bool IsPreviewIsProceeded(Guid previewId)
-    {
-        return _proceededPreviewIds.Exists(x => x == previewId);
     }
 
     private string Post(string method, object data)

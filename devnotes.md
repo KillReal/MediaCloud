@@ -12,7 +12,7 @@ dotnet publish -r linux-x64 -p:PublishSingleFile=true --no-self-contained -o D:/
 ```
 
 # Next release - 2.1.0       
-# Next minor - 2.0.1
+# Next minor - 2.0.2
 
 
 TODO:
@@ -28,12 +28,13 @@ TODO:
 - Search by file name?
 - Fix JoyTag server error on long run (Server got itself in trouble application.py line: 337)
 - Get rid of returnUrl in Urls
-- Fix preview change while tag typing in details when preview owned by collection
 - Implement Tasks page
-- Move preview autotagging check to galleryController, return true if tasks exist
-- Fix tag searching, if more than one preview in collection has same tag, search by it fails
+- Fix previews ordering in galery. Different order with filtering and witout.
 
 # Changelog
+
+### Version 2.0.2 - tbd, 2024
+- Fixed tag searching, if more than one preview in collection has same tag
 
 ### Version 2.0.1 - 31 Oct, 2024
 - New icons for list sortings

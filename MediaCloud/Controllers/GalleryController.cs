@@ -183,7 +183,9 @@ namespace MediaCloud.WebApp.Controllers
 
         public bool IsPreviewAutotaggingExecuted(Guid previewId)
         {
-            return _autotagService.IsPreviewIsProceeded(previewId);
+            var taskStatuses = _taskScheduler.GetStatus().TaskStatuses;
+
+            return taskStatuses.Any(x => x.IsCompleted == false && x.AffectedEntities.Contains(previewId));
         }
 
         public bool IsCollectionAutotaggingExecuted(Guid collectionId)
@@ -195,9 +197,11 @@ namespace MediaCloud.WebApp.Controllers
                 return false;
             }
 
+            var taskStatuses = _taskScheduler.GetStatus().TaskStatuses;
+
             foreach (var previewId in previewIds)
             {
-               if (_autotagService.IsPreviewIsProceeded(previewId))
+               if (taskStatuses.Any(x => x.IsCompleted == false && x.AffectedEntities.Contains(previewId)))
                {
                     return true;
                }
