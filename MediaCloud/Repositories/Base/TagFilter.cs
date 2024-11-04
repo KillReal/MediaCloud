@@ -23,12 +23,6 @@ namespace MediaCloud.WebApp.Repositories.Base
                         .Distinct()
                         .Where(y => NegativeTagIds.Contains(y.Id))
                         .Any() == false));
-                
-                return query.Where(x => (x.Tags.Where(y => PositiveTagIds.Contains(y.Id))
-                                               .Count() == PositiveTagIds.Count)
-                                     && (x.Tags.Where(y => NegativeTagIds.Contains(y.Id))
-                                               .Any() == false));
-
             }
 
             return query;
