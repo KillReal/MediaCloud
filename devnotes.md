@@ -26,14 +26,16 @@ TODO:
 - Rewrite collection gallery to _CollectionGallery.cshtml
 - Remove Tag Types
 - Search by file name?
-- Fix JoyTag server error on long run (Server got itself in trouble application.py line: 337)
+- Fix JoyTag server error on long run (Server got itself in trouble application.py line: 337). Problem might be in logging to console. So when nowhere to log it crashes.
 - Get rid of returnUrl in Urls
 - Implement Tasks page
 - Fix previews ordering in galery. Different order with filtering and witout.
+- Fix autotagging task after one task failed with error. When a completed task in queue exist then new one is skipping work.
 
 # Changelog
 
 ### Version 2.0.2 - tbd, 2024
+- Autotagging in background now displays for collections and previews when exists a task in queue but not started yet
 - Fixed tag searching, if more than one preview in collection has same tag
 
 ### Version 2.0.1 - 31 Oct, 2024
