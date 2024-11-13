@@ -32,13 +32,13 @@ namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
             return 100 - (int)Math.Clamp(progress, 0, 100);
         }
 
-        public override void DoTheTask(IServiceProvider serviceProvider, IUserProvider actorProvider)
+        public override void DoTheTask(IServiceProvider serviceProvider, IUserProvider userProvider)
         {
             var context = serviceProvider.GetRequiredService<AppDbContext>();
 
-            var statisticProvider = new StatisticProvider(context, actorProvider);
-            var previewRepository = new PreviewRepository(context, statisticProvider, actorProvider);
-            var tagRepository = new TagRepository(context, statisticProvider, actorProvider);
+            var statisticProvider = new StatisticProvider(context, userProvider);
+            var previewRepository = new PreviewRepository(context, statisticProvider, userProvider);
+            var tagRepository = new TagRepository(context, statisticProvider, userProvider);
             var autotagService = serviceProvider.GetRequiredService<IAutotagService>();
 
             while (AffectedEntities.Count != 0)

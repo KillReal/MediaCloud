@@ -64,17 +64,17 @@ namespace MediaCloud.Repositories
             var tagsToUnlink = preview.Tags.Except(tags).ToList();
             var tagsToLink = tags.Except(preview.Tags).ToList();
 
-            tagsToUnlink.ForEach(x =>
+            foreach (var tag in tagsToUnlink)
             {
-                x.Previews.Remove(preview);
-                x.PreviewsCount -= 1;
-            });
+                preview.Tags.Remove(tag);
+                tag.PreviewsCount -= 1;
+            };
 
-            tagsToLink.ForEach(x =>
+            foreach (var tag in tagsToLink)
             {
-                x.Previews.Add(preview);
-                x.PreviewsCount += 1;
-            });
+                preview.Tags.Add(tag);
+                tag.PreviewsCount += 1;
+            }
 
             var affectedTags = tagsToLink.Union(tagsToUnlink);
 

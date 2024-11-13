@@ -14,7 +14,7 @@ namespace MediaCloud.Data.Models
 
         public byte[] Content { get; set; }
 
-        public virtual List<Tag> Tags { get; set; } = [];
+        public virtual List<Tag> Tags { get; set; }
 
         [ForeignKey("CollectionId")]
         public virtual Collection? Collection { get; set; }

@@ -8,5 +8,6 @@ namespace MediaCloud.TaskScheduler.Tasks
         public int GetWorkCount();
 
         public void DoTheTask(IServiceProvider serviceProvider, IUserProvider actorProvider);
+        User GetAuthor();
     }
 }

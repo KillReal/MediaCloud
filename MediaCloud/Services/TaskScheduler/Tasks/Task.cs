@@ -69,5 +69,10 @@ namespace MediaCloud.TaskScheduler.Tasks
         {
             throw new NotImplementedException();
         }
+
+        public User GetAuthor()
+        {
+            return User;
+        }
     }
 }
