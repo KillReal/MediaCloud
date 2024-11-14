@@ -61,6 +61,11 @@ namespace MediaCloud.Repositories
 
         public void UpdatePreviewLinks(List<Tag> tags, Preview preview)
         {
+            if (preview.Tags.Count == 0 && tags.Count == 0)
+            {
+                return;
+            }
+
             var tagsToUnlink = preview.Tags.Except(tags).ToList();
             var tagsToLink = tags.Except(preview.Tags).ToList();
 
