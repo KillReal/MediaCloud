@@ -20,11 +20,12 @@ namespace MediaCloud.Data.Models
             Name = name;
             Description = description;
             Type = type;
+            Previews = [];
         }
 
         public Tag()
         {
-
+            Previews = [];
         }
     }
 }

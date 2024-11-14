@@ -28,6 +28,7 @@ namespace MediaCloud.Data.Models
             BlobType = uploadedFile.Type;
             Content = uploadedFile.Content;
             Order = 0;
+            Tags = [];
         }
 
         public Preview()
@@ -36,6 +37,7 @@ namespace MediaCloud.Data.Models
             BlobName = "unknown";
             BlobType = "unknown";
             Content = [];
+            Tags = [];
         }
     }
 }
