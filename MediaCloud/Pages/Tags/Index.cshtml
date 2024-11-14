@@ -128,7 +128,7 @@
         <tbody>
     @foreach (var item in Model.Tags) {
             <tr class="list-clickable" 
-                onclick="document.location='/Tags/Detail?id=@item.Id&returnUrl=/Tags/Index?sort=@Model.ListBuilder.Sorting.PropertyName';">
+                onclick="document.location='/Tags/Detail?id=@item.Id';">
                 <td class="table-item-padding">
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>

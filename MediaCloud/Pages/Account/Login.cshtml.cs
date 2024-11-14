@@ -18,16 +18,13 @@ namespace MediaCloud.WebApp.Pages
         public AuthData AuthData { get; set; } = new();
         [BindProperty]
         public User? CurrentUser { get; set; } = null;
-        [BindProperty]
-        public string ReturnUrl { get; set; } = "/";
 
-        public IActionResult OnGet(string returnUrl = "/")
+        public IActionResult OnGet()
         {
-            ReturnUrl = returnUrl;
 
             if (_userProvider.GetCurrentOrDefault() != null)
             {
-                return Redirect(ReturnUrl);
+                return Redirect(Request.Headers.Referer.ToString());
             }
 
             return Page();
@@ -47,7 +44,7 @@ namespace MediaCloud.WebApp.Pages
 
             _logger.Info(Result.Message);
 
-            return Redirect(ReturnUrl);
+            return Redirect(Request.Headers.Referer.ToString());
         }
     }
 }

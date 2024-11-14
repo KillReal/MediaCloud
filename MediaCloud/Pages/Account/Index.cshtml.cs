@@ -20,9 +20,6 @@ namespace MediaCloud.WebApp.Pages
         [BindProperty]
         public bool IsEnvironmentSettingsChanged { get; set; }
 
-        [BindProperty]
-        public string ReturnUrl { get; set; } = "/";
-
         public IndexModel(IUserProvider userProvider, IConfigProvider configProvider) : base(userProvider)
         {
             _logger = LogManager.GetLogger("Actor");
@@ -36,9 +33,8 @@ namespace MediaCloud.WebApp.Pages
                 : null;
         }
 
-        public IActionResult OnGet(string returnUrl = "/")
+        public IActionResult OnGet()
         {
-            ReturnUrl = returnUrl;
             return Page();
         }
 
@@ -53,7 +49,7 @@ namespace MediaCloud.WebApp.Pages
                 _configProvider.EnvironmentSettings = EnvironmentSettings;
             }
 
-            return Redirect(ReturnUrl);
+            return Page();
         }
     }
 }

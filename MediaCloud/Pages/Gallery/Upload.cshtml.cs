@@ -10,10 +10,10 @@ using MediaCloud.WebApp.Services.Statistic;
 
 namespace MediaCloud.Pages.Gallery
 {
-    public class UploadModel(IUserProvider userProvider, ITaskScheduler taskScheduler, StatisticProvider statisticProvider) : AuthorizedPageModel(userProvider)
+    public class UploadModel(IUserProvider userProvider, ITaskScheduler taskScheduler) 
+        : AuthorizedPageModel(userProvider)
     {
         private readonly ITaskScheduler _taskScheduler = taskScheduler;
-        private readonly StatisticProvider _statisticProvider = statisticProvider;
 
         [BindProperty]
         public List<IFormFile> Files { get; set; } = [];
@@ -21,13 +21,9 @@ namespace MediaCloud.Pages.Gallery
         public string? Tags { get; set; }
         [BindProperty]
         public bool IsCollection { get; set; }
-        [BindProperty]
-        public string ReturnUrl { get; set; } = "/Gallery";
 
-        public IActionResult OnGet(string returnUrl = "/Gallery")
+        public IActionResult OnGet()
         {
-            ReturnUrl = returnUrl.Replace("$", "&");
-
             return Page();
         }
 

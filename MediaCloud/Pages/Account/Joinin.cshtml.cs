@@ -8,11 +8,10 @@ using ILogger = NLog.ILogger;
 
 namespace MediaCloud.WebApp.Pages
 {
-    public class JoininModel(IUserProvider userProvider, IConfigProvider configProvider) : PageModel
+    public class JoininModel(IUserProvider userProvider) : PageModel
     {
         private readonly ILogger _logger = LogManager.GetLogger("Actor");
         private readonly IUserProvider _actorProvider = userProvider;
-        private readonly IConfigProvider _configProvider = configProvider;
 
         [BindProperty]
         public RegistrationResult Result { get; set; } = new();
@@ -22,16 +21,12 @@ namespace MediaCloud.WebApp.Pages
         public AuthData AuthData { get; set; } = new();
         [BindProperty]
         public User? CurrentUser { get; set; } = null;
-        [BindProperty]
-        public string ReturnUrl { get; set; } = "";
 
-        public IActionResult OnGet(string returnUrl = "/")
+        public IActionResult OnGet()
         {
-            ReturnUrl = returnUrl;
-
             if (_actorProvider.GetCurrentOrDefault() != null)
             {
-                return Redirect(ReturnUrl);
+                return Redirect(Request.Headers.Referer.ToString());
             }
 
             return Page();

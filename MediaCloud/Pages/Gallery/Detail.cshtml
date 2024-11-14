@@ -29,7 +29,7 @@
             <img id="left-arrow" 
                 src="/img/arrow-left.svg" 
                 class="arrow-button-left" 
-                onclick="window.location.replace('/Gallery/Detail/?id=@(Model.PrevPreviewId)&returnUrl=@(Model.ReturnUrl)')"
+                onclick="window.location.replace('/Gallery/Detail/?id=@(Model.PrevPreviewId)')"
             />
         }
         
@@ -61,7 +61,7 @@
             <img id="right-arrow" 
                 src="/img/arrow-right.svg" 
                 class="arrow-button-right"
-                onclick="window.location.replace('/Gallery/Detail/?id=@(Model.NextPreviewId)&returnUrl=@(Model.ReturnUrl)')"
+                onclick="window.location.replace('/Gallery/Detail/?id=@(Model.NextPreviewId)')"
             />
         }
 
@@ -82,11 +82,9 @@
     <div class="row">
         <form enctype="multipart/form-data" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control">
             <input type="hidden" asp-for=@(Model.PreviewId) class="form-control">
             <input type="hidden" asp-for=@(Model.Blob.Preview.Id) class="form-control">
             <input type="hidden" asp-for=@(Model.Blob.Id) class="form-control">
-            <input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control">
             <input type="hidden" asp-for=@(Model.RotationDegree) class="form-control" id="modelRotationDegree">
             <div class="row">
                 <div class="form-group autocomplete-list autocomplete mb-3 col">
@@ -167,8 +165,7 @@
                         }
                         <a class="btn @classStyle btn-rounded me-1 mb-2" 
                             asp-page="/Tags/Detail" 
-                            asp-route-id=@tag.Id
-                            asp-route-returnUrl='@Model.ReturnUrl'>
+                            asp-route-id=@tag.Id>
                             @tag.Name
                         </a>
                     }

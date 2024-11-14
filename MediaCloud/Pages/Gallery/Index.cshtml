@@ -62,8 +62,7 @@
         <div class="align-self-center d-flex flex-wrap">   
             <div class="button-group">
                 <a class="btn btn-success btn-rounded" 
-                    asp-page="Upload"
-                    asp-route-returnUrl="/Gallery?count=@(Model.ListBuilder.Pagination.Count)$offset=@(Model.ListBuilder.Pagination.Offset)$sort=@(Model.ListBuilder.Sorting.PropertyName)$filter=@(Model.ListBuilder.Filtering.Filter)$isUseAutoload=@(Model.IsAutoloadEnabled)">
+                    asp-page="Upload">
                         Upload
                 </a>
             </div>
@@ -189,12 +188,7 @@
 
     function GetPostUrl(entityType, dataId)
     {
-        return "Gallery/" + entityType +"?id=" + dataId +
-            "&returnUrl=/Gallery?count=" + @Model.ListBuilder.Pagination.Count + 
-            "$offset=" + @Model.ListBuilder.Pagination.Offset +
-            "$sort=" + '@Model.ListBuilder.Sorting.PropertyName' + 
-            "$filter=" + '@Model.ListBuilder.Filtering.Filter' + 
-            "$isUseAutoload=@Model.IsAutoloadEnabled";
+        return "Gallery/" + entityType +"?id=" + dataId;
     }
 
     var currentOffset = @Model.ListBuilder.Pagination.Offset;

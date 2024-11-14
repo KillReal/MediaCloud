@@ -13,13 +13,10 @@ namespace MediaCloud.Pages.Tags
         [BindProperty]
         public Tag Tag { get; set; } = new();
 
-        [BindProperty]
-        public string ReturnUrl { get; set; } = "/Tags";
-
-        public IActionResult OnGet(Guid id, string returnUrl = "/Tags/Index")
+        public IActionResult OnGet(Guid id)
         {
-            ReturnUrl = returnUrl.Replace("$", "&");  
             Tag = _tagRepository.Get(id) ?? new();
+            TempData["ReturnUrl"] = Request.Headers.Referer.ToString();
 
             return Page();
         }   
@@ -50,7 +47,7 @@ namespace MediaCloud.Pages.Tags
 
             _tagRepository.Update(tag);
 
-            return Redirect(ReturnUrl.Replace("$", "&"));
+            return Redirect(TempData["ReturnUrl"]?.ToString() ?? "/Tags");
         }
 
         public IActionResult OnPostDelete(Guid id)
@@ -60,7 +57,7 @@ namespace MediaCloud.Pages.Tags
                 return Redirect("/Error");
             }
 
-            return Redirect(ReturnUrl.Replace("$", "&"));
+            return Redirect(TempData["ReturnUrl"]?.ToString() ?? "/Tags");
         }
     }
 }

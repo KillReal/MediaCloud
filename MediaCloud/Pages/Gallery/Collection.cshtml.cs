@@ -16,8 +16,6 @@ namespace MediaCloud.Pages.Gallery
         [BindProperty]
         public Collection Collection { get; set; } = new();
         [BindProperty]
-        public string ReturnUrl { get; set; } = "/Gallery";
-        [BindProperty]
         public List<Tag> Tags { get; set; } = [];
         [BindProperty]
         public bool IsOrderChanged { get; set; } = false;
@@ -32,7 +30,7 @@ namespace MediaCloud.Pages.Gallery
         [BindProperty]
         public string? CollectionSizeInfo { get; set; }
 
-        public IActionResult OnGet(Guid id, string returnUrl = "/Gallery")
+        public IActionResult OnGet(Guid id)
         {
             Collection = _collectionRepository.Get(id) ?? new();
 
@@ -56,8 +54,6 @@ namespace MediaCloud.Pages.Gallery
             CollectionSizeInfo = collectionSize.FormatSize();
             TotalCount = _collectionRepository.GetListCount(id).Result;
             IsAutotaggingAvailable = Collection.Previews.Select(x => x.BlobType).Any(x => x.Contains("image"));
-
-            ReturnUrl = returnUrl.Replace("$", "&");
 
             return Page();
         }
@@ -83,12 +79,7 @@ namespace MediaCloud.Pages.Gallery
                 return Redirect("/Error");
             }
 
-            if (IsOrderChanged)
-            {
-                return Redirect($"/Gallery/Collection?id={collection.Id}&returnUrl={ReturnUrl.Replace("&", "$")}");
-            }
-
-            return Redirect(ReturnUrl.Replace("$", "&"));
+            return Redirect($"/Gallery/Collection?id={collection.Id}");
         }
 
         public IActionResult OnPostDelete(Guid id)
@@ -98,7 +89,7 @@ namespace MediaCloud.Pages.Gallery
                 return Redirect("/Error");
             }
 
-            return Redirect(ReturnUrl.Replace("$", "&"));
+            return Redirect(Request.Headers.Referer.ToString());
         }
     }
 }

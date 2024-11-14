@@ -23,6 +23,8 @@ namespace MediaCloud.Pages.Users
 
         public IActionResult OnGet()
         {
+            TempData["ReturnUrl"] = Request.Headers.Referer.ToString();
+
             var currentActor = _userProvider.GetCurrent();
 
             if (currentActor.IsAdmin == false)
@@ -56,7 +58,7 @@ namespace MediaCloud.Pages.Users
 
             _actorRepository.Create(User);
 
-            return RedirectToPage("/Users/Index");
+            return Redirect(TempData["ReturnUrl"]?.ToString() ?? "/Users");
         }
     }
 }

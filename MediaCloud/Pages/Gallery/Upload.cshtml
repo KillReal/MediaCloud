@@ -23,7 +23,6 @@
         <div class="col-md-4">
             <form enctype="multipart/form-data" id='uploadForm' method="post">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control">
                 <div class="form-group mb-3">
                 <label class="col-form-label">
                     Select File
@@ -73,7 +72,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <a href="@Model.ReturnUrl" class="btn btn-primary">
+                <a href="history.back();" class="btn btn-primary">
                     Back to Gallery
                 </a>
             </div>
