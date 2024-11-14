@@ -57,17 +57,7 @@ namespace MediaCloud.TaskScheduler.Tasks
                 var proceededCount = 0;
                 foreach (var preview in previews)
                 {
-                    if (preview.BlobType == "image/webp")
-                    {
-                        continue;
-                    }
-
-                    if (preview.BlobType.Contains("image") == false || preview.BlobType == "image/gif")
-                    {
-                        continue;
-                    }
-
-                    if (preview == null)
+                    if (preview.BlobType != "image/jpeg")
                     {
                         continue;
                     }
@@ -84,16 +74,16 @@ namespace MediaCloud.TaskScheduler.Tasks
                         fileToConvert.Name = preview.Id.ToString() + ".jpeg";
                     }
 
-                    var convertedFile = blobModelBuilder.Build(fileToConvert);
+                    var blob = blobModelBuilder.Build(fileToConvert);
 
                     var sizeBefore = preview.Blob.Size;
-                    shrinkedSize += sizeBefore - convertedFile.File.Content.Length;
+                    shrinkedSize += sizeBefore - blob.File.Content.Length;
 
-                    preview.Blob.Content = convertedFile.File.Content;
-                    preview.Blob.Size = convertedFile.File.Content.Length;
-                    preview.BlobName = convertedFile.Preview.BlobName;
+                    preview.Blob.Content = blob.File.Content;
+                    preview.Blob.Size = blob.File.Content.Length;
+                    preview.BlobName = blob.Preview.BlobName;
                     preview.BlobType = "image/webp";
-                    preview.Content = convertedFile.Preview.Content;
+                    preview.Content = blob.Preview.Content;
 
                     proceededCount += 1;
                 }

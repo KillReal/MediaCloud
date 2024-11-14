@@ -31,12 +31,19 @@ TODO:
 - Implement Tasks page
 - Fix previews ordering in galery. Different order with filtering and witout.
 - Fix autotagging task after one task failed with error. When a completed task in queue exist then new one is skipping work.
+- Fix app crashes (Unhandled exception. System.NullReferenceException: Object reference not set to an instance of an object.
+   at MediaCloud.TaskScheduler.TaskScheduler.WorkerCompleteTask(Task task)
+   at MediaCloud.TaskScheduler.Worker.WorkRoutine(Object state)
+   at System.Threading.QueueUserWorkItemCallback.Execute()
+   at System.Threading.ThreadPoolWorkQueue.Dispatch()
+   at System.Threading.PortableThreadPool.WorkerThread.WorkerThreadStart())
 
 # Changelog
 
 ### Version 2.0.2 - tbd, 2024
 - Autotagging in background now displays for collections and previews when exists a task in queue but not started yet
 - Fixed tag searching, if more than one preview in collection has same tag
+- Fixed high memory usage by tag linking
 
 ### Version 2.0.1 - 31 Oct, 2024
 - New icons for list sortings
