@@ -92,7 +92,7 @@ namespace MediaCloud.Repositories
 
         public List<Tag> GetRangeByString(string? tagsString)
         {
-            if (string.IsNullOrEmpty(tagsString))
+            if (string.IsNullOrWhiteSpace(tagsString))
             {
                 return [];
             }

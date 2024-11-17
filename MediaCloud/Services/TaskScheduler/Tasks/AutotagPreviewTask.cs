@@ -65,7 +65,6 @@ namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
                 {
                     var tags = preview.Tags.Union(result.Tags).ToList();
                     tagRepository.UpdatePreviewLinks(tags, preview);
-                    successfullyProceededCount++;
                 }
 
                 AffectedEntities.Remove(AffectedEntities.First());
@@ -75,6 +74,7 @@ namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
                     throw new Exception($"Autotagging failed due to: {result.ErrorMessage}");
                 }
 
+                successfullyProceededCount++;
                 message += $" Preview {preview.Id} suggested aliases: {result.SuggestedAliases}";
             }
 

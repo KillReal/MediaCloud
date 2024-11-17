@@ -26,7 +26,7 @@ namespace MediaCloud.TaskScheduler
 
         public bool IsEmpty => _tasks.Count == 0;
 
-        public int TaskCount => _tasks.Count;
+        public int TaskCount => _tasks.Where(x => x.IsCompleted == false).Count();
 
         public int WorkCount => _tasks.Sum(x => x.GetWorkCount());
 

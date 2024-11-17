@@ -142,6 +142,13 @@ namespace MediaCloud.WebApp.Controllers
             return _taskScheduler.AddTask(task);
         }
 
+        public Guid AutocompleteTagForPreviewRange(List<Guid> previewsIds)
+        {
+            var task = new AutotagPreviewTask(_userProvider.GetCurrent(), previewsIds);
+
+            return _taskScheduler.AddTask(task);
+        }
+
         public List<Guid> AutocompleteTagForCollection(Guid collectionId)
         {
             var previewIds = _collectionRepository.Get(collectionId)?.Previews.Select(x => x.Id);

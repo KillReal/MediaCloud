@@ -26,10 +26,10 @@ TODO:
 - Rewrite collection gallery to _CollectionGallery.cshtml
 - Remove Tag Types
 - Search by file name?
-- Fix JoyTag server error on long run (Server got itself in trouble application.py line: 337). Problem might be in logging to console. So when nowhere to log it crashes.
 - Get rid of returnUrl in Urls
 - Implement Tasks page
 - Fix previews ordering in galery. Different order with filtering and witout.
+- Fix worker task execution race condition (Error while running the task, mb cause of taking the task twice) 
 
 # Changelog
 
@@ -38,6 +38,8 @@ TODO:
 - Autotagging in background now displays for collections and previews when exists a task in queue but not started yet
 - Removed returnUrl parameters from request urls
 - Added Humanizer nuget
+- Added autotagging feature to /Upload parameters
+- Added feature to prevent image compression to /Upload parameters
 - Fixed tag searching, if more than one preview in collection has same tag
 - Fixed high memory usage by tag linking
 - Fixed app crash and race condition when several workers take same task to run

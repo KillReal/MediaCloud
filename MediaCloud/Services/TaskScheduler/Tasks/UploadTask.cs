@@ -9,6 +9,8 @@ using MediaCloud.WebApp.Services.Statistic;
 using System.Text;
 using Blob = MediaCloud.Data.Models.Blob;
 using MediaCloud.WebApp.Services.ConfigProvider;
+using MediaCloud.WebApp.Services.TaskScheduler.Tasks;
+using MediaCloud.WebApp.Controllers;
 
 namespace MediaCloud.TaskScheduler.Tasks
 {
@@ -47,9 +49,12 @@ namespace MediaCloud.TaskScheduler.Tasks
         }
     }
 
-    public class UploadTask(User actor, List<UploadedFile> uploadedFiles, bool isCollection, string? tagString) 
-        : Task(actor), ITask
+    public class UploadTask(User user, List<UploadedFile> uploadedFiles, bool isCollection, string? tagString) 
+        : Task(user), ITask
     {
+        protected IConfigProvider _configProvider;
+        protected List<Preview> _processedPreviews = [];
+
         public List<UploadedFile> UploadedFiles { get; set; } = [.. uploadedFiles.OrderByDescending(x => x.Name, new FileNameComparer())];
 
         public bool IsCollection { get; set; } = isCollection;
@@ -63,7 +68,7 @@ namespace MediaCloud.TaskScheduler.Tasks
             var context = serviceProvider.GetRequiredService<AppDbContext>();
             var statisticProvider = new StatisticProvider(context, userProvider);
             var pictureService = serviceProvider.GetRequiredService<IPictureService>();
-            var configProvider = serviceProvider.GetRequiredService<IConfigProvider>();
+            _configProvider = serviceProvider.GetRequiredService<IConfigProvider>();
 
             var sizeToUpload = UploadedFiles.Select(x => x.Content.Length).Sum();
             var targetSize = statisticProvider.GetTodaySnapshot().MediasSize + sizeToUpload;
@@ -75,7 +80,7 @@ namespace MediaCloud.TaskScheduler.Tasks
             }
 
             var tagRepository = new TagRepository(context, statisticProvider, userProvider);
-            var blobRepository = new BlobRepository(context, statisticProvider, userProvider, pictureService, configProvider);
+            var blobRepository = new BlobRepository(context, statisticProvider, userProvider, pictureService, _configProvider);
 
             var foundTags = tagRepository.GetRangeByString(TagString);
             
@@ -90,12 +95,15 @@ namespace MediaCloud.TaskScheduler.Tasks
                 files = blobRepository.CreateRange(UploadedFiles);
             }
 
-            var preview = files.Select(x => x.Preview).Where(x => x.Order == 0).First();
+            _processedPreviews = files.Select(x => x.Preview).ToList();
             
             
             if (foundTags.Count > 0)
             {
-                tagRepository.UpdatePreviewLinks(foundTags, preview);
+                foreach (var preview in _processedPreviews)
+                {
+                    tagRepository.UpdatePreviewLinks(foundTags, preview);
+                }
             }
 
             CompletionMessage = $"Proceeded {files.Count} files";

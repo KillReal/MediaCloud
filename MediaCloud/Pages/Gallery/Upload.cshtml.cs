@@ -21,6 +21,10 @@ namespace MediaCloud.Pages.Gallery
         public string? Tags { get; set; }
         [BindProperty]
         public bool IsCollection { get; set; }
+        [BindProperty]
+        public bool IsNeedAutotagging { get; set; }
+        [BindProperty]
+        public bool IsKeepOriginalFormat { get; set; }
 
         public IActionResult OnGet()
         {
@@ -42,11 +46,14 @@ namespace MediaCloud.Pages.Gallery
                 {
                     Name = Path.GetFileName(file.FileName),
                     Type = file.ContentType,
-                    Content = await file.GetBytesAsync()
+                    Content = await file.GetBytesAsync(),
+                    KeepOriginalFormat = IsKeepOriginalFormat
                 });
             }
 
-            var task = new UploadTask(CurrentUser, uploadedFiles, IsCollection, Tags);
+            var task = IsNeedAutotagging 
+                ? new UploadAndAutotagTask(CurrentUser, uploadedFiles, IsCollection, Tags)
+                : new UploadTask(CurrentUser, uploadedFiles, IsCollection, Tags);
             var taskId = _taskScheduler.AddTask(task);
 
             return Redirect($"/TaskScheduler/GetTaskStatus?id={taskId}");

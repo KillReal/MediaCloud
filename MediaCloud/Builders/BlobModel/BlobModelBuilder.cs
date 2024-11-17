@@ -41,21 +41,24 @@ namespace MediaCloud.WebApp.Builders.BlobModel
 
                     if (extension != "webp")
                     {
-                        var webpStream = new MemoryStream();
+                        var stream = new MemoryStream();
 
                         if (file.Content.Length < _lowQualitySize)
                         {
-                            image.SaveAsWebp(webpStream, _highQualityWebpEncoder);
+                            image.SaveAsWebp(stream, _highQualityWebpEncoder);
                         }
                         else
                         {
-                            image.SaveAsWebp(webpStream, _webpEncoder);
+                            image.SaveAsWebp(stream, _webpEncoder);
                         }
 
-                        image = Image.Load(webpStream.ToArray());
-                        file.Type = "image/webp";
-                        file.Name = file.Name.Split('.').First() + ".webp";
-                        file.Content = webpStream.ToArray();
+                        if (file.KeepOriginalFormat == false)
+                        {
+                            image = Image.Load(stream.ToArray());
+                            file.Type = "image/webp";
+                            file.Name = file.Name.Split('.').First() + ".webp";
+                            file.Content = stream.ToArray();
+                        }
                     }
 
                     blob = new(file.Content, image.Width, image.Height);
