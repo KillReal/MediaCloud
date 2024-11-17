@@ -19,8 +19,9 @@ namespace MediaCloud.WebApp.Pages
         [BindProperty]
         public User? CurrentUser { get; set; } = null;
 
-        public IActionResult OnGet()
+        public IActionResult OnGet(string returnUrl = "/")
         {
+            TempData["ReturnUrl"] = returnUrl;
 
             if (_userProvider.GetCurrentOrDefault() != null)
             {
@@ -44,7 +45,7 @@ namespace MediaCloud.WebApp.Pages
 
             _logger.Info(Result.Message);
 
-            return Redirect(Request.Headers.Referer.ToString());
+            return Redirect(TempData["ReturnUrl"]?.ToString() ?? "/");
         }
     }
 }

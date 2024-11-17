@@ -1,0 +1,204 @@
+﻿@page
+@using Humanizer
+@model MediaCloud.WebApp.Pages.Tasks.ListModel
+@{
+}
+
+<div class="page-container">
+   <h1>
+      Task list
+   </h1>
+   <div class="button-panel d-flex flex-row align-items-center mt-3">
+      <div class="button-group">
+         <a class="btn btn-success btn-rounded" asp-page-handler="Execute">
+            Execute
+         </a>
+         <div class="separator"></div>
+      </div>
+      <div class="button-group">
+         <a class="btn btn-danger btn-rounded" asp-page-handler="CleanupCompleted">
+            Cleanup completed
+         </a>
+         <a class="btn btn-danger btn-rounded" asp-page-handler="CleanupAll">
+            Cleanup all
+         </a>
+      </div>
+   </div>
+   <hr class="text-white"/>
+
+<h3>
+   Tasks in progress    (@Model.TaskSchedulerStatus.WorkersActive / @Model.TaskSchedulerStatus.MaxWorkersAvailable)
+</h3>
+
+@if(Model.TaskSchedulerStatus.TaskStatuses.Where(x => x.IsCompleted == false && x.IsInProgress).Any())
+{
+   <table class="table" style="background-color: white; border-radius: 1rem">
+      <thead>
+         <tr>
+               <th class="table-item-padding">
+                  @Html.DisplayNameFor(model => model.TaskSchedulerStatus.TaskStatuses[0].Type)
+               </th>
+               <th class="table-item-padding">
+                  @Html.DisplayNameFor(model => model.TaskSchedulerStatus.TaskStatuses[0].WorkCount)
+               </th>
+               <th class="table-item-padding">
+                  @Html.DisplayNameFor(model => model.TaskSchedulerStatus.TaskStatuses[0].ExecutedAt)
+               </th>
+               <th class="table-item-padding">
+                  @Html.DisplayNameFor(model => model.TaskSchedulerStatus.TaskStatuses[0].CompletedAt)
+               </th>
+               <th class="table-item-padding">
+                  @Html.DisplayNameFor(model => model.TaskSchedulerStatus.TaskStatuses[0].CompletionMessage)
+               </th>
+         </tr>
+      </thead>
+      <tbody>
+      @foreach (var item in Model.TaskSchedulerStatus.TaskStatuses.Where(x => x.IsCompleted == false && x.IsInProgress).OrderByDescending(x => x.ExecutedAt)) {
+            <tr class="list list-group-item-primary">
+                  <td class="table-item-padding">
+                     @Html.DisplayFor(modelItem => item.Type)
+                  </td>
+                  <td class="table-item-padding">
+                     @Html.DisplayFor(modelItem => item.WorkCount)
+                  </td>
+                  <td class="table-item-padding">
+                     @{
+                        var executedAt = item.ExecutedAt.Humanize(null, DateTime.Now, null);
+                     }
+                     @Html.DisplayFor(modelItem => executedAt)
+                  </td>
+                  <td class="table-item-padding">
+                     @{
+                        var completedAt = item.CompletedAt.Humanize(null, DateTime.Now, null);
+                     }
+                     @Html.DisplayFor(modelItem => completedAt)
+                  </td>
+                  <td class="table-item-padding">
+                     @Html.DisplayFor(modelItem => item.CompletionMessage)
+                  </td>
+            </tr>
+      }
+      </tbody>
+   </table>
+}
+
+<h3>
+   Tasks in queue
+</h3>
+
+@if(Model.TaskSchedulerStatus.TaskStatuses.Where(x => x.IsInProgress == false && x.IsCompleted == false).Any())
+{
+   <table class="table" style="background-color: white; border-radius: 1rem">
+      <thead>
+         <tr>
+               <th class="table-item-padding">
+                  @Html.DisplayNameFor(model => model.TaskSchedulerStatus.TaskStatuses[0].Type)
+               </th>
+               <th class="table-item-padding">
+                  @Html.DisplayNameFor(model => model.TaskSchedulerStatus.TaskStatuses[0].WorkCount)
+               </th>
+               <th class="table-item-padding">
+                  @Html.DisplayNameFor(model => model.TaskSchedulerStatus.TaskStatuses[0].ExecutedAt)
+               </th>
+               <th class="table-item-padding">
+                  @Html.DisplayNameFor(model => model.TaskSchedulerStatus.TaskStatuses[0].CompletedAt)
+               </th>
+               <th class="table-item-padding">
+                  @Html.DisplayNameFor(model => model.TaskSchedulerStatus.TaskStatuses[0].CompletionMessage)
+               </th>
+         </tr>
+      </thead>
+      <tbody>
+      @foreach (var item in Model.TaskSchedulerStatus.TaskStatuses.Where(x => x.IsInProgress == false && x.IsCompleted == false)) {
+            <tr class="list list-group-item-secondary">
+                  <td class="table-item-padding">
+                     @Html.DisplayFor(modelItem => item.Type)
+                  </td>
+                  <td class="table-item-padding">
+                     @Html.DisplayFor(modelItem => item.WorkCount)
+                  </td>
+                  <td class="table-item-padding">
+                     @{
+                        var executedAt = item.ExecutedAt.Humanize(null, DateTime.Now, null);
+                     }
+                     @Html.DisplayFor(modelItem => executedAt)
+                  </td>
+                  <td class="table-item-padding">
+                     @{
+                        var completedAt = item.CompletedAt.Humanize(null, DateTime.Now, null);
+                     }
+                     @Html.DisplayFor(modelItem => completedAt)
+                  </td>
+                  <td class="table-item-padding">
+                     @Html.DisplayFor(modelItem => item.CompletionMessage)
+                  </td>
+            </tr>
+      }
+      </tbody>
+   </table>
+}
+
+<h3>
+   Completed tasks
+</h3>
+
+@if(Model.TaskSchedulerStatus.TaskStatuses.Where(x => x.IsCompleted == true).Any())
+{
+   <table class="table" style="background-color: white; border-radius: 1rem">
+      <thead>
+         <tr>
+               <th class="table-item-padding">
+                  @Html.DisplayNameFor(model => model.TaskSchedulerStatus.TaskStatuses[0].Type)
+               </th>
+               <th class="table-item-padding">
+                  Time spent
+               </th>
+               <th class="table-item-padding">
+                  @Html.DisplayNameFor(model => model.TaskSchedulerStatus.TaskStatuses[0].ExecutedAt)
+               </th>
+               <th class="table-item-padding">
+                  @Html.DisplayNameFor(model => model.TaskSchedulerStatus.TaskStatuses[0].CompletedAt)
+               </th>
+               <th class="table-item-padding">
+                  @Html.DisplayNameFor(model => model.TaskSchedulerStatus.TaskStatuses[0].CompletionMessage)
+               </th>
+         </tr>
+      </thead>
+      <tbody>
+      @foreach (var item in Model.TaskSchedulerStatus.TaskStatuses.Where(x => x.IsCompleted == true).OrderByDescending(x => x.CompletedAt)) {
+            var classStyle = item.IsSuccess 
+                  ? "list-group-item-success" 
+                  : "list-group-item-danger";
+            
+            <tr class="list @classStyle">
+                  <td class="table-item-padding">
+                     @Html.DisplayFor(modelItem => item.Type)
+                  </td>
+                  <td class="table-item-padding">
+                     @{
+                        var completedTime = (item.CompletedAt - item.ExecutedAt).Humanize();
+                     }
+                     @Html.DisplayFor(modelItem => completedTime)
+                  </td>
+                  <td class="table-item-padding">
+                     @{
+                        var executedAt = item.ExecutedAt.Humanize(null, DateTime.Now, null);
+                     }
+                     @Html.DisplayFor(modelItem => executedAt)
+                  </td>
+                  <td class="table-item-padding">
+                     @{
+                        var completedAt = item.CompletedAt.Humanize(null, DateTime.Now, null);
+                     }
+                     @Html.DisplayFor(modelItem => completedAt)
+                  </td>
+                  <td class="table-item-padding">
+                     @Html.DisplayFor(modelItem => item.CompletionMessage)
+                  </td>
+            </tr>
+      }
+      </tbody>
+   </table>
+}
+
+</div>
