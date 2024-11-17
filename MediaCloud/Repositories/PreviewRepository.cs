@@ -157,35 +157,36 @@ namespace MediaCloud.Repositories
             
             if (preview.Collection != null)
             {
-                preview.Collection.Previews = [.. preview.Collection.Previews.OrderBy(x => x.Order)];
-                if (preview.Order == 0)
+                if (preview.Collection.Count > 1)
                 {
-                    if (preview.Collection.Previews.Count > 1)
+                    if (preview.Order == 0)
                     {
-                        preview.Collection.Previews[1].Order = 0;
-                        preview.Collection.Previews[1].Tags = preview.Tags;
-                        preview.Collection.Count--;
-
-                        _context.Collections.Update(preview.Collection);
-                        _context.Blobs.Remove(preview.Blob);
-                        SaveChanges();
-                        _logger.Info("Removed Media in Collection with id: {preview.Collection.Id} by: {_actor.Name}", 
-                            preview.Collection.Id, _actor.Name);
-                        _statisticProvider.MediasCountChanged.Invoke(-1, -size);
-
-                        return true;
+                        var newTitlePreview = _context.Previews.Where(x => x.Collection == preview.Collection)
+                            .OrderBy(x => x.Order)
+                            .First(x => x.Order > preview.Order);
+                        newTitlePreview.Order = 0;
                     }
+                    preview.Collection.Count--;
 
-                    var collectionId = preview.Collection.Id;
-
+                    _context.Collections.Update(preview.Collection);
                     _context.Blobs.Remove(preview.Blob);
-                    _context.Collections.Remove(preview.Collection);
                     SaveChanges();
-                    _logger.Info("Removed Collection with id: {collectionId} by: {_actor.Name}", collectionId, _actor.Name);
+                    _logger.Info("Removed Media in Collection with id: {preview.Collection.Id} by: {_actor.Name}", 
+                        preview.Collection.Id, _actor.Name);
                     _statisticProvider.MediasCountChanged.Invoke(-1, -size);
 
                     return true;
                 }
+
+                var collectionId = preview.Collection.Id;
+
+                _context.Blobs.Remove(preview.Blob);
+                _context.Collections.Remove(preview.Collection);
+                SaveChanges();
+                _logger.Info("Removed Collection with id: {collectionId} by: {_actor.Name}", collectionId, _actor.Name);
+                _statisticProvider.MediasCountChanged.Invoke(-1, -size);
+
+                return true;
             }
 
             var mediaId = preview.Blob.Id;

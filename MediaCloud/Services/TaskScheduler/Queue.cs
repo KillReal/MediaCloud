@@ -5,6 +5,7 @@ namespace MediaCloud.TaskScheduler
 {
     public class Queue
     {
+        private Mutex _takeMutex = new();
         private int _completedTaskLifetimeMin;
         private readonly List<Task> _tasks = [];
 
@@ -14,7 +15,7 @@ namespace MediaCloud.TaskScheduler
                 && DateTime.Now - x.CompletedAt > new TimeSpan(0, _completedTaskLifetimeMin, 0));
         }
 
-        public Action<Task, string?> OnTaskComplete;
+        public Action<Task> OnTaskComplete;
 
         public Queue(IConfigProvider configProvider) 
         {
@@ -36,18 +37,40 @@ namespace MediaCloud.TaskScheduler
             RemoveOldCompletedTasks();
         }
 
-        public void CompleteTask(Task task, string? message) 
+        public void CompleteTask(Task task) 
         {
             task.IsCompleted = true;
             task.CompletedAt = DateTime.Now;
 
-            if (message != null)
-            {
-                task.CompletionMessage = message;
-            }
+            RemoveOldCompletedTasks();
         }
 
-        public Task? GetNextTask() => _tasks.Where(x => x.IsCompleted == false && x.IsExecuted == false).FirstOrDefault();
+        public void CleanupCompleted()
+        {
+            _tasks.RemoveAll(x => x.IsCompleted);
+        }
+
+        public void CleanupAll()
+        {
+            _tasks.Clear();
+        }
+
+        public Task? TakeNextTask() 
+        {
+            _takeMutex.WaitOne();
+            var task = _tasks.Where(x => x.IsCompleted == false && x.IsExecuted == false).FirstOrDefault();
+
+            if (task == null)
+            {
+                _takeMutex.ReleaseMutex();
+                return null;
+            }
+
+            task.IsExecuted = true;
+            _takeMutex.ReleaseMutex();
+
+            return task;
+        }
 
         public Task? GetTask(Guid id) => _tasks.FirstOrDefault(x => x.Id == id);
 
@@ -60,7 +83,7 @@ namespace MediaCloud.TaskScheduler
                 return -1;
             }
 
-            return _tasks.Where(x => x.IsCompleted == false).ToList().IndexOf(task) + 1;
+            return _tasks.Where(x => x.IsCompleted == false && x.IsExecuted == false).ToList().IndexOf(task) + 1;
         }
 
         public TaskStatus GetTaskStatus(Guid taskId) 
@@ -79,8 +102,10 @@ namespace MediaCloud.TaskScheduler
 
 
             //TODO: Replace with Task itself.
+            taskStatus.Type = task.Type;
             taskStatus.IsInProgress = task.IsExecuted;
             taskStatus.IsCompleted = task.IsCompleted;
+            taskStatus.IsSuccess = !task.IsFailed;
             taskStatus.CompletionMessage = task.CompletionMessage;
             taskStatus.WorkCount = task.GetWorkCount();
             taskStatus.ExecutedAt = task.ExecutedAt;

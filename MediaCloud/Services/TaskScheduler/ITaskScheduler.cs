@@ -9,5 +9,7 @@ namespace MediaCloud.TaskScheduler
         public TaskSchedulerStatus GetStatus();
 
         public TaskStatus GetStatus(Guid taskId);
+
+        public void CleanupQueue(bool cleanupOnlyCompleted = true);
     }
 }

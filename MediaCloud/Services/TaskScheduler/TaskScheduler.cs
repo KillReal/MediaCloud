@@ -1,4 +1,5 @@
-﻿using MediaCloud.WebApp.Services.ConfigProvider;
+﻿using MediaCloud.Data.Models;
+using MediaCloud.WebApp.Services.ConfigProvider;
 using NLog;
 using Task = MediaCloud.TaskScheduler.Tasks.Task;
 
@@ -86,5 +87,17 @@ namespace MediaCloud.TaskScheduler
         /// <param name="taskId"> Task id. </param>
         /// <returns> <see cref="TaskStatus"/> with task state. </returns>
         public TaskStatus GetStatus(Guid taskId) => _queue.GetTaskStatus(taskId);
+
+        public void CleanupQueue(bool cleanupOnlyCompleted = true)
+        {
+            if (cleanupOnlyCompleted) 
+            {
+                _queue.CleanupCompleted();
+            }
+            else
+            {
+                _queue.CleanupAll();
+            }
+        }
     }
 }

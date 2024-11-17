@@ -40,7 +40,7 @@ namespace MediaCloud.TaskScheduler
         /// </summary>
         public void Run()
         {
-            Task = _queue.GetNextTask();
+            Task = _queue.TakeNextTask();
 
             if (Task == null)
             {

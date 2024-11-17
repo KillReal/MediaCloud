@@ -51,4 +51,5 @@ See IAutotaggingService service communication.
 - AI JoyTag (https://github.com/fpgaminer/joytag) for AI autotagging
 - SixLabors.ImageSharp (https://github.com/SixLabors/ImageSharp) for image processing
 - Html5Sortable (https://github.com/lukasoppermann/html5sortable) for image rearranging by drag-&-drop
+- Humanizer (https://www.nuget.org/packages/Humanizer) for displaying values in human readable format
 - JQuery (for html5sortable lib)

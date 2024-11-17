@@ -15,6 +15,11 @@ namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
 
         public override int GetWorkCount()
         {
+            if (IsCompleted)
+            {
+                return 0;
+            }
+
             if (ExecutedAt == DateTime.MinValue)
             {
                 return 100;
@@ -41,6 +46,8 @@ namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
             var tagRepository = new TagRepository(context, statisticProvider, userProvider);
             var autotagService = serviceProvider.GetRequiredService<IAutotagService>();
 
+            var successfullyProceededCount = 0;
+            var message = "";
             while (AffectedEntities.Count != 0)
             {
                 _aproximateExecutionTime = autotagService.GetAverageExecutionTime();
@@ -58,6 +65,7 @@ namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
                 {
                     var tags = preview.Tags.Union(result.Tags).ToList();
                     tagRepository.UpdatePreviewLinks(tags, preview);
+                    successfullyProceededCount++;
                 }
 
                 AffectedEntities.Remove(AffectedEntities.First());
@@ -66,7 +74,11 @@ namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
                 {
                     throw new Exception($"Autotagging failed due to: {result.ErrorMessage}");
                 }
+
+                message += $" Preview {preview.Id} suggested aliases: {result.SuggestedAliases}";
             }
+
+            CompletionMessage = $"Proceeded {successfullyProceededCount} previews [ {message} ]";
         }
 
     }

@@ -129,6 +129,7 @@ public class AutotagService : IAutotagService
             {
                 PreviewId = preview.Id,
                 Tags = actualTags,
+                SuggestedAliases = suggestedTagsString,
                 IsSuccess = true
             };
         }

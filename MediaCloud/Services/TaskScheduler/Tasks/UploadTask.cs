@@ -92,6 +92,8 @@ namespace MediaCloud.TaskScheduler.Tasks
 
             var preview = files.Select(x => x.Preview).Where(x => x.Order == 0).First();
             tagRepository.UpdatePreviewLinks(foundTags, preview);
+
+            CompletionMessage = $"Proceeded {files.Count} files";
         }
     }
 }
