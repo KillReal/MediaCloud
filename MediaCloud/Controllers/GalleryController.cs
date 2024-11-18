@@ -157,25 +157,10 @@ namespace MediaCloud.WebApp.Controllers
             {
                 return [];
             }
-
-            if (_configProvider.EnvironmentSettings.UseParallelProcessingForAutotagging)
-            {
-                var parts = _configProvider.EnvironmentSettings.AutotaggingMaxParallelDegree;
-                var chunks = previewIds.Chunk(previewIds.Count() / parts + 1);
-                var result = new List<Guid>();
-
-                foreach (var chunk in chunks)
-                {
-                    var task = new AutotagPreviewTask(_userProvider.GetCurrent(), [.. chunk]);
-                    result.Add(_taskScheduler.AddTask(task));
-                }
-
-                return result;
-            }
             
-            var singleTask = new AutotagPreviewTask(_userProvider.GetCurrent(), previewIds.ToList());
+            var task = new AutotagPreviewTask(_userProvider.GetCurrent(), previewIds.ToList());
 
-            return [_taskScheduler.AddTask(singleTask)];
+            return [_taskScheduler.AddTask(task)];
         }
 
         public double GetAverageAutocompleteTagExecution()
