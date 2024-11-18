@@ -45,9 +45,10 @@ public class AutotagService : IAutotagService
         _joyTagConnectionString = configProvider.EnvironmentSettings.AiJoyTagConnectionString ?? 
             throw new Exception("AI JoyTag Connection String is not set");
 
-        var parralelDegree = configProvider.EnvironmentSettings.AutotaggingMaxParallelDegree;
-        _semaphore = new(parralelDegree, parralelDegree);
-        _maxParralelDegree = parralelDegree;
+        var _maxParralelDegree = configProvider.EnvironmentSettings.UseParallelProcessingForAutotagging 
+            ? configProvider.EnvironmentSettings.AutotaggingMaxParallelDegree
+            : 1;
+        _semaphore = new(_maxParralelDegree, _maxParralelDegree);
         _memoryCache = memoryCache;
         _memoryCacheOptions = new MemoryCacheEntryOptions()
                 .SetAbsoluteExpiration(TimeSpan.FromMinutes(30));
@@ -58,7 +59,36 @@ public class AutotagService : IAutotagService
         };
     }
 
-    public AutotagResult AutocompleteTags(Preview preview, TagRepository tagRepository)
+    public List<AutotagResult> AutotagPreviewRange(List<Preview> previews, TagRepository tagRepository)
+    {
+        var results = new List<AutotagResult>();
+        
+        if (_maxParralelDegree > 0)
+        {
+            var chunks = previews.Chunk(previews.Count / _maxParralelDegree + 1);
+
+            foreach (var chunk in chunks)
+            {
+                Task.Run(()=> {
+                    foreach (var preview in chunk)
+                    {
+                       results.Add(AutotagPreview(preview, tagRepository));
+                    }
+                });
+            }
+
+            return results;
+        }
+
+        foreach (var preview in previews)
+        {
+            results.Add(AutotagPreview(preview, tagRepository));
+        }
+
+        return results;
+    }
+
+    public AutotagResult AutotagPreview(Preview preview, TagRepository tagRepository)
     {
         if (preview == null)
         {

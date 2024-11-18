@@ -48,34 +48,38 @@ namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
 
             var successfullyProceededCount = 0;
             var message = "";
-            while (AffectedEntities.Count != 0)
+
+            var previews = new List<Preview>();
+
+            foreach (var id in AffectedEntities)
             {
-                _aproximateExecutionTime = autotagService.GetAverageExecutionTime();
-                var preview = previewRepository.Get(AffectedEntities.First());
+                var preview = previewRepository.Get(id);
 
                 if (preview == null)
                 {
-                    AffectedEntities.Remove(AffectedEntities.First());
                     continue;
                 }
 
-                var result = autotagService.AutocompleteTags(preview, tagRepository);
+                previews.Add(preview);
+            }
+
+            var results = autotagService.AutotagPreviewRange(previews, tagRepository);
+
+            foreach (var result in results)
+            {
+                var preview = previews.First(x => x.Id == result.PreviewId);
 
                 if (result.IsSuccess && result.Tags.Count != 0)
                 {
                     var tags = preview.Tags.Union(result.Tags).ToList();
                     tagRepository.UpdatePreviewLinks(tags, preview);
+                    successfullyProceededCount++;
+                    message += $" Preview {preview.Id} suggested aliases: {result.SuggestedAliases}";
                 }
-
-                AffectedEntities.Remove(AffectedEntities.First());
-
-                if (result.IsSuccess == false)
+                else 
                 {
-                    throw new Exception($"Autotagging failed due to: {result.ErrorMessage}");
+                    message += $" Preview {preview.Id} failed to proceed due to: {result.ErrorMessage}";
                 }
-
-                successfullyProceededCount++;
-                message += $" Preview {preview.Id} suggested aliases: {result.SuggestedAliases}";
             }
 
             CompletionMessage = $"Proceeded {successfullyProceededCount} previews [ {message} ]";

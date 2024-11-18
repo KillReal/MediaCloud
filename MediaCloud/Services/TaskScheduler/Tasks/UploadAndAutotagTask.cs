@@ -27,21 +27,7 @@ namespace MediaCloud.TaskScheduler.Tasks
             .ToList();
 
          var taskScheduler = serviceProvider.GetRequiredService<ITaskScheduler>();
-
-         if (_configProvider.EnvironmentSettings.UseParallelProcessingForAutotagging)
-         {
-            var parts = _configProvider.EnvironmentSettings.AutotaggingMaxParallelDegree;
-            var chunks = previewsIds.Chunk(previewsIds.Count / parts + 1);
-
-            foreach (var chunk in chunks)
-            {
-               taskScheduler.AddTask(new AutotagPreviewTask(User, [.. chunk]));
-            }
-         }
-         else 
-         {
-            taskScheduler.AddTask(new AutotagPreviewTask(User, previewsIds));
-         }
+         taskScheduler.AddTask(new AutotagPreviewTask(User, previewsIds));
 
          CompletionMessage += " and autotagging task(-s) added to queue";
       }
