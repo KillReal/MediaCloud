@@ -114,9 +114,7 @@ public class AutotagService : IAutotagService
                 image = preview.Content
             };
 
-            _semaphore.WaitOne();
             var result = Post("predictTags", data);
-            _semaphore.Release();
 
             if (string.IsNullOrWhiteSpace(result))
             {
@@ -225,8 +223,11 @@ public class AutotagService : IAutotagService
 
         contentBytes.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
+        _semaphore.WaitOne();
         var response = _httpClient.PostAsync(_joyTagConnectionString + "/" + method, contentBytes);
         var result = response.GetAwaiter().GetResult();
+        _semaphore.Release();
+
 
         if (response.IsFaulted || result.StatusCode != HttpStatusCode.OK)
         {
