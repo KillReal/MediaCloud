@@ -63,7 +63,7 @@ public class AutotagService : IAutotagService
     {
         var results = new List<AutotagResult>();
         
-        if (_maxParralelDegree > 0)
+        if (_maxParralelDegree > 0 && previews.Count > 1)
         {
             var chunks = previews.Chunk(previews.Count / _maxParralelDegree + 1);
 
