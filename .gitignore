@@ -86,4 +86,3 @@ _[Ss]cripts
 __pycache__/
 *.onnx
 *.safetensors
-JoyTag/models/top_tags.txt

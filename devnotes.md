@@ -27,14 +27,13 @@ TODO:
 - Remove Tag Types
 - Search by file name?
 - Get rid of returnUrl in Urls
-- Implement Tasks page
 - Fix previews ordering in galery. Different order with filtering and witout.
 - Fix worker task execution race condition (Error while running the task, mb cause of taking the task twice) 
 
 # Changelog
 
 ### Version 2.0.2 - tbd, 2024
-- Added /Tags view for Admin for tasks execution monitoring
+- Added /Tasks view for Admin for tasks execution monitoring
 - Autotagging in background now displays for collections and previews when exists a task in queue but not started yet
 - Removed returnUrl parameters from request urls
 - Added Humanizer nuget

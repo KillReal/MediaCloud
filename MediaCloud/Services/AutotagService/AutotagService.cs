@@ -67,15 +67,19 @@ public class AutotagService : IAutotagService
         {
             var chunks = previews.Chunk(previews.Count / _maxParralelDegree + 1);
 
+            var tasks = new List<Task>();
+
             foreach (var chunk in chunks)
             {
-                Task.Run(()=> {
+                tasks.Add(Task.Run(()=> {
                     foreach (var preview in chunk)
                     {
                        results.Add(AutotagPreview(preview, tagRepository));
                     }
-                });
+                }));
             }
+
+            tasks.ForEach(x => x.Wait());
 
             return results;
         }
