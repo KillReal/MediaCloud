@@ -23,13 +23,11 @@ TODO:
 - Implement JoyTag garbage collection (unload model if not used for long time)
 - Show first uploaded image on upload page
 - Fix statistic recalculation when only 1 day recorded
-- Rewrite collection gallery to _CollectionGallery.cshtml
 - Remove Tag Types
 - Search by file name?
 - Get rid of returnUrl in Urls
 - Fix previews ordering in galery. Different order with filtering and witout.
 - Fix worker task execution race condition (Error while running the task, mb cause of taking the task twice)
-- Rework ordering in collection
 
 # Changelog
 
