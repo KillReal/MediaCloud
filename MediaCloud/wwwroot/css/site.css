@@ -327,6 +327,12 @@ body {
     animation-iteration-count: 1;
 }
 
+.picture-card:hover {
+    transition: all 0.3s ease-in-out;
+    transform: scale(1.05);
+    cursor: pointer;
+}
+
 .picture-container {
     position:relative;
     display: inline-block;

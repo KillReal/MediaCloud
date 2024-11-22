@@ -212,14 +212,12 @@
         }
         currentOffset += @Model.ListBuilder.Pagination.Count;
 
-        var url = "/Gallery/GetBatch?count=" + @Model.ListBuilder.Pagination.Count + "&offset=" + nextOffset 
+        var url = "/Gallery/GetPreviewsBatch?count=" + @Model.ListBuilder.Pagination.Count + "&offset=" + nextOffset 
             + "&sort=" + '@(Model.ListBuilder.Sorting.PropertyName)' + "&filter=" + '@(Model.ListBuilder.Filtering.Filter)';
         fetch(url).then(function(response) {
             return response.text();
         }).then(function(data) {
             var gallery = document.getElementById('gallery');
-
-            console.log(data);
 
             gallery.insertAdjacentHTML('beforeend', data);
             nextOffset += @Model.ListBuilder.Pagination.Count;

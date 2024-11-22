@@ -15,6 +15,8 @@ namespace MediaCloud.Pages.Gallery
         [BindProperty]
         public Collection Collection { get; set; } = new();
         [BindProperty]
+        public List<Preview> Previews { get; set; } = [];
+        [BindProperty]
         public List<Tag> Tags { get; set; } = [];
         [BindProperty]
         public bool IsOrderChanged { get; set; }
@@ -37,6 +39,8 @@ namespace MediaCloud.Pages.Gallery
             {
                 return Redirect("/Error");
             }
+
+            Previews = Collection.Previews.OrderBy(x => x.Order).Take(ListRequest.Count).ToList();
 
             var previewsTags = Collection.Previews.OrderBy(x => x.Order).Select(x => x.Tags);
             IEnumerable<Tag>? tagsUnion = null;
@@ -65,12 +69,9 @@ namespace MediaCloud.Pages.Gallery
                 return Redirect("/Error");
             }
 
-            if (IsOrderChanged)
+            if (_collectionRepository.TryUpdateOrder(Collection.Id, Orders) == false)
             {
-                if (_collectionRepository.TryUpdateOrder(Collection.Id, Orders) == false)
-                {
-                    return Redirect("/Error");
-                }
+                return Redirect("/Error");
             }
 
             var collection = _collectionRepository.Get(Collection.Id);

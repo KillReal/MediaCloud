@@ -20,7 +20,7 @@ namespace MediaCloud.Builders.List
     {
         public Sorting Sorting { get; init; } = new Sorting(request.Sort ?? "CreatedAtDesc");
 
-        public Filtering Filtering { get; init; } = new Filtering((request.Filter ?? "").ToLower());
+        public Filtering Filtering { get; init; } = new Filtering(request.Filter ?? "");
 
         public Pagination Pagination { get; init; } = new Pagination(request.Count == 0
                 ? userSettings.ListMaxEntitiesCount

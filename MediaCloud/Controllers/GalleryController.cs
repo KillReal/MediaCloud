@@ -71,12 +71,26 @@ namespace MediaCloud.WebApp.Controllers
             return jsonPreviews;
         }
 
-        public async Task<ActionResult> GetBatchAsync(ListRequest listRequest)
+        public async Task<ActionResult> GetPreviewsBatchAsync(ListRequest listRequest)
         {
             var ListBuilder = new ListBuilder<Preview>(listRequest, _configProvider.UserSettings);
             var previews = await ListBuilder.BuildAsync(_previewRepository);
 
             return PartialView("/Pages/Gallery/_Gallery.cshtml", new _GalleryPageModel(previews));
+        }
+
+        public ActionResult GetCollectionPreviewsBatch(Guid id, ListRequest listRequest)
+        {
+            var previews = _collectionRepository.GetList(id, listRequest);
+
+            return PartialView("/Pages/Gallery/_CollectionPreviews.cshtml", new _CollectionPreviewsPageModel(previews));
+        }
+
+        public ActionResult GetCollectionReordableBatch(Guid id, ListRequest listRequest)
+        {
+            var previews = _collectionRepository.GetList(id, listRequest);
+
+            return PartialView("/Pages/Gallery/_CollectionReordable.cshtml", new _CollectionReordablePageModel(previews));
         }
 
         public FileContentResult Preview(Guid id)

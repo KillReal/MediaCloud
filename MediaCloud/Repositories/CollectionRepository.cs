@@ -67,7 +67,7 @@ namespace MediaCloud.Repositories
         {
             var collection = Get(id);
 
-            if (collection == null || collection.Previews.Count != orders.Count)
+            if (collection == null)
             {
                 return false;
             }
@@ -76,7 +76,7 @@ namespace MediaCloud.Repositories
 
             var tags = new List<Tag>();
 
-            for (var i = 0; i < previews.Count; i++)
+            for (var i = 0; i < orders.Count; i++)
             {
                 previews[i].Order = orders[i];
                 if (previews[i].Tags.Count > 0)

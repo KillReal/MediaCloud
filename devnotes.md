@@ -28,7 +28,8 @@ TODO:
 - Search by file name?
 - Get rid of returnUrl in Urls
 - Fix previews ordering in galery. Different order with filtering and witout.
-- Fix worker task execution race condition (Error while running the task, mb cause of taking the task twice) 
+- Fix worker task execution race condition (Error while running the task, mb cause of taking the task twice)
+- Rework ordering in collection
 
 # Changelog
 
