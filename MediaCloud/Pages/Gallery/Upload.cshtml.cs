@@ -7,13 +7,15 @@ using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp;
 using MediaCloud.Extensions;
 using MediaCloud.WebApp.Services.Statistic;
+using MediaCloud.WebApp.Services.ConfigProvider;
 
 namespace MediaCloud.Pages.Gallery
 {
-    public class UploadModel(IUserProvider userProvider, ITaskScheduler taskScheduler) 
+    public class UploadModel(IUserProvider userProvider, ITaskScheduler taskScheduler, IConfigProvider configProvider) 
         : AuthorizedPageModel(userProvider)
     {
         private readonly ITaskScheduler _taskScheduler = taskScheduler;
+        private readonly IConfigProvider _configProvider = configProvider;
 
         [BindProperty]
         public List<IFormFile> Files { get; set; } = [];
@@ -24,10 +26,16 @@ namespace MediaCloud.Pages.Gallery
         [BindProperty]
         public bool IsNeedAutotagging { get; set; }
         [BindProperty]
+        public bool IsAutotaggingEnabled { get; set; }
+        [BindProperty]
         public bool IsKeepOriginalFormat { get; set; }
 
         public IActionResult OnGet()
         {
+            IsAutotaggingEnabled = _configProvider.EnvironmentSettings.AutotaggingEnabled 
+                && CurrentUser != null 
+                && CurrentUser.IsAutotaggingAllowed;
+
             return Page();
         }
 

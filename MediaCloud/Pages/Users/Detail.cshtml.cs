@@ -66,6 +66,7 @@ namespace MediaCloud.Pages.Users
             referenceUser.IsActivated = User.IsActivated;
             referenceUser.InviteCode = User.InviteCode;
             referenceUser.SpaceLimit = User.SpaceLimit;
+            referenceUser.IsAutotaggingAllowed = User.IsAutotaggingAllowed;
 
             _userRepository.Update(referenceUser);
 

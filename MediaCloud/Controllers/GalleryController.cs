@@ -24,6 +24,15 @@ namespace MediaCloud.WebApp.Controllers
         private readonly IAutotagService _autotagService = actorService;
         private readonly CollectionRepository _collectionRepository = collectionRepository;
 
+        private bool IsAutotaggingAllowed()
+        {
+            var currentUser = _userProvider.GetCurrent();
+
+            return _configProvider.EnvironmentSettings.AutotaggingEnabled 
+                && currentUser != null 
+                && currentUser.IsAutotaggingAllowed;
+        }
+
         public List<string> GetSuggestions(string searchString, int limit = 10)
         {
             return _tagRepository.GetSuggestionsByString(searchString, limit);
@@ -31,6 +40,11 @@ namespace MediaCloud.WebApp.Controllers
 
         public List<string> GetAliasSuggestions(string searchString, int limit = 10)
         {
+            if (IsAutotaggingAllowed() == false)
+            {
+                return [];
+            }
+
             return _autotagService.GetSuggestionsByString(searchString, limit);
         }
 
@@ -137,6 +151,11 @@ namespace MediaCloud.WebApp.Controllers
 
         public Guid AutocompleteTagForPreview(Guid previewId)
         {
+            if (IsAutotaggingAllowed() == false)
+            {
+                return Guid.Empty;
+            }
+
             var task = new AutotagPreviewTask(_userProvider.GetCurrent(), [previewId]);
 
             return _taskScheduler.AddTask(task);
@@ -144,6 +163,11 @@ namespace MediaCloud.WebApp.Controllers
 
         public Guid AutocompleteTagForPreviewRange(List<Guid> previewsIds)
         {
+            if (IsAutotaggingAllowed() == false)
+            {
+                return Guid.Empty;
+            }
+
             var task = new AutotagPreviewTask(_userProvider.GetCurrent(), previewsIds);
 
             return _taskScheduler.AddTask(task);
@@ -151,6 +175,11 @@ namespace MediaCloud.WebApp.Controllers
 
         public List<Guid> AutocompleteTagForCollection(Guid collectionId)
         {
+            if (IsAutotaggingAllowed() == false)
+            {
+                return [];
+            }
+
             var previewIds = _collectionRepository.Get(collectionId)?.Previews.Select(x => x.Id);
             
             if (previewIds == null || !previewIds.Any())

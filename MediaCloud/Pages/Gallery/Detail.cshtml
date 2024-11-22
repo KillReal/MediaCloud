@@ -99,7 +99,7 @@
                 <div class="button-panel w-100 mb-2">
                     <div class="button-group justify-content-between">
                         <input type="submit" value="Edit" class="btn btn-success" />
-                        @if (Model.BlobType.Contains("image"))
+                        @if (Model.IsAutotaggingEnabled && Model.BlobType.Contains("image"))
                         {
                             <input class="btn btn-success btn-rounded" 
                                 type="button" 
@@ -258,106 +258,109 @@
         modelRotationDegree.value = currentDegree;
     }
 
-    fetch('/Gallery/IsPreviewAutotaggingExecuted?previewId=' + '@Model.PreviewId')
-        .then((response) => response.json())
-        .then(function (data) {
-            if (data == true) {
-                    document.getElementById('autotagButton').disabled = true;
-                    document.getElementById('autotagButton').value = "Autotagging... ";
-            }
-        }
-    )
-
-    var averageExecutionTime = 45.0;
-
-    fetch('/Gallery/GetAverageAutocompleteTagExecution')
-        .then((response) => response.json())
-        .then(function (data) {
-            if (data > 0) {
-                averageExecutionTime = data;
-            }
-        }
-    )
-
-    var modalTitle = document.getElementById('modalTitle');
-    var modalBody = document.getElementById("modalBody");
-    var loadSpinner = document.getElementById("loadingSpinner");
-
-    function setModalTitle(title) {
-        modalTitle.innerHTML = title;
-    }
-
-    function setModalProgress(progress, executionTime) {
-        document.getElementById('progress').innerHTML = "Progress: " + parseInt(progress, 10) + "%";
-        document.getElementById('executionTime').innerHTML = 'It may take some time (~' + parseInt(executionTime, 10) + ' sec)';
-        document.getElementById('autotagButton').value = "Autotagging... " + parseInt(progress, 10)+ "%";
-    }
-
-    function hideModalBody() {
-        $('#loadingModal').modal('hide');
-    }
-
-    function showModalBody() {
-        $('#loadingModal').modal('show');
-        document.getElementById('autotagButton').disabled = true;
-        document.getElementById('autotagButton').value = "Autotagging... ";
-    }
-
-    function showLoadSpinner() {
-        loadSpinner.style.display = "block";
-    }
-
-    function hideLoadSpinner() {
-        loadSpinner.style.display = "none";
-    }
-
-    var timerCounter = 0;
-    var updateInterval = 3000;
-    var progress = 0;
-
-    function autocompleteTags(previewId, isExecuted = false) {
-        
-        var url = "/Gallery/AutocompleteTagForPreview?previewId=" + previewId;
-
-        var request = new XMLHttpRequest();
-        request.open('POST', url, true);
-        request.onload = function() { // request successful
-            setModalTitle('Waiting queue for processing...');
-            showModalBody();
-            var data = JSON.parse(request.response);
-
-            var url = "/TaskScheduler/GetTaskStatus?id=" + data;
-
-            const updator = function () {
-                fetch(url)
-                    .then((response) => response.json())
-                    .then(function (data) {
-                        progress = 100 - data.workCount;
-
-                        if (data.isCompleted == true) {
-                            setModalTitle('Autotagging successfully completed!');
-                            hideModalBody();
-                            hideLoadSpinner();
-
-                            location.reload();
-                            clearInterval(loadingUpdateInterval);
-                        }
-                        else if (data.isInProgress == false) {
-                            setModalTitle('Waiting queue for processing...');
-                        }
-                        else {
-                            setModalTitle('Autotagging in progress...');
-                            setModalProgress(progress, averageExecutionTime);
-                            timerCounter += updateInterval;
-                        }
-                    })
+    if (@Model.IsAutotaggingEnabled)
+    {
+        fetch('/Gallery/IsPreviewAutotaggingExecuted?previewId=' + '@Model.PreviewId')
+            .then((response) => response.json())
+            .then(function (data) {
+                if (data == true) {
+                        document.getElementById('autotagButton').disabled = true;
+                        document.getElementById('autotagButton').value = "Autotagging... ";
                 }
+            }
+        )
 
-                updator();
-                var loadingUpdateInterval = setInterval(updator, updateInterval);
-            };
+        var averageExecutionTime = 45.0;
 
-        request.send();
+        fetch('/Gallery/GetAverageAutocompleteTagExecution')
+            .then((response) => response.json())
+            .then(function (data) {
+                if (data > 0) {
+                    averageExecutionTime = data;
+                }
+            }
+        )
+
+        var modalTitle = document.getElementById('modalTitle');
+        var modalBody = document.getElementById("modalBody");
+        var loadSpinner = document.getElementById("loadingSpinner");
+
+        function setModalTitle(title) {
+            modalTitle.innerHTML = title;
+        }
+
+        function setModalProgress(progress, executionTime) {
+            document.getElementById('progress').innerHTML = "Progress: " + parseInt(progress, 10) + "%";
+            document.getElementById('executionTime').innerHTML = 'It may take some time (~' + parseInt(executionTime, 10) + ' sec)';
+            document.getElementById('autotagButton').value = "Autotagging... " + parseInt(progress, 10)+ "%";
+        }
+
+        function hideModalBody() {
+            $('#loadingModal').modal('hide');
+        }
+
+        function showModalBody() {
+            $('#loadingModal').modal('show');
+            document.getElementById('autotagButton').disabled = true;
+            document.getElementById('autotagButton').value = "Autotagging... ";
+        }
+
+        function showLoadSpinner() {
+            loadSpinner.style.display = "block";
+        }
+
+        function hideLoadSpinner() {
+            loadSpinner.style.display = "none";
+        }
+
+        var timerCounter = 0;
+        var updateInterval = 3000;
+        var progress = 0;
+
+        function autocompleteTags(previewId, isExecuted = false) {
+            
+            var url = "/Gallery/AutocompleteTagForPreview?previewId=" + previewId;
+
+            var request = new XMLHttpRequest();
+            request.open('POST', url, true);
+            request.onload = function() { // request successful
+                setModalTitle('Waiting queue for processing...');
+                showModalBody();
+                var data = JSON.parse(request.response);
+
+                var url = "/TaskScheduler/GetTaskStatus?id=" + data;
+
+                const updator = function () {
+                    fetch(url)
+                        .then((response) => response.json())
+                        .then(function (data) {
+                            progress = 100 - data.workCount;
+
+                            if (data.isCompleted == true) {
+                                setModalTitle('Autotagging successfully completed!');
+                                hideModalBody();
+                                hideLoadSpinner();
+
+                                location.reload();
+                                clearInterval(loadingUpdateInterval);
+                            }
+                            else if (data.isInProgress == false) {
+                                setModalTitle('Waiting queue for processing...');
+                            }
+                            else {
+                                setModalTitle('Autotagging in progress...');
+                                setModalProgress(progress, averageExecutionTime);
+                                timerCounter += updateInterval;
+                            }
+                        })
+                    }
+
+                    updator();
+                    var loadingUpdateInterval = setInterval(updator, updateInterval);
+                };
+
+            request.send();
+        }
     }
 </script>
 

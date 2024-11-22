@@ -9,6 +9,7 @@ namespace MediaCloud.Data.Models
         public bool IsAdmin { get; set; }
         public bool IsPublic { get; set; }
         public bool IsActivated { get; set; }
+        public bool IsAutotaggingAllowed { get; set; }
         public DateTime LastLoginAt { get; set; }
         public DateTime? NextLoginAttemptAt {get; set; }
         public int FailLoginAttemptCount {get; set;}

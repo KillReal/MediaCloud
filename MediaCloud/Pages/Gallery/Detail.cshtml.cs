@@ -5,11 +5,12 @@ using MediaCloud.Repositories;
 using MediaCloud.WebApp.Pages;
 using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp.Repositories;
+using MediaCloud.WebApp.Services.ConfigProvider;
 
 namespace MediaCloud.Pages.Gallery
 {
     public class DetailModel(IUserProvider actorProvider, IPictureService pictureService, TagRepository tagRepository,
-        PreviewRepository previewRepository, BlobRepository blobRepository) : AuthorizedPageModel(actorProvider)
+        PreviewRepository previewRepository, BlobRepository blobRepository, IConfigProvider configProvider) : AuthorizedPageModel(actorProvider)
     {
         private readonly IPictureService _pictureService = pictureService;
         private readonly TagRepository _tagRepository = tagRepository;
@@ -33,7 +34,9 @@ namespace MediaCloud.Pages.Gallery
         [BindProperty]
         public Guid? NextPreviewId { get; set; } = null;
         [BindProperty]
-        public int RotationDegree {get; set;} = 0;
+        public int RotationDegree { get; set; } = 0;
+        [BindProperty]
+        public bool IsAutotaggingEnabled { get; set; } = configProvider.EnvironmentSettings.AutotaggingEnabled;
 
         public IActionResult OnGet(Guid id)
         {
@@ -50,6 +53,11 @@ namespace MediaCloud.Pages.Gallery
             BlobName = preview.BlobName;
             BlobType = preview.BlobType;
             Blob = preview.Blob;
+
+            if (IsAutotaggingEnabled)
+            {
+                IsAutotaggingEnabled = CurrentUser != null && CurrentUser.IsAutotaggingAllowed;
+            }
 
             if (preview.Collection != null)
             {

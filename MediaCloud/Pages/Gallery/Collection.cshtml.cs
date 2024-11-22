@@ -8,19 +8,18 @@ using MediaCloud.WebApp.Services.UserProvider;
 
 namespace MediaCloud.Pages.Gallery
 {
-    public class CollectionModel(IUserProvider userProvider, CollectionRepository collectionRepository, TagRepository tagRepository) : AuthorizedPageModel(userProvider)
+    public class CollectionModel(IUserProvider userProvider, CollectionRepository collectionRepository) : AuthorizedPageModel(userProvider)
     {
         private readonly CollectionRepository _collectionRepository = collectionRepository;
-        private readonly TagRepository _tagRepository = tagRepository;
 
         [BindProperty]
         public Collection Collection { get; set; } = new();
         [BindProperty]
         public List<Tag> Tags { get; set; } = [];
         [BindProperty]
-        public bool IsOrderChanged { get; set; } = false;
+        public bool IsOrderChanged { get; set; }
         [BindProperty]
-        public bool IsAutotaggingAvailable { get; set; } = false;
+        public bool IsAutotaggingEnabled { get; set; }
         [BindProperty]
         public ListRequest ListRequest { get; set; } = new() { Count = 42};
         [BindProperty]
@@ -53,7 +52,8 @@ namespace MediaCloud.Pages.Gallery
             var collectionSize = _collectionRepository.GetSize(id);
             CollectionSizeInfo = collectionSize.FormatSize();
             TotalCount = _collectionRepository.GetListCount(id).Result;
-            IsAutotaggingAvailable = Collection.Previews.Select(x => x.BlobType).Any(x => x.Contains("image"));
+            IsAutotaggingEnabled = Collection.Previews.Select(x => x.BlobType).Any(x => x.Contains("image")) 
+                && CurrentUser != null && CurrentUser.IsAutotaggingAllowed;
 
             return Page();
         }
