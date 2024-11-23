@@ -16,11 +16,9 @@ dotnet publish -r linux-x64 -p:PublishSingleFile=true --no-self-contained -o D:/
 
 
 TODO:
-- Review sql requests (Accordingly to UserProvider staff)
 - Admin check for display actors in Statistic
 - Implement all actors statistic dashboards for Admin
 - Write unit tests 
-- Implement JoyTag garbage collection (unload model if not used for long time)
 - Show first uploaded image on upload page
 - Fix statistic recalculation when only 1 day recorded
 - Remove Tag Types
@@ -28,6 +26,9 @@ TODO:
 - Get rid of returnUrl in Urls
 - Fix previews ordering in galery. Different order with filtering and witout.
 - Fix worker task execution race condition (Error while running the task, mb cause of taking the task twice)
+- Research statisticsnapshot retrieving (happends several times for single page)
+- Gallery randomizing retrieving all previews with all columns
+- Rewrite StatisticProvider with caching (now 2-3 selects on every page and 1 update)
 
 # Changelog
 
@@ -40,6 +41,7 @@ TODO:
 - Added feature to prevent image compression to /Upload parameters
 - Fixed tag searching, if more than one preview in collection has same tag
 - Fixed high memory usage by tag linking
+- Fixed high memory usage by gallery randomizing
 - Fixed app crash and race condition when several workers take same task to run
 - Fixed title preview removing in collection
 

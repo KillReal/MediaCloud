@@ -125,15 +125,13 @@ namespace MediaCloud.Repositories
                                                       .Shuffle(seed)
                                                       .ToList();
 
-                var list = await query.Where(x => previewIdsList.Any(id => id == x.Id) 
+                return await query.Where(x => previewIdsList.Any(id => id == x.Id) 
                                             && x.CreatorId == _actor.Id)
-                                        .Include(x => x.Collection)
-                                        .ToListAsync();
-
-                return list.OrderBy(x => previewIdsList.IndexOf(x.Id))
-                            .Skip(listBuilder.Pagination.Offset)
-                            .Take(listBuilder.Pagination.Count)
-                            .ToList();
+                                .Include(x => x.Collection)
+                                .OrderBy(x => previewIdsList.IndexOf(x.Id))
+                                .Skip(listBuilder.Pagination.Offset)
+                                .Take(listBuilder.Pagination.Count)
+                                .ToListAsync();
             }  
 
             return await query.Order(listBuilder.Sorting.GetOrder())
