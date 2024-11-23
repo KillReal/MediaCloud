@@ -33,6 +33,8 @@ namespace MediaCloud.Pages.Gallery
 
         public IActionResult OnGet(Guid id)
         {
+            TempData["ReturnUrl"] = Request.Headers.Referer.ToString();
+
             Collection = _collectionRepository.Get(id) ?? new();
 
             if (Collection == null)
@@ -90,7 +92,7 @@ namespace MediaCloud.Pages.Gallery
                 return Redirect("/Error");
             }
 
-            return Redirect(Request.Headers.Referer.ToString());
+            return Redirect(TempData["ReturnUrl"]?.ToString() ?? "/Gallery");
         }
     }
 }
