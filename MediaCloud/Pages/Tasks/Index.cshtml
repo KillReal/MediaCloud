@@ -193,7 +193,9 @@
                      @Html.DisplayFor(modelItem => completedAt)
                   </td>
                   <td class="table-item-padding">
-                     @Html.DisplayFor(modelItem => item.CompletionMessage)
+                      <textarea class="table-item-padding" style="width: 100%;">
+                        @Html.DisplayFor(modelItem => item.CompletionMessage)
+                     </textarea>
                   </td>
             </tr>
       }

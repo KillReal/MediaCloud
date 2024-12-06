@@ -251,14 +251,16 @@
         nextOffset += @Model.ListRequest.Count;
     }
 
-    fetch('/Gallery/IsCollectionAutotaggingExecuted?collectionId=' + '@Model.Collection.Id')
-        .then((response) => response.json())
-        .then(function (data) {
-            if (data == true) {
-                    document.getElementById('autotagButton').disabled = true;
-                    document.getElementById('autotagButton').value = "Autotagging... ";
+    if (@Json.Serialize(Model.IsAutotaggingEnabled))
+    {
+        fetch('/Gallery/IsCollectionAutotaggingExecuted?collectionId=' + '@Model.Collection.Id')
+            .then((response) => response.json())
+            .then(function (data) {
+                if (data == true) {
+                        document.getElementById('autotagButton').disabled = true;
+                        document.getElementById('autotagButton').value = "Autotagging... ";
+                }
             }
-        }
     )
 
     var averageExecutionTime = 45.0 * @Model.TotalCount;
@@ -271,6 +273,7 @@
             }
         }
     )
+    }
 
     var modalTitle = document.getElementById('modalTitle');
     var modalBody = document.getElementById("modalBody");

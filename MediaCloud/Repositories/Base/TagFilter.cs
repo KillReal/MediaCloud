@@ -8,7 +8,7 @@ namespace MediaCloud.WebApp.Repositories.Base
 
         public List<Guid> NegativeTagIds { get; set; } = negativeTagIds;
 
-        public IQueryable<T> GetQuery(IQueryable<T> query)
+        public IQueryable<T> ApplyToQuery(IQueryable<T> query)
         {
             if (PositiveTagIds.Any() || NegativeTagIds.Any())
             {
@@ -22,7 +22,8 @@ namespace MediaCloud.WebApp.Repositories.Base
                     .SelectMany(z => z.Tags))
                         .Distinct()
                         .Where(y => NegativeTagIds.Contains(y.Id))
-                        .Any() == false));
+                        .Any() == false)
+                );
             }
 
             return query;

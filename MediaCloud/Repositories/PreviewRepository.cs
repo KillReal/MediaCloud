@@ -83,7 +83,7 @@ namespace MediaCloud.Repositories
                     query = query.Where(x => x.Tags.Any(x => x.Type == Data.Types.TagType.Series));
                 }
 
-                return GetFilterQueryByTags(filter).GetQuery(query);
+                return GetFilterQueryByTags(filter).ApplyToQuery(query);
             }
 
             return query;

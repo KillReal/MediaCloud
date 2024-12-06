@@ -258,7 +258,7 @@
         modelRotationDegree.value = currentDegree;
     }
 
-    if (@Model.IsAutotaggingEnabled)
+    if (@Json.Serialize(Model.IsAutotaggingEnabled))
     {
         fetch('/Gallery/IsPreviewAutotaggingExecuted?previewId=' + '@Model.PreviewId')
             .then((response) => response.json())
