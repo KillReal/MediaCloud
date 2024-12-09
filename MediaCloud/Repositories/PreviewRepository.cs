@@ -118,20 +118,14 @@ namespace MediaCloud.Repositories
             _statisticProvider.ActivityFactorRaised.Invoke();
 
             if (listBuilder.Sorting.PropertyName.Contains("Random") &&
-                int.TryParse(listBuilder.Sorting.PropertyName.Split('_').Last(), out int seed))
+                int.TryParse(listBuilder.Sorting.PropertyName.Split('_').Last(), out var seed))
             {
-                var previewIdsList = _context.Previews.Where(x => x.Order == 0)
-                                                      .Select(x => x.Id)
-                                                      .Shuffle(seed)
-                                                      .ToList();
-
-                return await query.Where(x => previewIdsList.Any(id => id == x.Id) 
-                                            && x.CreatorId == _actor.Id)
-                                .Include(x => x.Collection)
-                                .OrderBy(x => previewIdsList.IndexOf(x.Id))
-                                .Skip(listBuilder.Pagination.Offset)
-                                .Take(listBuilder.Pagination.Count)
-                                .ToListAsync();
+                return await query.Where(x => x.Order == 0 && x.CreatorId == _actor.Id)
+                    .Include(x => x.Collection)
+                    .OrderBy(x => EF.Functions.Random())
+                    .Skip(listBuilder.Pagination.Offset)
+                    .Take(listBuilder.Pagination.Count)
+                    .ToListAsync();
             }  
 
             return await query.Order(listBuilder.Sorting.GetOrder())
