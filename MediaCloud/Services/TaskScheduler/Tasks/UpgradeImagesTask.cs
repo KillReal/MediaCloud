@@ -13,6 +13,7 @@ using NLog;
 using Microsoft.IdentityModel.Tokens;
 using MediaCloud.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace MediaCloud.TaskScheduler.Tasks
 {
@@ -28,8 +29,8 @@ namespace MediaCloud.TaskScheduler.Tasks
         {
             var context = serviceProvider.GetRequiredService<AppDbContext>();
             var pictureService = serviceProvider.GetRequiredService<IPictureService>();
-
-            var statisticProvider = new StatisticProvider(context, userProvider);
+            var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
+            var statisticProvider = new StatisticProvider(context, userProvider, memoryCache);
 
             var previewsCount = await context.Previews.Where(x => x.CreatorId == User.Id).CountAsync();
             var blobModelBuilder = new BlobModelBuilder(pictureService);

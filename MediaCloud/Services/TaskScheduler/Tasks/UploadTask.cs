@@ -11,6 +11,7 @@ using Blob = MediaCloud.Data.Models.Blob;
 using MediaCloud.WebApp.Services.ConfigProvider;
 using MediaCloud.WebApp.Services.TaskScheduler.Tasks;
 using MediaCloud.WebApp.Controllers;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace MediaCloud.TaskScheduler.Tasks
 {
@@ -66,7 +67,8 @@ namespace MediaCloud.TaskScheduler.Tasks
         public override void DoTheTask(IServiceProvider serviceProvider, IUserProvider userProvider)
         {
             var context = serviceProvider.GetRequiredService<AppDbContext>();
-            var statisticProvider = new StatisticProvider(context, userProvider);
+            var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
+            var statisticProvider = new StatisticProvider(context, userProvider, memoryCache);
             var pictureService = serviceProvider.GetRequiredService<IPictureService>();
             _configProvider = serviceProvider.GetRequiredService<IConfigProvider>();
 
