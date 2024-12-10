@@ -420,3 +420,8 @@ body {
     max-width: 75rem;
     max-height: 75rem;
 }
+
+.task-message {
+    width: 100%;
+    min-height: 10rem!important;
+}

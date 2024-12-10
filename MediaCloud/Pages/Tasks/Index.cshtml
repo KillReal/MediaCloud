@@ -30,7 +30,7 @@
    Tasks in progress    (@Model.TaskSchedulerStatus.WorkersActive / @Model.TaskSchedulerStatus.MaxWorkersAvailable)
 </h3>
 
-@if(Model.TaskSchedulerStatus.TaskStatuses.Where(x => x.IsCompleted == false && x.IsInProgress).Any())
+@if(Model.TaskSchedulerStatus.TaskStatuses.Any(x => x is { IsCompleted: false, IsInProgress: true }))
 {
    <table class="table" style="background-color: white; border-radius: 1rem">
       <thead>
@@ -53,7 +53,7 @@
          </tr>
       </thead>
       <tbody>
-      @foreach (var item in Model.TaskSchedulerStatus.TaskStatuses.Where(x => x.IsCompleted == false && x.IsInProgress).OrderByDescending(x => x.ExecutedAt)) {
+      @foreach (var item in Model.TaskSchedulerStatus.TaskStatuses.Where(x => x is { IsCompleted: false, IsInProgress: true }).OrderByDescending(x => x.ExecutedAt)) {
             <tr class="list list-group-item-primary">
                   <td class="table-item-padding">
                      @Html.DisplayFor(modelItem => item.Type)
@@ -73,8 +73,8 @@
                      }
                      @Html.DisplayFor(modelItem => completedAt)
                   </td>
-                  <td class="table-item-padding">
-                     @Html.DisplayFor(modelItem => item.CompletionMessage)
+                  <td class="table-item-padding col-sm-5">
+                     <textarea class="form-control task-message" readonly>@Html.DisplayFor(modelItem => item.CompletionMessage)</textarea>
                   </td>
             </tr>
       }
@@ -86,7 +86,7 @@
    Tasks in queue
 </h3>
 
-@if(Model.TaskSchedulerStatus.TaskStatuses.Where(x => x.IsInProgress == false && x.IsCompleted == false).Any())
+@if(Model.TaskSchedulerStatus.TaskStatuses.Any(x => x is { IsInProgress: false, IsCompleted: false }))
 {
    <table class="table" style="background-color: white; border-radius: 1rem">
       <thead>
@@ -109,7 +109,7 @@
          </tr>
       </thead>
       <tbody>
-      @foreach (var item in Model.TaskSchedulerStatus.TaskStatuses.Where(x => x.IsInProgress == false && x.IsCompleted == false)) {
+      @foreach (var item in Model.TaskSchedulerStatus.TaskStatuses.Where(x => x is { IsInProgress: false, IsCompleted: false })) {
             <tr class="list list-group-item-secondary">
                   <td class="table-item-padding">
                      @Html.DisplayFor(modelItem => item.Type)
@@ -129,8 +129,8 @@
                      }
                      @Html.DisplayFor(modelItem => completedAt)
                   </td>
-                  <td class="table-item-padding">
-                     @Html.DisplayFor(modelItem => item.CompletionMessage)
+                  <td class="table-item-padding col-sm-5">
+                     <textarea class="form-control task-message" readonly>@Html.DisplayFor(modelItem => item.CompletionMessage)</textarea>
                   </td>
             </tr>
       }
@@ -142,7 +142,7 @@
    Completed tasks
 </h3>
 
-@if(Model.TaskSchedulerStatus.TaskStatuses.Where(x => x.IsCompleted == true).Any())
+@if(Model.TaskSchedulerStatus.TaskStatuses.Any(x => x.IsCompleted == true))
 {
    <table class="table" style="background-color: white; border-radius: 1rem">
       <thead>
@@ -192,10 +192,8 @@
                      }
                      @Html.DisplayFor(modelItem => completedAt)
                   </td>
-                  <td class="table-item-padding">
-                      <textarea class="table-item-padding" style="width: 100%;">
-                        @Html.DisplayFor(modelItem => item.CompletionMessage)
-                     </textarea>
+                  <td class="table-item-padding col-sm-5">
+                     <textarea class="form-control task-message" readonly>@Html.DisplayFor(modelItem => item.CompletionMessage)</textarea>
                   </td>
             </tr>
       }
