@@ -12,14 +12,19 @@ namespace MediaCloud.WebApp.Services.Statistic
 {
     public partial class StatisticProvider
     {
+        private const int CacheExpirationInMinutes = 120;
+        
         private IMemoryCache _memoryCache;
+        private MemoryCacheEntryOptions _memoryCacheOptions;
         private readonly ILogger _logger;
         private readonly AppDbContext _context;
         private readonly User _currentUser;
 
         public StatisticProvider(AppDbContext context, IUserProvider userProvider, IMemoryCache memoryCache)
         {
-            _memoryCache = memoryCache; 
+            _memoryCache = memoryCache;
+            _memoryCacheOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromMinutes(CacheExpirationInMinutes));
             _logger = LogManager.GetLogger("StatisticProvider");
             _context = context;
             _currentUser = userProvider.GetCurrent();
@@ -194,7 +199,7 @@ namespace MediaCloud.WebApp.Services.Statistic
             _context.StatisticSnapshots.Add(snapshot);
             _context.SaveChanges();
             
-            _memoryCache.Set(_currentUser.Name + DateTime.Today, snapshot);
+            _memoryCache.Set(_currentUser.Name + DateTime.Today, snapshot, _memoryCacheOptions);
 
             return snapshot;
         }
@@ -216,7 +221,7 @@ namespace MediaCloud.WebApp.Services.Statistic
                 _context.StatisticSnapshots.Update(snapshot);
                 _context.SaveChanges();
                 
-                _memoryCache.Set(_currentUser.Name + DateTime.Today, snapshot);
+                _memoryCache.Set(_currentUser.Name + DateTime.Today, snapshot, _memoryCacheOptions);
                 
                 return;
             }
@@ -224,7 +229,7 @@ namespace MediaCloud.WebApp.Services.Statistic
             _context.StatisticSnapshots.Add(snapshot);
             _context.SaveChanges();
             
-            _memoryCache.Set(_currentUser.Name + DateTime.Today, snapshot);
+            _memoryCache.Set(_currentUser.Name + DateTime.Today, snapshot, _memoryCacheOptions);
         }
 
         /// <summary>
