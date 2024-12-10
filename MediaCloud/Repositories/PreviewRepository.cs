@@ -14,22 +14,18 @@ namespace MediaCloud.Repositories
 {
     public class PreviewRepository(AppDbContext context, StatisticProvider statisticProvider, IUserProvider actorProvider) : BaseRepository<Preview>(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider), IListBuildable<Preview>
     {
-        private static string DeduplicateTagString(string tagString)
+        private static string[] GetDeduplicatedTags(string tagString)
         {
             var tags = tagString.Split(' ');
 
-            if (tags.Length < 2)
-            {
-                return tagString;
-            }
-
-            return string.Join(' ', tags.Distinct());
+            return tags.Length < 2 
+                ? tags 
+                : tags.Distinct().ToArray();
         }
 
         private TagFilter<Preview> GetFilterQueryByTags(string tagsString)
         {
-            tagsString = DeduplicateTagString(tagsString);
-            var tags = tagsString.ToLower().Split(' ');
+            var tags = GetDeduplicatedTags(tagsString);
 
             var positiveTags = new List<string>();
             var negativeTags = new List<string>();

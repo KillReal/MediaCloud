@@ -74,11 +74,11 @@ namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
                     var tags = preview.Tags.Union(result.Tags).ToList();
                     tagRepository.UpdatePreviewLinks(tags, preview);
                     successfullyProceededCount++;
-                    message += $"\n   Preview {preview.Id} suggested aliases: {result.SuggestedAliases}";
+                    message += $"\nPreview {preview.Id}\nSuggested aliases: {result.SuggestedAliases}";
                 }
                 else 
                 {
-                    message += $"\n   Preview {preview.Id} failed to proceed due to: {result.ErrorMessage}";
+                    message += $"\nPreview {preview.Id} failed to proceed due to: {result.ErrorMessage}";
                 }
             }
 
