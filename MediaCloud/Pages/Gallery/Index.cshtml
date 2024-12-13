@@ -193,6 +193,7 @@
 
     var currentOffset = @Model.ListBuilder.Pagination.Offset;
     var nextOffset = @Model.ListBuilder.Pagination.Offset + @Model.ListBuilder.Pagination.Count;
+    var isEnrichInProcess = false;
 
     if (isAutoLoadingEnabled) {
         window.addEventListener("scroll", function(e) {
@@ -203,14 +204,16 @@
     }
 
     function enrichGallery() {
-        if (currentOffset == nextOffset || currentOffset > @Model.ListBuilder.Pagination.TotalCount) {
+        if (isEnrichInProcess || currentOffset === nextOffset || currentOffset > @Model.ListBuilder.Pagination.TotalCount) {
                 if (currentOffset > @Model.ListBuilder.Pagination.TotalCount) {
                     document.getElementById('loadingSpinner').style = "display: none";
                     document.getElementById('loadingDone').style = "text-align: center; display: block";
                 }
                 return;
         }
+        
         currentOffset += @Model.ListBuilder.Pagination.Count;
+        isEnrichInProcess = true;
 
         var url = "/Gallery/GetPreviewsBatch?count=" + @Model.ListBuilder.Pagination.Count + "&offset=" + nextOffset 
             + "&sort=" + '@(Model.ListBuilder.Sorting.PropertyName)' + "&filter=" + '@(Model.ListBuilder.Filtering.Filter)';
@@ -221,6 +224,7 @@
 
             gallery.insertAdjacentHTML('beforeend', data);
             nextOffset += @Model.ListBuilder.Pagination.Count;
+            isEnrichInProcess = false;
         }).catch(function(err) {
             console.log('Fetch Error :-S', err);
         });
