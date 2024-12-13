@@ -36,9 +36,8 @@ namespace MediaCloud.WebApp.Services.Statistic
         // Select existing snapshot by date.
         private StatisticSnapshot? GetSnapshotByDate(DateTime dateTime)
         {
-            return _context.StatisticSnapshots.Where(x => x.TakenAt.Date == dateTime.Date
-                                                        && x.CreatorId == _actor.Id)
-                                                .FirstOrDefault();
+            return _context.StatisticSnapshots.FirstOrDefault(x => x.TakenAt.Date == dateTime.Date
+                                                                   && x.CreatorId == _actor.Id);
         }
 
         // Select date of oldest snapshot of current user.
@@ -47,11 +46,9 @@ namespace MediaCloud.WebApp.Services.Statistic
             var dates = new List<DateTime?>
             {
                 _context.Tags.OrderBy(x => x.CreatedAt)
-                                .Where(x => x.CreatorId == _actor.Id)
-                                .FirstOrDefault()?.CreatedAt,
+                    .FirstOrDefault(x => x.CreatorId == _actor.Id)?.CreatedAt,
                 _context.Previews.OrderBy(x => x.CreatedAt)
-                                .Where(x => x.CreatorId == _actor.Id)
-                                .FirstOrDefault()?.CreatedAt
+                    .FirstOrDefault(x => x.CreatorId == _actor.Id)?.CreatedAt
             };
 
             if (_actor.IsAdmin)
@@ -76,8 +73,7 @@ namespace MediaCloud.WebApp.Services.Statistic
         public StatisticSnapshot GetTodaySnapshot()
         {
             var snapshot = _context.StatisticSnapshots.OrderByDescending(x => x.TakenAt)
-                        .Where(x => x.CreatorId == _actor.Id)
-                        .FirstOrDefault();
+                .FirstOrDefault(x => x.CreatorId == _actor.Id);
 
             if (snapshot == null) 
             {
@@ -149,15 +145,12 @@ namespace MediaCloud.WebApp.Services.Statistic
                 Creator = _context.Users.First(x => x.Id == _actor.Id),
                 Updator = _context.Users.First(x => x.Id == _actor.Id),
                 TakenAt = date,
-                ActorsCount = _context.Users.Where(x => x.CreatedAt.Date == date.Date
-                                                        && _actor.IsAdmin)
-                                                    .Count(),
-                TagsCount = _context.Tags.Where(x => x.CreatedAt.Date == date.Date
-                                                        && x.CreatorId == _actor.Id)
-                                                    .Count(),
-                MediasCount = _context.Previews.Where(x => x.CreatedAt.Date == date.Date
-                                                        && x.CreatorId == _actor.Id)
-                                                    .Count(),
+                ActorsCount = _context.Users.Count(x => x.CreatedAt.Date == date.Date 
+                                                        && _actor.IsAdmin),
+                TagsCount = _context.Tags.Count(x => x.CreatedAt.Date == date.Date 
+                                                     && x.CreatorId == _actor.Id),
+                MediasCount = _context.Previews.Count(x => x.CreatedAt.Date == date.Date
+                                                           && x.CreatorId == _actor.Id),
                 MediasSize = _context.Blobs.Where(x => x.CreatedAt.Date == date.Date
                                                 && x.CreatorId == _actor.Id)
                                             .Select(x => x.Size)
