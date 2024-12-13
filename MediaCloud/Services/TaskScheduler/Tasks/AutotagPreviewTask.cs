@@ -4,7 +4,6 @@ using MediaCloud.Repositories;
 using MediaCloud.TaskScheduler.Tasks;
 using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp.Services.Statistic;
-using Microsoft.Extensions.Caching.Memory;
 using Task = MediaCloud.TaskScheduler.Tasks.Task;
 
 namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
@@ -41,8 +40,8 @@ namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
         public override void DoTheTask(IServiceProvider serviceProvider, IUserProvider userProvider)
         {
             var context = serviceProvider.GetRequiredService<AppDbContext>();
-            var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
-            var statisticProvider = new StatisticProvider(context, userProvider, memoryCache);
+
+            var statisticProvider = new StatisticProvider(context, userProvider);
             var previewRepository = new PreviewRepository(context, statisticProvider, userProvider);
             var tagRepository = new TagRepository(context, statisticProvider, userProvider);
             var autotagService = serviceProvider.GetRequiredService<IAutotagService>();
