@@ -13,13 +13,8 @@ namespace MediaCloud.TaskScheduler.Tasks
 
         public override int GetWorkCount() => _workCount;
 
-        public override void DoTheTask(IServiceProvider serviceProvider, IUserProvider userProvider)
+        public override void DoTheTask(IServiceProvider serviceProvider, IUserProvider userProvider, StatisticProvider statisticProvider)
         {
-            var context = serviceProvider.GetRequiredService<AppDbContext>();
-            var cache = serviceProvider.GetRequiredService<IMemoryCache>();
-            
-            var statisticProvider = serviceProvider.GetRequiredService<StatisticProvider>();
-            
             statisticProvider.Recalculate(_startDate, ref _workCount);
         }
     }

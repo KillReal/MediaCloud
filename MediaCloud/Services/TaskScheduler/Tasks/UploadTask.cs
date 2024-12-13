@@ -64,10 +64,9 @@ namespace MediaCloud.TaskScheduler.Tasks
 
         public override int GetWorkCount() => UploadedFiles.Count(x => x.IsProcessed == false);
 
-        public override void DoTheTask(IServiceProvider serviceProvider, IUserProvider userProvider)
+        public override void DoTheTask(IServiceProvider serviceProvider, IUserProvider userProvider, StatisticProvider statisticProvider)
         {
             var context = serviceProvider.GetRequiredService<AppDbContext>();
-            var statisticProvider = ActivatorUtilities.CreateInstance<StatisticProvider>(serviceProvider, userProvider);
             var pictureService = serviceProvider.GetRequiredService<IPictureService>();
             _configProvider = serviceProvider.GetRequiredService<IConfigProvider>();
 

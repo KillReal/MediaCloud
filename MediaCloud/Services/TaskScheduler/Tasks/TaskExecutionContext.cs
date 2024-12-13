@@ -1,4 +1,5 @@
 using MediaCloud.Repositories;
+using MediaCloud.WebApp.Services.Statistic;
 using MediaCloud.WebApp.Services.UserProvider;
 
 namespace MediaCloud.TaskScheduler.Tasks
@@ -10,8 +11,10 @@ namespace MediaCloud.TaskScheduler.Tasks
         public virtual void DoTheTask(IServiceProvider serviceProvider)
         {
             var actorRepository = serviceProvider.GetRequiredService<UserRepository>();
-
-            _task.DoTheTask(serviceProvider, new DummyUserProvider(_task.GetAuthor(), actorRepository));
+            var userProvider = new DummyUserProvider(_task.GetAuthor(), actorRepository);
+            var statisticProvider = ActivatorUtilities.CreateInstance<StatisticProvider>(serviceProvider, userProvider);
+            
+            _task.DoTheTask(serviceProvider, userProvider, statisticProvider);
         }
     }
 }

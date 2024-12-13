@@ -17,9 +17,9 @@ namespace MediaCloud.TaskScheduler.Tasks
    public class UploadAndAutotagTask(User user, List<UploadedFile> uploadedFiles, bool isCollection, string? tagString) 
       : UploadTask(user, uploadedFiles, isCollection, tagString)
    {
-      public override void DoTheTask(IServiceProvider serviceProvider, IUserProvider userProvider)
+      public override void DoTheTask(IServiceProvider serviceProvider, IUserProvider userProvider, StatisticProvider statisticProvider)
       {
-         base.DoTheTask(serviceProvider, userProvider);
+         base.DoTheTask(serviceProvider, userProvider, statisticProvider);
 
          var previewsIds = _processedPreviews.Where(x => x.BlobType
             .Contains("image"))

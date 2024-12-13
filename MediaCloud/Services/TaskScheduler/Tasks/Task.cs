@@ -1,4 +1,5 @@
 ﻿using MediaCloud.Data.Models;
+using MediaCloud.WebApp.Services.Statistic;
 using MediaCloud.WebApp.Services.UserProvider;
 
 namespace MediaCloud.TaskScheduler.Tasks
@@ -76,7 +77,7 @@ namespace MediaCloud.TaskScheduler.Tasks
         /// <param name="actorProvider"> Used to set the current actor for repositories. </param>
         /// <exception cref="NotImplementedException"></exception>
         /// <returns> Message of results. </returns>
-        public virtual void DoTheTask(IServiceProvider serviceProvider, IUserProvider actorProvider)
+        public virtual void DoTheTask(IServiceProvider serviceProvider, IUserProvider actorProvider, StatisticProvider statisticProvider)
         {
             throw new NotImplementedException();
         }

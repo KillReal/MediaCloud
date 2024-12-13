@@ -25,13 +25,10 @@ namespace MediaCloud.TaskScheduler.Tasks
 
         public override int GetWorkCount() => _workCount;
 
-        public override async void DoTheTask(IServiceProvider serviceProvider, IUserProvider userProvider)
+        public override async void DoTheTask(IServiceProvider serviceProvider, IUserProvider userProvider, StatisticProvider statisticProvider)
         {
             var context = serviceProvider.GetRequiredService<AppDbContext>();
             var pictureService = serviceProvider.GetRequiredService<IPictureService>();
-
-            var cache = serviceProvider.GetRequiredService<IMemoryCache>();
-            var statisticProvider = serviceProvider.GetRequiredService<StatisticProvider>();
 
             var previewsCount = await context.Previews.Where(x => x.CreatorId == User.Id).CountAsync();
             var blobModelBuilder = new BlobModelBuilder(pictureService);
