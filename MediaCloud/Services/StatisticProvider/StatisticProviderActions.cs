@@ -15,7 +15,7 @@
             snapshot.MediasCount += affectedCount;
             snapshot.MediasSize += affectedSize;
 
-            CreateOrUpdateSnapshot(snapshot);
+            UpdateSnapshot(snapshot);
         }
 
         private void TagsCountChangedAction(int affectedCount)
@@ -25,7 +25,7 @@
             snapshot.ActivityFactor += 1;
             snapshot.TagsCount += affectedCount;
 
-            CreateOrUpdateSnapshot(snapshot);
+            UpdateSnapshot(snapshot);
         }
         private void ActorsCountChangedAction(int affectedCount)
         {
@@ -34,7 +34,7 @@
             snapshot.ActivityFactor += 1;
             snapshot.ActorsCount += affectedCount;
 
-            CreateOrUpdateSnapshot(snapshot);
+            UpdateSnapshot(snapshot);
         }
 
         private void ActivityFactorRaisedAction()
@@ -43,7 +43,7 @@
 
             snapshot.ActivityFactor += 1;
             
-            CreateOrUpdateSnapshot(snapshot);
+            UpdateSnapshot(snapshot);
         }
 
     }

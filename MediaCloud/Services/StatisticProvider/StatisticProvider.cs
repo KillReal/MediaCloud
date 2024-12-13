@@ -1,43 +1,81 @@
-﻿using MediaCloud.Data;
+﻿using System.Runtime.InteropServices.JavaScript;
+using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.TaskScheduler.Tasks;
 using MediaCloud.WebApp.Services.UserProvider;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using Microsoft.Extensions.Caching.Memory;
 using NLog;
-using ILogger = NLog.ILogger;
 
 namespace MediaCloud.WebApp.Services.Statistic
 {
     public partial class StatisticProvider
     {
-        private readonly ILogger _logger;
+        private readonly Logger _logger;
         private readonly AppDbContext _context;
-        private readonly User _actor;
+        private readonly IMemoryCache _cache;
+        private readonly IUserProvider _userProvider;
+        private readonly MemoryCacheEntryOptions _memoryCacheOptions;
+        
+        private const int CacheDurationInMinutes = 120;
 
-        public StatisticProvider(AppDbContext context, IUserProvider actorProvider)
+        public StatisticProvider(IServiceScopeFactory scopeFactory, IUserProvider userProvider, IMemoryCache cache)
         {
             _logger = LogManager.GetLogger("StatisticProvider");
-            _context = context;
-            _actor = actorProvider.GetCurrent();
-
-            if (_actor == null)
-            {
-                throw new ArgumentException("Cannot initialize statisticProvider with unknown actor context");
-            }
+            _context = scopeFactory.CreateScope().ServiceProvider.GetRequiredService<AppDbContext>();
+            _userProvider = userProvider;
+            _cache = cache;
+            _memoryCacheOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromMinutes(CacheDurationInMinutes));
 
             MediasCountChanged += MediasCountChangedAction;
             TagsCountChanged += TagsCountChangedAction;
             ActorsCountChanged += ActorsCountChangedAction;
             ActivityFactorRaised += ActivityFactorRaisedAction;
 
-            _logger.Debug("Initialized StatisticProvider by actor: {0}", _actor.Name);
+            _logger.Debug("Initialized StatisticProvider by actor: {0}", _userProvider.GetCurrent().Name);
         }
 
         // Select existing snapshot by date.
-        private StatisticSnapshot? GetSnapshotByDate(DateTime dateTime)
+        private StatisticSnapshot GetSnapshotByDate(DateTime dateTime)
         {
-            return _context.StatisticSnapshots.FirstOrDefault(x => x.TakenAt.Date == dateTime.Date
-                                                                   && x.CreatorId == _actor.Id);
+            if (_cache.TryGetValue($"{_userProvider.GetCurrent().Name}_{DateTime.Now.Date}", out StatisticSnapshot? snapshot))
+            {
+                if (snapshot != null)
+                {
+                    return snapshot;
+                }
+            }
+
+            snapshot = _context.StatisticSnapshots.FirstOrDefault(x => x.TakenAt.Date == dateTime.Date
+                                                                         && x.Creator == _userProvider.GetCurrent());
+            if (snapshot == null)
+            {
+                var lastSnapshot = _context.StatisticSnapshots.Where(x => x.Creator == _userProvider.GetCurrent())
+                    .OrderByDescending(x => x.TakenAt)
+                    .FirstOrDefault();
+
+                if (lastSnapshot == null)
+                {
+                    return CreateInitialSnapshot();
+                }
+
+                snapshot = new StatisticSnapshot().Merge(lastSnapshot);
+                snapshot.TakenAt = dateTime.Date;
+                
+                _context.StatisticSnapshots.Add(snapshot);
+                _context.SaveChanges();
+            }
+
+            if (DateTime.Now.Date != snapshot.TakenAt.Date)
+            {
+                return snapshot;
+            }
+            
+            _cache.Set($"{_userProvider.GetCurrent().Name}_{snapshot.TakenAt.Date}", snapshot, _memoryCacheOptions);
+
+            return snapshot;
+
         }
 
         // Select date of oldest snapshot of current user.
@@ -46,18 +84,18 @@ namespace MediaCloud.WebApp.Services.Statistic
             var dates = new List<DateTime?>
             {
                 _context.Tags.OrderBy(x => x.CreatedAt)
-                    .FirstOrDefault(x => x.CreatorId == _actor.Id)?.CreatedAt,
+                    .FirstOrDefault(x => x.Creator == _userProvider.GetCurrent())?.CreatedAt,
                 _context.Previews.OrderBy(x => x.CreatedAt)
-                    .FirstOrDefault(x => x.CreatorId == _actor.Id)?.CreatedAt
+                    .FirstOrDefault(x => x.Creator == _userProvider.GetCurrent())?.CreatedAt
             };
 
-            if (_actor.IsAdmin)
+            if (_userProvider.GetCurrent().IsAdmin)
             {
                 dates.Add(_context.Users.OrderBy(x => x.CreatedAt).FirstOrDefault()?.CreatedAt);
             }
 
-            DateTime minDate = dates.Where(x => x != DateTime.MinValue.ToUniversalTime()).Min()
-                ?? DateTime.MinValue.ToUniversalTime();
+            var minDate = dates.Where(x => x != DateTime.MinValue.ToUniversalTime()).Min()
+                          ?? DateTime.MinValue.ToUniversalTime();
 
             return (minDate == DateTime.MinValue.ToUniversalTime())
                 ? DateTime.Now.ToUniversalTime()
@@ -72,23 +110,7 @@ namespace MediaCloud.WebApp.Services.Statistic
         /// <returns> Today existing snapshot. </returns>
         public StatisticSnapshot GetTodaySnapshot()
         {
-            var snapshot = _context.StatisticSnapshots.OrderByDescending(x => x.TakenAt)
-                .FirstOrDefault(x => x.CreatorId == _actor.Id);
-
-            if (snapshot == null) 
-            {
-                return CreateInitialSnapshot();
-            }
-
-            if (DateTime.Now.Date != snapshot.TakenAt.Date)
-            {
-                snapshot = new StatisticSnapshot().Merge(snapshot);
-                snapshot.TakenAt = DateTime.Now.Date;
-
-                CreateOrUpdateSnapshot(snapshot);
-            }
-
-            return snapshot;
+            return GetSnapshotByDate(DateTime.Now);
         }
 
         /// <summary>
@@ -98,15 +120,15 @@ namespace MediaCloud.WebApp.Services.Statistic
         /// <param name="start"> Start date (include). </param>
         /// <param name="end"> End date (include). </param>
         /// <returns> List of existing snapshots. </returns>
-        public List<StatisticSnapshot> GetSnapshotsByDate(DateTime start, DateTime end)
+        public List<StatisticSnapshot> GetSnapshotsByDateRange(DateTime start, DateTime end)
         {
             var snapshots = _context.StatisticSnapshots.Where(x => x.TakenAt.Date >= start.Date
                                         && x.TakenAt.Date <= end.Date
-                                        && x.CreatorId == _actor.Id)
+                                        && x.Creator == _userProvider.GetCurrent())
                                 .OrderBy(x => x.TakenAt.Date)
                                 .ToList();
 
-            if (snapshots.Any() == false)
+            if (snapshots.Count == 0)
             {
                 snapshots.Add(GetTodaySnapshot());
             }
@@ -121,11 +143,11 @@ namespace MediaCloud.WebApp.Services.Statistic
         /// <returns> List of all existing snapshots. </returns>
         public List<StatisticSnapshot> GetAllSnapshots()
         {
-            var snapshots = _context.StatisticSnapshots.Where(x => x.CreatorId == _actor.Id)
+            var snapshots = _context.StatisticSnapshots.Where(x => x.Creator == _userProvider.GetCurrent())
                                 .OrderBy(x => x.TakenAt.Date)
                                 .ToList();
 
-            if (snapshots.Any() == false || snapshots.Last().TakenAt.Date != DateTime.Now.Date)
+            if (snapshots.Count == 0 || snapshots.Last().TakenAt.Date != DateTime.Now.Date)
             {
                 snapshots.Add(GetTodaySnapshot());
             }
@@ -142,17 +164,17 @@ namespace MediaCloud.WebApp.Services.Statistic
         {
             return new()
             {
-                Creator = _context.Users.First(x => x.Id == _actor.Id),
-                Updator = _context.Users.First(x => x.Id == _actor.Id),
+                Creator = _context.Users.First(x => x.Id == _userProvider.GetCurrent().Id),
+                Updator = _context.Users.First(x => x.Id == _userProvider.GetCurrent().Id),
                 TakenAt = date,
                 ActorsCount = _context.Users.Count(x => x.CreatedAt.Date == date.Date 
-                                                        && _actor.IsAdmin),
+                                                        && _userProvider.GetCurrent().IsAdmin),
                 TagsCount = _context.Tags.Count(x => x.CreatedAt.Date == date.Date 
-                                                     && x.CreatorId == _actor.Id),
+                                                     && x.Creator == _userProvider.GetCurrent()),
                 MediasCount = _context.Previews.Count(x => x.CreatedAt.Date == date.Date
-                                                           && x.CreatorId == _actor.Id),
+                                                           && x.Creator == _userProvider.GetCurrent()),
                 MediasSize = _context.Blobs.Where(x => x.CreatedAt.Date == date.Date
-                                                && x.CreatorId == _actor.Id)
+                                                && x.Creator == _userProvider.GetCurrent())
                                             .Select(x => x.Size)
                                             .ToList()
                                             .Sum()
@@ -168,7 +190,7 @@ namespace MediaCloud.WebApp.Services.Statistic
                 UpdatedAt = DateTime.Now.Date,
                 CreatedAt = DateTime.Now.Date,
 
-                Creator = _context.Users.First(x => x.Id == _actor.Id)
+                Creator = _context.Users.First(x => x == _userProvider.GetCurrent())
             };
             snapshot.Updator = snapshot.Creator;
 
@@ -182,23 +204,9 @@ namespace MediaCloud.WebApp.Services.Statistic
         /// Update or insert snapshot.
         /// </summary>
         /// <param name="snapshot"> Snapshot for update or create. </param>
-        public void CreateOrUpdateSnapshot(StatisticSnapshot snapshot)
+        private void UpdateSnapshot(StatisticSnapshot snapshot)
         {
-            var existingSnapshot = GetSnapshotByDate(snapshot.TakenAt);
-
-            if (existingSnapshot != null)
-            {
-                existingSnapshot.ActorsCount = snapshot.ActorsCount;
-                existingSnapshot.TagsCount = snapshot.TagsCount;
-                existingSnapshot.MediasCount = snapshot.MediasCount;
-                existingSnapshot.MediasSize = snapshot.MediasSize;
-                _context.StatisticSnapshots.Update(snapshot);
-                _context.SaveChanges();
-
-                return;
-            }
-
-            _context.StatisticSnapshots.Add(snapshot);
+            _context.StatisticSnapshots.Update(snapshot);
             _context.SaveChanges();
         }
 
@@ -207,19 +215,15 @@ namespace MediaCloud.WebApp.Services.Statistic
         /// </summary>
         public void RemoveAllSnapshots()
         {
-            var snapshots = _context.StatisticSnapshots.Where(x => x.CreatorId == _actor.Id);
+            if (_cache.TryGetValue($"{_userProvider.GetCurrent().Name}_{DateTime.Now.Date}", out StatisticSnapshot? _))
+            {
+                _cache.Remove($"{_userProvider.GetCurrent().Name}_{DateTime.Now.Date}");
+            }
+            
+            var snapshots = _context.StatisticSnapshots.Where(x => x.Creator == _userProvider.GetCurrent());
 
             _context.StatisticSnapshots.RemoveRange(snapshots);
             _context.SaveChanges();
-        }
-
-        /// <summary>
-        /// Get recalculation task for current user. <see cref="Task"/>
-        /// </summary>
-        /// <returns> Task for user statistic recalculation. </returns>
-        public RecalculateTask GetRecalculationTask()
-        {
-            return GetRecalculationTask(DateTime.MinValue);
         }
 
         /// <summary>
@@ -229,12 +233,9 @@ namespace MediaCloud.WebApp.Services.Statistic
         /// <returns> Task for user statistic recalculation. </returns>
         public RecalculateTask GetRecalculationTask(int lastDaysCount = 0)
         {
-            if (lastDaysCount <= 0)
-            {
-                return GetRecalculationTask();
-            }
-
-            return GetRecalculationTask(DateTime.Now.AddDays(-lastDaysCount));
+            return GetRecalculationTask(lastDaysCount <= 0 
+                ? DateTime.MinValue 
+                : DateTime.Now.AddDays(-lastDaysCount));
         }
 
         /// <summary>
@@ -249,7 +250,7 @@ namespace MediaCloud.WebApp.Services.Statistic
                 startDate = GetOldelstSnapshotDate();
             }
 
-            return new RecalculateTask(_actor, startDate);
+            return new RecalculateTask(_userProvider.GetCurrent(), startDate);
         }
 
         /// <summary>
@@ -278,7 +279,7 @@ namespace MediaCloud.WebApp.Services.Statistic
 
                 if (snapshot.IsEmpty() == false)
                 {
-                    CreateOrUpdateSnapshot(snapshot.Merge(prevSnapshot));
+                    UpdateSnapshot(snapshot.Merge(prevSnapshot));
                     totalDaysInserted++;
                     prevSnapshot = snapshot;
                 }

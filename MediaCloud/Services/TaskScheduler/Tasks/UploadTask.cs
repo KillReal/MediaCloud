@@ -11,6 +11,7 @@ using Blob = MediaCloud.Data.Models.Blob;
 using MediaCloud.WebApp.Services.ConfigProvider;
 using MediaCloud.WebApp.Services.TaskScheduler.Tasks;
 using MediaCloud.WebApp.Controllers;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace MediaCloud.TaskScheduler.Tasks
 {
@@ -66,14 +67,14 @@ namespace MediaCloud.TaskScheduler.Tasks
         public override void DoTheTask(IServiceProvider serviceProvider, IUserProvider userProvider)
         {
             var context = serviceProvider.GetRequiredService<AppDbContext>();
-            var statisticProvider = new StatisticProvider(context, userProvider);
+            var statisticProvider = ActivatorUtilities.CreateInstance<StatisticProvider>(serviceProvider, userProvider);
             var pictureService = serviceProvider.GetRequiredService<IPictureService>();
             _configProvider = serviceProvider.GetRequiredService<IConfigProvider>();
 
             var sizeToUpload = UploadedFiles.Select(x => x.Content.Length).Sum();
             var targetSize = statisticProvider.GetTodaySnapshot().MediasSize + sizeToUpload;
 
-            if (targetSize > User.SpaceLimitBytes)
+            if (User.SpaceLimitBytes != 0 && targetSize > User.SpaceLimitBytes)
             {
                 var delta = (targetSize - User.SpaceLimitBytes).FormatSize();
                 throw new Exception($"Uploading failed due to low space limit (need at least {delta} free space)");
