@@ -245,6 +245,7 @@
             var gallery = document.getElementById('gallery');
 
             gallery.insertAdjacentHTML('beforeend', data);
+            isEnrichInProcess = false;
         }).catch(function(err) {
             console.log('Fetch Error :-S', err);
         });
