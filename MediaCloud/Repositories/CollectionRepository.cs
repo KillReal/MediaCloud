@@ -79,19 +79,7 @@ namespace MediaCloud.Repositories
             for (var i = 0; i < orders.Count; i++)
             {
                 previews[i].Order = orders[i];
-                if (previews[i].Tags.Count > 0)
-                {
-                    tags = [.. previews[i].Tags];
-                    previews[i].Tags.Clear();
-                }
             }
-
-            if (previews.Where(x => x.Order == 0).Any() == false)
-            {
-                previews.First().Order = 0;
-            }
-
-            previews.First(x => x.Order == 0).Tags.AddRange(tags);
 
             _context.Previews.UpdateRange(previews);
             Update(collection);

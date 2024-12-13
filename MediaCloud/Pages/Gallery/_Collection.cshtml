@@ -14,8 +14,8 @@
             />
             <input class="order-val visually-hidden" 
                 type="number" 
-                id="Orders_@Model.Previews[i].Order"
-                name="Orders[@Model.Previews[i].Order]"
+                id="Orders_@(i + Model.BatchIdOffset)"
+                name="Orders[@(i + Model.BatchIdOffset)]"
                 value="@Model.Previews[i].Order"   
             >
             @if (Model.Previews[i].BlobType.Contains("image") == false)

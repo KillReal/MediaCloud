@@ -180,7 +180,6 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script src="~/js/html5sortable.js"></script>
-<script src="~/Pages/Gallery/Collection.cshtml.js"></script>
 
 <script type="text/javascript">
     
@@ -215,6 +214,7 @@
 
     var currentOffset = 0;
     var nextOffset = @Model.ListRequest.Count;
+    var isEnrichInProcess = false;
 
     window.addEventListener("scroll", function(e) {
         if ((window.innerHeight + window.scrollY + 2000) >= document.body.offsetHeight) {
@@ -223,8 +223,8 @@
     });
 
     function enrichGallery() {
-        if (currentOffset == nextOffset) {
-            // Return if we displayed all elements in batches
+        if (currentOffset === nextOffset || isEnrichInProcess) {
+            // Return if we displayed all elements in batches or loading in progress
             return;
         }
         
@@ -235,6 +235,7 @@
             return;
         }
 
+        isEnrichInProcess = true;
         currentOffset += @Model.ListRequest.Count;
 
        var url = "/Gallery/GetCollectionPreviewsBatch?id=" + '@Model.Collection.Id' + "&count=" + @Model.ListRequest.Count + "&offset=" + nextOffset;
