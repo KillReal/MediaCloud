@@ -23,22 +23,22 @@ TODO:
 - Fix statistic recalculation when only 1 day recorded
 - Remove Tag Types
 - Search by file name?
-- Get rid of returnUrl in Urls
-- Fix previews ordering in galery. Different order with filtering and witout.
+- Fix previews ordering in gallery. Different order with filtering and without.
 - Fix worker task execution race condition (Error while running the task, mb cause of taking the task twice)
-- Research statisticsnapshot retrieving (happends several times for single page)
-- Gallery randomizing retrieving all previews with all columns
-- Rewrite StatisticProvider with caching (now 2-3 selects on every page and 1 update)
+- Research statisticsnapshot retrieving (happens several times for single page)
 
 # Changelog
 
-### Version 2.0.2 - tbd, 2024
+### Version 2.0.2 - 14th Dec, 2024
 - Added /Tasks view for Admin for tasks execution monitoring
 - Autotagging in background now displays for collections and previews when exists a task in queue but not started yet
 - Removed returnUrl parameters from request urls
 - Added Humanizer nuget
 - Added autotagging feature to /Upload parameters
 - Added feature to prevent image compression to /Upload parameters
+- Added user and statistic snapshots memory caching
+- Optimized random ordering in /Gallery
+- Fixed ordering race condition in /Collection
 - Fixed tag searching, if more than one preview in collection has same tag
 - Fixed high memory usage by tag linking
 - Fixed high memory usage by gallery randomizing
