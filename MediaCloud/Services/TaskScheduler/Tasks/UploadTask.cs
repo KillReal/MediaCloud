@@ -8,6 +8,10 @@ using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp.Services.Statistic;
 using System.Text;
 using Blob = MediaCloud.Data.Models.Blob;
+using MediaCloud.WebApp.Services.ConfigProvider;
+using MediaCloud.WebApp.Services.TaskScheduler.Tasks;
+using MediaCloud.WebApp.Controllers;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace MediaCloud.TaskScheduler.Tasks
 {
@@ -46,25 +50,37 @@ namespace MediaCloud.TaskScheduler.Tasks
         }
     }
 
-    public class UploadTask(User actor, List<UploadedFile> uploadedFiles, bool isCollection, string? tagString) 
-        : Task(actor), ITask
+    public class UploadTask(User user, List<UploadedFile> uploadedFiles, bool isCollection, string? tagString) 
+        : Task(user), ITask
     {
+        protected IConfigProvider _configProvider;
+        protected List<Preview> _processedPreviews = [];
+
         public List<UploadedFile> UploadedFiles { get; set; } = [.. uploadedFiles.OrderByDescending(x => x.Name, new FileNameComparer())];
 
         public bool IsCollection { get; set; } = isCollection;
 
         public string TagString { get; set; } = tagString ?? "";
 
-        public override int GetWorkCount() => UploadedFiles.Count;
+        public override int GetWorkCount() => UploadedFiles.Count(x => x.IsProcessed == false);
 
-        public override void DoTheTask(IServiceProvider serviceProvider, IUserProvider actorProvider)
+        public override void DoTheTask(IServiceProvider serviceProvider, IUserProvider userProvider, StatisticProvider statisticProvider)
         {
             var context = serviceProvider.GetRequiredService<AppDbContext>();
-            var statisticProvider = new StatisticProvider(context, actorProvider);
             var pictureService = serviceProvider.GetRequiredService<IPictureService>();
+            _configProvider = serviceProvider.GetRequiredService<IConfigProvider>();
 
-            var tagRepository = new TagRepository(context, statisticProvider, actorProvider);
-            var fileRepository = new BlobRepository(context, statisticProvider, actorProvider, pictureService);
+            var sizeToUpload = UploadedFiles.Select(x => x.Content.Length).Sum();
+            var targetSize = statisticProvider.GetTodaySnapshot().MediasSize + sizeToUpload;
+
+            if (User.SpaceLimitBytes != 0 && targetSize > User.SpaceLimitBytes)
+            {
+                var delta = (targetSize - User.SpaceLimitBytes).FormatSize();
+                throw new Exception($"Uploading failed due to low space limit (need at least {delta} free space)");
+            }
+
+            var tagRepository = new TagRepository(context, statisticProvider, userProvider);
+            var blobRepository = new BlobRepository(context, statisticProvider, userProvider, pictureService, _configProvider);
 
             var foundTags = tagRepository.GetRangeByString(TagString);
             
@@ -72,15 +88,25 @@ namespace MediaCloud.TaskScheduler.Tasks
 
             if (IsCollection)
             {
-                files = fileRepository.CreateCollection(UploadedFiles);
+                files = blobRepository.CreateCollection(UploadedFiles);
             }
             else
             {
-                files = fileRepository.CreateRange(UploadedFiles);
+                files = blobRepository.CreateRange(UploadedFiles);
             }
 
-            var preview = files.Select(x => x.Preview).Where(x => x.Order == 0).First();
-            tagRepository.UpdatePreviewLinks(foundTags, preview);
+            _processedPreviews = files.Select(x => x.Preview).ToList();
+            
+            
+            if (foundTags.Count > 0)
+            {
+                foreach (var preview in _processedPreviews)
+                {
+                    tagRepository.UpdatePreviewLinks(foundTags, preview);
+                }
+            }
+
+            CompletionMessage = $"Proceeded {files.Count} files";
         }
     }
 }

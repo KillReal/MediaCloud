@@ -29,7 +29,7 @@
             <img id="left-arrow" 
                 src="/img/arrow-left.svg" 
                 class="arrow-button-left" 
-                onclick="window.location.replace('/Gallery/Detail/?id=@(Model.PrevPreviewId)&returnUrl=@(Model.ReturnUrl)')"
+                onclick="window.location.replace('/Gallery/Detail/?id=@(Model.PrevPreviewId)')"
             />
         }
         
@@ -45,7 +45,7 @@
                     <label class="col-form-label">
                         @Model.BlobName
                     </label>
-                    <textarea readonly class="form-control" style="resize: none">@System.Text.Encoding.Default.GetString(Model.Blob.Content)</textarea>
+                    <textarea readonly class="form-control" style="resize: none; height: 60vh;">@System.Text.Encoding.Default.GetString(Model.Blob.Content)</textarea>
                 </div>
             }
             else 
@@ -61,7 +61,7 @@
             <img id="right-arrow" 
                 src="/img/arrow-right.svg" 
                 class="arrow-button-right"
-                onclick="window.location.replace('/Gallery/Detail/?id=@(Model.NextPreviewId)&returnUrl=@(Model.ReturnUrl)')"
+                onclick="window.location.replace('/Gallery/Detail/?id=@(Model.NextPreviewId)')"
             />
         }
 
@@ -82,11 +82,9 @@
     <div class="row">
         <form enctype="multipart/form-data" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control">
             <input type="hidden" asp-for=@(Model.PreviewId) class="form-control">
             <input type="hidden" asp-for=@(Model.Blob.Preview.Id) class="form-control">
             <input type="hidden" asp-for=@(Model.Blob.Id) class="form-control">
-            <input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control">
             <input type="hidden" asp-for=@(Model.RotationDegree) class="form-control" id="modelRotationDegree">
             <div class="row">
                 <div class="form-group autocomplete-list autocomplete mb-3 col">
@@ -101,7 +99,7 @@
                 <div class="button-panel w-100 mb-2">
                     <div class="button-group justify-content-between">
                         <input type="submit" value="Edit" class="btn btn-success" />
-                        @if (Model.BlobType.Contains("image"))
+                        @if (Model.IsAutotaggingEnabled && Model.BlobType.Contains("image"))
                         {
                             <input class="btn btn-success btn-rounded" 
                                 type="button" 
@@ -167,8 +165,7 @@
                         }
                         <a class="btn @classStyle btn-rounded me-1 mb-2" 
                             asp-page="/Tags/Detail" 
-                            asp-route-id=@tag.Id
-                            asp-route-returnUrl='@Model.ReturnUrl'>
+                            asp-route-id=@tag.Id>
                             @tag.Name
                         </a>
                     }
@@ -214,13 +211,24 @@
 
 <script>
     autocomplete(document.getElementById("filterGrab"));
+    let isPreviewSwitchingEnabled = true;
+
+    document.getElementById("filterGrab").addEventListener("focusin", (event) => {
+        isPreviewSwitchingEnabled = false;
+    });
+
+    document.getElementById("filterGrab").addEventListener("focusout", (event) => {
+        isPreviewSwitchingEnabled = true;
+    });
 
     document.addEventListener('keydown', (event) => {
-        if ( event.code == 'ArrowLeft') {
-            document.getElementById("left-arrow").click();
-        }
-        if (event.code == 'ArrowRight') {
-            document.getElementById("right-arrow").click();
+        if (isPreviewSwitchingEnabled) {
+            if (event.code == 'ArrowLeft') {
+                document.getElementById("left-arrow").click();
+            }
+            if (event.code == 'ArrowRight') {
+                document.getElementById("right-arrow").click();
+            }
         }
     }, false);
 
@@ -250,108 +258,109 @@
         modelRotationDegree.value = currentDegree;
     }
 
-    fetch('/Gallery/IsPreviewAutotaggingExecuted?previewId=' + '@Model.PreviewId')
-        .then((response) => response.json())
-        .then(function (data) {
-            if (data == true) {
-                    document.getElementById('autotagButton').disabled = true;
-                    document.getElementById('autotagButton').value = "Autotagging... ";
-            }
-        }
-    )
-
-    var averageExecutionTime = 45.0;
-
-    fetch('/Gallery/GetAverageAutocompleteTagExecution')
-        .then((response) => response.json())
-        .then(function (data) {
-            if (data > 0) {
-                averageExecutionTime = data;
-            }
-        }
-    )
-
-    var modalTitle = document.getElementById('modalTitle');
-    var modalBody = document.getElementById("modalBody");
-    var loadSpinner = document.getElementById("loadingSpinner");
-
-    function setModalTitle(title) {
-        modalTitle.innerHTML = title;
-    }
-
-    function setModalProgress(progress, executionTime) {
-        document.getElementById('progress').innerHTML = "Progress: " + parseInt(progress, 10)+ "%";
-        document.getElementById('executionTime').innerHTML = 'It may take some time (~' + parseInt(executionTime, 10) + ' sec)';
-        document.getElementById('autotagButton').value = "Autotagging... " + parseInt(progress, 10)+ "%";
-    }
-
-    function hideModalBody() {
-        $('#loadingModal').modal('hide');
-    }
-
-    function showModalBody() {
-        $('#loadingModal').modal('show');
-        document.getElementById('autotagButton').disabled = true;
-        document.getElementById('autotagButton').value = "Autotagging... ";
-    }
-
-    function showLoadSpinner() {
-        loadSpinner.style.display = "block";
-    }
-
-    function hideLoadSpinner() {
-        loadSpinner.style.display = "none";
-    }
-
-    var timerCounter = 0;
-    var updateInterval = 3000;
-    var progress = 0;
-
-    function autocompleteTags(previewId, isExecuted = false) {
-        
-        var url = "/Gallery/AutocompleteTagForPreview?previewId=" + previewId;
-
-        var request = new XMLHttpRequest();
-        request.open('POST', url, true);
-        request.onload = function() { // request successful
-            setModalTitle('Waiting queue for processing...');
-            showModalBody();
-            var data = JSON.parse(request.response);
-
-            var url = "/TaskScheduler/GetTaskStatus?id=" + data;
-
-            const updator = function () {
-                fetch(url)
-                    .then((response) => response.json())
-                    .then(function (data) {
-
-                        progress = data.workCount;
-
-                        if (data.queuePosition > 1) {
-                            setModalTitle('Waiting queue for processing...');
-                        }
-                        else if (data.queuePosition == 1) {
-                            setModalTitle('Autotagging in progress...');
-                            setModalProgress(progress, averageExecutionTime);
-                            timerCounter += updateInterval;
-                        }
-                        else if (data.workCount == 0 && data.isExist == false) {
-                            setModalTitle('Autotagging successfully completed!');
-                            hideModalBody();
-                            hideLoadSpinner();
-
-                            location.reload();
-
-                            clearInterval(loadingUpdateInterval);
-                        }
-                    })
+    if (@Json.Serialize(Model.IsAutotaggingEnabled))
+    {
+        fetch('/Gallery/IsPreviewAutotaggingExecuted?previewId=' + '@Model.PreviewId')
+            .then((response) => response.json())
+            .then(function (data) {
+                if (data == true) {
+                        document.getElementById('autotagButton').disabled = true;
+                        document.getElementById('autotagButton').value = "Autotagging... ";
                 }
+            }
+        )
 
-                updator();
-                var loadingUpdateInterval = setInterval(updator, updateInterval);
-            };
+        var averageExecutionTime = 45.0;
 
-        request.send();
+        fetch('/Gallery/GetAverageAutocompleteTagExecution')
+            .then((response) => response.json())
+            .then(function (data) {
+                if (data > 0) {
+                    averageExecutionTime = data;
+                }
+            }
+        )
+
+        var modalTitle = document.getElementById('modalTitle');
+        var modalBody = document.getElementById("modalBody");
+        var loadSpinner = document.getElementById("loadingSpinner");
+
+        function setModalTitle(title) {
+            modalTitle.innerHTML = title;
+        }
+
+        function setModalProgress(progress, executionTime) {
+            document.getElementById('progress').innerHTML = "Progress: " + parseInt(progress, 10) + "%";
+            document.getElementById('executionTime').innerHTML = 'It may take some time (~' + parseInt(executionTime, 10) + ' sec)';
+            document.getElementById('autotagButton').value = "Autotagging... " + parseInt(progress, 10)+ "%";
+        }
+
+        function hideModalBody() {
+            $('#loadingModal').modal('hide');
+        }
+
+        function showModalBody() {
+            $('#loadingModal').modal('show');
+            document.getElementById('autotagButton').disabled = true;
+            document.getElementById('autotagButton').value = "Autotagging... ";
+        }
+
+        function showLoadSpinner() {
+            loadSpinner.style.display = "block";
+        }
+
+        function hideLoadSpinner() {
+            loadSpinner.style.display = "none";
+        }
+
+        var timerCounter = 0;
+        var updateInterval = 3000;
+        var progress = 0;
+
+        function autocompleteTags(previewId, isExecuted = false) {
+            
+            var url = "/Gallery/AutocompleteTagForPreview?previewId=" + previewId;
+
+            var request = new XMLHttpRequest();
+            request.open('POST', url, true);
+            request.onload = function() { // request successful
+                setModalTitle('Waiting queue for processing...');
+                showModalBody();
+                var data = JSON.parse(request.response);
+
+                var url = "/TaskScheduler/GetTaskStatus?id=" + data;
+
+                const updator = function () {
+                    fetch(url)
+                        .then((response) => response.json())
+                        .then(function (data) {
+                            progress = 100 - data.workCount;
+
+                            if (data.isCompleted == true) {
+                                setModalTitle('Autotagging successfully completed!');
+                                hideModalBody();
+                                hideLoadSpinner();
+
+                                location.reload();
+                                clearInterval(loadingUpdateInterval);
+                            }
+                            else if (data.isInProgress == false) {
+                                setModalTitle('Waiting queue for processing...');
+                            }
+                            else {
+                                setModalTitle('Autotagging in progress...');
+                                setModalProgress(progress, averageExecutionTime);
+                                timerCounter += updateInterval;
+                            }
+                        })
+                    }
+
+                    updator();
+                    var loadingUpdateInterval = setInterval(updator, updateInterval);
+                };
+
+            request.send();
+        }
     }
 </script>
 

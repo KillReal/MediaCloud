@@ -6,13 +6,16 @@ using MediaCloud.WebApp.Pages;
 using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp;
 using MediaCloud.Extensions;
+using MediaCloud.WebApp.Services.Statistic;
+using MediaCloud.WebApp.Services.ConfigProvider;
 
 namespace MediaCloud.Pages.Gallery
 {
-    public class UploadModel(IUserProvider userProvider, ITaskScheduler taskScheduler) : AuthorizedPageModel(userProvider)
+    public class UploadModel(IUserProvider userProvider, ITaskScheduler taskScheduler, IConfigProvider configProvider) 
+        : AuthorizedPageModel(userProvider)
     {
-        private readonly User? _user = userProvider.GetCurrent();
         private readonly ITaskScheduler _taskScheduler = taskScheduler;
+        private readonly IConfigProvider _configProvider = configProvider;
 
         [BindProperty]
         public List<IFormFile> Files { get; set; } = [];
@@ -21,18 +24,25 @@ namespace MediaCloud.Pages.Gallery
         [BindProperty]
         public bool IsCollection { get; set; }
         [BindProperty]
-        public string ReturnUrl { get; set; } = "/Gallery";
+        public bool IsNeedAutotagging { get; set; }
+        [BindProperty]
+        public bool IsAutotaggingEnabled { get; set; }
+        [BindProperty]
+        public bool IsKeepOriginalFormat { get; set; }
 
-        public IActionResult OnGet(string returnUrl = "/Gallery")
+        public IActionResult OnGet()
         {
-            ReturnUrl = returnUrl.Replace("$", "&");
+            IsAutotaggingEnabled = _configProvider.EnvironmentSettings.AutotaggingEnabled 
+                && CurrentUser != null 
+                && CurrentUser.IsAutotaggingAllowed;
 
             return Page();
         }
 
+        // Move method to controller
         public async Task<IActionResult> OnPost()
         {
-            if (_user == null)
+            if (CurrentUser == null)
             {
                 return Redirect("/Login");
             }
@@ -44,11 +54,14 @@ namespace MediaCloud.Pages.Gallery
                 {
                     Name = Path.GetFileName(file.FileName),
                     Type = file.ContentType,
-                    Content = await file.GetBytesAsync()
+                    Content = await file.GetBytesAsync(),
+                    KeepOriginalFormat = IsKeepOriginalFormat
                 });
             }
 
-            var task = new UploadTask(_user, uploadedFiles, IsCollection, Tags);
+            var task = IsNeedAutotagging 
+                ? new UploadAndAutotagTask(CurrentUser, uploadedFiles, IsCollection, Tags)
+                : new UploadTask(CurrentUser, uploadedFiles, IsCollection, Tags);
             var taskId = _taskScheduler.AddTask(task);
 
             return Redirect($"/TaskScheduler/GetTaskStatus?id={taskId}");

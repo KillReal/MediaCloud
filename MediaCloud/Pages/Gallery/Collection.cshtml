@@ -1,6 +1,7 @@
 ﻿@page
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @using MediaCloud.Data.Types
+@using MediaCloud.WebApp
 @model MediaCloud.Pages.Gallery.CollectionModel
 
 @{
@@ -26,7 +27,6 @@
 
     <form enctype="multipart/form-data" method="post">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control">
         <input type="hidden" asp-for=@(Model.IsOrderChanged) class="form-control" id="order-changed">
         <input type="hidden" asp-for=@(Model.Collection.Id) class="form-control">        
         <div class="row">
@@ -58,10 +58,6 @@
         </div>
 
         <div class="row">
-            <div class="col-sm mb-3 autocomplete">
-                <textarea asp-for="@Model.TagsString" class="form-control" style="height: 100%" id="filterGrab">
-                </textarea>
-            </div>
             <div class="col-sm">
                 <ul class="list-group">
                     <li class="list-group-item h-100">
@@ -72,8 +68,7 @@
                             {
                                 <a class="btn btn-warning btn-rounded me-1 mb-2" 
                                     asp-page="/Tags/Detail" 
-                                    asp-route-id=@tag.Id
-                                    asp-route-returnUrl='@Model.ReturnUrl'>
+                                    asp-route-id=@tag.Id>
                                     @tag.Name
                                 </a>
                             }
@@ -81,8 +76,7 @@
                             {
                                 <a class="btn btn-success btn-rounded me-1 mb-2" 
                                     asp-page="/Tags/Detail" 
-                                    asp-route-id=@tag.Id
-                                    asp-route-returnUrl='@Model.ReturnUrl'>
+                                    asp-route-id=@tag.Id>
                                     @tag.Name
                                 </a>
                             }
@@ -90,8 +84,7 @@
                             {
                                 <a class="btn btn-danger btn-rounded me-1 mb-2" 
                                     asp-page="/Tags/Detail" 
-                                    asp-route-id=@tag.Id
-                                    asp-route-returnUrl='@Model.ReturnUrl'>
+                                    asp-route-id=@tag.Id>
                                     @tag.Name
                                 </a>
                             }
@@ -99,8 +92,7 @@
                             {
                                 <a class="btn btn-info btn-rounded me-1 mb-2" 
                                     asp-page="/Tags/Detail" 
-                                    asp-route-id=@tag.Id
-                                    asp-route-returnUrl='@Model.ReturnUrl'>
+                                    asp-route-id=@tag.Id>
                                     @tag.Name
                                 </a>
                             }
@@ -114,7 +106,7 @@
             <div class="button-group">
                 <input type="submit" value="Edit" class="btn btn-success" />
 
-                @if (Model.IsAutotaggingAvailable) 
+                @if (Model.IsAutotaggingEnabled) 
                 {
                     <input class="btn btn-success btn-rounded" 
                         type="button" 
@@ -126,12 +118,9 @@
             </div>
 
             <div class="button-group">
-                <a class="btn btn-info btn-rounded" onclick="startReorder();" id="reorder-button">
-                    Reorder
-                </a>
                 <a class="btn btn-info btn-rounded text-nowrap" 
                     asp-page="Index" 
-                    asp-route-filter=@(Model.TagsString) 
+                    asp-route-filter=@(string.Join(' ', Model.Tags.Select(x => x.Name)))) 
                     asp-route-sort=@("UpdatedAtDesc")>
                     Show similar
                 </a>
@@ -143,10 +132,8 @@
             </div>
         </div>
 
-        <div class="row thumbnail-sortable" id="sortable-gallery" style="display: none"> 
-        </div>
-
-        <div class="row gallery" id="gallery">           
+        <div class="row gallery thumbnail-sortable" id="gallery">
+            <partial name="~/Pages/Gallery/_Collection.cshtml" model=@(new _CollectionPageModel(Model.Previews))/>          
         </div>
 
         <div class="d-flex justify-content-center">
@@ -193,85 +180,89 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script src="~/js/html5sortable.js"></script>
-<script src="~/js/tagAutocompletion.js"></script>
-<script src="~/Pages/Gallery/Collection.cshtml.js"></script>
 
 <script type="text/javascript">
-    autocomplete(document.getElementById("filterGrab"));
     
     sortable('.thumbnail-sortable', {
         placeholderClass: 'col-md-2'
     });
 
     sortable('.thumbnail-sortable')[0].addEventListener('sortupdate', function (e) {
-        var row = document.getElementById('sortable-gallery');
+        var row = document.getElementById('gallery');
         var place = 0;
         for (const child of row.children) {
-            var order = child.getElementsByClassName("order-val visually-hidden");
+            var order = child.getElementsByClassName("order-val");
             order[0].value = place;
             place++;
         }
     });
 
-    var rootReturnUrl = '@Model.ReturnUrl.Replace("&", "$")';
-    var currentOffset = -@Model.ListRequest.Count;
-    var nextOffset = 0;
+    function OnCardClick(entityType, dataId)
+    {
+        window.location = GetPostUrl(entityType, dataId);
+    }
 
-    window.addEventListener("scroll", function (e) {
-        // OnScroll autoloading
+    function OnCardInNewWindowClick(entityType, dataId) 
+    {
+        window.open(GetPostUrl(entityType, dataId));
+    }
+
+    function GetPostUrl(entityType, dataId)
+    {
+        return entityType +"?id=" + dataId;
+    }
+
+    var currentOffset = 0;
+    var nextOffset = @Model.ListRequest.Count;
+    var isEnrichInProcess = false;
+
+    window.addEventListener("scroll", function(e) {
         if ((window.innerHeight + window.scrollY + 2000) >= document.body.offsetHeight) {
-            // Continue if we at end of page
-            if (currentOffset == nextOffset) {
-                // Return if we displayed all elements in batches
-                return;
-            }
-            
-            if (currentOffset > @Model.TotalCount) {
-                // If it last batch, hide loading spinner and return
-                nextOffset = currentOffset;
-                document.getElementById('loadingSpinner').style = "display: none";
-                return;
-            }
-
-            // Update current progress
-            currentOffset += @Model.ListRequest.Count;
-
-            // Get next batch
-            var url = "/Collection/PreviewsBatch?id=" + '@Model.Collection.Id' + "&count=" + @Model.ListRequest.Count + "&offset=" + nextOffset;
-            fetch(url).then(function (response) {
-                return response.json();
-            }).then(function (data) {
-                // Get gallerie to show elements batch. One for viewing and one for sorting.
-                var gallery = document.getElementById('gallery');
-                var sortableGallery = document.getElementById('sortable-gallery');
-                for (var i = 0; i < data.length; i++) {
-                    // For each element in batch
-                    // Creates new cards
-                    var sortCard = CreateSortCard(data, i, i + currentOffset);
-                    var actualCard = CreateActualCard(data, i, '@Model.Collection.Id');
-
-                    // Add them to galleries
-                    gallery.appendChild(actualCard);
-                    sortableGallery.appendChild(sortCard);
-                }
-
-                // Move to next batch
-                sortable('.thumbnail-sortable');
-                nextOffset += @Model.ListRequest.Count;
-            }).catch(function (err) {
-                console.log('Fetch Error :-S', err);
-            });
+            enrichGallery();
         }
     });
 
-    fetch('/Gallery/IsCollectionAutotaggingExecuted?collectionId=' + '@Model.Collection.Id')
-        .then((response) => response.json())
-        .then(function (data) {
-            if (data == true) {
-                    document.getElementById('autotagButton').disabled = true;
-                    document.getElementById('autotagButton').value = "Autotagging... ";
-            }
+    function enrichGallery() {
+        if (currentOffset === nextOffset || isEnrichInProcess) {
+            // Return if we displayed all elements in batches or loading in progress
+            return;
         }
+        
+        if (currentOffset > @Model.TotalCount) {
+            // If it last batch, hide loading spinner and return
+            nextOffset = currentOffset;
+            document.getElementById('loadingSpinner').style = "display: none";
+            return;
+        }
+
+        isEnrichInProcess = true;
+        currentOffset += @Model.ListRequest.Count;
+
+       var url = "/Gallery/GetCollectionPreviewsBatch?id=" + '@Model.Collection.Id' + "&count=" + @Model.ListRequest.Count + "&offset=" + nextOffset;
+        fetch(url).then(function(response) {
+            return response.text();
+        }).then(function(data) {
+            var gallery = document.getElementById('gallery');
+
+            gallery.insertAdjacentHTML('beforeend', data);
+            isEnrichInProcess = false;
+        }).catch(function(err) {
+            console.log('Fetch Error :-S', err);
+        });
+        
+        nextOffset += @Model.ListRequest.Count;
+    }
+
+    if (@Json.Serialize(Model.IsAutotaggingEnabled))
+    {
+        fetch('/Gallery/IsCollectionAutotaggingExecuted?collectionId=' + '@Model.Collection.Id')
+            .then((response) => response.json())
+            .then(function (data) {
+                if (data == true) {
+                        document.getElementById('autotagButton').disabled = true;
+                        document.getElementById('autotagButton').value = "Autotagging... ";
+                }
+            }
     )
 
     var averageExecutionTime = 45.0 * @Model.TotalCount;
@@ -284,6 +275,7 @@
             }
         }
     )
+    }
 
     var modalTitle = document.getElementById('modalTitle');
     var modalBody = document.getElementById("modalBody");
@@ -293,8 +285,9 @@
         modalTitle.innerHTML = title;
     }
 
-    function setModalProgress(progress, executionTime) {
-        document.getElementById('progress').innerHTML = "Progress: " + parseInt(progress, 10)+ "%";
+    function setModalProgress(taskCount, progress, executionTime) {
+        document.getElementById('progress').innerHTML = "Progress: " + parseInt(progress, 10)+ "% and " +
+            + taskCount + " more tasks left...";
         document.getElementById('executionTime').innerHTML = 'It may take some time (~' + parseInt(executionTime, 10) + ' sec)';
         document.getElementById('autotagButton').value = "Autotagging... " + parseInt(progress, 10)+ "%";
     }
@@ -328,41 +321,42 @@
         request.onload = function() { // request successful
             setModalTitle('Waiting queue for processing...');
             showModalBody();
-            var data = JSON.parse(request.response);
+            var taskIds = JSON.parse(request.response);
 
-            var url = "/TaskScheduler/GetTaskStatus?id=" + data;
+            var url = "/TaskScheduler/GetTaskStatus?id=" + taskIds[0];
 
-            const updator = function () {
-                fetch(url)
+            /*taskIds.forEach(x => {
+                const updator = function () {
+                    fetch(url)
                     .then((response) => response.json())
                     .then(function (data) {
-                        var progress = data.workCount;
+                        var progress = 100 - data.workCount;
 
-                        if (data.queuePosition > 1) {
-                            setModalTitle('Waiting queue for processing...');
-                        }
-                        else if (data.queuePosition == 1) {
-                            setModalTitle('Autotagging in progress...');
-                            setModalProgress(progress, averageExecutionTime);
-                            timerCounter += updateInterval;
-                        }
-                        else if (data.workCount == 0 && data.isExist == false) {
+                    if (data.isCompleted == true) {
                             setModalTitle('Autotagging successfully completed!');
                             hideModalBody();
                             hideLoadSpinner();
 
-                            location.reload();
-
                             clearInterval(loadingUpdateInterval);
+                        }
+                        else if (data.isInProgress == false) {
+                            setModalTitle('Waiting queue for processing...');
+                        }
+                        else {
+                            setModalTitle('Autotagging in progress...');
+                            setModalProgress(taskIds.length, progress, averageExecutionTime);
+                            timerCounter += updateInterval;
                         }
                     })
                 }
 
                 updator();
                 var loadingUpdateInterval = setInterval(updator, updateInterval);
-            };
-
-        request.send();
+            });*/
+            setModalTitle('Autotagging in progress...');
+            hideModalBody();
+        };
+        request.send(); 
     }
 
     window.scrollTo(0, 1);

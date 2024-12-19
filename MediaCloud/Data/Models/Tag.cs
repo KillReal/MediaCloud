@@ -13,18 +13,19 @@ namespace MediaCloud.Data.Models
 
         public int PreviewsCount { get; set; }
 
-        public virtual List<Preview> Previews { get; set; } = [];
+        public virtual List<Preview> Previews { get; set; }
 
         public Tag(string name, string description, TagType type)
         {
             Name = name;
             Description = description;
             Type = type;
+            Previews = [];
         }
 
         public Tag()
         {
-
+            Previews = [];
         }
     }
 }

@@ -15,6 +15,11 @@ function updateModalLoadBody(data) {
     }
 }
 
+function updateModelLoadBodyWithErrorMessage(data) {
+    orderPosElem.innerHTML = data.completionMessage;
+    mediaCountElem.innerHTML = '';
+}
+
 function setModalTitle(title) {
     modalTitle.innerHTML = title;
 }
@@ -59,22 +64,32 @@ function formSubmit(event) {
                 .then((response) => response.json())
                 .then(function (data) {
                     updateModalLoadBody(data);
-                    if (data.queuePosition > 1) {
-                        setModalTitle('Waiting queue for processing...');
-                    }
-                    else if (data.queuePosition == 1) {
-                        setModalTitle('Server processing...');
-                    }
-                    else if (data.workCount == 0 && data.isExist) {
-                        setModalTitle('Saving in database...');
-                        showLoadSpinner();
-                    }
-                    else if (data.workCount == 0 && data.isExist == false) {
-                        setModalTitle('File(-s) successfully uploaded!');
-                        hideModalBody();
+                    if (data.isCompleted == true) {
+                        if (data.isSuccess == true)
+                        {
+                            setModalTitle('File(-s) successfully uploaded!');
+                            hideModalBody();
+                        }
+                        else 
+                        {
+                            setModalTitle('An error occured during uploading :(');
+                            updateModelLoadBodyWithErrorMessage(data);
+                        }
                         hideLoadSpinner();
 
                         clearInterval(loadingUpdateInterval);
+                    }
+                    else if (data.isInProgress == true) { 
+                        if (data.workCount == 0 && data.isCompleted == false) {
+                            setModalTitle('Saving in database...');
+                            showLoadSpinner();
+                        }
+                        else if (data.workCount > 0) {
+                            setModalTitle('Server processing...');
+                        }
+                        else if (data.queuePosition > 1) {
+                            setModalTitle('Waiting queue for processing...');
+                        }
                     }
                 })
         }

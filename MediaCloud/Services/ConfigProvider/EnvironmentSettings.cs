@@ -6,22 +6,35 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
         public string? DatabaseConnectionString {get; set;}
         public string? AiJoyTagConnectionString {get; set;}
         public int CookieExpireTime {get; set;}
+        public int TaskSchedulerQueueCleanupTime {get; set;}
         public int PreviewMaxHeight {get; set;}
         public int TaskSchedulerWorkerCount {get; set;}
-        public int TaskSchedulerAutotaggingWorkerCount {get; set;}
+
+        public int AutotaggingMaxParallelDegree {get; set;}
+        public int UploadingMaxParallelDegree {get; set;}
         public int PasswordMinLength {get; set;}
         public bool PasswordMustHaveSymbols {get; set;}
+        public bool LimitLoginAttempts {get; set;}
+        public bool UseParallelProcessingForUploading {get; set;}
+        public bool UseParallelProcessingForAutotagging {get; set;}
+        public bool AutotaggingEnabled {get; set;}
 
         public EnvironmentSettings(IConfiguration configuration)
         {
             DatabaseConnectionString = configuration["ConnectionStrings:Database"];
             AiJoyTagConnectionString = configuration["ConnectionStrings:AiJoyTag"];
-            CookieExpireTime = configuration.GetValue<int>("CookieExpireTime");
-            PreviewMaxHeight = configuration.GetValue<int>("PreviewMaxHeight");
+            CookieExpireTime = configuration.GetValue<int>("Security:CookieExpireTime");
+            PreviewMaxHeight = configuration.GetValue<int>("Uploading:Preview:MaxHeight");
             TaskSchedulerWorkerCount = configuration.GetValue<int>("TaskSchedulerWorkerCount");
-            TaskSchedulerAutotaggingWorkerCount = configuration.GetValue<int>("TaskSchedulerAutotaggingWorkerCount");
-            PasswordMinLength = configuration.GetValue<int>("PasswordMinLength");
-            PasswordMustHaveSymbols = configuration.GetValue<bool>("PasswordMustHaveSymbols");
+            AutotaggingMaxParallelDegree = configuration.GetValue<int>("Autotagging:MaxParallelThreadCount");
+            UploadingMaxParallelDegree = configuration.GetValue<int>("Uploading:MaxParallelThreadCount");
+            PasswordMinLength = configuration.GetValue<int>("Security:PasswordMinLength");
+            PasswordMustHaveSymbols = configuration.GetValue<bool>("Security:PasswordMustHaveSymbols");
+            UseParallelProcessingForUploading = configuration.GetValue<bool>("Uploading:UseParallelProcessing");
+            UseParallelProcessingForAutotagging = configuration.GetValue<bool>("Autotagging:UseParallelProcessing");
+            LimitLoginAttempts = configuration.GetValue<bool>("Security:LimitLoginAttempts");
+            AutotaggingEnabled = configuration.GetValue<bool>("Autotagging:Enabled");
+            TaskSchedulerQueueCleanupTime = configuration.GetValue<int>("TaskSchedulerQueueCleanupTime");
         }
 
         public EnvironmentSettings()
@@ -33,12 +46,18 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
         {
             configuration["ConnectionStrings:Database"] = DatabaseConnectionString;
             configuration["ConnectionStrings:AiJoyTag"] = AiJoyTagConnectionString;
-            configuration["CookieExpireTime"] = CookieExpireTime.ToString();
-            configuration["PreviewMaxHeight"] = PreviewMaxHeight.ToString();
+            configuration["Security:CookieExpireTime"] = CookieExpireTime.ToString();
+            configuration["Uploading:Preview:MaxHeight"] = PreviewMaxHeight.ToString();
             configuration["TaskSchedulerWorkerCount"] = TaskSchedulerWorkerCount.ToString();
-            configuration["TaskSchedulerAutotaggingWorkerCount"] = TaskSchedulerWorkerCount.ToString();
-            configuration["PasswordMinLength"] = PasswordMinLength.ToString();
-            configuration["PasswordMustHaveSymbols"] = PasswordMustHaveSymbols.ToString();
+            configuration["Autotagging:MaxParallelDegree"] = TaskSchedulerWorkerCount.ToString();
+            configuration["Security:PasswordMinLength"] = PasswordMinLength.ToString();
+            configuration["Security:PasswordMustHaveSymbols"] = PasswordMustHaveSymbols.ToString();
+            configuration["Uploading:UseParallelProcessing"] = UseParallelProcessingForUploading.ToString();
+            configuration["Autotagging:UseParallelProcessing"] = UseParallelProcessingForAutotagging.ToString();
+            configuration["Autotagging:UseParallelProcessing"] = AutotaggingEnabled.ToString();
+            configuration["Security:LimitLoginAttempts"] = LimitLoginAttempts.ToString();
+            configuration["Uploading:MaxParallelThreadCound"] = UploadingMaxParallelDegree.ToString();
+            configuration["TaskSchedulerQueueCleanupTime"] = TaskSchedulerQueueCleanupTime.ToString();
         }
     }
 }

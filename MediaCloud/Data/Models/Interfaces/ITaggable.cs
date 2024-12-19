@@ -5,5 +5,6 @@ namespace MediaCloud.WebApp.Data.Models.Interfaces
     public interface ITaggable
     {
         public List<Tag> Tags { get; set; }
+        public Collection? Collection {get; set; }
     }
 }

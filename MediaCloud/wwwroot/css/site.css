@@ -39,7 +39,6 @@ body {
     justify-content: center;
     background: #5063b9;
     min-height: 95vh;
-    transition: all 1.5s ease-out allow-discrete;
 }
 
 .main-container {
@@ -82,6 +81,29 @@ body {
 .page-center-container {
     display: flex;
     justify-content: center;
+}
+
+.page-header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.progress {
+    color: black;
+    background-color: rgb(38, 84, 112);
+    min-width: 20rem;
+    width: 25%;
+    height: 1.5rem;
+    border-radius: 2rem;
+}
+
+.progress-bar-value {
+    height: 100%;
+    vertical-align: middle;
+    line-height: 1.5rem;
+    font-size: small;
+    color: white;
 }
 
 .button-panel {
@@ -305,6 +327,12 @@ body {
     animation-iteration-count: 1;
 }
 
+.picture-card:hover {
+    transition: all 0.3s ease-in-out;
+    transform: scale(1.05);
+    cursor: pointer;
+}
+
 .picture-container {
     position:relative;
     display: inline-block;
@@ -336,8 +364,6 @@ body {
     object-fit: contain; 
     height: 80vh;
     max-width: 90vw;
-    transform: scale(0.7);
-    animation: smooth-appear-zoom 0.7s ease forwards;
     animation-iteration-count: 1;
 }
 
@@ -393,4 +419,9 @@ body {
     min-width: 20rem;
     max-width: 75rem;
     max-height: 75rem;
+}
+
+.task-message {
+    width: 100%;
+    min-height: 10rem!important;
 }

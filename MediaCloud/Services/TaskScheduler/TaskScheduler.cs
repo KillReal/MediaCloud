@@ -1,8 +1,7 @@
-﻿using MediaCloud.TaskScheduler.Tasks;
+﻿using MediaCloud.Data.Models;
 using MediaCloud.WebApp.Services.ConfigProvider;
 using NLog;
 using Task = MediaCloud.TaskScheduler.Tasks.Task;
-using MediaCloud.WebApp;
 
 namespace MediaCloud.TaskScheduler
 {
@@ -29,25 +28,12 @@ namespace MediaCloud.TaskScheduler
             _serviceScopeFactory = serviceScopeFactory;
             _logger = LogManager.GetLogger("Scheduler");
             _workers = [];
-            _queue = new Queue();
+            _queue = new Queue(configProvider);
 
             var workersCount = configProvider.EnvironmentSettings.TaskSchedulerWorkerCount;
             for (int i = 0; i < workersCount; i++)
             {
-                var types = new List<Type>() 
-                {
-                    typeof(Task), 
-                    typeof(RecalculateTask), 
-                    typeof(UploadTask),
-                    typeof(UpgradeUserImagesTask)
-                };
-                _workers.Add(new Worker(_queue, this, _serviceScopeFactory, types));
-            }
-
-            var autotaggingWorkersCount = configProvider.EnvironmentSettings.TaskSchedulerAutotaggingWorkerCount;
-            for (int i = 0; i < autotaggingWorkersCount; i++)
-            {
-                _workers.Add(new AutotagWorker(_queue, this, _serviceScopeFactory));
+                _workers.Add(new Worker(_queue, this, _serviceScopeFactory));
             }
 
             MaxWorkersCount = _workers.Count;
@@ -86,13 +72,7 @@ namespace MediaCloud.TaskScheduler
                 return;
             }
 
-            var taskTypes = _queue.GetWaitingTaskTypes();
-            taskTypes.ForEach(type => 
-            {
-                _workers.Where(worker => worker.IsAbleToExecute(type) && worker.IsReady)
-                                                .FirstOrDefault()
-                                                ?.Run();
-            });
+            _workers.Where(worker => worker.IsReady).FirstOrDefault()?.Run();
         }
 
         /// <summary>
@@ -107,5 +87,17 @@ namespace MediaCloud.TaskScheduler
         /// <param name="taskId"> Task id. </param>
         /// <returns> <see cref="TaskStatus"/> with task state. </returns>
         public TaskStatus GetStatus(Guid taskId) => _queue.GetTaskStatus(taskId);
+
+        public void CleanupQueue(bool cleanupOnlyCompleted = true)
+        {
+            if (cleanupOnlyCompleted) 
+            {
+                _queue.CleanupCompleted();
+            }
+            else
+            {
+                _queue.CleanupAll();
+            }
+        }
     }
 }

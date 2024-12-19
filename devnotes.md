@@ -1,8 +1,8 @@
 
 # Infrastructure             
 
-- 2.0.0 mediacloud
-- 2.0.0 mediacloud-dev
+- 2.0.1 mediacloud
+- 2.0.1 mediacloud-dev
 
 
 # Publishing
@@ -11,24 +11,52 @@
 dotnet publish -r linux-x64 -p:PublishSingleFile=true --no-self-contained -o D:/Development/MediaCloud-Deploy
 ```
 
-# Next release - 2.0.0       
-# Next minor - 2.0.1   
+# Next release - 2.1.0       
+# Next minor - 2.0.2
 
 
 TODO:
-- Review sql requests (Accordingly to ActorProvider staff)
 - Admin check for display actors in Statistic
 - Implement all actors statistic dashboards for Admin
 - Write unit tests 
-- Implement JoyTag garbage collection (unload model if not used for long time)
 - Show first uploaded image on upload page
-- Fix autotagging task stuck when service doesn't respond
 - Fix statistic recalculation when only 1 day recorded
-- Rewrite collection gallery to _CollectionGallery.cshtml
-- Implement multiple workers statistic for TaskSchedulerStatus
 - Remove Tag Types
+- Search by file name?
+- Fix previews ordering in gallery. Different order with filtering and without.
+- Fix worker task execution race condition (Error while running the task, mb cause of taking the task twice)
+- Research statisticsnapshot retrieving (happens several times for single page)
 
 # Changelog
+
+### Version 2.0.2 - 14th Dec, 2024
+- Added /Tasks view for Admin for tasks execution monitoring
+- Autotagging in background now displays for collections and previews when exists a task in queue but not started yet
+- Removed returnUrl parameters from request urls
+- Added Humanizer nuget
+- Added autotagging feature to /Upload parameters
+- Added feature to prevent image compression to /Upload parameters
+- Added user and statistic snapshots memory caching
+- Optimized random ordering in /Gallery
+- Fixed ordering race condition in /Collection
+- Fixed tag searching, if more than one preview in collection has same tag
+- Fixed high memory usage by tag linking
+- Fixed high memory usage by gallery randomizing
+- Fixed app crash and race condition when several workers take same task to run
+- Fixed title preview removing in collection
+
+### Version 2.0.1 - 31 Oct, 2024
+- New icons for list sortings
+- Implement anti-bruteforce login delaing in UserProvider
+- Fixed autotagging status when several tag tasks in process. Now it's updates only when other tasks completed.
+- Cache suggestedTags
+- Fixed tags removing when autotagging predict empty tag collection
+- Fixed autotagging timeout when long task running
+- Fixed image rotate
+- Implemented per user upload size limits
+- Fix autotagging task stuck when service doesn't respond
+- Fix user cache cleanup on logout
+- Fix preview switching while typing in tag input in Details
 
 ### Version 2.0.0 - 04th Sep, 2024
 - Implemented file uploading with any extension support

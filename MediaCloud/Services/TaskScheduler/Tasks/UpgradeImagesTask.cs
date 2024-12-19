@@ -13,6 +13,7 @@ using NLog;
 using Microsoft.IdentityModel.Tokens;
 using MediaCloud.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace MediaCloud.TaskScheduler.Tasks
 {
@@ -24,14 +25,12 @@ namespace MediaCloud.TaskScheduler.Tasks
 
         public override int GetWorkCount() => _workCount;
 
-        public override async void DoTheTask(IServiceProvider serviceProvider, IUserProvider userProvider)
+        public override async void DoTheTask(IServiceProvider serviceProvider, IUserProvider userProvider, StatisticProvider statisticProvider)
         {
             var context = serviceProvider.GetRequiredService<AppDbContext>();
             var pictureService = serviceProvider.GetRequiredService<IPictureService>();
 
-            var statisticProvider = new StatisticProvider(context, userProvider);
-
-            var previewsCount = await context.Previews.Where(x => x.CreatorId == Actor.Id).CountAsync();
+            var previewsCount = await context.Previews.Where(x => x.CreatorId == User.Id).CountAsync();
             var blobModelBuilder = new BlobModelBuilder(pictureService);
 
             _workCount = previewsCount;
@@ -43,7 +42,7 @@ namespace MediaCloud.TaskScheduler.Tasks
 
             while (_workCount > 0)
             {
-                var previews = await context.Previews.Where(x => x.CreatorId == Actor.Id)
+                var previews = await context.Previews.Where(x => x.CreatorId == User.Id)
                     .OrderByDescending(x => x.CreatedAt)
                     .Skip(offset)
                     .Take(_batchSize)
@@ -57,17 +56,7 @@ namespace MediaCloud.TaskScheduler.Tasks
                 var proceededCount = 0;
                 foreach (var preview in previews)
                 {
-                    if (preview.BlobType == "image/webp")
-                    {
-                        continue;
-                    }
-
-                    if (preview.BlobType.Contains("image") == false || preview.BlobType == "image/gif")
-                    {
-                        continue;
-                    }
-
-                    if (preview == null)
+                    if (preview.BlobType != "image/jpeg")
                     {
                         continue;
                     }
@@ -84,16 +73,16 @@ namespace MediaCloud.TaskScheduler.Tasks
                         fileToConvert.Name = preview.Id.ToString() + ".jpeg";
                     }
 
-                    var convertedFile = blobModelBuilder.Build(fileToConvert);
+                    var blob = blobModelBuilder.Build(fileToConvert);
 
                     var sizeBefore = preview.Blob.Size;
-                    shrinkedSize += sizeBefore - convertedFile.File.Content.Length;
+                    shrinkedSize += sizeBefore - blob.File.Content.Length;
 
-                    preview.Blob.Content = convertedFile.File.Content;
-                    preview.Blob.Size = convertedFile.File.Content.Length;
-                    preview.BlobName = convertedFile.Preview.BlobName;
+                    preview.Blob.Content = blob.File.Content;
+                    preview.Blob.Size = blob.File.Content.Length;
+                    preview.BlobName = blob.Preview.BlobName;
                     preview.BlobType = "image/webp";
-                    preview.Content = convertedFile.Preview.Content;
+                    preview.Content = blob.Preview.Content;
 
                     proceededCount += 1;
                 }

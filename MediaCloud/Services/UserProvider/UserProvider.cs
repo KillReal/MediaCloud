@@ -16,6 +16,7 @@ namespace MediaCloud.WebApp.Services.UserProvider
         private readonly AppDbContext _context;
         private readonly IMemoryCache _memoryCache;
         private readonly Mutex _mutex = new();
+        private readonly EnvironmentSettings _environmentSettings; 
 
         private readonly MemoryCacheEntryOptions _memoryCacheOptions;
 
@@ -25,8 +26,9 @@ namespace MediaCloud.WebApp.Services.UserProvider
             var scope = scopeFactory.CreateScope();
             _context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             _memoryCache = memoryCache;
+            _environmentSettings = new EnvironmentSettings(configuration);
             _memoryCacheOptions = new MemoryCacheEntryOptions()
-                .SetAbsoluteExpiration(TimeSpan.FromMinutes(new EnvironmentSettings(configuration).CookieExpireTime));
+                .SetAbsoluteExpiration(TimeSpan.FromMinutes(_environmentSettings.CookieExpireTime));
 
             _httpContextAccessor = httpContextAccessor;
 
@@ -81,19 +83,51 @@ namespace MediaCloud.WebApp.Services.UserProvider
                 return user;
             }
 
+            _mutex.WaitOne();
+
             var cachedUser = _context.Users.First(x => x.Name == identity.Name);
             _memoryCache.Set(identity.Name, cachedUser, _memoryCacheOptions);
+
+            _mutex.ReleaseMutex();
 
             return cachedUser;
         }
 
-        public bool Authorize(AuthData data, HttpContext httpContext)
+        public AuthorizationResult Authorize(AuthData data, HttpContext httpContext)
         {
             var user = _context.Users.FirstOrDefault(x => x.Name == data.Name && x.IsActivated);
 
-            if (user == null || user.PasswordHash == null || SecureHash.Verify(data.Password, user.PasswordHash) == false)
+            if (user == null || user.PasswordHash == null)
             {
-                return false;
+                return new(false, "Invalid data.");
+            }
+
+            _context.Entry(user).Reload();
+
+            if (_environmentSettings.LimitLoginAttempts && user.NextLoginAttemptAt > DateTime.Now)
+            {
+                var time = (int)(user.NextLoginAttemptAt - DateTime.Now).Value.TotalMinutes + 1;
+                return new(false, $"Account locked due to run out of attempts.\r\nNext attempt in {time} minute(-s).");
+            }
+
+            if (SecureHash.Verify(data.Password, user.PasswordHash) == false)
+            {
+                if (_environmentSettings.LimitLoginAttempts) 
+                {
+                    user.FailLoginAttemptCount += 1;
+                    var freeAttemptCount = 3;
+
+                    if (user.FailLoginAttemptCount >= freeAttemptCount)
+                    {
+                        var duration = Enumerable.Range(freeAttemptCount, user.FailLoginAttemptCount - freeAttemptCount + 1).Sum();
+                        user.NextLoginAttemptAt = DateTime.Now.AddMinutes(duration);
+                    }
+                }
+
+                _context.Users.Update(user);
+                _context.SaveChanges();
+                
+                return new(false, $"Incorrect username or password.");
             }
 
             var claims = new List<Claim>
@@ -107,17 +141,18 @@ namespace MediaCloud.WebApp.Services.UserProvider
             user.UpdatedAt = user.UpdatedAt.ToUniversalTime();
             user.CreatedAt = user.CreatedAt.ToUniversalTime();
             user.LastLoginAt = DateTime.Now.ToUniversalTime();
+            user.FailLoginAttemptCount = 0;
+            user.NextLoginAttemptAt = null;
             
             _context.Users.Update(user);
+            _context.SaveChanges();
             _memoryCache.Set(data.Name, user, _memoryCacheOptions);
 
-            return true;
+            return new (true, $"Successfully authorized for {user.Name}");
         }
 
         public void Logout(HttpContext httpContext)
         {
-            _ = httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-
             var identity = httpContext.User.Identity;
 
             if (identity == null || identity.Name == null)
@@ -129,9 +164,11 @@ namespace MediaCloud.WebApp.Services.UserProvider
             {
                 _memoryCache.Remove(identity.Name);
             }
+
+            _ = httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         }
 
-        public RegistrationResult Register(IConfigProvider configProvider, AuthData data, string inviteCode)
+        public RegistrationResult Register(AuthData data, string inviteCode)
         {
             var user = _context.Users.FirstOrDefault(x => x.InviteCode == inviteCode && x.IsActivated == false);
 
@@ -145,12 +182,12 @@ namespace MediaCloud.WebApp.Services.UserProvider
                 return new(false, $"Join attempt failed due to already existing name: {data.Name}");
             }
 
-            if (data.Password.Length < configProvider.EnvironmentSettings.PasswordMinLength)
+            if (data.Password.Length < _environmentSettings.PasswordMinLength)
             {
                 return new(false, $"Join attempt failed due to short password, it must be longer than 6 characters");
             }
 
-            if (data.Password.Any(char.IsSymbol) == false && configProvider.EnvironmentSettings.PasswordMustHaveSymbols)
+            if (data.Password.Any(char.IsSymbol) == false && _environmentSettings.PasswordMustHaveSymbols)
             {
                 return new(false, $"Join attempt failed due to week password, it must contain at least one symbol");
             }
@@ -169,10 +206,17 @@ namespace MediaCloud.WebApp.Services.UserProvider
         {
             var currentUser = GetCurrent();
 
+            if (_memoryCache.TryGetValue($"settings-{currentUser.Id}", out UserSettings? settings))
+            {
+                return settings;
+            }
+
             if (currentUser != null && currentUser.PersonalSettings != null)
             {
-                // TODO: deserialize settings once in CachedUser entity.
-                return JsonConvert.DeserializeObject<UserSettings>(currentUser.PersonalSettings);
+                settings = JsonConvert.DeserializeObject<UserSettings>(currentUser.PersonalSettings);
+                _memoryCache.Set($"settings-{currentUser.Id}", settings, _memoryCacheOptions);
+
+                return settings;
             }
 
             return null;

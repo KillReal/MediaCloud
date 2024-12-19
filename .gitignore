@@ -86,4 +86,10 @@ _[Ss]cripts
 __pycache__/
 *.onnx
 *.safetensors
-JoyTag/models/top_tags.txt
+.idea/.idea.MediaCloud/.idea/.gitignore
+.idea/.idea.MediaCloud/.idea/deployment.xml
+.idea/.idea.MediaCloud/.idea/encodings.xml
+.idea/.idea.MediaCloud/.idea/indexLayout.xml
+.idea/.idea.MediaCloud/.idea/sshConfigs.xml
+.idea/.idea.MediaCloud/.idea/vcs.xml
+.idea/.idea.MediaCloud/.idea/webServers.xml

@@ -8,14 +8,22 @@ namespace MediaCloud.WebApp.Repositories.Base
 
         public List<Guid> NegativeTagIds { get; set; } = negativeTagIds;
 
-        public IQueryable<T> GetQuery(IQueryable<T> query)
+        public IQueryable<T> ApplyToQuery(IQueryable<T> query)
         {
             if (PositiveTagIds.Any() || NegativeTagIds.Any())
             {
-                return query.Where(x => (x.Tags.Where(y => PositiveTagIds.Contains(y.Id))
-                                               .Count() == PositiveTagIds.Count)
-                                     && (x.Tags.Where(y => NegativeTagIds.Contains(y.Id))
-                                               .Any() == false));
+                return query.Where(x => (x.Tags.Concat(x.Collection.Previews.Where(x => x.Order != 0)
+                    .SelectMany(z => z.Tags))
+                        .Distinct()
+                        .Where(y => PositiveTagIds.Contains(y.Id))
+                        .Count() == PositiveTagIds.Count
+                )
+                && (x.Tags.Concat(x.Collection.Previews.Where(x => x.Order != 0)
+                    .SelectMany(z => z.Tags))
+                        .Distinct()
+                        .Where(y => NegativeTagIds.Contains(y.Id))
+                        .Any() == false)
+                );
             }
 
             return query;

@@ -5,22 +5,23 @@
 @{
     ViewData["Title"] = "Gallery";
 
-    var updatedAtSortType = "UpdatedAtDesc";
-    var updatedAtSortSymbol = "";
-    var updatedAtButtonStyle = "btn-info";
+    var nameSortType = "BlobNameDesc";
+    var nameSortSymbol = "";
+    var nameButtonStyle = "btn-info";
+
     var createdAtSortType = "CreatedAtDesc";
     var createdAtSortSymbol = "";
     var createdAtButtonStyle = "btn-info";
 
-    if (Model.ListBuilder.Sorting.PropertyName == "UpdatedAtDesc"){
-        updatedAtSortType = "UpdatedAt";
-        updatedAtSortSymbol = "↓";
-        updatedAtButtonStyle = "btn-warning";
+    if (Model.ListBuilder.Sorting.PropertyName == "BlobNameDesc"){
+        nameSortType = "BlobName";
+        nameSortSymbol = "↓";
+        nameButtonStyle = "btn-warning";
     }
-    else if (Model.ListBuilder.Sorting.PropertyName == "UpdatedAt"){
-        updatedAtSortType = "UpdatedAtDesc";
-        updatedAtSortSymbol = "↑";
-        updatedAtButtonStyle = "btn-warning";
+    else if (Model.ListBuilder.Sorting.PropertyName == "BlobName"){
+        nameSortType = "BlobNameDesc";
+        nameSortSymbol = "↑";
+        nameButtonStyle = "btn-warning";
     }
 
     if (Model.ListBuilder.Sorting.PropertyName == "CreatedAtDesc"){
@@ -46,31 +47,39 @@
 }
 
 <div class="page-container">
-    <h1>Gallery</h1>
+    <div class="page-header-container">
+        <h1>Gallery</h1>
+        <div class="progress position-relative">
+            <small class="ms-2 progress-bar-value d-flex position-absolute w-100">Used space: </small>
+            <div class="progress-bar bg-success" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: @Model.SpaceUsagePercent%"></div>
+            <small class="progress-bar-value justify-content-center d-flex position-absolute w-100">
+                @Model.SpaceUsage
+            </small>
+        </div>
+    </div>
 
     <div class="button-panel">
         <div class="align-self-center d-flex flex-wrap">   
             <div class="button-group">
                 <a class="btn btn-success btn-rounded" 
-                    asp-page="Upload"
-                    asp-route-returnUrl="/Gallery?count=@(Model.ListBuilder.Pagination.Count)$offset=@(Model.ListBuilder.Pagination.Offset)$sort=@(Model.ListBuilder.Sorting.PropertyName)$filter=@(Model.ListBuilder.Filtering.Filter)$isUseAutoload=@(Model.IsAutoloadEnabled)">
+                    asp-page="Upload">
                         Upload
                 </a>
             </div>
 
-            <div class="button-group">
+           <div class="button-group">
                 <div class="separator"></div>
                 <div class="descriptor">
                     Sort:
                 </div>
-                <a class="btn @updatedAtButtonStyle btn-rounded text-nowrap" 
+                <a class="btn @nameButtonStyle btn-rounded text-nowrap" 
                     asp-page="Index" 
                     asp-route-filter=@(Model.ListBuilder.Filtering.Filter) 
-                    asp-route-sort=@(updatedAtSortType) 
+                    asp-route-sort=@(nameSortType) 
                     asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>
-                    Updated @(updatedAtSortSymbol)
-                </a>
-            </div>
+                    🅰️ @(nameSortSymbol)
+                </a>   
+           </div>
 
            <div class="button-group">
                 <a class="btn @createdAtButtonStyle btn-rounded text-nowrap" 
@@ -78,7 +87,7 @@
                     asp-route-filter=@(Model.ListBuilder.Filtering.Filter) 
                     asp-route-sort=@(createdAtSortType) 
                     asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>
-                    Created @(createdAtSortSymbol)
+                    📅 @(createdAtSortSymbol)
                 </a>   
            </div>
 
@@ -88,7 +97,7 @@
                     asp-route-filter=@(Model.ListBuilder.Filtering.Filter) 
                     asp-route-sort=@($"Random_{new Random().Next(int.MaxValue)}") 
                     asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>
-                    Random
+                    🎲
                 </a>
                 <div class="separator"></div>
             </div>
@@ -179,16 +188,12 @@
 
     function GetPostUrl(entityType, dataId)
     {
-        return "Gallery/" + entityType +"?id=" + dataId +
-            "&returnUrl=/Gallery?count=" + @Model.ListBuilder.Pagination.Count + 
-            "$offset=" + @Model.ListBuilder.Pagination.Offset +
-            "$sort=" + '@Model.ListBuilder.Sorting.PropertyName' + 
-            "$filter=" + '@Model.ListBuilder.Filtering.Filter' + 
-            "$isUseAutoload=@Model.IsAutoloadEnabled";
+        return "Gallery/" + entityType +"?id=" + dataId;
     }
 
     var currentOffset = @Model.ListBuilder.Pagination.Offset;
     var nextOffset = @Model.ListBuilder.Pagination.Offset + @Model.ListBuilder.Pagination.Count;
+    var isEnrichInProcess = false;
 
     if (isAutoLoadingEnabled) {
         window.addEventListener("scroll", function(e) {
@@ -199,26 +204,27 @@
     }
 
     function enrichGallery() {
-        if (currentOffset == nextOffset || currentOffset > @Model.ListBuilder.Pagination.TotalCount) {
+        if (isEnrichInProcess || currentOffset === nextOffset || currentOffset > @Model.ListBuilder.Pagination.TotalCount) {
                 if (currentOffset > @Model.ListBuilder.Pagination.TotalCount) {
                     document.getElementById('loadingSpinner').style = "display: none";
                     document.getElementById('loadingDone').style = "text-align: center; display: block";
                 }
                 return;
         }
+        
         currentOffset += @Model.ListBuilder.Pagination.Count;
+        isEnrichInProcess = true;
 
-        var url = "/Gallery/GetBatch?count=" + @Model.ListBuilder.Pagination.Count + "&offset=" + nextOffset 
+        var url = "/Gallery/GetPreviewsBatch?count=" + @Model.ListBuilder.Pagination.Count + "&offset=" + nextOffset 
             + "&sort=" + '@(Model.ListBuilder.Sorting.PropertyName)' + "&filter=" + '@(Model.ListBuilder.Filtering.Filter)';
         fetch(url).then(function(response) {
             return response.text();
         }).then(function(data) {
             var gallery = document.getElementById('gallery');
 
-            console.log(data);
-
             gallery.insertAdjacentHTML('beforeend', data);
             nextOffset += @Model.ListBuilder.Pagination.Count;
+            isEnrichInProcess = false;
         }).catch(function(err) {
             console.log('Fetch Error :-S', err);
         });

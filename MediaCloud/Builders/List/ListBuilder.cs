@@ -18,9 +18,9 @@ namespace MediaCloud.Builders.List
     /// <param name="configProvider"> Config provider for current user <see cref="IDataService"/>. </param>
     public class ListBuilder<T>(ListRequest request, UserSettings userSettings) where T : Record
     {
-        public Sorting Sorting { get; init; } = new Sorting(request.Sort ?? "UpdatedAtDesc");
+        public Sorting Sorting { get; init; } = new Sorting(request.Sort ?? "CreatedAtDesc");
 
-        public Filtering Filtering { get; init; } = new Filtering((request.Filter ?? "").ToLower());
+        public Filtering Filtering { get; init; } = new Filtering(request.Filter ?? "");
 
         public Pagination Pagination { get; init; } = new Pagination(request.Count == 0
                 ? userSettings.ListMaxEntitiesCount

@@ -17,14 +17,12 @@
 					Sign In 🖐
 					</h2>
 
-					@if(Model.IsFailed)
+					@if(Model.Result.IsSuccess == false)
 					{
 						<div class="alert alert-danger mt-2" role="alert">
-							Sign in failed due to incorrect name or password.
+							@Model.Result.Message
 						</div>
 					}
-
-					<input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control">
 
 					<div class="form-outline form-white mb-4 mt-5">
 						<label class="col-form-label mb-1">Name</label>

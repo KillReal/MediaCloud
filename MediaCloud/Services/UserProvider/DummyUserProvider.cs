@@ -22,15 +22,16 @@ namespace MediaCloud.WebApp.Services.UserProvider
         
         public User? GetCurrentOrDefault() => _currentUser;
 
-        public bool Authorize(AuthData data, HttpContext httpContext) => false;
+        public AuthorizationResult Authorize(AuthData data, HttpContext httpContext) 
+            => new(false, "Dummy provider cannot register an actor");
 
         public void Logout(HttpContext httpContext)
         {
             throw new NotImplementedException($"Dummy provider cannot proceed logout");
         }
 
-        public RegistrationResult Register(IConfigProvider configProvider, AuthData data, string inviteCode) 
-        => new(false, $"Dummy provider cannot register an actor");
+        public RegistrationResult Register(AuthData data, string inviteCode) 
+            => new(false, "Dummy provider cannot register an actor");
 
         public bool SaveSettings(string jsonSettings)
         {

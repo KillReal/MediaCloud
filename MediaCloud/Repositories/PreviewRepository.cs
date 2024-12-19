@@ -14,22 +14,18 @@ namespace MediaCloud.Repositories
 {
     public class PreviewRepository(AppDbContext context, StatisticProvider statisticProvider, IUserProvider actorProvider) : BaseRepository<Preview>(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider), IListBuildable<Preview>
     {
-        private static string DeduplicateTagString(string tagString)
+        private static string[] GetDeduplicatedTags(string tagString)
         {
             var tags = tagString.Split(' ');
 
-            if (tags.Length < 2)
-            {
-                return tagString;
-            }
-
-            return string.Join(' ', tags.Distinct());
+            return tags.Length < 2 
+                ? tags 
+                : tags.Distinct().ToArray();
         }
 
         private TagFilter<Preview> GetFilterQueryByTags(string tagsString)
         {
-            tagsString = DeduplicateTagString(tagsString);
-            var tags = tagsString.ToLower().Split(' ');
+            var tags = GetDeduplicatedTags(tagsString);
 
             var positiveTags = new List<string>();
             var negativeTags = new List<string>();
@@ -83,7 +79,7 @@ namespace MediaCloud.Repositories
                     query = query.Where(x => x.Tags.Any(x => x.Type == Data.Types.TagType.Series));
                 }
 
-                return GetFilterQueryByTags(filter).GetQuery(query);
+                return GetFilterQueryByTags(filter).ApplyToQuery(query);
             }
 
             return query;
@@ -105,8 +101,9 @@ namespace MediaCloud.Repositories
         {
             var query = _context.Previews.AsNoTracking().Where(x => x.Order == 0);
 
-            return await SetFilterToQuery(query, listBuilder.Filtering.Filter).Where(x => x.CreatorId == _actor.Id)
-                                                                    .CountAsync();
+            return await SetFilterToQuery(query, listBuilder.Filtering.Filter)
+                .Where(x => x.CreatorId == _actor.Id)
+                .CountAsync();
         }
 
         public async Task<List<Preview>> GetListAsync(ListBuilder<Preview> listBuilder)
@@ -117,22 +114,14 @@ namespace MediaCloud.Repositories
             _statisticProvider.ActivityFactorRaised.Invoke();
 
             if (listBuilder.Sorting.PropertyName.Contains("Random") &&
-                int.TryParse(listBuilder.Sorting.PropertyName.Split('_').Last(), out int seed))
+                int.TryParse(listBuilder.Sorting.PropertyName.Split('_').Last(), out var seed))
             {
-                var previewIdsList = _context.Previews.Where(x => x.Order == 0)
-                                                      .Select(x => x.Id)
-                                                      .Shuffle(seed)
-                                                      .ToList();
-
-                var list = await query.Where(x => previewIdsList.Any(id => id == x.Id) 
-                                            && x.CreatorId == _actor.Id)
-                                        .Include(x => x.Collection)
-                                        .ToListAsync();
-
-                return list.OrderBy(x => previewIdsList.IndexOf(x.Id))
-                            .Skip(listBuilder.Pagination.Offset)
-                            .Take(listBuilder.Pagination.Count)
-                            .ToList();
+                return await query.Where(x => x.Order == 0 && x.CreatorId == _actor.Id)
+                    .Include(x => x.Collection)
+                    .OrderBy(x => EF.Functions.Random())
+                    .Skip(listBuilder.Pagination.Offset)
+                    .Take(listBuilder.Pagination.Count)
+                    .ToListAsync();
             }  
 
             return await query.Order(listBuilder.Sorting.GetOrder())
@@ -156,35 +145,36 @@ namespace MediaCloud.Repositories
             
             if (preview.Collection != null)
             {
-                preview.Collection.Previews = [.. preview.Collection.Previews.OrderBy(x => x.Order)];
-                if (preview.Order == 0)
+                if (preview.Collection.Count > 1)
                 {
-                    if (preview.Collection.Previews.Count > 1)
+                    if (preview.Order == 0)
                     {
-                        preview.Collection.Previews[1].Order = 0;
-                        preview.Collection.Previews[1].Tags = preview.Tags;
-                        preview.Collection.Count--;
-
-                        _context.Collections.Update(preview.Collection);
-                        _context.Blobs.Remove(preview.Blob);
-                        SaveChanges();
-                        _logger.Info("Removed Media in Collection with id: {preview.Collection.Id} by: {_actor.Name}", 
-                            preview.Collection.Id, _actor.Name);
-                        _statisticProvider.MediasCountChanged.Invoke(-1, -size);
-
-                        return true;
+                        var newTitlePreview = _context.Previews.Where(x => x.Collection == preview.Collection)
+                            .OrderBy(x => x.Order)
+                            .First(x => x.Order > preview.Order);
+                        newTitlePreview.Order = 0;
                     }
+                    preview.Collection.Count--;
 
-                    var collectionId = preview.Collection.Id;
-
+                    _context.Collections.Update(preview.Collection);
                     _context.Blobs.Remove(preview.Blob);
-                    _context.Collections.Remove(preview.Collection);
                     SaveChanges();
-                    _logger.Info("Removed Collection with id: {collectionId} by: {_actor.Name}", collectionId, _actor.Name);
+                    _logger.Info("Removed Media in Collection with id: {preview.Collection.Id} by: {_actor.Name}", 
+                        preview.Collection.Id, _actor.Name);
                     _statisticProvider.MediasCountChanged.Invoke(-1, -size);
 
                     return true;
                 }
+
+                var collectionId = preview.Collection.Id;
+
+                _context.Blobs.Remove(preview.Blob);
+                _context.Collections.Remove(preview.Collection);
+                SaveChanges();
+                _logger.Info("Removed Collection with id: {collectionId} by: {_actor.Name}", collectionId, _actor.Name);
+                _statisticProvider.MediasCountChanged.Invoke(-1, -size);
+
+                return true;
             }
 
             var mediaId = preview.Blob.Id;

@@ -5,11 +5,12 @@ using MediaCloud.Repositories;
 using MediaCloud.WebApp.Pages;
 using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp.Repositories;
+using MediaCloud.WebApp.Services.ConfigProvider;
 
 namespace MediaCloud.Pages.Gallery
 {
     public class DetailModel(IUserProvider actorProvider, IPictureService pictureService, TagRepository tagRepository,
-        PreviewRepository previewRepository, BlobRepository blobRepository) : AuthorizedPageModel(actorProvider)
+        PreviewRepository previewRepository, BlobRepository blobRepository, IConfigProvider configProvider) : AuthorizedPageModel(actorProvider)
     {
         private readonly IPictureService _pictureService = pictureService;
         private readonly TagRepository _tagRepository = tagRepository;
@@ -29,18 +30,18 @@ namespace MediaCloud.Pages.Gallery
         [BindProperty]
         public string? TagsString { get; set; } = "";
         [BindProperty]
-        public string ReturnUrl { get; set; } = "/";
-         [BindProperty]
-        public string RootReturnUrl { get; set; } = "/";
-        [BindProperty]
         public Guid? PrevPreviewId { get; set; } = null;
         [BindProperty]
         public Guid? NextPreviewId { get; set; } = null;
         [BindProperty]
-        public int RotationDegree {get; set;} = 0;
+        public int RotationDegree { get; set; } = 0;
+        [BindProperty]
+        public bool IsAutotaggingEnabled { get; set; } = configProvider.EnvironmentSettings.AutotaggingEnabled;
 
-        public IActionResult OnGet(Guid id, string returnUrl = "/Blobs", string rootReturnUrl = "/")
+        public IActionResult OnGet(Guid id)
         {
+            TempData["ReturnUrl"] = Request.Headers.Referer.ToString();
+
             var preview = _previewRepository.Get(id);
 
             if (preview == null)
@@ -53,6 +54,11 @@ namespace MediaCloud.Pages.Gallery
             BlobType = preview.BlobType;
             Blob = preview.Blob;
 
+            if (IsAutotaggingEnabled)
+            {
+                IsAutotaggingEnabled = CurrentUser != null && CurrentUser.IsAutotaggingAllowed;
+            }
+
             if (preview.Collection != null)
             {
                 var collectionPreviews = preview.Collection.Previews.OrderBy(x => x.Order);
@@ -61,9 +67,6 @@ namespace MediaCloud.Pages.Gallery
             }
 
             Tags = [.. preview.Tags.OrderBy(x => x.Type)];
-
-            ReturnUrl = returnUrl.Replace("$", "&");
-            RootReturnUrl = rootReturnUrl.Replace("$", "&");
             TagsString = string.Join(" ", Tags.Select(x => x.Name.ToLower()));
 
             return Page();
@@ -93,7 +96,7 @@ namespace MediaCloud.Pages.Gallery
             
             _blobRepository.Update(blob); 
 
-            return Redirect(ReturnUrl.Replace("$", "&"));
+            return Redirect(TempData["ReturnUrl"]?.ToString() ?? "/Gallery");
         }
 
         public IActionResult OnPostDelete(Guid id)
@@ -103,7 +106,7 @@ namespace MediaCloud.Pages.Gallery
                 return Redirect("/Error");
             }
 
-            return Redirect(ReturnUrl.Replace("$", "&"));
+            return Redirect(TempData["ReturnUrl"]?.ToString() ?? "/Gallery");
         }
     }
 }

@@ -13,8 +13,10 @@ namespace MediaCloud.Pages.Tags
         [BindProperty]
         public Tag Tag { get; set; } = new();
 
-        public IActionResult OnGet(string ReturnUrl = "/Tags")
+        public IActionResult OnGet()
         {
+            TempData["ReturnUrl"] = Request.Headers.Referer.ToString();
+
             return Page();
         }
 
@@ -32,7 +34,7 @@ namespace MediaCloud.Pages.Tags
 
             _tagRepository.Create(Tag);
 
-            return RedirectToPage("/Tags/Index");
+            return Redirect(TempData["ReturnUrl"]?.ToString() ?? "/Tags");
         }
     }
 }

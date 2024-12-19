@@ -7,6 +7,7 @@ using MediaCloud.WebApp.Services.ConfigProvider;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IO.Compression;
+using MediaCloud.WebApp.Services.TaskScheduler.Tasks;
 
 namespace MediaCloud.WebApp.Controllers
 {
@@ -23,12 +24,13 @@ namespace MediaCloud.WebApp.Controllers
         private readonly IAutotagService _autotagService = actorService;
         private readonly CollectionRepository _collectionRepository = collectionRepository;
 
-        public bool StartUserImagesUpgrade()
+        private bool IsAutotaggingAllowed()
         {
-            var task = new TaskScheduler.Tasks.UpgradeUserImagesTask(_userProvider.GetCurrent(), 100);
-            _taskScheduler.AddTask(task);
+            var currentUser = _userProvider.GetCurrent();
 
-            return true;
+            return _configProvider.EnvironmentSettings.AutotaggingEnabled 
+                && currentUser != null 
+                && currentUser.IsAutotaggingAllowed;
         }
 
         public List<string> GetSuggestions(string searchString, int limit = 10)
@@ -38,6 +40,11 @@ namespace MediaCloud.WebApp.Controllers
 
         public List<string> GetAliasSuggestions(string searchString, int limit = 10)
         {
+            if (IsAutotaggingAllowed() == false)
+            {
+                return [];
+            }
+
             return _autotagService.GetSuggestionsByString(searchString, limit);
         }
 
@@ -64,12 +71,19 @@ namespace MediaCloud.WebApp.Controllers
             return jsonPreviews;
         }
 
-        public async Task<ActionResult> GetBatchAsync(ListRequest listRequest)
+        public async Task<ActionResult> GetPreviewsBatchAsync(ListRequest listRequest)
         {
             var ListBuilder = new ListBuilder<Preview>(listRequest, _configProvider.UserSettings);
             var previews = await ListBuilder.BuildAsync(_previewRepository);
 
             return PartialView("/Pages/Gallery/_Gallery.cshtml", new _GalleryPageModel(previews));
+        }
+
+        public ActionResult GetCollectionPreviewsBatch(Guid id, ListRequest listRequest)
+        {
+            var previews = _collectionRepository.GetList(id, listRequest);
+
+            return PartialView("/Pages/Gallery/_Collection.cshtml", new _CollectionPageModel(previews, listRequest.Offset));
         }
 
         public FileContentResult Preview(Guid id)
@@ -144,16 +158,45 @@ namespace MediaCloud.WebApp.Controllers
 
         public Guid AutocompleteTagForPreview(Guid previewId)
         {
+            if (IsAutotaggingAllowed() == false)
+            {
+                return Guid.Empty;
+            }
+
             var task = new AutotagPreviewTask(_userProvider.GetCurrent(), [previewId]);
 
             return _taskScheduler.AddTask(task);
         }
 
-        public Guid AutocompleteTagForCollection(Guid collectionId)
+        public Guid AutocompleteTagForPreviewRange(List<Guid> previewsIds)
         {
-            var task = new AutotagCollectionTask(_userProvider.GetCurrent(), collectionId);
+            if (IsAutotaggingAllowed() == false)
+            {
+                return Guid.Empty;
+            }
+
+            var task = new AutotagPreviewTask(_userProvider.GetCurrent(), previewsIds);
 
             return _taskScheduler.AddTask(task);
+        }
+
+        public List<Guid> AutocompleteTagForCollection(Guid collectionId)
+        {
+            if (IsAutotaggingAllowed() == false)
+            {
+                return [];
+            }
+
+            var previewIds = _collectionRepository.Get(collectionId)?.Previews.Select(x => x.Id);
+            
+            if (previewIds == null || !previewIds.Any())
+            {
+                return [];
+            }
+            
+            var task = new AutotagPreviewTask(_userProvider.GetCurrent(), previewIds.ToList());
+
+            return [_taskScheduler.AddTask(task)];
         }
 
         public double GetAverageAutocompleteTagExecution()
@@ -168,7 +211,9 @@ namespace MediaCloud.WebApp.Controllers
 
         public bool IsPreviewAutotaggingExecuted(Guid previewId)
         {
-            return _autotagService.IsPreviewIsProceeded(previewId);
+            var taskStatuses = _taskScheduler.GetStatus().TaskStatuses;
+
+            return taskStatuses.Any(x => x.IsCompleted == false && x.AffectedEntities.Contains(previewId));
         }
 
         public bool IsCollectionAutotaggingExecuted(Guid collectionId)
@@ -180,9 +225,11 @@ namespace MediaCloud.WebApp.Controllers
                 return false;
             }
 
+            var taskStatuses = _taskScheduler.GetStatus().TaskStatuses;
+
             foreach (var previewId in previewIds)
             {
-               if (_autotagService.IsPreviewIsProceeded(previewId))
+               if (taskStatuses.Any(x => x.IsCompleted == false && x.AffectedEntities.Contains(previewId)))
                {
                     return true;
                }

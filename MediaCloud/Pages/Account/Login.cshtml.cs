@@ -13,21 +13,19 @@ namespace MediaCloud.WebApp.Pages
         private readonly ILogger _logger = LogManager.GetLogger("Actor");
 
         [BindProperty]
-        public bool IsFailed { get; set; } = false;
+        public AuthorizationResult Result { get; set; } = new();
         [BindProperty]
         public AuthData AuthData { get; set; } = new();
         [BindProperty]
         public User? CurrentUser { get; set; } = null;
-        [BindProperty]
-        public string ReturnUrl { get; set; } = "/";
 
         public IActionResult OnGet(string returnUrl = "/")
         {
-            ReturnUrl = returnUrl;
+            TempData["ReturnUrl"] = returnUrl;
 
             if (_userProvider.GetCurrentOrDefault() != null)
             {
-                return Redirect(ReturnUrl);
+                return Redirect(Request.Headers.Referer.ToString());
             }
 
             return Page();
@@ -35,19 +33,19 @@ namespace MediaCloud.WebApp.Pages
 
         public IActionResult OnPost()
         {
+            Result = _userProvider.Authorize(AuthData, HttpContext);
 
-            if (_userProvider.Authorize(AuthData, HttpContext) == false)
+            if (Result.IsSuccess == false)
             {
                 CurrentUser = null;
-                _logger.Error("Failed sign attempt by name: {AuthData.Name}", AuthData.Name);
-                IsFailed = true;
+                _logger.Error(Result.Message);
                 
                 return Page();
             }
 
-            _logger.Info("Signed in actor with name: {AuthData.Name}", AuthData.Name);
+            _logger.Info(Result.Message);
 
-            return Redirect(ReturnUrl);
+            return Redirect(TempData["ReturnUrl"]?.ToString() ?? "/");
         }
     }
 }

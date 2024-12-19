@@ -29,7 +29,6 @@
 						<input type="hidden" asp-for=@(Model.IsEnvironmentSettingsChanged) class="form-control" id="IsEnvironmentSettingsChanged">
 					}
 					<input type="hidden" asp-for=@(Model.User.Id) class="form-control">
-					<input type="hidden" asp-for=@(Model.ReturnUrl) class="form-control">
 
 					<div>
 						Name: @Html.DisplayTextFor(x => x.User.Name)

@@ -10,9 +10,9 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
 
         public UserSettings(IConfiguration configuration)
         {   
-            ListMaxEntitiesCount = configuration.GetValue<int>("ListMaxEntitiesCount");
-            ListMaxPageCount = configuration.GetValue<int>("ListMaxPageCount");
-            ListAutoloadingEnabled = configuration.GetValue<bool>("ListAutoloadingEnabled");
+            ListMaxEntitiesCount = configuration.GetValue<int>("Gallery:List:MaxEntitiesCount");
+            ListMaxPageCount = configuration.GetValue<int>("Gallery:List:MaxPageCount");
+            ListAutoloadingEnabled = configuration.GetValue<bool>("Gallery:List:AutoloadingEnabled");
             StatisticActivityBacktrackDayCount = configuration.GetValue<int>("StatisticActivityBacktrackDayCount");
         }
 

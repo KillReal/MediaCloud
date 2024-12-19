@@ -65,22 +65,22 @@
 
         <div class="button-group">
             <div class="descriptor">
-                Sorting:
+                Sort:
             </div>
             <a class="btn @nameButtonStyle btn-rounded text-nowrap" 
                 asp-page="Index" 
                 asp-route-sort=@(nameSortType)>
-                Name @(nameSortSymbol)
+                🅰️ @(nameSortSymbol)
             </a>
             <a class="btn @updatedAtButtonStyle btn-rounded text-nowrap" 
                 asp-page="Index" 
                 asp-route-sort=@(updatedAtSortType)>
-                Date @(updatedAtSortSymbol)
+                📅 @(updatedAtSortSymbol)
             </a>
             <a class="btn @lastLoginAtButtonStyle btn-rounded text-nowrap" 
                 asp-page="Index" 
                 asp-route-sort=@(lastLoginAtSortType)>
-                Last login at @(lastLoginAtSortSymbol)
+                ⌚ @(lastLoginAtSortSymbol)
             </a>
         </div>
     </div>  
@@ -110,12 +110,15 @@
                     <th class="table-item-padding">
                         @Html.DisplayNameFor(model => model.Users[0].InviteCode)
                     </th>
+                    <th class="table-item-padding">
+                        @Html.DisplayNameFor(model => model.Users[0].SpaceLimit)
+                    </th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var item in Model.Users) {
                     <tr class="list-clickable" 
-                        onclick="document.location='/Users/Detail?id=@item.Id&returnUrl=/Users/Index?sort=@Model.ListBuilder.Sorting.PropertyName';">
+                        onclick="document.location='/Users/Detail?id=@item.Id';">
                         <td class="table-item-padding">
                             @Html.DisplayFor(modelItem => item.Name)
                         </td>
@@ -133,6 +136,16 @@
                         </td>
                         <td class="table-item-padding">
                             @Html.DisplayFor(modelItem => item.InviteCode)
+                        </td>
+                        <td class="table-item-padding">
+                            @if (@item.SpaceLimit == 0)
+                            {
+                                <text>unlimited</text>
+                            }
+                            else 
+                            {
+                                @(Html.DisplayFor(modelItem => item.SpaceLimit))<text> Gb</text>
+                            }
                         </td>
                     </tr>
                 }

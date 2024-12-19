@@ -31,19 +31,19 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<IConfigProvider, ConfigProvider>();
 builder.Services.AddSingleton<IUserProvider, UserProvider>();
 builder.Services.AddSingleton<ITaskScheduler, MediaCloud.TaskScheduler.TaskScheduler>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<IAutotagService, AutotagService>();
-builder.Services.AddScoped<StatisticProvider>();
+builder.Services.AddSingleton<IPictureService, PictureService>();
+builder.Services.AddSingleton<StatisticProvider>();
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<PreviewRepository>();
 builder.Services.AddScoped<BlobRepository>();
 builder.Services.AddScoped<CollectionRepository>();
 builder.Services.AddScoped<TagRepository>();
-builder.Services.AddSingleton<IPictureService, PictureService>();
 
 builder.Services.Configure<FormOptions>(x =>
 {
@@ -61,7 +61,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(options => 
     {
         options.LoginPath = "/Account/Login";
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(builder.Configuration.GetValue<int>("CookieExpireTime"));
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(builder.Configuration.GetValue<int>("Security:CookieExpireTime"));
     });
 builder.Services.AddAuthorization();
 

@@ -15,9 +15,6 @@ namespace MediaCloud.Pages.Users
         [BindProperty]
         public new User User { get; set; }
 
-        [BindProperty]
-        public string ReturnUrl { get; set; } = "/Users";
-
         public DetailModel(IUserProvider userProvider, UserRepository userRepository) : base(userProvider)
         {
             _logger = LogManager.GetLogger("User.Detail");
@@ -26,14 +23,15 @@ namespace MediaCloud.Pages.Users
             User =  _userProvider.GetCurrent();
         }
 
-        public IActionResult OnGet(Guid id, string returnUrl = "/Users")
+        public IActionResult OnGet(Guid id)
         {
+            TempData["ReturnUrl"] = Request.Headers.Referer.ToString();
+
             if (User.IsAdmin == false)
             {
                 return Redirect("/Account/Login");
             }
 
-            ReturnUrl = returnUrl.Replace("$", "&");  
             User = _userRepository.Get(id) ?? new();
             User.PasswordHash = string.Empty;
 
@@ -67,10 +65,12 @@ namespace MediaCloud.Pages.Users
             referenceUser.IsAdmin = User.IsAdmin;
             referenceUser.IsActivated = User.IsActivated;
             referenceUser.InviteCode = User.InviteCode;
+            referenceUser.SpaceLimit = User.SpaceLimit;
+            referenceUser.IsAutotaggingAllowed = User.IsAutotaggingAllowed;
 
             _userRepository.Update(referenceUser);
 
-            return Redirect(ReturnUrl.Replace("$", "&"));
+            return Redirect(TempData["ReturnUrl"]?.ToString() ?? "/Users");
         }
 
         public IActionResult OnPostDelete(Guid id)
@@ -83,7 +83,7 @@ namespace MediaCloud.Pages.Users
                 return Redirect("/Account/Login");
             }
 
-            return Redirect(ReturnUrl.Replace("$", "&"));
+            return Redirect(TempData["ReturnUrl"]?.ToString() ?? "/Users");
         }
     }
 }

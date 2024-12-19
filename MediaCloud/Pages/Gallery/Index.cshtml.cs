@@ -6,6 +6,8 @@ using MediaCloud.WebApp.Pages;
 using MediaCloud.WebApp.Services.ConfigProvider;
 using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp.Repositories;
+using MediaCloud.WebApp.Services.Statistic;
+using MediaCloud.Extensions;
 
 namespace MediaCloud.Pages.Gallery
 {
@@ -14,6 +16,7 @@ namespace MediaCloud.Pages.Gallery
         private readonly IConfigProvider _configProvider;
         private readonly TagRepository _tagRepository;
         private readonly PreviewRepository _previewRepository;
+        private const int SpaceSizePrecision = 1;
 
         [BindProperty]
         public List<Preview> Previews { get; set; } = [];
@@ -25,27 +28,39 @@ namespace MediaCloud.Pages.Gallery
         public string ExampleFilter { get; set; }
 
         [BindProperty]
-        public bool IsAutoloadEnabled { get; set; } = true;
+        public bool IsAutoloadEnabled { get; set; }
+        [BindProperty]
+        public string SpaceUsage {get; set;}
+        [BindProperty]
+        public int SpaceUsagePercent {get; set;}
 
-        public ListModel(IUserProvider actorProvider, IConfigProvider configProvider, TagRepository tagRepository, 
-            PreviewRepository previewRepository) : base(actorProvider)
+        public ListModel(IUserProvider userProvider, IConfigProvider configProvider, TagRepository tagRepository, PreviewRepository previewRepository, StatisticProvider statisticProvider) : base(userProvider)
         {
             _configProvider = configProvider;
             _tagRepository = tagRepository;
             _previewRepository = previewRepository;
 
             var topTagNames = _tagRepository.GetTopUsed(2).Select(x => x.Name.ToLower());
-            if (topTagNames.Count() > 1)
-            {
-                ExampleFilter = $"{topTagNames.First()} !{topTagNames.Last()}";
-            }
-            else
-            {
-                ExampleFilter = "Create more tags to filtering";
-            }
+            ExampleFilter = topTagNames.Count() > 1 
+                ? $"{topTagNames.First()} !{topTagNames.Last()}" 
+                : "Create more tags to filtering";
 
             ListBuilder = new ListBuilder<Preview>(new(), _configProvider.UserSettings);
             IsAutoloadEnabled = _configProvider.UserSettings.ListAutoloadingEnabled;
+
+            var currentUsedSpace = statisticProvider.GetTodaySnapshot().MediasSize;
+            SpaceUsage = $"{currentUsedSpace.FormatSize(true, SpaceSizePrecision)} / ";
+
+            if (CurrentUser is { SpaceLimit: > 0 })
+            {
+                SpaceUsage += CurrentUser.SpaceLimitBytes.FormatSize(true, SpaceSizePrecision);
+                SpaceUsagePercent = Convert.ToInt32((double)currentUsedSpace / CurrentUser.SpaceLimitBytes * 100);
+            }
+            else
+            {
+                SpaceUsage += "unlimited";
+                SpaceUsagePercent = 0;
+            }
         }
 
         public async Task<IActionResult> OnGetAsync(ListRequest request)
