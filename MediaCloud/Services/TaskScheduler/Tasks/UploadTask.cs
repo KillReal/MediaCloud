@@ -105,6 +105,8 @@ namespace MediaCloud.TaskScheduler.Tasks
                     tagRepository.UpdatePreviewLinks(foundTags, preview);
                 }
             }
+            
+            UploadedFiles.Clear();
 
             CompletionMessage = $"Proceeded {files.Count} files";
         }
