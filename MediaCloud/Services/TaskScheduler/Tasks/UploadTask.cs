@@ -70,13 +70,12 @@ namespace MediaCloud.TaskScheduler.Tasks
             var pictureService = serviceProvider.GetRequiredService<IPictureService>();
             _configProvider = serviceProvider.GetRequiredService<IConfigProvider>();
 
-            var sizeToUpload = UploadedFiles.Select(x => x.Content.Length).Sum();
+            var sizeToUpload = UploadedFiles.Select(x => x.Content.LongLength).Sum();
             var targetSize = statisticProvider.GetTodaySnapshot().MediasSize + sizeToUpload;
 
             if (User.SpaceLimitBytes != 0 && targetSize > User.SpaceLimitBytes)
             {
-                var delta = (targetSize - User.SpaceLimitBytes).FormatSize();
-                throw new Exception($"Uploading failed due to low space limit (need at least {delta} free space)");
+                throw new Exception($"Uploading failed due to low space limit (need at least {sizeToUpload.FormatSize()} free space)");
             }
 
             var tagRepository = new TagRepository(context, statisticProvider, userProvider);
