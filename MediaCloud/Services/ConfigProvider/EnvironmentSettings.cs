@@ -18,6 +18,7 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
         public bool UseParallelProcessingForUploading {get; set;}
         public bool UseParallelProcessingForAutotagging {get; set;}
         public bool AutotaggingEnabled {get; set;}
+        public long MaxFileSize { get; set; }
 
         public EnvironmentSettings(IConfiguration configuration)
         {
@@ -25,6 +26,7 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
             AiJoyTagConnectionString = configuration["ConnectionStrings:AiJoyTag"];
             CookieExpireTime = configuration.GetValue<int>("Security:CookieExpireTime");
             PreviewMaxHeight = configuration.GetValue<int>("Uploading:Preview:MaxHeight");
+            MaxFileSize = configuration.GetValue<int>("Uploading:MaxFileSize");
             TaskSchedulerWorkerCount = configuration.GetValue<int>("TaskSchedulerWorkerCount");
             AutotaggingMaxParallelDegree = configuration.GetValue<int>("Autotagging:MaxParallelThreadCount");
             UploadingMaxParallelDegree = configuration.GetValue<int>("Uploading:MaxParallelThreadCount");
@@ -48,6 +50,7 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
             configuration["ConnectionStrings:AiJoyTag"] = AiJoyTagConnectionString;
             configuration["Security:CookieExpireTime"] = CookieExpireTime.ToString();
             configuration["Uploading:Preview:MaxHeight"] = PreviewMaxHeight.ToString();
+            configuration["Uploading:MaxFileSize"] = MaxFileSize.ToString();
             configuration["TaskSchedulerWorkerCount"] = TaskSchedulerWorkerCount.ToString();
             configuration["Autotagging:MaxParallelDegree"] = TaskSchedulerWorkerCount.ToString();
             configuration["Security:PasswordMinLength"] = PasswordMinLength.ToString();

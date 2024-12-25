@@ -40,7 +40,7 @@ function hideLoadSpinner() {
     loadSpinner.style.display = "none";
 }
 
-function formSubmit(event) {
+function uploadFile(event) {
     setModalTitle('Sending to server...');
     showModalBody();
     updateModalLoadBody();
@@ -56,7 +56,7 @@ function formSubmit(event) {
         var data = JSON.parse(request.response);
 
         var url = "/TaskScheduler/GetTaskStatus?id=" + data.id;
-        
+
         console.log('Goes to update status');
 
         const updator = function () {
@@ -70,7 +70,7 @@ function formSubmit(event) {
                             setModalTitle('File(-s) successfully uploaded!');
                             hideModalBody();
                         }
-                        else 
+                        else
                         {
                             setModalTitle('An error occured during uploading :(');
                             updateModelLoadBodyWithErrorMessage(data);
@@ -79,7 +79,7 @@ function formSubmit(event) {
 
                         clearInterval(loadingUpdateInterval);
                     }
-                    else if (data.isInProgress == true) { 
+                    else if (data.isInProgress == true) {
                         if (data.workCount == 0 && data.isCompleted == false) {
                             setModalTitle('Saving in database...');
                             showLoadSpinner();
@@ -99,10 +99,48 @@ function formSubmit(event) {
     };
 
     request.onerror = function() {
-    // request failed
+        // request failed
     };
 
     request.send(new FormData(event.target)); // create FormData from form that triggered event
+    event.preventDefault();
+}
+
+function formSubmit(event) {
+    var url = "/Gallery/IsCanUploadFiles";
+    var request = new XMLHttpRequest();
+    request.open('POST', url, true);
+    request.onload = function() {
+        var data = JSON.parse(request.response);
+
+        if (data.success === true) {
+            uploadFile(event);
+            return;
+        }
+
+        showModalBody();
+        setModalTitle("File(-s) couldn't be uploaded");
+        setModalTitle(data.message);
+
+        event.preventDefault();
+    };
+
+    request.onerror = function() {
+        showModalBody();
+        setModalTitle("File(-s) couldn't be uploaded");
+        setModalTitle("Server doesn't respond in time");
+
+        event.preventDefault();
+    };
+    
+    var fileSizes = []
+    var files = event.target[0].files;
+    
+    for (var i = 0; i < files.length; i++) {
+        fileSizes.push(files[i].size);
+    }
+    
+    request.send(fileSizes);
     event.preventDefault();
 }
 
