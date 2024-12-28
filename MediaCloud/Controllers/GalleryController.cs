@@ -259,7 +259,7 @@ namespace MediaCloud.WebApp.Controllers
             var userLimit = _userProvider.GetCurrent().SpaceLimitBytes;
             var userFilesSize = _statisticProvider.GetTodaySnapshot().MediasSize;
 
-            if (userFilesSize + totalFileSize > userLimit)
+            if (userLimit != 0 && userFilesSize + totalFileSize > userLimit)
             {
                 return new
                 {
