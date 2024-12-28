@@ -117,18 +117,22 @@ function formSubmit(event) {
             uploadFile(event);
             return;
         }
-
-        showModalBody();
+        
+        hideModalBody();
+        hideLoadSpinner();
         setModalTitle("File(-s) couldn't be uploaded");
         setModalTitle(data.message);
+        $('#loadingModal').modal('show');
 
         event.preventDefault();
     };
 
     request.onerror = function() {
-        showModalBody();
+        hideModalBody();
+        hideLoadSpinner();
         setModalTitle("File(-s) couldn't be uploaded");
         setModalTitle("Server doesn't respond in time");
+        $('#loadingModal').modal('show');
 
         event.preventDefault();
     };
