@@ -226,7 +226,7 @@
     }
     function filterClicked()
     {
-        var filter = document.getElementById("filterGrab").value.replace(/[^0-9a-z-A-Z ]/g, "").replace(/ +/, " ");
+        var filter = document.getElementById("filterGrab").value.replace(/\\/g, '');
         window.location.href = "/Gallery?filter=" + filter + "&sort=@(Model.ListBuilder.Sorting.PropertyName)&isUseAutoload=@(Model.IsAutoloadEnabled)";
     };
 
