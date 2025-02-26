@@ -166,31 +166,25 @@
 <script src="~/js/tagAutocompletion.js"></script>
 
 <script type="text/javascript">
+    
     autocomplete(document.getElementById("filterGrab"));
     
     var isAutoLoadingEnabled = @Model.IsAutoloadEnabled.ToString().ToLower();
-    var elem = document.getElementById("filterGrab");
-    elem.onkeyup = function(e){
-        if(e.keyCode == 13){
-            filterClicked();
+    var filterInput = document.getElementById("filterGrab");
+    filterInput.onkeyup = function (e) {
+        if (e.keyCode === 13) {
+            if (filterInput.value !== "") {
+                filterClicked();
+            }
         }
     }
 
-    function OnCardClick(entityType, dataId)
-    {
-        window.location = GetPostUrl(entityType, dataId);
+    document.onkeyup = function (e) {
+        if (e.keyCode === 13) {
+            filterInput.focus();
+        }
     }
-
-    function OnCardInNewWindowClick(entityType, dataId) 
-    {
-        window.open(GetPostUrl(entityType, dataId));
-    }
-
-    function GetPostUrl(entityType, dataId)
-    {
-        return "Gallery/" + entityType +"?id=" + dataId;
-    }
-
+    
     var currentOffset = @Model.ListBuilder.Pagination.Offset;
     var nextOffset = @Model.ListBuilder.Pagination.Offset + @Model.ListBuilder.Pagination.Count;
     var isEnrichInProcess = false;
