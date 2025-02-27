@@ -67,30 +67,30 @@
     <div class="modal text-black" id="loadingModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalTitle">
-                    File(-s) uploading...
-                </h5>
-                <div class="spinner-border text-primary" role="status" id="loadingSpinner" style="display: block">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">
+                        File(-s) uploading...
+                    </h5>
+                    <div class="spinner-border text-primary" role="status" id="loadingSpinner" style="display: block">
+                    </div>
                 </div>
-            </div>
-            <div class="modal-body" id="modalBody">
-                <div class="mb-1">
-                    <label class="col-form-label" id="orderPos">
-                        Your position in order: updating...
-                    </label>
+                <div class="modal-body" id="modalBody">
+                    <div class="mb-1">
+                        <label class="col-form-label" id="orderPos">
+                            Your position in order: updating...
+                        </label>
+                    </div>
+                    <div class="mb-1">
+                        <label class="col-form-label" id="blobsCount">
+                            Files count: updating...
+                        </label>
+                    </div>
                 </div>
-                <div class="mb-1">
-                    <label class="col-form-label" id="blobsCount">
-                        Files count: updating...
-                    </label>
+                <div class="modal-footer">
+                    <a onclick="history.back();" class="btn btn-primary">
+                        Back to Gallery
+                    </a>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <a onclick="history.back();" class="btn btn-primary">
-                    Back to Gallery
-                </a>
-            </div>
             </div>
         </div>
     </div>
