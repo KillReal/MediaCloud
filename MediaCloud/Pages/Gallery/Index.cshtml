@@ -172,11 +172,16 @@
     
     var isAutoLoadingEnabled = @Model.IsAutoloadEnabled.ToString().ToLower();
     var filterInput = document.getElementById("filterGrab");
+    var filterInputChanged = false;
+    
     filterInput.onkeyup = function (e) {
         if (e.keyCode === 13) {
-            if (filterInput.value !== "") {
+            if (filterInput.value !== "" || filterInputChanged) {
                 filterClicked();
             }
+        }
+        else {
+            filterInputChanged = true;
         }
     }
 
