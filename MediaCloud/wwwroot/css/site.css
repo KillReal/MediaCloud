@@ -122,6 +122,8 @@ body {
 .button-panel .btn {
     margin-right: 0.25rem;
     margin-left: 0.25rem;
+    padding-right: 0.6rem;
+    padding-left: 0.6rem;
 }
 
 .button-group-input {
@@ -257,11 +259,12 @@ body {
 }
 
 .gallery-item-bubble {
-    position: absolute; 
-    min-width: 2.25rem; 
-    text-align: center; 
-    margin-bottom: 1.85rem; 
-    margin-right: 0.25rem; 
+    position: absolute;
+    min-width: 2.25rem;
+    text-align: center;
+    color: white;
+    margin-bottom: 1.85rem;
+    margin-right: 0.25rem;
     font-size: 1.5rem;
 }
 

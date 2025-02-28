@@ -12,7 +12,7 @@ dotnet publish -r linux-x64 -p:PublishSingleFile=true --no-self-contained -o D:/
 ```
 
 # Next release - 2.1.0       
-# Next minor - 2.0.2
+# Next minor - 2.0.3
 
 
 TODO:
@@ -28,6 +28,14 @@ TODO:
 - Research statisticsnapshot retrieving (happens several times for single page)
 
 # Changelog
+
+### Version 2.0.3 - 27th Feb, 2025
+- File size check now initiating before uploading
+- Return to previous pages now updating page content
+- Improved shortcuts behaviour in gallery
+- Uploading tasks now doesn't contain work content after completing
+- Fixed miscalculations for pre-upload file size check
+- Fixed gallery item inconsistent onClick behaviour
 
 ### Version 2.0.2 - 14th Dec, 2024
 - Added /Tasks view for Admin for tasks execution monitoring

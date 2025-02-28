@@ -10,8 +10,8 @@ namespace MediaCloud.TaskScheduler.Tasks
 
         public virtual void DoTheTask(IServiceProvider serviceProvider)
         {
-            var actorRepository = serviceProvider.GetRequiredService<UserRepository>();
-            var userProvider = new DummyUserProvider(_task.GetAuthor(), actorRepository);
+            var userRepository = serviceProvider.GetRequiredService<UserRepository>();
+            var userProvider = new DummyUserProvider(_task.GetAuthor(), userRepository);
             var statisticProvider = ActivatorUtilities.CreateInstance<StatisticProvider>(serviceProvider, userProvider);
             
             _task.DoTheTask(serviceProvider, userProvider, statisticProvider);

@@ -11,12 +11,10 @@ using MediaCloud.WebApp.Services.ConfigProvider;
 
 namespace MediaCloud.Pages.Gallery
 {
-    public class UploadModel(IUserProvider userProvider, ITaskScheduler taskScheduler, IConfigProvider configProvider) 
+    public class UploadModel(IUserProvider userProvider, ITaskScheduler taskScheduler, IConfigProvider configProvider,
+        StatisticProvider statisticProvider) 
         : AuthorizedPageModel(userProvider)
     {
-        private readonly ITaskScheduler _taskScheduler = taskScheduler;
-        private readonly IConfigProvider _configProvider = configProvider;
-
         [BindProperty]
         public List<IFormFile> Files { get; set; } = [];
         [BindProperty]
@@ -29,13 +27,23 @@ namespace MediaCloud.Pages.Gallery
         public bool IsAutotaggingEnabled { get; set; }
         [BindProperty]
         public bool IsKeepOriginalFormat { get; set; }
-
+        [BindProperty]
+        public long FileSizeLimit { get; set; }
+        [BindProperty]
+        public long FilesTotalSizeLimit { get; set; }
+        
         public IActionResult OnGet()
         {
-            IsAutotaggingEnabled = _configProvider.EnvironmentSettings.AutotaggingEnabled 
+            IsAutotaggingEnabled = configProvider.EnvironmentSettings.AutotaggingEnabled 
                 && CurrentUser != null 
                 && CurrentUser.IsAutotaggingAllowed;
 
+            FileSizeLimit = configProvider.EnvironmentSettings.MaxFileSize;
+            
+            var userLimit = _userProvider.GetCurrent().SpaceLimitBytes;
+            var userFilesSize = statisticProvider.GetTodaySnapshot().MediasSize;
+            FilesTotalSizeLimit = userLimit - userFilesSize;
+            
             return Page();
         }
 
@@ -62,7 +70,7 @@ namespace MediaCloud.Pages.Gallery
             var task = IsNeedAutotagging 
                 ? new UploadAndAutotagTask(CurrentUser, uploadedFiles, IsCollection, Tags)
                 : new UploadTask(CurrentUser, uploadedFiles, IsCollection, Tags);
-            var taskId = _taskScheduler.AddTask(task);
+            var taskId = taskScheduler.AddTask(task);
 
             return Redirect($"/TaskScheduler/GetTaskStatus?id={taskId}");
         }

@@ -7,6 +7,8 @@ using MediaCloud.WebApp.Services.ConfigProvider;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IO.Compression;
+using MediaCloud.Extensions;
+using MediaCloud.WebApp.Services.Statistic;
 using MediaCloud.WebApp.Services.TaskScheduler.Tasks;
 
 namespace MediaCloud.WebApp.Controllers
@@ -14,7 +16,8 @@ namespace MediaCloud.WebApp.Controllers
     [Authorize]
     public class GalleryController(IConfigProvider configProvider, TagRepository tagRepository,
         PreviewRepository previewRepository, CollectionRepository collectionRepository,
-        ITaskScheduler taskScheduler, IUserProvider userProvider, IAutotagService actorService) : Controller
+        ITaskScheduler taskScheduler, IUserProvider userProvider, IAutotagService actorService,
+        StatisticProvider statisticProvider) : Controller
     {
         private readonly IConfigProvider _configProvider = configProvider;
         private readonly TagRepository _tagRepository = tagRepository;
@@ -23,6 +26,7 @@ namespace MediaCloud.WebApp.Controllers
         private readonly IUserProvider _userProvider = userProvider;
         private readonly IAutotagService _autotagService = actorService;
         private readonly CollectionRepository _collectionRepository = collectionRepository;
+        private readonly StatisticProvider _statisticProvider = statisticProvider;
 
         private bool IsAutotaggingAllowed()
         {
@@ -236,6 +240,38 @@ namespace MediaCloud.WebApp.Controllers
             }
 
             return false;
+        }
+
+        public object IsCanUploadFiles(List<long> fileSizes)
+        {
+            var fileSizeLimit = _configProvider.EnvironmentSettings.MaxFileSize;
+            var totalFileSize = fileSizes.Sum();
+
+            if (fileSizes.Any(x => x > fileSizeLimit))
+            {
+                return new
+                {
+                    Success = false,
+                    Message = $"File size above {fileSizeLimit.FormatSize()}"
+                };
+            }
+            
+            var userLimit = _userProvider.GetCurrent().SpaceLimitBytes;
+            var userFilesSize = _statisticProvider.GetTodaySnapshot().MediasSize;
+
+            if (userLimit != 0 && userFilesSize + totalFileSize > userLimit)
+            {
+                return new
+                {
+                    Success = false,
+                    Message = $"Space limit exceeded, at least {(userFilesSize + totalFileSize).FormatSize()} free space needed"
+                };
+            }
+            
+            return new
+            {
+                Success = true
+            };
         }
     }
 }

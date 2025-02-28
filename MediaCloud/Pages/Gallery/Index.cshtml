@@ -123,7 +123,8 @@
                     <input asp-for=@Model.ListBuilder.Filtering.Filter 
                         class="form-control" 
                         id="filterGrab" 
-                        placeholder="example: @Model.ExampleFilter"/>
+                        placeholder="example: @Model.ExampleFilter"
+                        autocomplete="off"/>
                 </div>
                 <a class="btn btn-info btn-rounded me-0" onclick="filterClicked()">
                     Filter
@@ -166,31 +167,30 @@
 <script src="~/js/tagAutocompletion.js"></script>
 
 <script type="text/javascript">
+    
     autocomplete(document.getElementById("filterGrab"));
     
     var isAutoLoadingEnabled = @Model.IsAutoloadEnabled.ToString().ToLower();
-    var elem = document.getElementById("filterGrab");
-    elem.onkeyup = function(e){
-        if(e.keyCode == 13){
-            filterClicked();
+    var filterInput = document.getElementById("filterGrab");
+    var filterInputChanged = false;
+    
+    filterInput.onkeyup = function (e) {
+        if (e.keyCode === 13) {
+            if (filterInput.value !== "" || filterInputChanged) {
+                filterClicked();
+            }
+        }
+        else {
+            filterInputChanged = true;
         }
     }
 
-    function OnCardClick(entityType, dataId)
-    {
-        window.location = GetPostUrl(entityType, dataId);
+    document.onkeyup = function (e) {
+        if (e.keyCode === 13) {
+            filterInput.focus();
+        }
     }
-
-    function OnCardInNewWindowClick(entityType, dataId) 
-    {
-        window.open(GetPostUrl(entityType, dataId));
-    }
-
-    function GetPostUrl(entityType, dataId)
-    {
-        return "Gallery/" + entityType +"?id=" + dataId;
-    }
-
+    
     var currentOffset = @Model.ListBuilder.Pagination.Offset;
     var nextOffset = @Model.ListBuilder.Pagination.Offset + @Model.ListBuilder.Pagination.Count;
     var isEnrichInProcess = false;
@@ -216,7 +216,7 @@
         isEnrichInProcess = true;
 
         var url = "/Gallery/GetPreviewsBatch?count=" + @Model.ListBuilder.Pagination.Count + "&offset=" + nextOffset 
-            + "&sort=" + '@(Model.ListBuilder.Sorting.PropertyName)' + "&filter=" + '@(Model.ListBuilder.Filtering.Filter)';
+            + "&sort=@(Model.ListBuilder.Sorting.PropertyName)&filter=@(Model.ListBuilder.Filtering.Filter)";
         fetch(url).then(function(response) {
             return response.text();
         }).then(function(data) {
@@ -231,7 +231,7 @@
     }
     function filterClicked()
     {
-        var filter = document.getElementById("filterGrab").value;
+        var filter = document.getElementById("filterGrab").value.replace(/\\/g, '');
         window.location.href = "/Gallery?filter=" + filter + "&sort=@(Model.ListBuilder.Sorting.PropertyName)&isUseAutoload=@(Model.IsAutoloadEnabled)";
     };
 
