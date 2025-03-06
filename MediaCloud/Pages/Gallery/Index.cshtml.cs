@@ -33,6 +33,8 @@ namespace MediaCloud.Pages.Gallery
         public string SpaceUsage {get; set;}
         [BindProperty]
         public int SpaceUsagePercent {get; set;}
+        [BindProperty]
+        public int MaxColumnCount {get; set;}
 
         public ListModel(IUserProvider userProvider, IConfigProvider configProvider, TagRepository tagRepository, PreviewRepository previewRepository, StatisticProvider statisticProvider) : base(userProvider)
         {
@@ -50,6 +52,8 @@ namespace MediaCloud.Pages.Gallery
 
             var currentUsedSpace = statisticProvider.GetTodaySnapshot().MediasSize;
             SpaceUsage = $"{currentUsedSpace.FormatSize(true, SpaceSizePrecision)} / ";
+
+            MaxColumnCount = configProvider.UserSettings.MaxColumnsCount;
 
             if (CurrentUser is { SpaceLimit: > 0 })
             {

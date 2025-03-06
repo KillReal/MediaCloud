@@ -227,7 +227,6 @@ body {
     display: flex;
     justify-content: end;
     align-items: end;
-    min-width: 20rem;
     opacity: 0;
     transform: translateY(5rem);
     animation: smooth-appear 0.7s ease forwards;

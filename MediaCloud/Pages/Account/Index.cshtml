@@ -4,7 +4,7 @@
     ViewData["Title"] = "Index page";
 }
 
-<div class="page-container">
+<div class="page-container" xmlns="http://www.w3.org/1999/html">
     <h1>
         Account settings
     </h1>
@@ -37,88 +37,131 @@
 						Last login at: @Html.DisplayTextFor(x => x.User.LastLoginAt)
 					</div>
 
-					<h5 class="mt-5">User settings</h5>
-					<hr>
-					<div class="form-group mb-3">
-						<label class="col-form-label">
-							Count of entities at page in list
-						</label>
-						<input class="form-control" asp-for="@Model.UserSettings.ListMaxEntitiesCount" />
-					</div>
-					<div class="form-group mb-3">
-						<label class="col-form-label">
-							Count of showing pages in pagination
-						</label>
-						<input class="form-control" asp-for="@Model.UserSettings.ListMaxPageCount" class="form-control" />
-					</div>
-					<div class="form-group mb-3">
-						<label class="col-form-label" asp-for="@Model.UserSettings.ListAutoloadingEnabled">
-							Autoload next entities in list
-						</label>
-						<div class="w-100">
-							<input class="form-check-input big-form-check-input"
-							type="checkbox" 
-							asp-for="@Model.UserSettings.ListAutoloadingEnabled"/>
+					<div class="row">
+						<h4 class="mt-5">User settings</h4>
+						<hr>
+						<div class="col-12">
+							<h5 class="mt-2">Gallery view</h5>
+							<div class="form-group mb-3">
+								<label class="col-form-label">
+									Max columns count
+								</label>
+								<select class="form-select" asp-for="@Model.UserSettings.MaxColumnsCount">
+									<option selected>Select count</option>
+									<option value="2">2</option>
+									<option value="3">3</option>
+									<option value="4">4</option>
+									<option value="5">5</option>
+									<option value="6">6</option>
+								</select>
+							</div>
+							<div class="form-group mb-3">
+								<label class="col-form-label">
+									Count of entities per page
+								</label>
+								<select class="form-select" asp-for="@Model.UserSettings.ListMaxEntitiesCount">
+									<option selected>Select count</option>
+									<option value="12">12</option>
+									<option value="24">24</option>
+									<option value="36">36</option>
+									<option value="48">48</option>
+									<option value="64">64</option>
+								</select>
+							</div>
+							<div class="form-group mb-3">
+								<label class="col-form-label">
+									Count of showing pages in pagination
+								</label>
+								<select class="form-select" asp-for="@Model.UserSettings.ListMaxPageCount">
+									<option selected>Select count</option>
+									<option value="4">4</option>
+									<option value="6">6</option>
+									<option value="8">8</option>
+									<option value="10">10</option>
+									<option value="12">12</option>
+									<option value="16">16</option>
+								</select>
+							</div>
+							<div class="form-group mb-3">
+								<label class="col-form-label" asp-for="@Model.UserSettings.ListAutoloadingEnabled">
+									Autoload next entities in list
+								</label>
+								<div class="w-100">
+									<input class="form-check-input big-form-check-input"
+									       type="checkbox"
+									       asp-for="@Model.UserSettings.ListAutoloadingEnabled"/>
+								</div>
+							</div>
+							<div class="form-group mb-3">
+								<label class="col-form-label">
+									Count of days to show in activity statistic
+								</label>
+								<select class="form-select" asp-for="@Model.UserSettings.StatisticActivityBacktrackDayCount">
+									<option selected>Select count</option>
+									<option value="7">7</option>
+									<option value="14">14</option>
+									<option value="30">30</option>
+									<option value="60">60</option>
+									<option value="90">90</option>
+								</select>
+							</div>
 						</div>
-					</div>
-					<div class="form-group mb-3">
-						<label class="col-form-label">
-							Count of days to show in activity statistic
-						</label>
-						<input class="form-control" asp-for="@Model.UserSettings.StatisticActivityBacktrackDayCount" />
 					</div>
 
 					@if (Model.User.IsAdmin && Model.EnvironmentSettings != null) {
-						<h5 class="pt-5">
-							Environment settings:
-						</h5>
+						<div class="row">
+							<h4 class="pt-5">
+								Environment settings:
+							</h4>
 
-						<hr>
+							<hr>
 
-						<div> 
-							<div style="color: red;">
-								Be carefull, wrong changes may make application unrunnable. 
+							<div>
+								<div style="color: red;">
+									Be carefull, wrong changes may make application unrunnable.
+								</div>
 							</div>
-						</div>
-						<div class="form-group mb-3">
-							<label class="col-form-label">
-								Database connection string. Need an app restart to apply changes.
-							</label>
-							<input class="form-control bg-warning" asp-for="@Model.EnvironmentSettings.DatabaseConnectionString" onchange="environmentSettingChanged()"/>
-						</div>
-						<div class="form-group mb-3">
-							<label class="col-form-label">
-								Cookie expiration time (min). Need an app restart to apply changes. 
-							</label>
-							<input class="form-control bg-warning" 
-								asp-for="@Model.EnvironmentSettings.CookieExpireTime" 
-								onchange="environmentSettingChanged()"/>
-						</div>
-						<div class="form-group mb-3">
-							<label class="col-form-label">
-								Max previews height size (pixels)
-							</label>
-							<input class="form-control bg-warning" 
-								asp-for="@Model.EnvironmentSettings.PreviewMaxHeight" 
-								onchange="environmentSettingChanged()"/>
-						</div>
-						<div class="form-group mb-3">
-							<label class="col-form-label">
-								Password min length
-							</label>
-							<input class="form-control bg-warning" 
-								asp-for="@Model.EnvironmentSettings.PasswordMinLength" 
-								onchange="environmentSettingChanged()"/>
-						</div>
-						<div class="form-group mb-3">
-							<label class="col-form-label" asp-for="@Model.EnvironmentSettings.PasswordMustHaveSymbols">
-								Password must have at least one symbol
-							</label>
-							<div class="w-100">
-								<input class="form-check-input bg-warning big-form-check-input"
-								type="checkbox" 
-								asp-for="@Model.EnvironmentSettings.PasswordMustHaveSymbols" 
-								onchange="environmentSettingChanged()"/>
+							<div class="form-group mb-3">
+								<label class="col-form-label">
+									Autotagging service connection string. Need an app restart to apply changes.
+								</label>
+								<input class="form-control bg-warning" asp-for="@Model.EnvironmentSettings.AiJoyTagConnectionString"
+								       onchange="environmentSettingsChanged()"/>
+							</div>
+							<div class="form-group mb-3">
+								<label class="col-form-label">
+									Cookie expiration time (min). Need an app restart to apply changes.
+								</label>
+								<input class="form-control bg-warning"
+								       asp-for="@Model.EnvironmentSettings.CookieExpireTime"
+								       onchange="environmentSettingsChanged()"/>
+							</div>
+							<div class="form-group mb-3">
+								<label class="col-form-label">
+									Max previews height size (pixels)
+								</label>
+								<input class="form-control bg-warning"
+								       asp-for="@Model.EnvironmentSettings.PreviewMaxHeight"
+								       onchange="environmentSettingsChanged()"/>
+							</div>
+							<div class="form-group mb-3">
+								<label class="col-form-label">
+									Password min length
+								</label>
+								<input class="form-control bg-warning"
+								       asp-for="@Model.EnvironmentSettings.PasswordMinLength"
+								       onchange="environmentSettingsChanged()"/>
+							</div>
+							<div class="form-group mb-3">
+								<label class="col-form-label" asp-for="@Model.EnvironmentSettings.PasswordMustHaveSymbols">
+									Password must have at least one symbol
+								</label>
+								<div class="w-100">
+									<input class="form-check-input bg-warning big-form-check-input"
+									       type="checkbox"
+									       asp-for="@Model.EnvironmentSettings.PasswordMustHaveSymbols"
+									       onchange="environmentSettingsChanged()"/>
+								</div>
 							</div>
 						</div>
 					}

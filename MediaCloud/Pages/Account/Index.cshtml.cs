@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using MediaCloud.Data.Models;
 using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp.Services.ConfigProvider;
@@ -40,6 +41,11 @@ namespace MediaCloud.WebApp.Pages
 
         public IActionResult OnPost()
         {
+            if (!ModelState.IsValid)
+            {
+                return Redirect($"/Error?message={string.Join("\n", ModelState.Select(x => x.Value?.Errors).Where(y=>y?.Count>0).ToList())}");
+            }
+            
             _configProvider.UserSettings = UserSettings;
 
             var actualActor = _userProvider.GetCurrent();
