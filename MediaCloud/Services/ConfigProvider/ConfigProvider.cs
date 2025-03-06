@@ -7,7 +7,7 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
 {
     public class ConfigProvider : IConfigProvider
     {
-        private readonly IUserProvider _actorProvider;
+        private readonly IUserProvider _userProvider;
         private readonly IConfiguration _configuration;
         private readonly ILogger _logger;
 
@@ -22,7 +22,7 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
         { 
             get 
             { 
-                return _actorProvider.GetSettings() ?? new(_configuration);
+                return _userProvider.GetSettings() ?? new(_configuration);
             }
             set 
             {
@@ -49,13 +49,13 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
         }
 
 
-        public ConfigProvider(IConfiguration configuration, IUserProvider actorProvider)
+        public ConfigProvider(IConfiguration configuration, IUserProvider userProvider)
         {
-            _actorProvider = actorProvider;
+            _userProvider = userProvider;
             _configuration = configuration;
             _logger = LogManager.GetLogger("ConfigurationProvider");
 
-            var actor = _actorProvider.GetCurrentOrDefault();
+            var actor = _userProvider.GetCurrentOrDefault();
 
             if (actor != null)
             {
@@ -76,7 +76,7 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
         public bool SaveActorSettings(UserSettings settings)
         {
             var jsonSettings = JsonConvert.SerializeObject(settings, Formatting.Indented);
-            return _actorProvider.SaveSettings(jsonSettings);
+            return _userProvider.SaveSettings(jsonSettings);
         }
 
         /// <summary>
