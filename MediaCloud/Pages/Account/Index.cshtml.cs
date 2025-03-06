@@ -49,7 +49,7 @@ namespace MediaCloud.WebApp.Pages
                 _configProvider.EnvironmentSettings = EnvironmentSettings;
             }
 
-            return Page();
+            return Redirect("/Account");
         }
     }
 }
