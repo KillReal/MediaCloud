@@ -3,7 +3,6 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
     [Serializable]
     public class EnvironmentSettings
     {
-        public string? DatabaseConnectionString {get; set;}
         public string? AiJoyTagConnectionString {get; set;}
         public int CookieExpireTime {get; set;}
         public int TaskSchedulerQueueCleanupTime {get; set;}
@@ -22,7 +21,6 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
 
         public EnvironmentSettings(IConfiguration configuration)
         {
-            DatabaseConnectionString = configuration["ConnectionStrings:Database"];
             AiJoyTagConnectionString = configuration["ConnectionStrings:AiJoyTag"];
             CookieExpireTime = configuration.GetValue<int>("Security:CookieExpireTime");
             PreviewMaxHeight = configuration.GetValue<int>("Uploading:Preview:MaxHeight");
@@ -46,7 +44,6 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
 
         public void SaveToAppSettings(IConfiguration configuration)
         {
-            configuration["ConnectionStrings:Database"] = DatabaseConnectionString;
             configuration["ConnectionStrings:AiJoyTag"] = AiJoyTagConnectionString;
             configuration["Security:CookieExpireTime"] = CookieExpireTime.ToString();
             configuration["Uploading:Preview:MaxHeight"] = PreviewMaxHeight.ToString();
