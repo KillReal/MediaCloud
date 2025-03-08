@@ -15,7 +15,7 @@
     },
     "Developer": {
       "commandName": "Project",
-      "workingDirectory": "D:\\Development\\MediaCloud\\MediaCloud",
+      "workingDirectory": "D:\\Development\\MediaCloud\\MediaCloud\\bin\\Debug\\net8.0",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation"
@@ -25,7 +25,7 @@
     },
     "Production": {
       "commandName": "Project",
-      "workingDirectory": "D:\\Development\\MediaCloud\\MediaCloud",
+      "workingDirectory": "D:\\Development\\MediaCloud\\MediaCloud\\bin\\Debug\\net8.0",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Production"
       },
