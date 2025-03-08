@@ -29,6 +29,11 @@ TODO:
 
 # Changelog
 
+### Version 2.0.4 - tbd, 2025
+- Added Autotagging AI model environment settings
+- Added gallery column count user setting
+- Fixed user settings saving
+
 ### Version 2.0.3 - 27th Feb, 2025
 - File size check now initiating before uploading
 - Return to previous pages now updating page content

@@ -3,25 +3,29 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
     [Serializable]
     public class EnvironmentSettings
     {
-        public string? AiJoyTagConnectionString {get; set;}
+        public string? AutotaggingServiceConnectionString {get; set;}
         public int CookieExpireTime {get; set;}
         public int TaskSchedulerQueueCleanupTime {get; set;}
         public int PreviewMaxHeight {get; set;}
         public int TaskSchedulerWorkerCount {get; set;}
 
         public int AutotaggingMaxParallelDegree {get; set;}
+        public bool AutotaggingEnabled {get; set;}
+        public string? AutotaggingAiModel { get; set; }
+        public double AutotaggingAiModelConfidence {get; set;}
         public int UploadingMaxParallelDegree {get; set;}
         public int PasswordMinLength {get; set;}
         public bool PasswordMustHaveSymbols {get; set;}
         public bool LimitLoginAttempts {get; set;}
         public bool UseParallelProcessingForUploading {get; set;}
         public bool UseParallelProcessingForAutotagging {get; set;}
-        public bool AutotaggingEnabled {get; set;}
         public long MaxFileSize { get; set; }
 
         public EnvironmentSettings(IConfiguration configuration)
         {
-            AiJoyTagConnectionString = configuration["ConnectionStrings:AiJoyTag"];
+            AutotaggingServiceConnectionString = configuration["ConnectionStrings:AutotaggingService"];
+            AutotaggingAiModel = configuration["Autotagging:AiModel"];
+            AutotaggingAiModelConfidence = configuration.GetValue<double>("Autotagging:AiModelConfidence");
             CookieExpireTime = configuration.GetValue<int>("Security:CookieExpireTime");
             PreviewMaxHeight = configuration.GetValue<int>("Uploading:Preview:MaxHeight");
             MaxFileSize = configuration.GetValue<int>("Uploading:MaxFileSize");
@@ -44,7 +48,9 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
 
         public void SaveToAppSettings(IConfiguration configuration)
         {
-            configuration["ConnectionStrings:AiJoyTag"] = AiJoyTagConnectionString;
+            configuration["ConnectionStrings:AutotaggingService"] = AutotaggingServiceConnectionString;
+            configuration["Autotagging:AiModel"] = AutotaggingAiModel;
+            configuration["Autotagging:AiModelConfidence"] = AutotaggingAiModelConfidence.ToString();
             configuration["Security:CookieExpireTime"] = CookieExpireTime.ToString();
             configuration["Uploading:Preview:MaxHeight"] = PreviewMaxHeight.ToString();
             configuration["Uploading:MaxFileSize"] = MaxFileSize.ToString();

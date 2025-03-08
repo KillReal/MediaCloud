@@ -118,14 +118,38 @@
 
 							<div>
 								<div style="color: red;">
-									Be carefull, wrong changes may make application unrunnable.
+									App restart needed to apply.
 								</div>
 							</div>
 							<div class="form-group mb-3">
 								<label class="col-form-label">
-									Autotagging service connection string. Need an app restart to apply changes.
+									Autotagging Ai Model to use.
 								</label>
-								<input class="form-control bg-warning" asp-for="@Model.EnvironmentSettings.AiJoyTagConnectionString"
+								<div class="w-100">
+									<input class="form-check-input bg-warning big-form-check-input"
+									       type="checkbox"
+									       asp-for="@Model.EnvironmentSettings.AutotaggingEnabled"
+									       onchange="environmentSettingsChanged()"/>
+								</div>
+							</div>
+							<div class="form-group mb-3">
+								<label class="col-form-label">
+									Autotagging enabled.
+								</label>
+								<select class="form-control bg-warning" asp-for="@Model.EnvironmentSettings.AutotaggingAiModel"
+								        onchange="environmentSettingsChanged()">
+									<option selected>Select model</option>
+									@for (var i = 0; i < Model.AutotaggingAIModels.Count; i++)
+									{
+										<option value="@Model.AutotaggingAIModels[i]">@Model.AutotaggingAIModels[i]</option>
+									}
+								</select>
+							</div>
+							<div class="form-group mb-3">
+								<label class="col-form-label">
+									Autotagging Ai Model confidence. Retrieve results only if model sure more than that threshold.
+								</label>
+								<input class="form-control bg-warning" asp-for="@Model.EnvironmentSettings.AutotaggingAiModelConfidence"
 								       onchange="environmentSettingsChanged()"/>
 							</div>
 							<div class="form-group mb-3">

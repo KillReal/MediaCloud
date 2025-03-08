@@ -23,7 +23,9 @@ public class AutotagService : IAutotagService
     private readonly int _maxParralelDegree = 1;
     private const double _defaultExecutionTime = 45.0;
     private double? _averageExecutionTime = null;
-    private readonly string _joyTagConnectionString;
+    private readonly string _autotaggingServiceConnectionString;
+    private readonly string _autotaggingAiModel;
+    private readonly double _autotaggingAiModelConfidence;
 
     public double GetAverageExecutionTime() => _averageExecutionTime ?? _defaultExecutionTime;
 
@@ -42,8 +44,11 @@ public class AutotagService : IAutotagService
 
     public AutotagService(IConfigProvider configProvider, IMemoryCache memoryCache)
     {
-        _joyTagConnectionString = configProvider.EnvironmentSettings.AiJoyTagConnectionString ?? 
-            throw new Exception("AI JoyTag Connection String is not set");
+        _autotaggingServiceConnectionString = configProvider.EnvironmentSettings.AutotaggingServiceConnectionString ?? 
+            throw new Exception("Autotagging service Connection String is not set");
+        _autotaggingAiModel = configProvider.EnvironmentSettings.AutotaggingAiModel ?? 
+            throw new Exception("Autotagging AI Model is not set");
+        _autotaggingAiModelConfidence = configProvider.EnvironmentSettings.AutotaggingAiModelConfidence;
 
         var _maxParralelDegree = configProvider.EnvironmentSettings.UseParallelProcessingForAutotagging 
             ? configProvider.EnvironmentSettings.AutotaggingMaxParallelDegree
@@ -111,7 +116,9 @@ public class AutotagService : IAutotagService
 
             object data = new
             {
-                image = preview.Content
+                image = preview.Content,
+                model = _autotaggingAiModel,
+                confidence = _autotaggingAiModelConfidence
             };
 
             var result = Post("predictTags", data);
@@ -215,6 +222,34 @@ public class AutotagService : IAutotagService
         }
     }
 
+    public List<string> GetAvailableModels()
+    {
+        if (_memoryCache.TryGetValue("availableModels", out List<string>? availableModels))
+        {
+            return availableModels ?? [];
+        }
+
+        try
+        {
+            var result = Post("availableModels", new { });
+            
+            if (string.IsNullOrWhiteSpace(result))
+            {
+                return [];
+            }
+            
+            availableModels = JsonConvert.DeserializeObject<List<string>>(result);
+            _memoryCache.Set("availableModels", availableModels, _memoryCacheOptions);
+            
+            return availableModels ?? [];
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Failed to get available AI models");
+            return [];
+        }
+    }
+
     private string Post(string method, object data)
     {
         var content = JsonConvert.SerializeObject(data);
@@ -224,7 +259,7 @@ public class AutotagService : IAutotagService
         contentBytes.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
         _semaphore.WaitOne();
-        var response = _httpClient.PostAsync(_joyTagConnectionString + "/" + method, contentBytes);
+        var response = _httpClient.PostAsync(_autotaggingServiceConnectionString + "/" + method, contentBytes);
         var result = response.GetAwaiter().GetResult();
         _semaphore.Release();
 
