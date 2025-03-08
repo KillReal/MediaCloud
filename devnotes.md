@@ -1,10 +1,3 @@
-
-# Infrastructure             
-
-- 2.0.1 mediacloud
-- 2.0.1 mediacloud-dev
-
-
 # Publishing
 
 ```bash
