@@ -112,7 +112,7 @@ public class AutotagService : IAutotagService
         try {
             var stopwatch = DateTime.Now;
 
-            _logger.Info("Executed AI tag autocompletion for Preview: {previewId}", preview.Id);
+            _logger.Info("Executed AI tag autocompletion for Preview: {previewId} with model {_autotaggingAiModel}", preview.Id, _autotaggingAiModel);
 
             object data = new
             {
