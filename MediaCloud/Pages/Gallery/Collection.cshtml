@@ -132,7 +132,7 @@
             </div>
         </div>
 
-        <div class="row gallery thumbnail-sortable" id="gallery">
+        <div class="row row-cols-sm-@(Model.MaxColumnCount) gallery thumbnail-sortable" id="gallery">
             <partial name="~/Pages/Gallery/_Collection.cshtml" model=@(new _CollectionPageModel(Model.Previews))/>          
         </div>
 

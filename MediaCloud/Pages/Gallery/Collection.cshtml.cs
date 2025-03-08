@@ -4,13 +4,16 @@ using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Pages;
 using MediaCloud.Extensions;
+using MediaCloud.WebApp.Services.ConfigProvider;
 using MediaCloud.WebApp.Services.UserProvider;
 
 namespace MediaCloud.Pages.Gallery
 {
-    public class CollectionModel(IUserProvider userProvider, CollectionRepository collectionRepository) : AuthorizedPageModel(userProvider)
+    public class CollectionModel(IUserProvider userProvider, CollectionRepository collectionRepository, IConfigProvider configProvider) 
+        : AuthorizedPageModel(userProvider)
     {
         private readonly CollectionRepository _collectionRepository = collectionRepository;
+        private readonly IConfigProvider _configProvider = configProvider;
 
         [BindProperty]
         public Collection Collection { get; set; } = new();
@@ -30,6 +33,8 @@ namespace MediaCloud.Pages.Gallery
         public List<int> Orders { get; set; } = [];
         [BindProperty]
         public string? CollectionSizeInfo { get; set; }
+        [BindProperty]
+        public int MaxColumnCount { get; set; }
 
         public IActionResult OnGet(Guid id)
         {
@@ -60,6 +65,7 @@ namespace MediaCloud.Pages.Gallery
             TotalCount = _collectionRepository.GetListCount(id).Result;
             IsAutotaggingEnabled = Collection.Previews.Select(x => x.BlobType).Any(x => x.Contains("image")) 
                 && CurrentUser != null && CurrentUser.IsAutotaggingAllowed;
+            MaxColumnCount = _configProvider.UserSettings.MaxColumnsCount;
 
             return Page();
         }
