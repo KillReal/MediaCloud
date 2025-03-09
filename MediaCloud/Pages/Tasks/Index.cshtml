@@ -63,13 +63,17 @@
                   </td>
                   <td class="table-item-padding">
                      @{
-                        var executedAt = item.ExecutedAt.Humanize(null, DateTime.Now, null);
+                        var executedAt = item.ExecutedAt == default 
+                        ? ""
+                        : item.ExecutedAt.Humanize(null, DateTime.Now, null);
                      }
                      @Html.DisplayFor(modelItem => executedAt)
                   </td>
                   <td class="table-item-padding">
                      @{
-                        var completedAt = item.CompletedAt.Humanize(null, DateTime.Now, null);
+                        var completedAt = item.CompletedAt == default 
+                           ? "" 
+                           : item.CompletedAt.Humanize(null, DateTime.Now, null);
                      }
                      @Html.DisplayFor(modelItem => completedAt)
                   </td>
