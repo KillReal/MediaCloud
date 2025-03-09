@@ -16,6 +16,7 @@ namespace MediaCloud.WebApp.Services.UserProvider
         private readonly AppDbContext _context;
         private readonly IMemoryCache _memoryCache;
         private readonly Mutex _mutex = new();
+        private readonly IConfiguration _configuration;
         private readonly EnvironmentSettings _environmentSettings; 
 
         private readonly MemoryCacheEntryOptions _memoryCacheOptions;
@@ -26,6 +27,7 @@ namespace MediaCloud.WebApp.Services.UserProvider
             var scope = scopeFactory.CreateScope();
             _context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             _memoryCache = memoryCache;
+            _configuration = configuration;
             _environmentSettings = new EnvironmentSettings(configuration);
             _memoryCacheOptions = new MemoryCacheEntryOptions()
                 .SetAbsoluteExpiration(TimeSpan.FromMinutes(_environmentSettings.CookieExpireTime));
@@ -216,8 +218,17 @@ namespace MediaCloud.WebApp.Services.UserProvider
                 return null;
             }
             
-            settings = JsonConvert.DeserializeObject<UserSettings>(currentUser.PersonalSettings);
-            _memoryCache.Set($"settings-{currentUser.Id}", settings, _memoryCacheOptions);
+
+            if (string.IsNullOrWhiteSpace(currentUser.PersonalSettings))
+            {
+                settings = new UserSettings(_configuration);
+                SaveSettings(JsonConvert.SerializeObject(settings));   
+            }
+            else
+            {
+                settings = JsonConvert.DeserializeObject<UserSettings>(currentUser.PersonalSettings);
+                _memoryCache.Set($"settings-{currentUser.Id}", settings, _memoryCacheOptions);
+            }
 
             return settings;
 
