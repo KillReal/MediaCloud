@@ -364,7 +364,7 @@ body {
 .picture-viewer {
     object-fit: contain; 
     height: 80vh;
-    max-width: 90vw;
+    max-width: 85vw;
     animation-iteration-count: 1;
 }
 
