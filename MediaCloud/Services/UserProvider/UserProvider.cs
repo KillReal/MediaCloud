@@ -215,6 +215,11 @@ namespace MediaCloud.WebApp.Services.UserProvider
             {
                 return null;
             }
+
+            if (string.IsNullOrWhiteSpace(currentUser.PersonalSettings))
+            {
+                return null;
+            }
             
             settings = JsonConvert.DeserializeObject<UserSettings>(currentUser.PersonalSettings);
             _memoryCache.Set($"settings-{currentUser.Id}", settings, _memoryCacheOptions);

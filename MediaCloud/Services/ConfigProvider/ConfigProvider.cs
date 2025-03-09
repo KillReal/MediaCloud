@@ -20,14 +20,8 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
         /// </summary>
         public UserSettings UserSettings
         { 
-            get 
-            { 
-                return _userProvider.GetSettings() ?? new(_configuration);
-            }
-            set 
-            {
-                SaveActorSettings(value);
-            }
+            get => _userProvider.GetSettings() ?? new UserSettings(_configuration);
+            set => SaveActorSettings(value);
         }
         
         /// <summary>
@@ -37,10 +31,7 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
         /// </summary>
         public EnvironmentSettings EnvironmentSettings 
         { 
-            get
-            {
-                return _environmentSettings;
-            }
+            get => _environmentSettings;
             set
             {
                 _environmentSettings = value;
@@ -66,7 +57,7 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
                 _logger.Debug("Initialized ConfigurationProvider anonymously");
             }
 
-            _environmentSettings = new(_configuration);
+            _environmentSettings = new EnvironmentSettings(_configuration);
         }
 
         /// <summary>
