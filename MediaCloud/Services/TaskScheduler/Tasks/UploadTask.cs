@@ -107,7 +107,7 @@ namespace MediaCloud.TaskScheduler.Tasks
             
             UploadedFiles.Clear();
 
-            CompletionMessage = $"Proceeded {files.Count} files";
+            CompletionMessage = $"Proceeded {files.Count} files, total size: {files.Select(x => x.Size).Sum().FormatSize()}";
         }
     }
 }
