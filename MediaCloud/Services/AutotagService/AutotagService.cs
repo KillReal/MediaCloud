@@ -180,7 +180,8 @@ public class AutotagService : IAutotagService
             object data = new
             {
                 searchString = "",
-                limit = -1
+                limit = -1,
+                model = _autotaggingAiModel
             };
 
             var result = Post("suggestedTags", data);
