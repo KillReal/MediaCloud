@@ -24,6 +24,7 @@ public class AutotagService : IAutotagService
     private const double _defaultExecutionTime = 45.0;
     private double? _averageExecutionTime = null;
     private readonly string _autotaggingServiceConnectionString;
+    private readonly int _autotaggingRequestTimeout;
     private readonly string _autotaggingAiModel;
     private readonly double _autotaggingAiModelConfidence;
 
@@ -49,6 +50,7 @@ public class AutotagService : IAutotagService
         _autotaggingAiModel = configProvider.EnvironmentSettings.AutotaggingAiModel ?? 
             throw new Exception("Autotagging AI Model is not set");
         _autotaggingAiModelConfidence = configProvider.EnvironmentSettings.AutotaggingAiModelConfidence;
+        _autotaggingRequestTimeout = configProvider.EnvironmentSettings.AutotaggingRequestTimeout;
 
         var _maxParralelDegree = configProvider.EnvironmentSettings.UseParallelProcessingForAutotagging 
             ? configProvider.EnvironmentSettings.AutotaggingMaxParallelDegree
@@ -60,7 +62,8 @@ public class AutotagService : IAutotagService
 
         _httpClient = new HttpClient
         {
-            Timeout = TimeSpan.FromSeconds(_defaultExecutionTime * 4)
+            Timeout = TimeSpan.FromMilliseconds(_autotaggingRequestTimeout),
+            
         };
     }
 
