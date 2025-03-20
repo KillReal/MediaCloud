@@ -95,7 +95,7 @@
                 <a class="btn @randomButtonStyle btn-rounded text-nowrap" 
                     asp-page="Index" 
                     asp-route-filter=@(Model.ListBuilder.Filtering.Filter) 
-                    asp-route-sort=@($"Random_{new Random().Next(int.MaxValue)}") 
+                    asp-route-sort=@($"Random") 
                     asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>
                     🎲
                 </a>
@@ -134,7 +134,10 @@
     </div>  
 
     <hr style="margin-bottom: 1rem"/>
-    <partial name="~/Pages/Shared/_Pagination.cshtml" />
+    @if (Model.ListBuilder.Sorting.PropertyName.Contains("Random") == false)
+    {
+        <partial name="~/Pages/Shared/_Pagination.cshtml" />
+    }
     <div class="row row-cols-sm-@(Model.MaxColumnCount) row-col image-row gallery mb-3" id="gallery">
         <partial name="~/Pages/Gallery/_Gallery.cshtml" model=@(new _GalleryPageModel(Model.Previews))/>
         
@@ -158,7 +161,7 @@
             Your are reached the end 😮
         </h1>
     </div>
-    @if (Model.IsAutoloadEnabled == false)
+    @if (Model.IsAutoloadEnabled == false && Model.ListBuilder.Sorting.PropertyName.Contains("Random") == false)
     {
         <partial name="~/Pages/Shared/_Pagination.cshtml" />
     }
