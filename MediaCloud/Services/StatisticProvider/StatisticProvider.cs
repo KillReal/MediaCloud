@@ -3,6 +3,7 @@ using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.TaskScheduler.Tasks;
 using MediaCloud.WebApp.Services.UserProvider;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.Extensions.Caching.Memory;
 using NLog;
@@ -47,11 +48,14 @@ namespace MediaCloud.WebApp.Services.Statistic
                 }
             }
 
-            snapshot = _context.StatisticSnapshots.FirstOrDefault(x => x.TakenAt.Date == dateTime.Date
-                                                                         && x.Creator == _userProvider.GetCurrent());
+            snapshot = _context.StatisticSnapshots.Include(x => x.Creator)
+                .Include(x => x.Updator)
+                .FirstOrDefault(x => x.TakenAt.Date == dateTime.Date && x.Creator == _userProvider.GetCurrent());
             if (snapshot == null)
             {
                 var lastSnapshot = _context.StatisticSnapshots.Where(x => x.Creator == _userProvider.GetCurrent())
+                    .Include(x => x.Creator)
+                    .Include(x => x.Updator)
                     .OrderByDescending(x => x.TakenAt)
                     .FirstOrDefault();
 

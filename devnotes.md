@@ -5,7 +5,7 @@ dotnet publish -r linux-x64 -p:PublishSingleFile=true --no-self-contained -o D:/
 ```
 
 # Next release - 2.1.0       
-# Next minor - 2.0.3
+# Next minor - 2.0.4
 
 
 TODO:
