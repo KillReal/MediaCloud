@@ -2,14 +2,12 @@
 using System.Net.Http.Headers;
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
-using MediaCloud.WebApp.Services.AutotagService;
 using MediaCloud.WebApp.Services.ConfigProvider;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using NLog;
-using Logger = NLog.ILogger;
 
-namespace MediaCloud.WebApp;
+namespace MediaCloud.WebApp.Services.AutotagService;
 
 public class AutotagService : IAutotagService
 {
@@ -17,22 +15,21 @@ public class AutotagService : IAutotagService
     private readonly HttpClient _httpClient;
     private readonly Mutex _mutex = new();
     private readonly Semaphore _semaphore;
-    private IMemoryCache _memoryCache;
-    private MemoryCacheEntryOptions _memoryCacheOptions;
+    private readonly IMemoryCache _memoryCache;
+    private readonly MemoryCacheEntryOptions _memoryCacheOptions;
 
-    private readonly int _maxParralelDegree = 1;
-    private const double _defaultExecutionTime = 45.0;
+    private const int _maxParallelDegree = 1;
     private double? _averageExecutionTime = null;
-    private readonly string _autotaggingServiceConnectionString;
     private readonly int _autotaggingRequestTimeout;
+    private readonly string _autotaggingServiceConnectionString;
     private readonly string _autotaggingAiModel;
     private readonly double _autotaggingAiModelConfidence;
 
-    public double GetAverageExecutionTime() => _averageExecutionTime ?? _defaultExecutionTime;
+    public double GetAverageExecutionTime() => (_averageExecutionTime ?? _autotaggingRequestTimeout) / 1000;
 
     public double GetAverageExecutionTime(int previewsCount) 
     {
-        var batchCount = (int)Math.Ceiling(((double)previewsCount) / _maxParralelDegree);
+        var batchCount = (int)Math.Ceiling(((double)previewsCount) / _maxParallelDegree);
         var approximateTime = _averageExecutionTime * batchCount;
         
         if (previewsCount > 4)
@@ -40,22 +37,23 @@ public class AutotagService : IAutotagService
             approximateTime *= 1.2;
         }
 
-        return approximateTime ?? _defaultExecutionTime * batchCount;
+        return (approximateTime ?? _autotaggingRequestTimeout * batchCount) / 1000;
     }
 
     public AutotagService(IConfigProvider configProvider, IMemoryCache memoryCache)
     {
         _autotaggingServiceConnectionString = configProvider.EnvironmentSettings.AutotaggingServiceConnectionString ?? 
-            throw new Exception("Autotagging service Connection String is not set");
+                                              throw new Exception("Autotagging service Connection String is not set");
         _autotaggingAiModel = configProvider.EnvironmentSettings.AutotaggingAiModel ?? 
             throw new Exception("Autotagging AI Model is not set");
         _autotaggingAiModelConfidence = configProvider.EnvironmentSettings.AutotaggingAiModelConfidence;
         _autotaggingRequestTimeout = configProvider.EnvironmentSettings.AutotaggingRequestTimeout;
 
-        var _maxParralelDegree = configProvider.EnvironmentSettings.UseParallelProcessingForAutotagging 
+        var maxParallelDegree = configProvider.EnvironmentSettings.UseParallelProcessingForAutotagging 
             ? configProvider.EnvironmentSettings.AutotaggingMaxParallelDegree
             : 1;
-        _semaphore = new(_maxParralelDegree, _maxParralelDegree);
+        _semaphore = new Semaphore(maxParallelDegree, maxParallelDegree);
+        
         _memoryCache = memoryCache;
         _memoryCacheOptions = new MemoryCacheEntryOptions()
                 .SetAbsoluteExpiration(TimeSpan.FromMinutes(30));
@@ -71,47 +69,28 @@ public class AutotagService : IAutotagService
     {
         var results = new List<AutotagResult>();
         
-        if (_maxParralelDegree > 0 && previews.Count > 1)
+        if (_maxParallelDegree > 0 && previews.Count > 1)
         {
-            var chunks = previews.Chunk(previews.Count / _maxParralelDegree + 1);
+            var chunks = previews.Chunk(previews.Count / _maxParallelDegree + 1);
 
-            var tasks = new List<Task>();
-
-            foreach (var chunk in chunks)
+            var tasks = chunks.Select(chunk => Task.Run(() =>
             {
-                tasks.Add(Task.Run(()=> {
-                    foreach (var preview in chunk)
-                    {
-                       results.Add(AutotagPreview(preview, tagRepository));
-                    }
-                }));
-            }
+                results.AddRange(chunk.Select(preview => AutotagPreview(preview, tagRepository)));
+            }))
+            .ToList();
 
             tasks.ForEach(x => x.Wait());
 
             return results;
         }
 
-        foreach (var preview in previews)
-        {
-            results.Add(AutotagPreview(preview, tagRepository));
-        }
+        results.AddRange(previews.Select(preview => AutotagPreview(preview, tagRepository)));
 
         return results;
     }
 
     public AutotagResult AutotagPreview(Preview preview, TagRepository tagRepository)
     {
-        if (preview == null)
-        {
-            return new() 
-            {
-                PreviewId = Guid.Empty,
-                Tags = [],
-                IsSuccess = true
-            };
-        }
-        
         try {
             var stopwatch = DateTime.Now;
 
@@ -128,7 +107,7 @@ public class AutotagService : IAutotagService
 
             if (string.IsNullOrWhiteSpace(result))
             {
-                return new() 
+                return new AutotagResult
                 {
                     PreviewId = preview.Id,
                     Tags = [],
@@ -145,7 +124,7 @@ public class AutotagService : IAutotagService
                 
             var suggestedTagsString = string.Join(" ", suggestedTags);
 
-            var elapsedTime = (DateTime.Now - stopwatch).TotalSeconds;
+            var elapsedTime = (DateTime.Now - stopwatch).TotalMilliseconds;
 
             if (_averageExecutionTime == null) 
             {
@@ -167,7 +146,7 @@ public class AutotagService : IAutotagService
 
             _logger.Debug("Existing tags for suggestion: {actualTagsString}", actualTagsString);
 
-            return new() 
+            return new AutotagResult
             {
                 PreviewId = preview.Id,
                 Tags = actualTags,
@@ -179,7 +158,7 @@ public class AutotagService : IAutotagService
         {
             _logger.Error(ex, "Failed to process autotagging for image");
             
-            return new() 
+            return new AutotagResult
             {
                 PreviewId = preview.Id,
                 Tags = [],
