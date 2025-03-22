@@ -255,7 +255,7 @@
 
     if (@Json.Serialize(Model.IsAutotaggingEnabled))
     {
-        fetch('/Gallery/IsCollectionAutotaggingExecuted?collectionId=' + '@Model.Collection.Id')
+        fetch('/Autotagging/IsCollectionProcessing?collectionId=' + '@Model.Collection.Id')
             .then((response) => response.json())
             .then(function (data) {
                 if (data == true) {
@@ -267,7 +267,7 @@
 
     var averageExecutionTime = 45.0 * @Model.TotalCount;
 
-    fetch('/Gallery/GetAverageAutocompleteTagForCollectionExecution?previewsCount=' + @Model.TotalCount)
+    fetch('/Autotagging/GetCollectionTagsProcessingTime?previewsCount=' + @Model.TotalCount)
         .then((response) => response.json())
         .then(function (data) {
             if (data > 0) {
@@ -314,7 +314,7 @@
     var updateInterval = 3000;
 
     function autocompleteTags(collectionId) {
-        var url = "/Gallery/AutocompleteTagForCollection?collectionId=" + collectionId;
+        var url = "/Autotagging/GetTagsForCollection?collectionId=" + collectionId;
 
         var request = new XMLHttpRequest();
         request.open('POST', url, true);

@@ -260,7 +260,7 @@
 
     if (@Json.Serialize(Model.IsAutotaggingEnabled))
     {
-        fetch('/Gallery/IsPreviewAutotaggingExecuted?previewId=' + '@Model.PreviewId')
+        fetch('/Autotagging/IsPreviewProcessing?previewId=' + '@Model.PreviewId')
             .then((response) => response.json())
             .then(function (data) {
                 if (data == true) {
@@ -272,7 +272,7 @@
 
         var averageExecutionTime = 45.0;
 
-        fetch('/Gallery/GetAverageAutocompleteTagExecution')
+        fetch('/Autotagging/GetPreviewTagsProcessingTime')
             .then((response) => response.json())
             .then(function (data) {
                 if (data > 0) {
@@ -319,7 +319,7 @@
 
         function autocompleteTags(previewId, isExecuted = false) {
             
-            var url = "/Gallery/AutocompleteTagForPreview?previewId=" + previewId;
+            var url = "/Autotagging/GetTagsForPreview?previewId=" + previewId;
 
             var request = new XMLHttpRequest();
             request.open('POST', url, true);

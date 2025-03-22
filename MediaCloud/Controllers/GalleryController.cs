@@ -19,7 +19,7 @@ namespace MediaCloud.WebApp.Controllers
         IUserProvider userProvider,
         StatisticProvider statisticProvider) : Controller
     {
-        public List<string> GetSuggestions(string searchString, int limit = 10)
+        public List<string> GetTagSuggestions(string searchString, int limit = 10)
         {
             return tagRepository.GetSuggestionsByString(searchString, limit);
         }

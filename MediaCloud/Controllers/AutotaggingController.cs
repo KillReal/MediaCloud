@@ -31,7 +31,7 @@ public class AutotaggingController(IUserProvider userProvider, IConfigProvider c
         return autotagService.GetSuggestionsByString(searchString, limit);
     }
     
-    public Guid AutocompleteTagForPreview(Guid previewId)
+    public Guid GetTagsForPreview(Guid previewId)
         {
             if (IsAutotaggingAllowed() == false)
             {
@@ -43,7 +43,7 @@ public class AutotaggingController(IUserProvider userProvider, IConfigProvider c
             return taskScheduler.AddTask(task);
         }
 
-        public Guid AutocompleteTagForPreviewRange(List<Guid> previewsIds)
+        public Guid GetTagsForPreviewRange(List<Guid> previewsIds)
         {
             if (IsAutotaggingAllowed() == false)
             {
@@ -55,7 +55,7 @@ public class AutotaggingController(IUserProvider userProvider, IConfigProvider c
             return taskScheduler.AddTask(task);
         }
 
-        public List<Guid> AutocompleteTagForCollection(Guid collectionId)
+        public List<Guid> GetTagsForCollection(Guid collectionId)
         {
             if (IsAutotaggingAllowed() == false)
             {
@@ -74,24 +74,24 @@ public class AutotaggingController(IUserProvider userProvider, IConfigProvider c
             return [taskScheduler.AddTask(task)];
         }
 
-        public double GetAverageAutocompleteTagExecution()
+        public double GetPreviewTagsProcessingTime()
         {
             return autotagService.GetAverageExecutionTime();
         }
 
-        public double GetAverageAutocompleteTagForCollectionExecution(int previewsCount)
+        public double GetCollectionTagsProcessingTime(int previewsCount)
         {
             return autotagService.GetAverageExecutionTime(previewsCount);
         }
 
-        public bool IsPreviewAutotaggingExecuted(Guid previewId)
+        public bool IsPreviewProcessing(Guid previewId)
         {
             var taskStatuses = taskScheduler.GetStatus().TaskStatuses;
 
             return taskStatuses.Any(x => x.IsCompleted == false && x.AffectedEntities.Contains(previewId));
         }
 
-        public bool IsCollectionAutotaggingExecuted(Guid collectionId)
+        public bool IsCollectionProcessing(Guid collectionId)
         {
             var previewIds = collectionRepository.Get(collectionId)?.Previews.Select(x => x.Id).ToList();
 
