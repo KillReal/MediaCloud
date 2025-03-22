@@ -4,9 +4,6 @@
 dotnet publish -r linux-x64 -p:PublishSingleFile=true --no-self-contained -o D:/Development/MediaCloud-Deploy
 ```
 
-# Next release - 2.1.0       
-# Next minor - 2.0.4
-
 
 TODO:
 - Admin check for display actors in Statistic
@@ -22,10 +19,14 @@ TODO:
 
 # Changelog
 
-### Version 2.0.4 - tbd, 2025
+### Version 2.1 - tbd, 2025
+- Added dark theme
+
+### Version 2.0.4 - 08th Mar, 2025
 - Added Autotagging AI model environment settings
 - Added gallery column count user setting
 - Fixed user settings saving
+- Improved shortcuts behaviour in gallery
 
 ### Version 2.0.3 - 27th Feb, 2025
 - File size check now initiating before uploading
