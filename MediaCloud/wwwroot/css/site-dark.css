@@ -370,6 +370,10 @@ body {
     padding: 0.75rem!important;
 }
 
+.text-muted {
+    color: #bbbbbb !important;
+}
+
 .card {
     color: white;
     align-self: center;
