@@ -113,8 +113,7 @@ namespace MediaCloud.Repositories
 
             _statisticProvider.ActivityFactorRaised.Invoke();
 
-            if (listBuilder.Sorting.PropertyName.Contains("Random") &&
-                int.TryParse(listBuilder.Sorting.PropertyName.Split('_').Last(), out var seed))
+            if (listBuilder.Sorting.PropertyName.Contains("Random"))
             {
                 return await query.Where(x => x.Order == 0 && x.CreatorId == _actor.Id)
                     .Include(x => x.Collection)
