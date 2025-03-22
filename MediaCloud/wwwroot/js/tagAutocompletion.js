@@ -24,11 +24,11 @@
 
         this.parentNode.appendChild(a);
 
-        var url = "/Gallery/GetSuggestions?searchString=" + val + '&limit=7';
+        var url = "/Gallery/GetTagSuggestions?searchString=" + val + '&limit=7';
 
         if (isAliases)
         {
-            var url = "/Gallery/GetAliasSuggestions?searchString=" + val + '&limit=30';
+            var url = "/Autotagging/GetAliasSuggestions?searchString=" + val + '&limit=30';
         }
 
         fetch(url).then(function (response) {
