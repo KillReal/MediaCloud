@@ -4,6 +4,7 @@ using MediaCloud.WebApp;
 using MediaCloud.Repositories;
 using NLog;
 using MediaCloud.WebApp.Pages;
+using MediaCloud.WebApp.Services.ConfigProvider;
 using MediaCloud.WebApp.Services.UserProvider;
 
 namespace MediaCloud.Pages.Users
@@ -13,9 +14,10 @@ namespace MediaCloud.Pages.Users
         private readonly UserRepository _actorRepository;
 
         [BindProperty]
-        public new User User { get; set; } = new();
+        public new Data.Models.User User { get; set; } = new();
 
-        public CreateModel(IUserProvider userProvider, UserRepository userRepository) : base(userProvider)
+        public CreateModel(IUserProvider userProvider, UserRepository userRepository, IConfigProvider configProvider) 
+            : base(userProvider, configProvider)
         {
             _logger = LogManager.GetLogger("Users.Create");
             _actorRepository = userRepository;

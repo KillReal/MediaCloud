@@ -1,11 +1,13 @@
 using MediaCloud.TaskScheduler;
+using MediaCloud.WebApp.Services.ConfigProvider;
 using MediaCloud.WebApp.Services.UserProvider;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace MediaCloud.WebApp.Pages.Tasks
 {
-    public class ListModel(IUserProvider userProvider, ITaskScheduler taskScheduler) : AuthorizedPageModel(userProvider)
+    public class ListModel(IUserProvider userProvider, ITaskScheduler taskScheduler, IConfigProvider configProvider) 
+        : AuthorizedPageModel(userProvider, configProvider)
     {
         private readonly ITaskScheduler _taskScheduler = taskScheduler;
 

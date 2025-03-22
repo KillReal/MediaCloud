@@ -21,7 +21,7 @@ namespace MediaCloud.Pages.Tags
         public bool IsAutoloadEnabled { get; set; } = false;
 
         public ListModel(IUserProvider userProvider, IConfigProvider configProvider, TagRepository tagRepository) 
-            : base(userProvider)
+            : base(userProvider, configProvider)
         {
             _configProvider = configProvider;
             _tagRepository = tagRepository;

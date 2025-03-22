@@ -16,12 +16,12 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
         /// <summary>
         /// Direct access to a settings of current actor. Default values are taken from <see cref="IConfiguration"/>.
         /// Does not save changes to database implicitly. 
-        /// Use <see cref="SaveActorSettings()"/> for explicit save.
+        /// Use <see cref="SaveUserSettings"/> for explicit save.
         /// </summary>
         public UserSettings UserSettings
         { 
             get => _userProvider.GetSettings() ?? new UserSettings(_configuration);
-            set => SaveActorSettings(value);
+            set => SaveUserSettings(value);
         }
         
         /// <summary>
@@ -64,7 +64,7 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
         /// Implicitly saves changes to database in json format.
         /// </summary>
         /// <returns> Result of operation. </returns>
-        public bool SaveActorSettings(UserSettings settings)
+        public bool SaveUserSettings(UserSettings settings)
         {
             var jsonSettings = JsonConvert.SerializeObject(settings, Formatting.Indented);
             return _userProvider.SaveSettings(jsonSettings);

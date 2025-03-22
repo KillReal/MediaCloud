@@ -36,7 +36,9 @@ namespace MediaCloud.Pages.Gallery
         [BindProperty]
         public int MaxColumnCount {get; set;}
 
-        public ListModel(IUserProvider userProvider, IConfigProvider configProvider, TagRepository tagRepository, PreviewRepository previewRepository, StatisticProvider statisticProvider) : base(userProvider)
+        public ListModel(IUserProvider userProvider, IConfigProvider configProvider, TagRepository tagRepository, 
+            PreviewRepository previewRepository, StatisticProvider statisticProvider) 
+            : base(userProvider, configProvider)
         {
             _configProvider = configProvider;
             _tagRepository = tagRepository;

@@ -10,7 +10,8 @@ using MediaCloud.WebApp.Services.ConfigProvider;
 namespace MediaCloud.Pages.Gallery
 {
     public class DetailModel(IUserProvider actorProvider, IPictureService pictureService, TagRepository tagRepository,
-        PreviewRepository previewRepository, BlobRepository blobRepository, IConfigProvider configProvider) : AuthorizedPageModel(actorProvider)
+        PreviewRepository previewRepository, BlobRepository blobRepository, IConfigProvider configProvider) 
+        : AuthorizedPageModel(actorProvider, configProvider)
     {
         private readonly IPictureService _pictureService = pictureService;
         private readonly TagRepository _tagRepository = tagRepository;

@@ -1,4 +1,5 @@
 ﻿using MediaCloud.Data.Models;
+using MediaCloud.WebApp.Services.ConfigProvider;
 using MediaCloud.WebApp.Services.UserProvider;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +15,14 @@ namespace MediaCloud.WebApp.Pages
         protected IUserProvider _userProvider;
         protected ILogger _logger;
         public User? CurrentUser { get; set; }
+        public string UIThemeName { get; set; }
 
-        public AuthorizedPageModel(IUserProvider userProvider) 
+        public AuthorizedPageModel(IUserProvider userProvider, IConfigProvider configProvider) 
         {
             _userProvider = userProvider;
             _logger = LogManager.GetLogger("PageModel");
+
+            UIThemeName = configProvider.UserSettings.UITheme;
 
             LogPageInit();
         }

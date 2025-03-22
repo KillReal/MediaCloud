@@ -8,7 +8,7 @@ namespace MediaCloud.Pages
     public class IndexModel(IUserProvider userProvider) : PageModel
     {
         [BindProperty]
-        public User? CurrentUser { get; set; } = userProvider.GetCurrentOrDefault();
+        public Data.Models.User? CurrentUser { get; set; } = userProvider.GetCurrentOrDefault();
 
         public IActionResult OnGet()
         {

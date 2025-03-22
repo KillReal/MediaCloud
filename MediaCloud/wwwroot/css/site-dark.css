@@ -36,7 +36,7 @@ body {
 .main-frame {
     display: flex;
     justify-content: center;
-    background: #5063b9;
+    background: #000000;
     min-height: 95vh;
 }
 
@@ -49,27 +49,60 @@ body {
     /* fallback for old browsers */
     background: #ddb56e;
     /* Chrome 10-25, Safari 5.1-6 */
-    background: -webkit-linear-gradient(to bottom, rgba(77, 37, 116, 1), rgba(130, 84, 248, 1));
+    background: -webkit-linear-gradient(to bottom, rgba(77, 37, 116, 1), rgba(0, 0, 0, 1));
     /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-    background: linear-gradient(to bottom, rgba(77, 37, 116, 1), rgba(130, 84, 248, 1))
+    background: linear-gradient(to bottom, rgba(77, 37, 116, 1), rgb(0 0 0));
 }
 
 .footer {
     /* fallback for old browsers */
     background: #ddb56e;
     /* Chrome 10-25, Safari 5.1-6 */
-    background: -webkit-linear-gradient(to bottom, rgba(130, 84, 248, 1), rgba(77, 37, 116, 1));
+    background: -webkit-linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(77, 37, 116, 1));
     /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-    background: linear-gradient(to bottom, rgba(130, 84, 248, 1), rgba(77, 37, 116, 1));
+    background: linear-gradient(to bottom, rgb(0 0 0), rgba(77, 37, 116, 1));
     position: absolute;
     bottom: 0;
     width: 100%;
 }
 
+.form-control {
+    background: #4e4e4e;
+    color: white;
+}
+
+.form-control:focus {
+    background: #d4d4d4;
+}
+
+.form-control[readonly] {
+    background: #454545;
+    color: white;
+}
+
+.page-link {
+    background: #4e4e4e;
+    color: #7eb2ff;
+}
+
 .table {
-    background: white;
-    color: black;
+    background: #4e4e4e;
+    color: white;
     border-radius: 1rem;
+}
+
+.card {
+    background: #4e4e4e;
+}
+
+.form-select {
+    background: #4e4e4e;
+    color: white;
+}
+
+.bg-warning {
+    background: rgb(207 179 97) !important;
+    color: black;
 }
 
 .page-container {
@@ -294,6 +327,26 @@ body {
     text-overflow: ellipsis;
 }
 
+.list-group-item {
+    background-color: #4e4e4e;
+    color: white;
+}
+
+.list-group-item-success {
+    background: #4a8f70;
+    color: white;
+}
+
+.list-group-item-danger {
+    background: #c24e4e;
+    color: white;
+}
+
+.list-group-item-secondary {
+    background: #4e4e4e;
+    color: white;
+}
+
 .list-clickable {
     border-style: hidden;
     transition: Background-color 0.6s
@@ -306,10 +359,11 @@ body {
 }
 
 .whiteback-bar {
-    background: white;
+    background: #4e4e4e;
     border-radius: 1.5rem;
     padding: 1.5rem;
     margin: 1rem;
+    color: white;
 }
 
 .table-item-padding {
@@ -319,7 +373,6 @@ body {
 .card {
     align-self: center;
     max-width: 700px;
-    color: black;
 }
 
 .card-container {
@@ -384,6 +437,11 @@ body {
 
 .btn-inactive {
     border-color: darkgray;
+}
+
+.btn-info {
+    background-color: #2e8fa3;
+    color: white;
 }
 
 .autocomplete {

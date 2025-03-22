@@ -14,7 +14,7 @@ namespace MediaCloud.Pages.Users
         private readonly UserRepository _userRepository;
 
         public ListModel(IUserProvider userProvider, IConfigProvider configProvider, UserRepository userRepository) 
-            : base(userProvider)
+            : base(userProvider, configProvider)
         {
             _configProvider = configProvider;
             _userRepository = userRepository;
@@ -24,9 +24,9 @@ namespace MediaCloud.Pages.Users
         }
 
         [BindProperty]
-        public List<User> Users { get; set; } = [];
+        public List<Data.Models.User> Users { get; set; } = [];
         [BindProperty]
-        public ListBuilder<User> ListBuilder { get; set; }
+        public ListBuilder<Data.Models.User> ListBuilder { get; set; }
 
         public async Task<IActionResult> OnGetAsync(ListRequest request)
         {

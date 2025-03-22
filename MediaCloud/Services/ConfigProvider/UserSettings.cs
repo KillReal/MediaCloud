@@ -22,6 +22,9 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
         
         [Required]
         public bool ListAutoloadingEnabled { get; set; }
+        [Required]
+        [AllowedValues("Light", "Dark")]
+        public string UITheme { get; set; }
 
         public UserSettings(IConfiguration configuration)
         {   
@@ -30,6 +33,7 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
             ListAutoloadingEnabled = configuration.GetValue<bool>("Gallery:List:AutoloadingEnabled");
             StatisticActivityBacktrackDayCount = configuration.GetValue<int>("StatisticActivityBacktrackDayCount");
             MaxColumnsCount = configuration.GetValue<int>("Gallery:MaxColumnCount");
+            UITheme = configuration.GetValue<string>("UI:Theme") ?? "Light";
         }
 
         public UserSettings()

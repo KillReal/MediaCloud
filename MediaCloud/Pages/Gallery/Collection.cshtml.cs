@@ -10,7 +10,7 @@ using MediaCloud.WebApp.Services.UserProvider;
 namespace MediaCloud.Pages.Gallery
 {
     public class CollectionModel(IUserProvider userProvider, CollectionRepository collectionRepository, IConfigProvider configProvider) 
-        : AuthorizedPageModel(userProvider)
+        : AuthorizedPageModel(userProvider, configProvider)
     {
         private readonly CollectionRepository _collectionRepository = collectionRepository;
         private readonly IConfigProvider _configProvider = configProvider;

@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace MediaCloud.Pages
 {
     public class StatisticModel(IUserProvider userProvider, IConfigProvider configProvider, StatisticProvider statisticProvider,
-        TagRepository tagRepository, AppDbContext context) : AuthorizedPageModel(userProvider)
+        TagRepository tagRepository, AppDbContext context) : AuthorizedPageModel(userProvider, configProvider)
     {
         private readonly StatisticProvider _statisticProvider = statisticProvider;
         private readonly IConfigProvider _configProvider = configProvider;

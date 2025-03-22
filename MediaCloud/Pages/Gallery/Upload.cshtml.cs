@@ -13,7 +13,7 @@ namespace MediaCloud.Pages.Gallery
 {
     public class UploadModel(IUserProvider userProvider, ITaskScheduler taskScheduler, IConfigProvider configProvider,
         StatisticProvider statisticProvider) 
-        : AuthorizedPageModel(userProvider)
+        : AuthorizedPageModel(userProvider, configProvider)
     {
         [BindProperty]
         public List<IFormFile> Files { get; set; } = [];

@@ -61,7 +61,7 @@ builder.Services.Configure<KestrelServerOptions>(options =>
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options => 
     {
-        options.LoginPath = "/Account/Login";
+        options.LoginPath = "/User/Login";
         options.ExpireTimeSpan = TimeSpan.FromMinutes(builder.Configuration.GetValue<int>("Security:CookieExpireTime"));
     });
 builder.Services.AddAuthorization();

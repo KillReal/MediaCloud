@@ -5,10 +5,10 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace MediaCloud.Pages
 {
-    public class PrivacyModel(IUserProvider userProvider) : PageModel
+    public class ChangeLogModel(IUserProvider userProvider) : PageModel
     {
         [BindProperty]
-        public User? CurrentUser { get; set; } = userProvider.GetCurrentOrDefault();
+        public Data.Models.User? CurrentUser { get; set; } = userProvider.GetCurrentOrDefault();
 
         public IActionResult OnGet()
         {

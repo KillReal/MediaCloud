@@ -32,7 +32,7 @@
 
 @if(Model.TaskSchedulerStatus.TaskStatuses.Any(x => x is { IsCompleted: false, IsInProgress: true }))
 {
-   <table class="table" style="background-color: white; border-radius: 1rem">
+   <table class="table">
       <thead>
          <tr>
                <th class="table-item-padding">
@@ -92,7 +92,7 @@
 
 @if(Model.TaskSchedulerStatus.TaskStatuses.Any(x => x is { IsInProgress: false, IsCompleted: false }))
 {
-   <table class="table" style="background-color: white; border-radius: 1rem">
+   <table class="table">
       <thead>
          <tr>
                <th class="table-item-padding">
@@ -148,7 +148,7 @@
 
 @if(Model.TaskSchedulerStatus.TaskStatuses.Any(x => x.IsCompleted == true))
 {
-   <table class="table" style="background-color: white; border-radius: 1rem">
+   <table class="table">
       <thead>
          <tr>
                <th class="table-item-padding">

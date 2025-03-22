@@ -23,7 +23,8 @@ namespace MediaCloud.WebApp.Pages
         [BindProperty]
         public List<string> AutotaggingAIModels { get; set; }
 
-        public IndexModel(IUserProvider userProvider, IConfigProvider configProvider, IAutotagService autotagService) : base(userProvider)
+        public IndexModel(IUserProvider userProvider, IConfigProvider configProvider, IAutotagService autotagService) 
+            : base(userProvider, configProvider)
         {
             _logger = LogManager.GetLogger("Actor");
             _configProvider = configProvider;
@@ -59,7 +60,7 @@ namespace MediaCloud.WebApp.Pages
                 _configProvider.EnvironmentSettings = EnvironmentSettings;
             }
 
-            return Redirect("/Account");
+            return Redirect("/User");
         }
     }
 }

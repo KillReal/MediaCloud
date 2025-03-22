@@ -2,11 +2,13 @@
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Pages;
+using MediaCloud.WebApp.Services.ConfigProvider;
 using MediaCloud.WebApp.Services.UserProvider;
 
 namespace MediaCloud.Pages.Tags
 {
-    public class DetailModel(IUserProvider userProvider, TagRepository tagRepository) : AuthorizedPageModel(userProvider)
+    public class DetailModel(IUserProvider userProvider, TagRepository tagRepository, IConfigProvider configProvider) 
+        : AuthorizedPageModel(userProvider, configProvider)
     {
         private readonly TagRepository _tagRepository = tagRepository;
 
