@@ -371,6 +371,7 @@ body {
 }
 
 .card {
+    color: white;
     align-self: center;
     max-width: 700px;
 }

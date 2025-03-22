@@ -1,4 +1,5 @@
 ﻿@using System.Reflection
+@using System.Reflection.Metadata
 @using MediaCloud.WebApp.Pages;
 @using MediaCloud.WebApp.Services.UserProvider;
 <!DOCTYPE html>
@@ -10,21 +11,14 @@
         @ViewData["Title"] - MediaCloud v@(Assembly.GetEntryAssembly()?.GetName().Version?.ToString(3))
     </title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    @if (Model.GetType().IsSubclassOf(typeof(AuthorizedPageModel)) && Model.CurrentUser != null)
+    @if (Model.GetType().IsSubclassOf(typeof(AuthorizedPageModel)) && Model.CurrentUser != null && Model.UIThemeName == "Dark")
     {
-        @if (Model.UIThemeName == "Light")
-        {
-            <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-        }
-        else
-        {
-            <link rel="stylesheet" href="~/css/site-dark.css" asp-append-version="true" />
-        }
+        <link rel="stylesheet" href="~/css/site-dark.css" asp-append-version="true" id="theme-styler"/>
     }
-    else
-    {
-        <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    else {
+        <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" id="theme-styler"/>
     }
+    
 </head>
 <body class="body">
     <header>
@@ -116,7 +110,31 @@
 </html>
 
 <script>
-    let mybutton = document.getElementById("btn-back-to-top");
+    var isAuthorized = @((Model.GetType().IsSubclassOf(typeof(AuthorizedPageModel)) && Model.CurrentUser != null).ToString().ToLower());
+    var targetTheme = '@((Model.GetType().IsSubclassOf(typeof(AuthorizedPageModel)) && Model.CurrentUser != null) ? Model.UIThemeName : "Light")';
+    var selectedTheme =  localStorage.getItem('ui-theme-name');
+    
+    if (targetTheme !== selectedTheme && isAuthorized) {
+        localStorage.setItem('ui-theme-name', selectedTheme);
+    }
+    
+    if (isAuthorized === false) {
+        setTheme(selectedTheme);
+    }
+    
+    function setTheme(name) {
+        switch (name) {
+            default:
+            case "Light":
+                document.getElementById("theme-styler").setAttribute('href', '/css/site.css')
+                break;
+            case "Dark":
+                document.getElementById("theme-styler").setAttribute('href', '/css/site-dark.css')
+                break;
+        }
+    }
+    
+    let scrollOnTopButton = document.getElementById("btn-back-to-top");
 
     // When the user scrolls down 20px from the top of the document, show the button
     window.onscroll = function () {
@@ -128,16 +146,18 @@
             document.body.scrollTop > 20 ||
             document.documentElement.scrollTop > 20
         ) {
-            mybutton.style.display = "block";
+            scrollOnTopButton.style.display = "block";
         } else {
-            mybutton.style.display = "none";
+            scrollOnTopButton.style.display = "none";
         }
     }
     // When the user clicks on the button, scroll to the top of the document
-    mybutton.addEventListener("click", backToTop);
+    scrollOnTopButton.addEventListener("click", backToTop);
 
     function backToTop() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     
+
+
 </script>
