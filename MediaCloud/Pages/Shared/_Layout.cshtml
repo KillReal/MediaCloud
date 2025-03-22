@@ -115,7 +115,7 @@
     var selectedTheme =  localStorage.getItem('ui-theme-name');
     
     if (targetTheme !== selectedTheme && isAuthorized) {
-        localStorage.setItem('ui-theme-name', selectedTheme);
+        localStorage.setItem('ui-theme-name', targetTheme);
     }
     
     if (isAuthorized === false) {
