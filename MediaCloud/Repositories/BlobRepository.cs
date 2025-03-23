@@ -19,7 +19,7 @@ namespace MediaCloud.Repositories
         IUserProvider actorProvider, IPictureService pictureService, IConfigProvider configProvider) : 
         BaseRepository<Blob>(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider)
     {
-        private BlobModelBuilder _fileModelBuilder = new(pictureService);
+        private BlobModelBuilder _fileModelBuilder = new(pictureService, configProvider);
         private IConfigProvider _configProvider = configProvider;
 
         private Blob CreateFile(UploadedFile uploadedFile, User author)

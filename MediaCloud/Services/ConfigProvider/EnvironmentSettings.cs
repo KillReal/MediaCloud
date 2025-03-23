@@ -21,6 +21,16 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
         public bool UseParallelProcessingForUploading {get; set;}
         public bool UseParallelProcessingForAutotagging {get; set;}
         public long MaxFileSize { get; set; }
+        
+        
+        public int SmallImageProcessingQuality { get; set; }
+        public int SmallImageProcessingLevel { get; set;}
+        public int SmallImageSizeLimitKb { get; set; }
+        public int ImageProcessingQuality { get; set; }
+        public int ImageProcessingLevel { get; set;}
+        public int ImageSizeLimitKb { get; set; }
+        public int LargeImageProcessingQuality { get; set; }
+        public int LargeImageProcessingLevel { get; set;}
 
         public EnvironmentSettings(IConfiguration configuration)
         {
@@ -41,6 +51,15 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
             AutotaggingEnabled = configuration.GetValue<bool>("Autotagging:Enabled");
             AutotaggingRequestTimeout = configuration.GetValue<int>("Autotagging:RequestTimeout");
             TaskSchedulerQueueCleanupTime = configuration.GetValue<int>("TaskSchedulerQueueCleanupTime");
+            
+            SmallImageProcessingQuality = configuration.GetValue<int>("Uploading:SmallImageProcessing:Quality");
+            SmallImageProcessingLevel = configuration.GetValue<int>("Uploading:SmallImageProcessing:Level");
+            SmallImageSizeLimitKb = configuration.GetValue<int>("Uploading:SmallImageProcessing:SizeLimit");
+            ImageProcessingQuality = configuration.GetValue<int>("Uploading:ImageProcessing:Quality");
+            ImageProcessingLevel = configuration.GetValue<int>("Uploading:ImageProcessing:Level");
+            ImageSizeLimitKb = configuration.GetValue<int>("Uploading:ImageProcessing:SizeLimit");
+            LargeImageProcessingQuality = configuration.GetValue<int>("Uploading:LargeImageProcessing:Quality");
+            LargeImageProcessingLevel = configuration.GetValue<int>("Uploading:LargeImageProcessing:Level");
         }
 
         public EnvironmentSettings()
@@ -67,6 +86,15 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
             configuration["Security:LimitLoginAttempts"] = LimitLoginAttempts.ToString();
             configuration["Uploading:MaxParallelThreadCount"] = UploadingMaxParallelDegree.ToString();
             configuration["TaskSchedulerQueueCleanupTime"] = TaskSchedulerQueueCleanupTime.ToString();
+            
+            configuration["Uploading:SmallImageProcessing:Quality"] = SmallImageProcessingQuality.ToString();
+            configuration["Uploading:SmallImageProcessing:Level"] = SmallImageProcessingLevel.ToString();
+            configuration["Uploading:SmallImageProcessing:SizeLimitKb"] = SmallImageSizeLimitKb.ToString();
+            configuration["Uploading:ImageProcessing:Quality"] = ImageProcessingQuality.ToString();
+            configuration["Uploading:ImageProcessing:Level"] = ImageProcessingLevel.ToString();
+            configuration["Uploading:ImageProcessing:SizeLimitKb"] = ImageSizeLimitKb.ToString();
+            configuration["Uploading:LargeImageProcessing:Quality"] = LargeImageProcessingQuality.ToString();
+            configuration["Uploading:LargeImageProcessing:Level"] = LargeImageProcessingLevel.ToString();
         }
     }
 }

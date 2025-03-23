@@ -1,25 +1,33 @@
 ﻿using MediaCloud.Data.Models;
 using MediaCloud.Services;
+using MediaCloud.WebApp.Services.ConfigProvider;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Webp;
 
 namespace MediaCloud.WebApp.Builders.BlobModel
 {
-    public class BlobModelBuilder(IPictureService pictureService)
+    public class BlobModelBuilder(IPictureService pictureService, IConfigProvider configProvider)
     {
-        private readonly WebpEncoder _webpEncoder = new() 
+        private readonly long _lowQualitySizeLimit = configProvider.EnvironmentSettings.SmallImageSizeLimitKb * 1024;
+        private readonly long _defaultQualitySizeLimit = configProvider.EnvironmentSettings.ImageSizeLimitKb * 1024; 
+
+        private readonly WebpEncoder _defaultWebpEncoder = new() 
         {
-            Quality = 75,
-            Method = WebpEncodingMethod.Level5,
+            Quality = configProvider.EnvironmentSettings.ImageProcessingQuality,
+            Method = (WebpEncodingMethod)configProvider.EnvironmentSettings.ImageProcessingLevel,
             
         };
-
-        private const long _lowQualitySize = 512_000; 
-
-        private readonly WebpEncoder _highQualityWebpEncoder = new()
+        
+        private readonly WebpEncoder _smallImageWebpEncoder = new()
         {
-            Quality = 90,
-            Method = WebpEncodingMethod.Level5
+            Quality = configProvider.EnvironmentSettings.SmallImageProcessingQuality,
+            Method = (WebpEncodingMethod)configProvider.EnvironmentSettings.SmallImageProcessingLevel,
+        };
+        
+        private readonly WebpEncoder _largeImageWebpEncoder = new()
+        {
+            Quality = configProvider.EnvironmentSettings.LargeImageProcessingQuality,
+            Method = (WebpEncodingMethod)configProvider.EnvironmentSettings.LargeImageProcessingLevel,
         };
 
         public FileModel Build(UploadedFile file)
@@ -37,26 +45,27 @@ namespace MediaCloud.WebApp.Builders.BlobModel
                 case "webp":
                     var image = Image.Load(file.Content);
 
-                    if (extension != "webp")
+                    if (extension != "webp" && file.KeepOriginalFormat == false)
                     {
                         var stream = new MemoryStream();
-
-                        if (file.Content.Length < _lowQualitySize)
+                            
+                        if (file.Content.Length < _lowQualitySizeLimit)
                         {
-                            image.SaveAsWebp(stream, _highQualityWebpEncoder);
+                            image.SaveAsWebp(stream, _smallImageWebpEncoder);
+                        }
+                        else if (file.Content.Length < _defaultQualitySizeLimit)
+                        {
+                            image.SaveAsWebp(stream, _defaultWebpEncoder);
                         }
                         else
                         {
-                            image.SaveAsWebp(stream, _webpEncoder);
+                            image.SaveAsWebp(stream, _largeImageWebpEncoder);
                         }
-
-                        if (file.KeepOriginalFormat == false)
-                        {
-                            image = Image.Load(stream.ToArray());
-                            file.Type = "image/webp";
-                            file.Name = file.Name.Split('.').First() + ".webp";
-                            file.Content = stream.ToArray();
-                        }
+                            
+                        image = Image.Load(stream.ToArray());
+                        file.Type = "image/webp";
+                        file.Name = file.Name.Split('.').First() + ".webp";
+                        file.Content = stream.ToArray();
                     }
 
                     blob = new Blob(file.Content, image.Width, image.Height);
