@@ -7,8 +7,6 @@ namespace MediaCloud.WebApp.Builders.BlobModel
 {
     public class BlobModelBuilder(IPictureService pictureService)
     {
-        private readonly IPictureService _pictureService = pictureService;
-
         private readonly WebpEncoder _webpEncoder = new() 
         {
             Quality = 75,
@@ -61,29 +59,16 @@ namespace MediaCloud.WebApp.Builders.BlobModel
                         }
                     }
 
-                    blob = new(file.Content, image.Width, image.Height);
-                    file.Content = _pictureService.LowerResolution(image, blob.Content);
-                    break;
-                case "xlsx":
-                case "xls":
-                    blob = new(file.Content);
-                    file.Content = File.ReadAllBytes("wwwroot/img/types/excel.png");
+                    blob = new Blob(file.Content, image.Width, image.Height);
+                    file.Content = pictureService.LowerResolution(image, blob.Content);
                     break;
                 default:
-                    blob = new(file.Content);
-                    if (File.Exists($"wwwroot/img/types/{extension}.png"))
-                    {
-                        File.Exists($"wwwroot/img/types/{extension}.png");
-                        file.Content = File.ReadAllBytes($"wwwroot/img/types/{extension}.png");
-                    }
-                    else 
-                    {
-                        file.Content = File.ReadAllBytes("wwwroot/img/types/file.png");
-                    }
+                    blob = new Blob(file.Content);
+                    file.Content = [];
                     break;
             }
 
-            return new(blob, new Preview(blob, file));
+            return new FileModel(blob, new Preview(blob, file));
         }
     }
 }
