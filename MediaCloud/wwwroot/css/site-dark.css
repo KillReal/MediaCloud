@@ -251,6 +251,11 @@ body {
    margin-top: 1rem!important;
 }
 
+.modal-content {
+    background: #4e4e4e;
+    color: white;
+}
+
 @keyframes smooth-appear {
     from {
 		opacity: 0;
