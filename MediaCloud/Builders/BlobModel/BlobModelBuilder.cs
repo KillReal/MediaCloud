@@ -8,32 +8,13 @@ namespace MediaCloud.WebApp.Builders.BlobModel
 {
     public class BlobModelBuilder(IPictureService pictureService, IConfigProvider configProvider)
     {
-        private readonly long _lowQualitySizeLimit = configProvider.EnvironmentSettings.SmallImageSizeLimitKb * 1024;
-        private readonly long _defaultQualitySizeLimit = configProvider.EnvironmentSettings.ImageSizeLimitKb * 1024; 
-
-        private readonly WebpEncoder _defaultWebpEncoder = new() 
-        {
-            Quality = configProvider.EnvironmentSettings.ImageProcessingQuality,
-            Method = (WebpEncodingMethod)configProvider.EnvironmentSettings.ImageProcessingLevel,
-            
-        };
+        private readonly WebpEncoderFactory _webpEncoderFactory = new(configProvider);
         
-        private readonly WebpEncoder _smallImageWebpEncoder = new()
-        {
-            Quality = configProvider.EnvironmentSettings.SmallImageProcessingQuality,
-            Method = (WebpEncodingMethod)configProvider.EnvironmentSettings.SmallImageProcessingLevel,
-        };
-        
-        private readonly WebpEncoder _largeImageWebpEncoder = new()
-        {
-            Quality = configProvider.EnvironmentSettings.LargeImageProcessingQuality,
-            Method = (WebpEncodingMethod)configProvider.EnvironmentSettings.LargeImageProcessingLevel,
-        };
-
         public FileModel Build(UploadedFile file)
         {
             Blob blob;
             var extension = file.Name.Split('.').Last();
+            var fileSize = file.Content.Length;
 
             switch (extension)
             {
@@ -44,23 +25,11 @@ namespace MediaCloud.WebApp.Builders.BlobModel
                 case "tiff":
                 case "webp":
                     var image = Image.Load(file.Content);
-
+                    
                     if (extension != "webp" && file.KeepOriginalFormat == false)
                     {
                         var stream = new MemoryStream();
-                            
-                        if (file.Content.Length < _lowQualitySizeLimit)
-                        {
-                            image.SaveAsWebp(stream, _smallImageWebpEncoder);
-                        }
-                        else if (file.Content.Length < _defaultQualitySizeLimit)
-                        {
-                            image.SaveAsWebp(stream, _defaultWebpEncoder);
-                        }
-                        else
-                        {
-                            image.SaveAsWebp(stream, _largeImageWebpEncoder);
-                        }
+                        image.SaveAsWebp(stream, _webpEncoderFactory.GetBestEncoder(fileSize));
                             
                         image = Image.Load(stream.ToArray());
                         file.Type = "image/webp";
