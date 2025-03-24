@@ -54,10 +54,10 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
             
             SmallImageProcessingQuality = configuration.GetValue<int>("Uploading:SmallImageProcessing:Quality");
             SmallImageProcessingLevel = configuration.GetValue<int>("Uploading:SmallImageProcessing:Level");
-            SmallImageSizeLimitKb = configuration.GetValue<int>("Uploading:SmallImageProcessing:SizeLimit");
+            SmallImageSizeLimitKb = configuration.GetValue<int>("Uploading:SmallImageProcessing:SizeLimitKb");
             ImageProcessingQuality = configuration.GetValue<int>("Uploading:ImageProcessing:Quality");
             ImageProcessingLevel = configuration.GetValue<int>("Uploading:ImageProcessing:Level");
-            ImageSizeLimitKb = configuration.GetValue<int>("Uploading:ImageProcessing:SizeLimit");
+            ImageSizeLimitKb = configuration.GetValue<int>("Uploading:ImageProcessing:SizeLimitKb");
             LargeImageProcessingQuality = configuration.GetValue<int>("Uploading:LargeImageProcessing:Quality");
             LargeImageProcessingLevel = configuration.GetValue<int>("Uploading:LargeImageProcessing:Level");
         }
