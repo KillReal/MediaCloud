@@ -8,30 +8,37 @@ public class WebpEncoderFactory(IConfigProvider configProvider)
     private readonly long _lowQualitySizeLimit = configProvider.EnvironmentSettings.SmallImageSizeLimitKb * 1024;
     private readonly long _defaultQualitySizeLimit = configProvider.EnvironmentSettings.ImageSizeLimitKb * 1024; 
     
+    
+    private readonly Lazy<WebpEncoder> _smallFileWebpEncoder = new(() => new WebpEncoder
+    {
+        Quality = configProvider.EnvironmentSettings.SmallImageProcessingQuality,
+        Method = (WebpEncodingMethod)configProvider.EnvironmentSettings.SmallImageProcessingLevel,
+    });
+    
+    private readonly Lazy<WebpEncoder> _defaultFileWebpEncoder = new(() => new WebpEncoder
+    {
+        Quality = configProvider.EnvironmentSettings.ImageProcessingQuality,
+        Method = (WebpEncodingMethod)configProvider.EnvironmentSettings.ImageProcessingLevel
+    });
+    
+    private readonly Lazy<WebpEncoder> _largeFileWebpEncoder = new(() => new WebpEncoder
+    {
+        Quality = configProvider.EnvironmentSettings.LargeImageProcessingQuality,
+        Method = (WebpEncodingMethod)configProvider.EnvironmentSettings.LargeImageProcessingLevel
+    });
+    
     public WebpEncoder GetBestEncoder(int fileSize)
     {
         if (fileSize < _lowQualitySizeLimit)
         {
-            return new WebpEncoder
-            {
-                Quality = configProvider.EnvironmentSettings.SmallImageProcessingQuality,
-                Method = (WebpEncodingMethod)configProvider.EnvironmentSettings.SmallImageProcessingLevel,
-            };
+            return _smallFileWebpEncoder.Value;
         }
 
         if (fileSize < _defaultQualitySizeLimit)
         {
-            return new WebpEncoder
-            {
-                Quality = configProvider.EnvironmentSettings.SmallImageProcessingQuality,
-                Method = (WebpEncodingMethod)configProvider.EnvironmentSettings.SmallImageProcessingLevel,
-            };;
+            return _defaultFileWebpEncoder.Value;
         }
 
-        return new WebpEncoder
-        {
-            Quality = configProvider.EnvironmentSettings.LargeImageProcessingQuality,
-            Method = (WebpEncodingMethod)configProvider.EnvironmentSettings.LargeImageProcessingLevel,
-        };;
+        return _largeFileWebpEncoder.Value;
     }
 }
