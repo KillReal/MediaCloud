@@ -101,7 +101,7 @@ body {
 }
 
 .bg-warning {
-    background: rgb(207 179 97) !important;
+    background-color: rgb(207 179 97) !important;
     color: black;
 }
 
