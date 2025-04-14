@@ -2,15 +2,16 @@
 using MediaCloud.Builders.List;
 using MediaCloud.Data;
 using MediaCloud.Data.Models;
-using MediaCloud.Extensions;
 using MediaCloud.WebApp.Repositories.Base;
 using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp.Services.Data.Repositories.Interfaces;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.EntityFrameworkCore;
 using NLog;
+using MediaCloud.Repositories;
+using MediaCloud.Data.Types;
 
-namespace MediaCloud.Repositories
+namespace MediaCloud.WebApp.Repositories
 {
     public class PreviewRepository(AppDbContext context, StatisticProvider statisticProvider, IUserProvider actorProvider) : BaseRepository<Preview>(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider), IListBuildable<Preview>
     {
@@ -20,7 +21,7 @@ namespace MediaCloud.Repositories
 
             return tags.Length < 2 
                 ? tags 
-                : tags.Distinct().ToArray();
+                : [.. tags.Distinct()];
         }
 
         private TagFilter<Preview> GetFilterQueryByTags(string tagsString)
@@ -33,7 +34,7 @@ namespace MediaCloud.Repositories
             {
                 if (tag.Contains('!'))
                 {
-                    negativeTags.Add(tag.Remove(0, 1));
+                    negativeTags.Add(tag[1..]);
                     continue;
                 }
 
@@ -63,20 +64,20 @@ namespace MediaCloud.Repositories
 
                 if (filter.Contains("!character") || filter.Contains("!char"))
                 {
-                    query = query.Where(x => !x.Tags.Any(x => x.Type == Data.Types.TagType.Character));
+                    query = query.Where(x => !x.Tags.Any(x => x.Type == TagType.Character));
                 }
                 else if (filter.Contains("character") || filter.Contains("char"))
                 {
-                    query = query.Where(x => x.Tags.Any(x => x.Type == Data.Types.TagType.Character));
+                    query = query.Where(x => x.Tags.Any(x => x.Type == TagType.Character));
                 }
 
                 if (filter.Contains("!series"))
                 {
-                    query = query.Where(x => !x.Tags.Any(x => x.Type == Data.Types.TagType.Series));
+                    query = query.Where(x => !x.Tags.Any(x => x.Type == TagType.Series));
                 }
                 else if (filter.Contains("series"))
                 {
-                    query = query.Where(x => x.Tags.Any(x => x.Type == Data.Types.TagType.Series));
+                    query = query.Where(x => x.Tags.Any(x => x.Type == TagType.Series));
                 }
 
                 return GetFilterQueryByTags(filter).ApplyToQuery(query);

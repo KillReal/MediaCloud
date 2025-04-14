@@ -10,6 +10,7 @@ using System.IO.Compression;
 using MediaCloud.Extensions;
 using MediaCloud.WebApp.Services.Statistic;
 using MediaCloud.WebApp.Services.TaskScheduler.Tasks;
+using MediaCloud.WebApp.Repositories;
 
 namespace MediaCloud.WebApp.Controllers
 {

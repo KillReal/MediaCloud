@@ -14,6 +14,7 @@ using MediaCloud.WebApp.Services.ConfigProvider;
 using MediaCloud.WebApp;
 using MediaCloud.WebApp.Services.AutotagService;
 using Npgsql;
+using MediaCloud.WebApp.Repositories;
 
 var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 logger.Debug("Early NLog initialization");
