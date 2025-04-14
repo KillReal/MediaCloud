@@ -1,4 +1,5 @@
-﻿using MediaCloud.WebApp.Data.Models.Interfaces;
+﻿using MediaCloud.Data.Models.Interfaces;
+using MediaCloud.WebApp.Data.Models.Interfaces;
 
 namespace MediaCloud.WebApp.Repositories.Base
 {

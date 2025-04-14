@@ -1,10 +1,11 @@
 ﻿using MediaCloud.WebApp;
 using MediaCloud.WebApp.Data.Models.Interfaces;
 using System.ComponentModel.DataAnnotations.Schema;
+using MediaCloud.Data.Models.Interfaces;
 
 namespace MediaCloud.Data.Models
 {
-    public class Preview : Entity, ITaggable
+    public class Preview : Entity, ITaggable, IBlobNameSearchable
     {
         [ForeignKey("BlobId")]
         public virtual Blob Blob { get; set; }

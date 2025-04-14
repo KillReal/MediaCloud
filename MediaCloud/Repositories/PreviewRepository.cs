@@ -46,7 +46,7 @@ namespace MediaCloud.WebApp.Repositories
             var negativeTagIds = _context.Tags.Where(x => negativeTags.Any(y => y.ToLower() == x.Name.ToLower()))
                                               .Select(x => x.Id);
 
-            return new([.. positiveTagIds], [.. negativeTagIds]);
+            return new TagFilter<Preview>([.. positiveTagIds], [.. negativeTagIds]);
         }
 
         private IQueryable<Preview> SetFilterToQuery(IQueryable<Preview> query, string filter)
@@ -80,7 +80,10 @@ namespace MediaCloud.WebApp.Repositories
                     query = query.Where(x => x.Tags.Any(x => x.Type == TagType.Series));
                 }
 
-                return GetFilterQueryByTags(filter).ApplyToQuery(query);
+                query = GetFilterQueryByTags(filter).ApplyToQuery(query);
+                query = new BlobNameFilter<Preview>(filter).ApplyToQuery(query);
+                
+                return query;
             }
 
             return query;
