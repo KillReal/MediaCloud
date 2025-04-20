@@ -67,7 +67,7 @@ namespace MediaCloud.Pages.Gallery
                 NextPreviewId = collectionPreviews.FirstOrDefault(x => x.Order > preview.Order)?.Id;
             }
 
-            Tags = [.. preview.Tags.OrderBy(x => x.Type)];
+            Tags = [.. preview.Tags.OrderBy(x => x.Color)];
             TagsString = string.Join(" ", Tags.Select(x => x.Name.ToLower()));
 
             return Page();

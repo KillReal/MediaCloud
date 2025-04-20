@@ -1,5 +1,7 @@
 ﻿@page
 @using MediaCloud.Data.Types
+@using MediaCloud.WebApp
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model MediaCloud.Pages.Gallery.DetailModel
 
 @{
@@ -130,48 +132,23 @@
     <div class="row">
         <div class="col-sm pt-3">
             <ul class="list-group">
-            <li class="list-group-item">Id: @Model.Blob.Id</li>  
-            @if (Model.Blob.Resolution.Contains('x'))
-            {
-                <li class="list-group-item">Resolution: @Model.Blob.Resolution</li>
-            }
-            <li class="list-group-item">File name: @Model.BlobName</li>
-            <li class="list-group-item">File type: @Model.BlobType</li>
-            <li class="list-group-item">Size: @Model.Blob.SizeInfo</li>
-            <li class="list-group-item">Creator: @Model.Blob.Creator.Name</li>
-            <li class="list-group-item">Updator: @Model.Blob.Updator.Name</li>
-            <li class="list-group-item">Time of create: @Model.Blob.CreatedAt</li>
-            <li class="list-group-item">Time of update: @Model.Blob.UpdatedAt</li>
-        </ul>
-        </div>
-        <div class="col-sm pt-3">
-             <ul class="list-group h-100">
-                 <li class="list-group-item h-100">
-                    Related tags: 
-                    @foreach(var tag in Model.Tags)
-                    {
-                        var classStyle = "btn-info";
-                        switch (tag.Type) 
-                        {
-                            case TagType.Character:
-                                classStyle = "btn-warning";
-                                break;
-                            case TagType.Series:
-                                classStyle = "btn-success";
-                                break;
-                            case TagType.Clothes:
-                                classStyle = "btn-danger";
-                                break;
-                        }
-                        <a class="btn @classStyle btn-rounded me-1 mb-2" 
-                            asp-page="/Tags/Detail" 
-                            asp-route-id=@tag.Id>
-                            @tag.Name
-                        </a>
-                    }
-                </li>         
+                <li class="list-group-item">Id: @Model.Blob.Id</li>  
+                @if (Model.Blob.Resolution.Contains('x'))
+                {
+                    <li class="list-group-item">Resolution: @Model.Blob.Resolution</li>
+                }
+                <li class="list-group-item">File name: @Model.BlobName</li>
+                <li class="list-group-item">File type: @Model.BlobType</li>
+                <li class="list-group-item">Size: @Model.Blob.SizeInfo</li>
+                <li class="list-group-item">Creator: @Model.Blob.Creator.Name</li>
+                <li class="list-group-item">Updator: @Model.Blob.Updator.Name</li>
+                <li class="list-group-item">Time of create: @Model.Blob.CreatedAt</li>
+                <li class="list-group-item">Time of update: @Model.Blob.UpdatedAt</li>
             </ul>
         </div>
+        
+        <partial name="~/Pages/Gallery/_Tags.cshtml" model=@(new _TagsModel(Model.Tags))/>
+        
     </div>
 
     <div class="modal text-black" id="loadingModal" tabindex="-1" role="dialog">

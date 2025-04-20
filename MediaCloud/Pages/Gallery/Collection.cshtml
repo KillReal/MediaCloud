@@ -58,48 +58,7 @@
         </div>
 
         <div class="row">
-            <div class="col-sm">
-                <ul class="list-group">
-                    <li class="list-group-item h-100">
-                        Related tags:
-                        @foreach (var tag in Model.Tags)
-                        {
-                            if (tag.Type == TagType.Character)
-                            {
-                                <a class="btn btn-warning btn-rounded me-1 mb-2" 
-                                    asp-page="/Tags/Detail" 
-                                    asp-route-id=@tag.Id>
-                                    @tag.Name
-                                </a>
-                            }
-                            else if (tag.Type == TagType.Series)
-                            {
-                                <a class="btn btn-success btn-rounded me-1 mb-2" 
-                                    asp-page="/Tags/Detail" 
-                                    asp-route-id=@tag.Id>
-                                    @tag.Name
-                                </a>
-                            }
-                            else if (tag.Type == TagType.Clothes)
-                            {
-                                <a class="btn btn-danger btn-rounded me-1 mb-2" 
-                                    asp-page="/Tags/Detail" 
-                                    asp-route-id=@tag.Id>
-                                    @tag.Name
-                                </a>
-                            }
-                            else
-                            {
-                                <a class="btn btn-info btn-rounded me-1 mb-2" 
-                                    asp-page="/Tags/Detail" 
-                                    asp-route-id=@tag.Id>
-                                    @tag.Name
-                                </a>
-                            }
-                        }
-                    </li>
-                </ul>
-            </div>
+            <partial name="~/Pages/Gallery/_Tags.cshtml" model=@(new _TagsModel(Model.Tags))/>
         </div>
 
         <div class="form-group button-panel">

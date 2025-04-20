@@ -118,7 +118,7 @@
                     @Html.DisplayNameFor(model => model.Tags[0].Description)
                 </th>
                 <th class="table-item-padding">
-                    @Html.DisplayNameFor(model => model.Tags[0].Type)
+                    @Html.DisplayNameFor(model => model.Tags[0].Color)
                 </th>
                 <th class="table-item-padding">
                     Files count
@@ -136,7 +136,7 @@
                     @Html.DisplayFor(modelItem => item.Description)
                 </td>
                 <td class="table-item-padding">
-                    @(item.Type.GetDisplayName())
+                    @(item.Color.GetDisplayName())
                 </td>
                 <td class="table-item-padding">
                     @Html.DisplayFor(modelItem => item.PreviewsCount)

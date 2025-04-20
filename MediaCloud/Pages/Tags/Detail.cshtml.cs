@@ -45,7 +45,7 @@ namespace MediaCloud.Pages.Tags
             tag.Name = Tag.Name;
             tag.Description = Tag.Description;
             tag.Alias = Tag.Alias;
-            tag.Type = Tag.Type;
+            tag.Color = Tag.Color;
 
             _tagRepository.Update(tag);
 

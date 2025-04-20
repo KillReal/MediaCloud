@@ -131,6 +131,46 @@ body {
     padding-left: 0.6rem;
 }
 
+.btn-purple {
+    color: #fff;
+    background-color: #b229d8;
+    border-color: #b011cf;
+}
+
+.btn-purple:hover {
+    background-color: #b229d8;
+}
+
+.btn-black {
+    color: #fff;
+    background-color: #191919;
+    border-color: #7e7e7e;
+}
+
+.btn-black:hover {
+    background-color: #363636;
+}
+
+.btn-aquamarine {
+    color: #fff;
+    background-color: #32c6cd;
+    border-color: #06798c;
+}
+
+.btn-aquamarine:hover {
+    background-color: #1eb3ba;
+}
+
+.btn-white {
+    color: #000;
+    background-color: #e7e7e7;
+    border-color: #2e2e2c;
+}
+
+.btn-white:hover {
+    background-color: #b8b8b8;
+}
+
 .button-group-input {
     margin-right: 0.25rem;
     margin-left: 0.25rem;

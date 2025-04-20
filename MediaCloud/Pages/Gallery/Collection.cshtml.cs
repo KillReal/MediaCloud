@@ -58,7 +58,7 @@ namespace MediaCloud.Pages.Gallery
                 tagsUnion = tagsUnion.Union(tags);
            }
 
-            Tags = [.. tagsUnion?.OrderBy(x => x.Type)];
+            Tags = [.. tagsUnion?.OrderBy(x => x.Color)];
             
             var collectionSize = _collectionRepository.GetSize(id);
             CollectionSizeInfo = collectionSize.FormatSize();

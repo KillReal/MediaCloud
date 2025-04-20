@@ -1,0 +1,46 @@
+﻿@using MediaCloud.Data.Types
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model MediaCloud.WebApp._TagsModel
+
+
+
+<div class="col-sm">
+    <ul class="list-group">
+        <li class="list-group-item h-100">
+            Related tags:
+            @foreach (var tag in Model.Tags)
+            {
+                var classStyle = "btn-info";
+                switch (tag.Color) 
+                {
+                    case TagColor.Orange:
+                        classStyle = "btn-warning";
+                        break;
+                    case TagColor.Green:
+                        classStyle = "btn-success";
+                        break;
+                    case TagColor.Red:
+                        classStyle = "btn-danger";
+                        break;
+                    case TagColor.Purple:
+                        classStyle = "btn-purple";
+                        break;
+                    case TagColor.Aquamarine:
+                        classStyle = "btn-aquamarine";
+                        break;
+                    case TagColor.Black:
+                        classStyle = "btn-black";
+                        break;
+                    case TagColor.White:
+                        classStyle = "btn-white";
+                        break;
+                }
+                <a class="btn @classStyle btn-rounded me-1 mb-2" 
+                   asp-page="/Tags/Detail" 
+                   asp-route-id=@tag.Id>
+                    @tag.Name
+                </a>
+            }
+        </li>
+    </ul>
+</div>

@@ -71,20 +71,20 @@ namespace MediaCloud.WebApp.Repositories
 
                 if (filter.Contains("!character") || filter.Contains("!char"))
                 {
-                    query = query.Where(x => !x.Tags.Any(x => x.Type == TagType.Character));
+                    query = query.Where(x => !x.Tags.Any(x => x.Color == TagColor.Orange));
                 }
                 else if (filter.Contains("character") || filter.Contains("char"))
                 {
-                    query = query.Where(x => x.Tags.Any(x => x.Type == TagType.Character));
+                    query = query.Where(x => x.Tags.Any(x => x.Color == TagColor.Orange));
                 }
 
                 if (filter.Contains("!series"))
                 {
-                    query = query.Where(x => !x.Tags.Any(x => x.Type == TagType.Series));
+                    query = query.Where(x => !x.Tags.Any(x => x.Color == TagColor.Purple));
                 }
                 else if (filter.Contains("series"))
                 {
-                    query = query.Where(x => x.Tags.Any(x => x.Type == TagType.Series));
+                    query = query.Where(x => x.Tags.Any(x => x.Color == TagColor.Purple));
                 }
                 
                 return GetFilterQuery(query, filter);
