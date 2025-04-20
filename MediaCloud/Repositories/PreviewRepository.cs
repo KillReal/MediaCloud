@@ -1,4 +1,5 @@
-﻿using DynamicExpression.Extensions;
+﻿using DynamicExpression.Entities;
+using DynamicExpression.Extensions;
 using MediaCloud.Builders.List;
 using MediaCloud.Data;
 using MediaCloud.Data.Models;
@@ -10,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using NLog;
 using MediaCloud.Repositories;
 using MediaCloud.Data.Types;
+using MediaCloud.WebApp.Builders;
 
 namespace MediaCloud.WebApp.Repositories
 {
@@ -24,9 +26,9 @@ namespace MediaCloud.WebApp.Repositories
                 : [.. tags.Distinct()];
         }
 
-        private TagFilter<Preview> GetFilterQueryByTags(string tagsString)
+        private IQueryable<Preview> GetFilterQuery(IQueryable<Preview> query, string filter)
         {
-            var tags = GetDeduplicatedTags(tagsString);
+            var tags = GetDeduplicatedTags(filter);
 
             var positiveTags = new List<string>();
             var negativeTags = new List<string>();
@@ -46,7 +48,12 @@ namespace MediaCloud.WebApp.Repositories
             var negativeTagIds = _context.Tags.Where(x => negativeTags.Any(y => y.ToLower() == x.Name.ToLower()))
                                               .Select(x => x.Id);
 
-            return new TagFilter<Preview>([.. positiveTagIds], [.. negativeTagIds]);
+            var tagFilter = new TagFilter<Preview>([.. positiveTagIds], [.. negativeTagIds]);
+            var nameFilter = new BlobNameFilter<Preview>(filter);
+            
+            var filterExpression = tagFilter.GetExpression().Or(nameFilter.GetExpression());
+            
+            return query.Where(filterExpression);
         }
 
         private IQueryable<Preview> SetFilterToQuery(IQueryable<Preview> query, string filter)
@@ -79,11 +86,8 @@ namespace MediaCloud.WebApp.Repositories
                 {
                     query = query.Where(x => x.Tags.Any(x => x.Type == TagType.Series));
                 }
-
-                query = GetFilterQueryByTags(filter).ApplyToQuery(query);
-                query = new BlobNameFilter<Preview>(filter).ApplyToQuery(query);
                 
-                return query;
+                return GetFilterQuery(query, filter);
             }
 
             return query;
