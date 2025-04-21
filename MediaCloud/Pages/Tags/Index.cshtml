@@ -1,7 +1,6 @@
 ﻿@page
 @model MediaCloud.Pages.Tags.ListModel
 @using MediaCloud.Extensions
-@using MediaCloud.Data.Types
 
 @{
     ViewData["Title"] = "Tag list";
@@ -12,9 +11,9 @@
     var createdAtSortType = "CreatedAtDesc";
     var createdAtSortSymbol = "";
     var createdAtButtonStyle = "btn-info";
-    var typeSortType = "TypeDesc";
-    var typeSortSymbol = "";
-    var typeButtonStyle = "btn-info";
+    var colorSortType = "ColorDesc";
+    var colorSortSymbol = "";
+    var colorButtonStyle = "btn-info";
     var previewsCountSortType = "PreviewsCountDesc";
     var previewsCountSortSymbol = "";
     var previewsCountButtonStyle = "btn-info";
@@ -41,15 +40,15 @@
         createdAtButtonStyle = "btn-warning";
     }
 
-    @if (@Model.ListBuilder.Sorting.PropertyName == "TypeDesc"){
-        typeSortType = "Type";
-        typeSortSymbol = "↓";
-        typeButtonStyle = "btn-warning";
+    @if (@Model.ListBuilder.Sorting.PropertyName == "ColorDesc"){
+        colorSortType = "Color";
+        colorSortSymbol = "↓";
+        colorButtonStyle = "btn-warning";
     }
-    else if (@Model.ListBuilder.Sorting.PropertyName == "Type"){
-        typeSortType = "TypeDesc";
-        typeSortSymbol = "↑";
-        typeButtonStyle = "btn-warning";
+    else if (@Model.ListBuilder.Sorting.PropertyName == "Color"){
+        colorSortType = "ColorDesc";
+        colorSortSymbol = "↑";
+        colorButtonStyle = "btn-warning";
     }
 
     @if (@Model.ListBuilder.Sorting.PropertyName == "PreviewsCountDesc"){
@@ -91,10 +90,10 @@
                 asp-route-sort=@(createdAtSortType)>
                 📅 @(createdAtSortSymbol)
             </a>
-            <a class="btn @typeButtonStyle btn-rounded text-nowrap" 
+            <a class="btn @colorButtonStyle btn-rounded text-nowrap" 
                 asp-page="Index" 
-                asp-route-sort=@(typeSortType)>
-                🔖 @(typeSortSymbol)
+                asp-route-sort=@(colorSortType)>
+                🔖 @(colorSortSymbol)
             </a>
             <a class="btn @previewsCountButtonStyle btn-rounded text-nowrap" 
                 asp-page="Index" 
