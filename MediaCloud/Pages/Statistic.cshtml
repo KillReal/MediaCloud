@@ -3,7 +3,9 @@
 @{
     ViewData["Title"] = "Statistic";
 }
+@using MediaCloud.Extensions
 @using MediaCloud.Services;
+@using SixLabors.ImageSharp
 
 <h1 class="pt-3 text-white">Statistic</h1>
 
@@ -30,7 +32,7 @@
         </div>
         <div class="row" style="justify-content: space-around; min-width: 45rem;">
             <div class="col whiteback-bar" style="justify-content: space-around;">
-                <canvas class="chart-canvas-block" style="max-height: 35rem" id="TagsChart"></canvas>
+                <canvas class="chart-canvas-block" style="max-height: 50rem" id="TagsChart"></canvas>
             </div>
             <div class="col whiteback-bar">
                 <canvas class="chart-canvas" id="ActivityChart"></canvas>
@@ -71,6 +73,42 @@
     var dayDisplayFormat = 'DD'
     var selectedTheme = localStorage.getItem('ui-theme-name');
     var fontColor = 'black';
+    var cssStyleFile = 'site.css'
+
+    function getStyleProperty(selector, style)
+    {
+        for (var i = 0; i < document.styleSheets.length; i++)
+        {
+            var mysheet = document.styleSheets[i];
+            var myrules = mysheet.cssRules ? mysheet.cssRules : mysheet.rules;
+
+            for (var j = 0; j < myrules.length; j++)
+            {
+                if (myrules[j].selectorText && myrules[j].selectorText.toLowerCase() === selector)
+                {
+                    return myrules[j].style[style];
+                }
+            }
+        }
+    };
+    
+    // Retrieve hex colors list from css file for class names ('btn-black' etc.)
+    function getHexColorStylesListByClassNames(colorNames) {
+        colors = []
+        
+        for (var i = 0; i < colorNames.length; i++) {
+            colors.push(getStyleProperty('.btn-' + colorNames[i], 'backgroundColor'));
+        }
+        
+        return colors;
+    }
+
+    function endsWith(str, suffix) {
+        if (str != null) {
+            return str.indexOf(suffix, str.length - suffix.length) !== -1;
+        }
+        return false;
+    };
     
     switch (selectedTheme)
     {
@@ -79,6 +117,7 @@
             break
         case "Dark":
             fontColor = 'white'
+            cssStyleFile = 'site-dark.css'
             break
     }
 
@@ -282,24 +321,65 @@
         type: 'pie',
         data: {
             labels: ['@(Html.Raw(string.Join("', '", Model.Tags.Select(x => x.Name))))'],
-            datasets: [{
-                label: 'Medias count',
-                data: [@(Html.Raw(string.Join(", ", Model.Tags.Select(x => x.PreviewsCount))))],
-                borderWidth: 1
-            }]
+            datasets: [
+                {
+                    label: 'Files count',
+                    data: [@(Html.Raw(string.Join(", ", Model.Tags.Select(x => x.PreviewsCount))))],
+                    borderWidth: 1,
+                    backgroundColor: getHexColorStylesListByClassNames(['@(Html.Raw(string.Join("', '", Model.Tags.Select(x => x.Color.GetDisplayName().ToLower()))))'])
+                }
+            ]
         },
         options: {
             responsive: true,
             plugins: {
                 legend: {
-                    display: false,
                     labels: {
-                        color: fontColor
+                        generateLabels(chart) {
+                            const data = chart.data;
+                            if (data.labels.length && data.datasets.length) {
+                                const {
+                                    labels: {
+                                        pointStyle
+                                    }
+                                } = chart.legend.options;
+
+                                // Show every other label
+                                const labels = [];
+                                const dataColors = ['@(Html.Raw(string.Join("', '", Model.Tags.Select(x => x.Color))))'];
+                                for (let i = 0; i < dataColors.length; i += 1) {
+                                    const meta = chart.getDatasetMeta(0);
+                                    const style = meta.controller.getStyle(i);
+
+                                    if (!labels.some(x => x.text === dataColors[i])) {
+                                        labels.push({
+                                            text: dataColors[i],
+                                            fillStyle: style.backgroundColor,
+                                            strokeStyle: style.borderColor,
+                                            lineWidth: style.borderWidth,
+                                            pointStyle: pointStyle,
+                                            hidden: !chart.getDataVisibility(i),
+                                            index: i
+                                        })
+                                    }
+                                }
+                                return labels;
+                            }
+                        },
+                    },
+                    onClick(e, legendItem, legend) {
+                        const dataColors = ['@(Html.Raw(string.Join("', '", Model.Tags.Select(x => x.Color))))'];
+                        for (let i = 0; i < dataColors.length; i += 1) {
+                            if (legendItem.text === dataColors[i]) {
+                                legend.chart.toggleDataVisibility(i);
+                            }
+                        }
+                        legend.chart.update();
                     }
                 },
                 title: {
                     display: true,
-                    text: 'Tag popularity (top ' + @Model.Tags.Count() + ' of ' + @Model.Tags.Count + ' total)',
+                    text: 'Tag popularity (top ' + @Model.Tags.Count() + ' of ' + @Model.TotalTagsCount + ' total)',
                     color: fontColor
                 },
                 datalabels: {

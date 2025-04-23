@@ -1,4 +1,4 @@
-﻿using MediaCloud.Data;
+﻿using MediaCloud.Builders.List;
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Pages;
@@ -10,12 +10,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace MediaCloud.Pages
 {
     public class StatisticModel(IUserProvider userProvider, IConfigProvider configProvider, StatisticProvider statisticProvider,
-        TagRepository tagRepository, AppDbContext context) : AuthorizedPageModel(userProvider, configProvider)
+        TagRepository tagRepository) : AuthorizedPageModel(userProvider, configProvider)
     {
-        private readonly StatisticProvider _statisticProvider = statisticProvider;
         private readonly IConfigProvider _configProvider = configProvider;
-        private readonly TagRepository _tagRepository = tagRepository;
-        private readonly AppDbContext _context = context;
 
         [BindProperty]
         public int ActivityBacktrackDayCount { get; set; }
@@ -23,15 +20,15 @@ namespace MediaCloud.Pages
         public List<StatisticSnapshot> Snapshots { get; set; } = [];
         [BindProperty]
         public List<Tag> Tags { get; set; } = [];
+        [BindProperty]
+        public int TotalTagsCount { get; set; }
 
-        public IActionResult OnGet()
+        public async Task<IActionResult> OnGet(int limit = 20)
         {
             ActivityBacktrackDayCount = _configProvider.UserSettings.StatisticActivityBacktrackDayCount;
-            Snapshots = _statisticProvider.GetAllSnapshots();
-            Tags = _tagRepository.GetTopUsed(15).Where(x => x.PreviewsCount > 0).ToList();
-
-            var actualSize = _context.GetDbSize();
-            var aproximateSize = Snapshots.Last().MediasSize;
+            Snapshots = statisticProvider.GetAllSnapshots();
+            Tags = tagRepository.GetTopUsed(limit).Where(x => x.PreviewsCount > 0).ToList();
+            TotalTagsCount = await tagRepository.GetTotalCountAsync();
 
             return Page();
         }
