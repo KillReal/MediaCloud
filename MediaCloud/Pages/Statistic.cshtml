@@ -377,22 +377,22 @@
                     },
                     onClick(e, legendItem, legend) {
                         const dataColors = ['@(Html.Raw(string.Join("', '", Model.Tags.Select(x => x.Color))))'];
+                        const dataValues = [@(Html.Raw(string.Join(", ", Model.Tags.Select(x => x.PreviewsCount))))];
                         tagsChartGroupsSelected[legendItem.index] = !tagsChartGroupsSelected[legendItem.index];
-                        
+
+                        let valuesSum = 0;                        
                         for (let i = 0; i < dataColors.length; i++) {
                             if (legend.chart.getDataVisibility(i) !== tagsChartGroupsSelected[getTagGroupIndex(dataColors[i])]) {
                                 legend.chart.toggleDataVisibility(i);
                             }
+                            if (legend.chart.getDataVisibility(i)) {
+                                valuesSum += dataValues[i]
+                            }
                         }
                         
-                        // Hide least items to limit actual displayed items
-                        const showedItemsLimit = 20;
-                        let showedItems = 0;
+                        // Hide pies that smaller than 7.5% of full pie.
                         for (let i = 0; i < dataColors.length; i++) {
-                            if (legend.chart.getDataVisibility(i) === true) {
-                                showedItems++;
-                            }
-                            if (legend.chart.getDataVisibility(i) !== false && showedItems > showedItemsLimit) {
+                            if (legend.chart.getDataVisibility(i) && dataValues[i] < valuesSum / 54) {
                                 legend.chart.toggleDataVisibility(i);
                             }
                         }
