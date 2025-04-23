@@ -11,12 +11,15 @@
         @ViewData["Title"] - MediaCloud v@(Assembly.GetEntryAssembly()?.GetName().Version?.ToString(3))
     </title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+    
     @if (Model.GetType().IsSubclassOf(typeof(AuthorizedPageModel)) && Model.CurrentUser != null && Model.UIThemeName == "Dark")
     {
         <link rel="stylesheet" href="~/css/site-dark.css" asp-append-version="true" id="theme-styler"/>
     }
-    else {
-        <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" id="theme-styler"/>
+    else
+    {
+        <link rel="stylesheet" href="" asp-append-version="true" id="theme-styler"/>
     }
     
 </head>
@@ -126,7 +129,7 @@
         switch (name) {
             default:
             case "Light":
-                document.getElementById("theme-styler").setAttribute('href', '/css/site.css')
+                document.getElementById("theme-styler").remove();
                 break;
             case "Dark":
                 document.getElementById("theme-styler").setAttribute('href', '/css/site-dark.css')
