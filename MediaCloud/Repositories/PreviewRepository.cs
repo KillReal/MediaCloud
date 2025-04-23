@@ -110,7 +110,7 @@ namespace MediaCloud.WebApp.Repositories
             var query = _context.Previews.AsNoTracking().Where(x => x.Order == 0);
 
             return await SetFilterToQuery(query, listBuilder.Filtering.Filter)
-                .Where(x => x.CreatorId == _actor.Id)
+                .Where(x => x.CreatorId == _user.Id)
                 .CountAsync();
         }
 
@@ -123,7 +123,7 @@ namespace MediaCloud.WebApp.Repositories
 
             if (listBuilder.Sorting.PropertyName.Contains("Random"))
             {
-                return await query.Where(x => x.Order == 0 && x.CreatorId == _actor.Id)
+                return await query.Where(x => x.Order == 0 && x.CreatorId == _user.Id)
                     .Include(x => x.Collection)
                     .OrderBy(x => EF.Functions.Random())
                     .Skip(listBuilder.Pagination.Offset)
@@ -132,7 +132,7 @@ namespace MediaCloud.WebApp.Repositories
             }  
 
             return await query.Order(listBuilder.Sorting.GetOrder())
-                        .Where(x => x.CreatorId == _actor.Id)
+                        .Where(x => x.CreatorId == _user.Id)
                         .Skip(listBuilder.Pagination.Offset)
                         .Take(listBuilder.Pagination.Count)
                         .Include(x => x.Collection)
@@ -167,7 +167,7 @@ namespace MediaCloud.WebApp.Repositories
                     _context.Blobs.Remove(preview.Blob);
                     SaveChanges();
                     _logger.Info("Removed Media in Collection with id: {preview.Collection.Id} by: {_actor.Name}", 
-                        preview.Collection.Id, _actor.Name);
+                        preview.Collection.Id, _user.Name);
                     _statisticProvider.MediasCountChanged.Invoke(-1, -size);
 
                     return true;
@@ -178,7 +178,7 @@ namespace MediaCloud.WebApp.Repositories
                 _context.Blobs.Remove(preview.Blob);
                 _context.Collections.Remove(preview.Collection);
                 SaveChanges();
-                _logger.Info("Removed Collection with id: {collectionId} by: {_actor.Name}", collectionId, _actor.Name);
+                _logger.Info("Removed Collection with id: {collectionId} by: {_actor.Name}", collectionId, _user.Name);
                 _statisticProvider.MediasCountChanged.Invoke(-1, -size);
 
                 return true;
@@ -188,7 +188,7 @@ namespace MediaCloud.WebApp.Repositories
 
             _context.Blobs.Remove(preview.Blob);
             SaveChanges();
-            _logger.Info("Removed Media  with id: {mediaId} by: {_actor.Name}", mediaId, _actor.Name);
+            _logger.Info("Removed Media  with id: {mediaId} by: {_actor.Name}", mediaId, _user.Name);
             _statisticProvider.MediasCountChanged.Invoke(-1, -size);
 
             return true;
