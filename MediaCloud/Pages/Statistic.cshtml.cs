@@ -23,11 +23,14 @@ namespace MediaCloud.Pages
         [BindProperty]
         public int TotalTagsCount { get; set; }
 
-        public async Task<IActionResult> OnGet(int limit = 50)
+        public async Task<IActionResult> OnGet()
         {
             ActivityBacktrackDayCount = _configProvider.UserSettings.StatisticActivityBacktrackDayCount;
             Snapshots = statisticProvider.GetAllSnapshots();
-            Tags = tagRepository.GetTopUsed(limit).Where(x => x.PreviewsCount > 0).ToList();
+
+            var tagsCountLimit = configProvider.UserSettings.StatisticTagsTopCount;
+            
+            Tags = tagRepository.GetTopUsed(tagsCountLimit).Where(x => x.PreviewsCount > 0).ToList();
             TotalTagsCount = await tagRepository.GetTotalCountAsync();
 
             return Page();

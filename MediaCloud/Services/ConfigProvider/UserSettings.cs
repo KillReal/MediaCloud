@@ -17,6 +17,9 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
         [AllowedValues(7, 14, 30, 60, 90)]
         public int StatisticActivityBacktrackDayCount { get; set; }
         [Required]
+        [AllowedValues(15, 30, 50, 100, 200, 300)]
+        public int StatisticTagsTopCount { get; set; }
+        [Required]
         [AllowedValues(2, 3, 4, 5, 6)]
         public int MaxColumnsCount { get; set; }
         
@@ -32,6 +35,7 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
             ListMaxPageCount = configuration.GetValue<int>("Gallery:List:MaxPageCount");
             ListAutoloadingEnabled = configuration.GetValue<bool>("Gallery:List:AutoloadingEnabled");
             StatisticActivityBacktrackDayCount = configuration.GetValue<int>("StatisticActivityBacktrackDayCount");
+            StatisticTagsTopCount = configuration.GetValue<int>("StatisticTagsTopCount");
             MaxColumnsCount = configuration.GetValue<int>("Gallery:MaxColumnCount");
             UITheme = configuration.GetValue<string>("UI:Theme") ?? "Light";
         }
