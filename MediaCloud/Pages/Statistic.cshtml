@@ -323,7 +323,36 @@
         },
     });
 
-    new Chart(document.getElementById('TagsChart'), {
+    function updateTagsCountChart(legend) {
+        const dataColors = ['@(Html.Raw(string.Join("', '", Model.Tags.Select(x => x.Color))))'];
+        const dataValues = [@(Html.Raw(string.Join(", ", Model.Tags.Select(x => x.PreviewsCount))))];
+
+        let valuesSum = 0;
+        for (let i = 0; i < dataColors.length; i++) {
+            if (legend.chart.getDataVisibility(i) !== tagsChartGroupsSelected[getTagGroupIndex(dataColors[i])]) {
+                legend.chart.toggleDataVisibility(i);
+            }
+            if (legend.chart.getDataVisibility(i)) {
+                valuesSum += dataValues[i]
+            }
+        }
+
+        // Hide pies that smaller than 7.5% of full pie.
+        for (let i = 0; i < dataColors.length; i++) {
+            if (legend.chart.getDataVisibility(i) && dataValues[i] < valuesSum / 54) {
+                legend.chart.toggleDataVisibility(i);
+            }
+        }
+
+        legend.chart.update();
+    }
+    
+    function toggleTagsCountChartGroup(legendItem, legend) {
+        tagsChartGroupsSelected[legendItem.index] = !tagsChartGroupsSelected[legendItem.index];
+        updateTagsCountChart(legend)
+    }
+    
+    let tagsCountChart = new Chart(document.getElementById('TagsChart'), {
         type: 'pie',
         data: {
             labels: ['@(Html.Raw(string.Join("', '", Model.Tags.Select(x => x.Name))))'],
@@ -376,28 +405,7 @@
                         },
                     },
                     onClick(e, legendItem, legend) {
-                        const dataColors = ['@(Html.Raw(string.Join("', '", Model.Tags.Select(x => x.Color))))'];
-                        const dataValues = [@(Html.Raw(string.Join(", ", Model.Tags.Select(x => x.PreviewsCount))))];
-                        tagsChartGroupsSelected[legendItem.index] = !tagsChartGroupsSelected[legendItem.index];
-
-                        let valuesSum = 0;                        
-                        for (let i = 0; i < dataColors.length; i++) {
-                            if (legend.chart.getDataVisibility(i) !== tagsChartGroupsSelected[getTagGroupIndex(dataColors[i])]) {
-                                legend.chart.toggleDataVisibility(i);
-                            }
-                            if (legend.chart.getDataVisibility(i)) {
-                                valuesSum += dataValues[i]
-                            }
-                        }
-                        
-                        // Hide pies that smaller than 7.5% of full pie.
-                        for (let i = 0; i < dataColors.length; i++) {
-                            if (legend.chart.getDataVisibility(i) && dataValues[i] < valuesSum / 54) {
-                                legend.chart.toggleDataVisibility(i);
-                            }
-                        }
-
-                        legend.chart.update();
+                        toggleTagsCountChartGroup(legendItem, legend);
                     }
                 },
                 title: {
@@ -429,6 +437,7 @@
         },
         plugins: [ChartDataLabels]
     });
+    updateTagsCountChart(tagsCountChart.legend);
 
     new Chart(document.getElementById('ActivityChart'), {
         type: 'bar',
