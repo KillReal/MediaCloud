@@ -23,7 +23,7 @@ namespace MediaCloud.Pages
         [BindProperty]
         public int TotalTagsCount { get; set; }
 
-        public async Task<IActionResult> OnGet(int limit = 20)
+        public async Task<IActionResult> OnGet(int limit = 50)
         {
             ActivityBacktrackDayCount = _configProvider.UserSettings.StatisticActivityBacktrackDayCount;
             Snapshots = statisticProvider.GetAllSnapshots();

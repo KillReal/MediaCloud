@@ -70,23 +70,29 @@
 <script src="~/js/chartjs-adapter-luxon.js"></script>
 
 <script type="text/javascript">
-    var dayDisplayFormat = 'DD'
+    const dayDisplayFormat = 'DD';
     var selectedTheme = localStorage.getItem('ui-theme-name');
-    var fontColor = 'black';
-    var cssStyleFile = 'site.css'
+    let fontColor = 'black';
+    let cssStyleFile = 'site.css';
+    let tagsChartGroupsSelected = new Array(@Model.Tags.Select(x => x.Color).Distinct().Count()).fill(true);
+    
+    function getTagGroupIndex(color) {
+        const colors = ['@(Html.Raw(string.Join("', '", Model.Tags.Select(x => x.Color).Distinct())))']
+        return colors.indexOf(color);
+    }
 
     function getStyleProperty(selector, style)
     {
-        for (var i = 0; i < document.styleSheets.length; i++)
+        for (let i = 0; i < document.styleSheets.length; i++)
         {
-            var mysheet = document.styleSheets[i];
-            var myrules = mysheet.cssRules ? mysheet.cssRules : mysheet.rules;
+            const mySheet = document.styleSheets[i];
+            const myRules = mySheet.cssRules ? mySheet.cssRules : mySheet.rules;
 
-            for (var j = 0; j < myrules.length; j++)
+            for (let j = 0; j < myRules.length; j++)
             {
-                if (myrules[j].selectorText && myrules[j].selectorText.toLowerCase() === selector)
+                if (myRules[j].selectorText && myRules[j].selectorText.toLowerCase() === selector)
                 {
-                    return myrules[j].style[style];
+                    return myRules[j].style[style];
                 }
             }
         }
@@ -96,7 +102,7 @@
     function getHexColorStylesListByClassNames(colorNames) {
         colors = []
         
-        for (var i = 0; i < colorNames.length; i++) {
+        for (let i = 0; i < colorNames.length; i++) {
             colors.push(getStyleProperty('.btn-' + colorNames[i], 'backgroundColor'));
         }
         
@@ -345,12 +351,13 @@
                                 } = chart.legend.options;
 
                                 // Show every other label
+                                let indexCounter = 0;
                                 const labels = [];
                                 const dataColors = ['@(Html.Raw(string.Join("', '", Model.Tags.Select(x => x.Color))))'];
                                 for (let i = 0; i < dataColors.length; i += 1) {
                                     const meta = chart.getDatasetMeta(0);
                                     const style = meta.controller.getStyle(i);
-
+                                    
                                     if (!labels.some(x => x.text === dataColors[i])) {
                                         labels.push({
                                             text: dataColors[i],
@@ -359,8 +366,9 @@
                                             lineWidth: style.borderWidth,
                                             pointStyle: pointStyle,
                                             hidden: !chart.getDataVisibility(i),
-                                            index: i
+                                            index: indexCounter
                                         })
+                                        indexCounter++;
                                     }
                                 }
                                 return labels;
@@ -369,11 +377,26 @@
                     },
                     onClick(e, legendItem, legend) {
                         const dataColors = ['@(Html.Raw(string.Join("', '", Model.Tags.Select(x => x.Color))))'];
-                        for (let i = 0; i < dataColors.length; i += 1) {
-                            if (legendItem.text === dataColors[i]) {
+                        tagsChartGroupsSelected[legendItem.index] = !tagsChartGroupsSelected[legendItem.index];
+                        
+                        for (let i = 0; i < dataColors.length; i++) {
+                            if (legend.chart.getDataVisibility(i) !== tagsChartGroupsSelected[getTagGroupIndex(dataColors[i])]) {
                                 legend.chart.toggleDataVisibility(i);
                             }
                         }
+                        
+                        // Hide least items to limit actual displayed items
+                        const showedItemsLimit = 20;
+                        let showedItems = 0;
+                        for (let i = 0; i < dataColors.length; i++) {
+                            if (legend.chart.getDataVisibility(i) === true) {
+                                showedItems++;
+                            }
+                            if (legend.chart.getDataVisibility(i) !== false && showedItems > showedItemsLimit) {
+                                legend.chart.toggleDataVisibility(i);
+                            }
+                        }
+
                         legend.chart.update();
                     }
                 },
@@ -472,11 +495,11 @@
         },
     });
 
-    var orderPosElem = document.getElementById('orderPos');
-    var mediaCountElem = document.getElementById('mediasCount');
-    var modalTitle = document.getElementById('modalTitle');
-    var modalBody = document.getElementById("modalBody");
-    var loadSpinner = document.getElementById("loadingSpinner");
+    const orderPosElem = document.getElementById('orderPos');
+    const mediaCountElem = document.getElementById('mediasCount');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById("modalBody");
+    const loadSpinner = document.getElementById("loadingSpinner");
 
     function updateModalLoadBody(data) {
         if (data == undefined) {
@@ -514,17 +537,17 @@
         showModalBody();
         updateModalLoadBody();
 
-        var url = "/Statistic/Recalculate";
-        var request = new XMLHttpRequest();
+        const url = "/Statistic/Recalculate";
+        const request = new XMLHttpRequest();
         request.open('POST', url, true);
         request.onload = function () { // request successful
             setModalTitle('Waiting queue for processing...');
             showModalBody();
             updateModalLoadBody();
             $('#loadingModal').modal('show');
-            var data = JSON.parse(request.response);
+            const data = JSON.parse(request.response);
 
-            var url = "/Uploader/GetTaskStatus?id=" + data.id;
+            const url = "/Uploader/GetTaskStatus?id=" + data.id;
 
             console.log('Goes to update status');
 
