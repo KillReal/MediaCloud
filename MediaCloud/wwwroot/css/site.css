@@ -181,6 +181,22 @@ body {
     background-color: #e9a5dc;
 }
 
+.btn-green {
+    background-color: #198754;
+}
+
+.btn-orange {
+    background-color: #ffc107;
+}
+
+.btn-blue {
+    background-color: #0dcaf0;
+}
+
+.btn-red {
+    background-color: #bb2d3b;
+}
+
 .button-group-input {
     margin-right: 0.25rem;
     margin-left: 0.25rem;
