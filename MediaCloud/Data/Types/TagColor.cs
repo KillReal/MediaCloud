@@ -4,6 +4,8 @@ namespace MediaCloud.Data.Types
 {
     public enum TagColor
     {
+        [Display(Name = "Blue")]
+        Default = 0,
         [Display(Name = "Orange")]
         Orange = 1,
         [Display(Name = "Purple")]
