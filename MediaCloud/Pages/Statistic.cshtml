@@ -370,6 +370,7 @@
             plugins: {
                 legend: {
                     labels: {
+                        color: fontColor,
                         generateLabels(chart) {
                             const data = chart.data;
                             if (data.labels.length && data.datasets.length) {
@@ -395,7 +396,8 @@
                                             lineWidth: style.borderWidth,
                                             pointStyle: pointStyle,
                                             hidden: !chart.getDataVisibility(i),
-                                            index: indexCounter
+                                            index: indexCounter,
+                                            fontColor: fontColor
                                         })
                                         indexCounter++;
                                     }
