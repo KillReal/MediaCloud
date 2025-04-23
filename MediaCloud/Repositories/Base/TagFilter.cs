@@ -17,13 +17,15 @@ namespace MediaCloud.WebApp.Repositories.Base
                                     .SelectMany(z => z.Tags))
                                 .Distinct()
                                 .Where(y => PositiveTagIds.Contains(y.Id))
-                                .Count() == PositiveTagIds.Count && PositiveTagIds.Count > 0
+                                .Count() == PositiveTagIds.Count 
+                                    && (PositiveTagIds.Count != 0 || NegativeTagIds.Count != 0) 
                         )
                         && (x.Tags.Concat(x.Collection.Previews.Where(x => x.Order != 0)
                                 .SelectMany(z => z.Tags))
                             .Distinct()
                             .Where(y => NegativeTagIds.Contains(y.Id))
-                            .Any() == false);
+                            .Any() == false
+                        );
         }
     }
 }
