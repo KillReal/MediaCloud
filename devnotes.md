@@ -11,16 +11,18 @@ TODO:
 - Write unit tests 
 - Show first uploaded image on upload page
 - Fix statistic recalculation when only 1 day recorded
-- Remove Tag Types
-- Search by file name?
 - Fix previews ordering in gallery. Different order with filtering and without.
 - Fix worker task execution race condition (Error while running the task, mb cause of taking the task twice)
-- Research statisticsnapshot retrieving (happens several times for single page)
 
 # Changelog
 
 ### Version 2.1 - tbd, 2025
 - Added dark theme
+- Added search by file name
+- Tag types switched to tag colors
+- Added more tag colors
+- Added more flexible image processing strategies, set up in config
+- Fixed incorrect variable names in config
 
 ### Version 2.0.4 - 08th Mar, 2025
 - Added Autotagging AI model environment settings
