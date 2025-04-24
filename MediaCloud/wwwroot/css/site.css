@@ -224,6 +224,7 @@ body {
     position: absolute;
     right: 0;
     bottom: 0;
+    color: black;
     background: white;
     border-radius: 1rem;
     max-height: 5rem;
