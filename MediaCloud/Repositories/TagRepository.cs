@@ -129,14 +129,18 @@ namespace MediaCloud.Repositories
         public async Task<List<Tag>> GetListAsync(ListBuilder<Tag> listBuilder)
         {
             return await _context.Tags.AsNoTracking().Order(listBuilder.Sorting.GetOrder())
-                                               .Where(x => x.CreatorId == _user.Id)
+                                               .Where(x => x.CreatorId == _user.Id 
+                                                           && x.Name.ToLower().Contains(listBuilder.Filtering.Filter.ToLower()))
                                                .Skip(listBuilder.Pagination.Offset)
                                                .Take(listBuilder.Pagination.Count)
                                                .ToListAsync();
         }
 
         public async Task<int> GetListCountAsync(ListBuilder<Tag> listBuilder)
-            => await _context.Tags.Where(x => x.CreatorId == _user.Id).AsNoTracking().CountAsync();
+            => await _context.Tags.Where(x => x.CreatorId == _user.Id 
+                                              && x.Name.ToLower().Contains(listBuilder.Filtering.Filter.ToLower()))
+                                    .AsNoTracking()
+                                    .CountAsync();
 
         public async Task<int> GetTotalCountAsync()
         {
