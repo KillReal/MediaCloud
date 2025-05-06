@@ -73,6 +73,7 @@
 
 .list-group-item-success {
     background: #4a8f70;
+    color: white;
 }
 
 .list-group-item-danger {
