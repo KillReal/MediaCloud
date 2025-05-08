@@ -1,11 +1,10 @@
 ﻿using System.Linq.Expressions;
 using DynamicExpression.Entities;
-using MediaCloud.Data.Models.Interfaces;
 using MediaCloud.WebApp.Data.Models.Interfaces;
 
 namespace MediaCloud.WebApp.Repositories.Base
 {
-    public class TagFilter<T>(List<Guid> positiveTagIds, List<Guid> negativeTagIds) where T : ITaggable, IBlobNameSearchable
+    public class TagFilter<T>(List<Guid> positiveTagIds, List<Guid> negativeTagIds) where T : ITaggable
     {
         public List<Guid> PositiveTagIds { get; set; } = positiveTagIds;
 

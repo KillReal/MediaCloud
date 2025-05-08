@@ -1,28 +1,31 @@
 ﻿using MediaCloud.WebApp;
 using MediaCloud.WebApp.Data.Models.Interfaces;
 using System.ComponentModel.DataAnnotations.Schema;
-using MediaCloud.Data.Models.Interfaces;
 
 namespace MediaCloud.Data.Models
 {
-    public class Preview : Entity, ITaggable, IBlobNameSearchable
+    public class Preview : Entity, ITaggable, INameSearchable
     {
         [ForeignKey("BlobId")]
         public virtual Blob Blob { get; set; }
 
         public string BlobType { get; set; }
+        
         public string BlobName { get; set; }
-
+        
+        [NotMapped]
+        public string Name { get => BlobName; set => BlobName = value; }
+        
         public byte[] Content { get; set; }
-
+        
         public virtual List<Tag> Tags { get; set; }
-
+        
         [ForeignKey("CollectionId")]
         public virtual Collection? Collection { get; set; }
-
+        
         public int Order { get; set; }
 
-        public Preview(Blob file, UploadedFile uploadedFile)
+      public Preview(Blob file, UploadedFile uploadedFile)
         {
             Blob = file;
             BlobName = uploadedFile.Name;
