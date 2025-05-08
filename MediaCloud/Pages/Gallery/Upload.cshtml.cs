@@ -69,7 +69,9 @@ namespace MediaCloud.Pages.Gallery
 
             var task = IsNeedAutotagging 
                 ? new UploadAndAutotagTask(CurrentUser, uploadedFiles, IsCollection, Tags)
-                : new UploadTask(CurrentUser, uploadedFiles, IsCollection, Tags);
+                : configProvider.EnvironmentSettings.AutorateImages
+                    ? new UploadAndRateTask(CurrentUser, uploadedFiles, IsCollection, Tags)
+                    : new UploadTask(CurrentUser, uploadedFiles, IsCollection, Tags);
             var taskId = taskScheduler.AddTask(task);
 
             return Redirect($"/TaskScheduler/GetTaskStatus?id={taskId}");

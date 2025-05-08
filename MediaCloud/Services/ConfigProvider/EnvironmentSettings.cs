@@ -23,6 +23,7 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
         public long MaxFileSize { get; set; }
         
         
+        public bool AutorateImages { get; set; }
         public int SmallImageProcessingQuality { get; set; }
         public int SmallImageProcessingLevel { get; set;}
         public int SmallImageSizeLimitKb { get; set; }
@@ -52,6 +53,7 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
             AutotaggingRequestTimeout = configuration.GetValue<int>("Autotagging:RequestTimeout");
             TaskSchedulerQueueCleanupTime = configuration.GetValue<int>("TaskSchedulerQueueCleanupTime");
             
+            AutorateImages = configuration.GetValue<bool>("Uploading:AutorateImages");
             SmallImageProcessingQuality = configuration.GetValue<int>("Uploading:SmallImageProcessing:Quality");
             SmallImageProcessingLevel = configuration.GetValue<int>("Uploading:SmallImageProcessing:Level");
             SmallImageSizeLimitKb = configuration.GetValue<int>("Uploading:SmallImageProcessing:SizeLimitKb");
@@ -87,6 +89,7 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
             configuration["Uploading:MaxParallelThreadCount"] = UploadingMaxParallelDegree.ToString();
             configuration["TaskSchedulerQueueCleanupTime"] = TaskSchedulerQueueCleanupTime.ToString();
             
+            configuration["Uploading:AutorateImages"] = AutorateImages.ToString();
             configuration["Uploading:SmallImageProcessing:Quality"] = SmallImageProcessingQuality.ToString();
             configuration["Uploading:SmallImageProcessing:Level"] = SmallImageProcessingLevel.ToString();
             configuration["Uploading:SmallImageProcessing:SizeLimitKb"] = SmallImageSizeLimitKb.ToString();
