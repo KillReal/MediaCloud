@@ -1,5 +1,6 @@
 ﻿@page
 @using MediaCloud.Data.Types
+@using MediaCloud.Extensions
 @using MediaCloud.WebApp
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model MediaCloud.Pages.Gallery.DetailModel
@@ -136,6 +137,7 @@
                 @if (Model.Blob.Resolution.Contains('x'))
                 {
                     <li class="list-group-item">Resolution: @Model.Blob.Resolution</li>
+                    <li class="list-group-item">Rating: @Model.PreviewRating.GetDisplayName()</li>
                 }
                 <li class="list-group-item">File name: @Model.BlobName</li>
                 <li class="list-group-item">File type: @Model.BlobType</li>

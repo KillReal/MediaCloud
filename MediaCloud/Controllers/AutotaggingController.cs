@@ -112,4 +112,16 @@ public class AutotaggingController(IUserProvider userProvider, IConfigProvider c
 
             return false;
         }
+        
+        public Guid UpdateRatingsForAllPreviews()
+        {
+            if (IsAutotaggingAllowed() == false)
+            {
+                return Guid.Empty;
+            }
+
+            var task = new RatePreviewTask(userProvider.GetCurrent());
+
+            return taskScheduler.AddTask(task);
+        }
 }

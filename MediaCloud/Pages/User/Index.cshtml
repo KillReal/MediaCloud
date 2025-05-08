@@ -101,6 +101,18 @@
 									</div>
 								</div>
 
+								<div class="form-group mb-3"></div>
+									<label class="col-form-label" asp-for="@Model.UserSettings.AllowedNSFWContent">
+										Allowed NSFW content type to show
+									</label>
+									<select class="form-select" asp-for="@Model.UserSettings.AllowedNSFWContent">
+										<option value="1">None</option>
+										<option value="2">Sensitive</option>
+										<option value="3">Questionable</option>
+										<option value="4">Explicit</option>
+									</select>
+								</div>
+
 								<h5 class="mt-4">Statistics</h5>
 
 								<div class="form-group mb-3">
@@ -129,9 +141,8 @@
 									</select>
 								</div>
 							</div>
-						</div>
-
-						@if (Model.User.IsAdmin && Model.EnvironmentSettings != null) {
+						@if (Model.User.IsAdmin && Model.EnvironmentSettings != null)
+						{
 							<div class="col">
 								<h4 class="pt-3">
 									Environment settings:
@@ -140,7 +151,7 @@
 								<hr>
 
 								<h5 class="mt-4">Autotagging</h5>
-								
+
 								<div class="form-group mb-3">
 									<label class="col-form-label">
 										Autotagging enabled.
@@ -174,7 +185,7 @@
 								</div>
 
 								<h5 class="mt-4">Common</h5>
-								
+
 								<div class="form-group mb-3">
 									<label class="col-form-label">
 										Max previews height size (pixels)
@@ -192,7 +203,7 @@
 									       asp-for="@Model.EnvironmentSettings.MaxFileSize"
 									       onchange="environmentSettingsChanged()"/>
 								</div>
-								
+
 								<h5 class="mt-4">Security</h5>
 
 								<div class="form-group mb-3">

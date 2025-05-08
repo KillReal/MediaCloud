@@ -8,6 +8,7 @@ using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp.Repositories;
 using MediaCloud.WebApp.Services.Statistic;
 using MediaCloud.Extensions;
+using MediaCloud.WebApp.Data.Types;
 
 namespace MediaCloud.Pages.Gallery
 {
@@ -30,11 +31,13 @@ namespace MediaCloud.Pages.Gallery
         [BindProperty]
         public bool IsAutoloadEnabled { get; set; }
         [BindProperty]
-        public string SpaceUsage {get; set;}
+        public string SpaceUsage { get; set; }
         [BindProperty]
-        public int SpaceUsagePercent {get; set;}
+        public int SpaceUsagePercent { get; set; }
         [BindProperty]
-        public int MaxColumnCount {get; set;}
+        public int MaxColumnCount { get; set; }
+        [BindProperty]
+        public PreviewRatingType AllowedNSFWContent { get; set; }
 
         public ListModel(IUserProvider userProvider, IConfigProvider configProvider, TagRepository tagRepository, 
             PreviewRepository previewRepository, StatisticProvider statisticProvider) 
@@ -56,6 +59,7 @@ namespace MediaCloud.Pages.Gallery
             SpaceUsage = $"{currentUsedSpace.FormatSize(true, SpaceSizePrecision)} / ";
 
             MaxColumnCount = configProvider.UserSettings.MaxColumnsCount;
+            AllowedNSFWContent = configProvider.UserSettings.AllowedNSFWContent;
 
             if (CurrentUser is { SpaceLimit: > 0 })
             {

@@ -1,4 +1,5 @@
-﻿using MediaCloud.Data;
+﻿using DynamicExpression.Extensions;
+using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
 using MediaCloud.TaskScheduler.Tasks;
@@ -10,33 +11,25 @@ using Task = MediaCloud.TaskScheduler.Tasks.Task;
 
 namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
 {
-    public class AutotagPreviewTask(User actor, List<Guid> previewsIds) : Task(actor), ITask
+    public class RatePreviewTask : Task
     {
-        public new List<Guid> AffectedEntities = previewsIds;
-        private double _aproximateExecutionTime;
+        public RatePreviewTask(User user, List<Guid> previewsIds) : base(user)
+        {
+            AffectedEntities = previewsIds;
+            _workCount = AffectedEntities.Count;
+        }
+
+        public RatePreviewTask(User user) : base(user)
+        {
+            AffectedEntities = new List<Guid>();
+        }
+        
+        public new List<Guid> AffectedEntities;
+        private int _workCount;
 
         public override int GetWorkCount()
         {
-            if (IsCompleted)
-            {
-                return 0;
-            }
-
-            if (ExecutedAt == DateTime.MinValue)
-            {
-                return 100;
-            }
-
-            var time = (DateTime.Now - ExecutedAt).TotalSeconds;
-
-            if (time > _aproximateExecutionTime)
-            {
-                return 1;
-            }
-
-            var progress = (double)(time / _aproximateExecutionTime) * 100;
-
-            return 100 - (int)Math.Clamp(progress, 0, 100);
+            return _workCount;
         }
 
         public override void DoTheTask(IServiceProvider serviceProvider, IUserProvider userProvider, StatisticProvider statisticProvider)
@@ -51,6 +44,14 @@ namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
             var message = "";
 
             var previews = new List<Preview>();
+
+            if (_workCount == 0)
+            {
+                AffectedEntities = context.Previews.Where(x => x.BlobType.ToLower().Contains("image")
+                                                            && x.Creator == userProvider.GetCurrent())
+                                                    .Select(x => x.Id).ToList();
+                _workCount = AffectedEntities.Count;
+            }
 
             foreach (var id in AffectedEntities)
             {
@@ -70,11 +71,8 @@ namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
             {
                 var preview = previews.First(x => x.Id == result.PreviewId);
 
-                if (result.IsSuccess && result.Tags.Count != 0)
+                if (result.IsSuccess)
                 {
-                    var tags = preview.Tags.Union(result.Tags).ToList();
-                    tagRepository.UpdatePreviewLinks(tags, preview);
-                    
                     if (preview.Rating != result.Rating)
                     {
                         preview.Rating = result.Rating;
@@ -82,12 +80,14 @@ namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
                     }
                     
                     successfullyProceededCount++;
-                    message += $"\nPreview {preview.Id}\nSuggested aliases: {result.SuggestedAliases}\nRating: {result.Rating}";
+                    message += $"\nPreview {preview.Id}\nSuggested Rating: {result.Rating}";
                 }
                 else 
                 {
                     message += $"\nPreview {preview.Id} failed to proceed due to: {result.ErrorMessage}";
                 }
+
+                _workCount--;
             }
 
             CompletionMessage = $"Proceeded {successfullyProceededCount} previews [ {message} ]";

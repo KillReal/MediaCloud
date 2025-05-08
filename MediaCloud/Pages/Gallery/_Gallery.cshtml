@@ -1,5 +1,6 @@
 ﻿@using System.Xml
 @using MediaCloud.Data.Models
+@using MediaCloud.Extensions
 @model MediaCloud.WebApp._GalleryPageModel
 @{
     string BuildUrlByBlobType(string type)
@@ -53,6 +54,12 @@
                         <div class="filename">
                             @Model.Previews[i].BlobName
                         </div>
+                    </div>
+                }
+                @if (Model.Previews[i].Rating > Model.AllowedNSFWContentRating)
+                {
+                    <div class="gallery-image-blurring">
+                        @Model.Previews[i].Rating.GetDisplayName()
                     </div>
                 }
             </div>

@@ -1,5 +1,6 @@
 ﻿using MediaCloud.WebApp;
 using MediaCloud.WebApp.Data.Models.Interfaces;
+using MediaCloud.WebApp.Data.Types;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MediaCloud.Data.Models
@@ -25,13 +26,14 @@ namespace MediaCloud.Data.Models
         
         public int Order { get; set; }
 
+        public PreviewRatingType Rating { get; set; }
+
       public Preview(Blob file, UploadedFile uploadedFile)
         {
             Blob = file;
             BlobName = uploadedFile.Name;
             BlobType = uploadedFile.Type;
             Content = uploadedFile.Content;
-            Order = 0;
             Tags = [];
         }
 

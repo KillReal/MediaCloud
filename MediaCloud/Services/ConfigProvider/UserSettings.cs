@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using MediaCloud.WebApp.Data.Types;
 
 namespace MediaCloud.WebApp.Services.ConfigProvider 
 {
@@ -28,6 +29,9 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
         [Required]
         [AllowedValues("Light", "Dark")]
         public string UITheme { get; set; }
+        [Required]
+        [AllowedValues(PreviewRatingType.Unknown, PreviewRatingType.General, PreviewRatingType.Sensitive, PreviewRatingType.Questionable, PreviewRatingType.Explicit)]
+        public PreviewRatingType AllowedNSFWContent  { get; set; }
 
         public UserSettings(IConfiguration configuration)
         {   
@@ -38,6 +42,7 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
             StatisticTagsTopCount = configuration.GetValue<int>("StatisticTagsTopCount");
             MaxColumnsCount = configuration.GetValue<int>("Gallery:MaxColumnCount");
             UITheme = configuration.GetValue<string>("UI:Theme") ?? "Light";
+            AllowedNSFWContent = configuration.GetValue<PreviewRatingType>("Gallery:AllowedNSFWContent");
         }
 
         public UserSettings()

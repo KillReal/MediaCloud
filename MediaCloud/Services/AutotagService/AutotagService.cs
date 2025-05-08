@@ -2,6 +2,7 @@
 using System.Net.Http.Headers;
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
+using MediaCloud.WebApp.Data.Types;
 using MediaCloud.WebApp.Services.ConfigProvider;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
@@ -102,10 +103,10 @@ public class AutotagService : IAutotagService
                 model = _autotaggingAiModel,
                 confidence = _autotaggingAiModelConfidence
             };
+            
+            var result = JsonConvert.DeserializeObject<AutotagResponse>(Post("predictTags", data));
 
-            var result = Post("predictTags", data);
-
-            if (string.IsNullOrWhiteSpace(result))
+            if (string.IsNullOrWhiteSpace(result?.Aliases))
             {
                 return new AutotagResult
                 {
@@ -116,13 +117,21 @@ public class AutotagService : IAutotagService
                 };
             }
 
-            var suggestedTags = result.Split("\n")
+            var suggestedTags = result.Aliases.Split("\n")
                 .Take(100)
                 .Select(x => x.Split(":")[0])
                 .Where(x => !string.IsNullOrWhiteSpace(x))
                 .ToList();
                 
             var suggestedTagsString = string.Join(" ", suggestedTags);
+
+            var suggestedRating = result.Rating.ToLower() switch
+            {
+                "sensitive" => PreviewRatingType.Sensitive,
+                "questionable" => PreviewRatingType.Questionable,
+                "explicit" => PreviewRatingType.Explicit,
+                _ => PreviewRatingType.General
+            };
 
             var elapsedTime = (DateTime.Now - stopwatch).TotalMilliseconds;
 
@@ -151,6 +160,7 @@ public class AutotagService : IAutotagService
                 PreviewId = preview.Id,
                 Tags = actualTags,
                 SuggestedAliases = suggestedTagsString,
+                Rating = suggestedRating,
                 IsSuccess = true
             };
         }

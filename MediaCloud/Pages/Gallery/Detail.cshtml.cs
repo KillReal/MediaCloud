@@ -2,6 +2,7 @@
 using MediaCloud.Data.Models;
 using MediaCloud.Services;
 using MediaCloud.Repositories;
+using MediaCloud.WebApp.Data.Types;
 using MediaCloud.WebApp.Pages;
 using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp.Repositories;
@@ -20,6 +21,8 @@ namespace MediaCloud.Pages.Gallery
 
         [BindProperty]
         public Guid PreviewId { get; set; }
+        [BindProperty]
+        public PreviewRatingType PreviewRating { get; set; }
         [BindProperty]
         public string BlobName {get; set; } = "unknown";
         [BindProperty]
@@ -51,6 +54,7 @@ namespace MediaCloud.Pages.Gallery
             }
 
             PreviewId = preview.Id;
+            PreviewRating = preview.Rating;
             BlobName = preview.BlobName;
             BlobType = preview.BlobType;
             Blob = preview.Blob;
