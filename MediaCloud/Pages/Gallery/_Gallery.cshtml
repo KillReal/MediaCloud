@@ -33,12 +33,6 @@
     <div class="gallery-item-container col-sm">
         <a draggable="false" href="@BuildUrlByPreview(Model.Previews[i])">
             <div class="shadow-1-strong gallery-item">
-                @if (Model.Previews[i].Collection != null)
-                {
-                    <div class="bg-success rounded-circle gallery-item-bubble">
-                        @Model.Previews[i].Collection?.Count
-                    </div>
-                }
                 @if (Model.Previews[i].BlobType.Contains("image"))
                 {
                     <img draggable="false" class="w-100 shadow-1-strong gallery-image"
@@ -60,6 +54,12 @@
                 {
                     <div class="gallery-image-blurring">
                         @Model.Previews[i].Rating.GetDisplayName()
+                    </div>
+                }
+                @if (Model.Previews[i].Collection != null)
+                {
+                    <div class="bg-success rounded-circle gallery-item-bubble">
+                        @Model.Previews[i].Collection?.Count
                     </div>
                 }
             </div>
