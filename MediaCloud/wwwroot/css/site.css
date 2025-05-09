@@ -332,7 +332,7 @@ body {
 .gallery-image-blurring {
     backdrop-filter: blur(1.85rem);
     border-radius: 0.75rem;
-    width: 100%;
+    width: calc(100% + 1px);
     height: calc(100% + 1px);
     position: absolute;
     text-align: center;
@@ -342,6 +342,7 @@ body {
     mix-blend-mode: soft-light;
     font-family: cursive;
     bottom: -1px;
+    right: -1px;
 }
 
 .gallery-item-bubble {
