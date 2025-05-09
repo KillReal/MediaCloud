@@ -106,7 +106,7 @@ public class AutotagService : IAutotagService
             
             var result = JsonConvert.DeserializeObject<AutotagResponse>(Post("predictTags", data));
 
-            if (string.IsNullOrWhiteSpace(result?.Aliases))
+            if (result is null)
             {
                 return new AutotagResult
                 {
