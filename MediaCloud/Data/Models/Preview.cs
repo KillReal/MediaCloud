@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MediaCloud.Data.Models
 {
-    public class Preview : Entity, ITaggable, INameSearchable
+    public class Preview : Entity, ITaggable, IBlobNameSearchable
     {
         [ForeignKey("BlobId")]
         public virtual Blob Blob { get; set; }
@@ -13,9 +13,6 @@ namespace MediaCloud.Data.Models
         public string BlobType { get; set; }
         
         public string BlobName { get; set; }
-        
-        [NotMapped]
-        public string Name { get => BlobName; set => BlobName = value; }
         
         public byte[] Content { get; set; }
         
