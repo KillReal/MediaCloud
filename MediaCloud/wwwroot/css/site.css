@@ -338,9 +338,10 @@ body {
     text-align: center;
     vertical-align: middle;
     line-height: 15rem;
-    color:gray;
+    color: lightgray;
     font-family: cursive;
     bottom: -1px;
+    mix-blend-mode: difference;
 }
 
 .gallery-item-bubble {
