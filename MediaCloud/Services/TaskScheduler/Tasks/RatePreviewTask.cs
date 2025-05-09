@@ -3,6 +3,7 @@ using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
 using MediaCloud.TaskScheduler.Tasks;
+using MediaCloud.WebApp.Data.Types;
 using MediaCloud.WebApp.Repositories;
 using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp.Services.Statistic;
@@ -43,13 +44,13 @@ namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
             var successfullyProceededCount = 0;
             var message = "";
 
-            var previews = new List<Preview>();
-
             if (_workCount == 0)
             {
                 AffectedEntities = context.Previews.Where(x => x.BlobType.ToLower().Contains("image")
+                                                            && x.Rating == PreviewRatingType.Unknown
                                                             && x.Creator == userProvider.GetCurrent())
-                                                    .Select(x => x.Id).ToList();
+                                                    .Select(x => x.Id)
+                                                    .ToList();
                 _workCount = AffectedEntities.Count;
             }
 
@@ -62,14 +63,7 @@ namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
                     continue;
                 }
 
-                previews.Add(preview);
-            }
-
-            var results = autotagService.AutotagPreviewRange(previews, tagRepository);
-
-            foreach (var result in results)
-            {
-                var preview = previews.First(x => x.Id == result.PreviewId);
+                var result = autotagService.AutotagPreview(preview, tagRepository);
 
                 if (result.IsSuccess)
                 {
