@@ -8,6 +8,7 @@ using MediaCloud.WebApp.Repositories;
 using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.Extensions.Caching.Memory;
+using Newtonsoft.Json;
 using Task = MediaCloud.TaskScheduler.Tasks.Task;
 
 namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks

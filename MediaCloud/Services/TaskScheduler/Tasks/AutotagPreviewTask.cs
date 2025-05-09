@@ -70,7 +70,7 @@ namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
             {
                 var preview = previews.First(x => x.Id == result.PreviewId);
 
-                if (result.IsSuccess && result.Tags.Count != 0)
+                if (result.IsSuccess)
                 {
                     var tags = preview.Tags.Union(result.Tags).ToList();
                     tagRepository.UpdatePreviewLinks(tags, preview);

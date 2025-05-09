@@ -113,7 +113,8 @@ public class AutotagService : IAutotagService
                     PreviewId = preview.Id,
                     Tags = [],
                     IsSuccess = false,
-                    ErrorMessage = "Autotagging service return empty result"
+                    ErrorMessage = "Autotagging service return empty result",
+                    Rating = PreviewRatingType.Unknown
                 };
             }
 
@@ -144,8 +145,8 @@ public class AutotagService : IAutotagService
                 _averageExecutionTime = (_averageExecutionTime + elapsedTime) / 2;
             }
 
-            _logger.Debug("AI tag autocompletion for Preview: {previewId} successfully executed within: {elapsedTime} sec, suggested tags: {suggestedTagsString}", 
-                preview.Id, elapsedTime.ToString("N0"), suggestedTagsString);
+            _logger.Debug("AI tag autocompletion for Preview: {previewId} successfully executed within: {elapsedTime} sec, suggested tags: {suggestedTagsString} rating: {suggestedRating}", 
+                preview.Id, elapsedTime.ToString("N0"), suggestedTagsString, suggestedRating);
             
             _mutex.WaitOne();
             var actualTags = tagRepository.GetRangeByAliasString(suggestedTagsString);
@@ -173,7 +174,8 @@ public class AutotagService : IAutotagService
                 PreviewId = preview.Id,
                 Tags = [],
                 IsSuccess = false,
-                ErrorMessage = ex.Message
+                ErrorMessage = ex.Message,
+                Rating = PreviewRatingType.Unknown
             };
         }
     }
