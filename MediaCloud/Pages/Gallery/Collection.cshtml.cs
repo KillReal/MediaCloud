@@ -4,6 +4,7 @@ using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Pages;
 using MediaCloud.Extensions;
+using MediaCloud.WebApp.Data.Types;
 using MediaCloud.WebApp.Services.ConfigProvider;
 using MediaCloud.WebApp.Services.UserProvider;
 
@@ -35,6 +36,8 @@ namespace MediaCloud.Pages.Gallery
         public string? CollectionSizeInfo { get; set; }
         [BindProperty]
         public int MaxColumnCount { get; set; }
+        [BindProperty]
+        public PreviewRatingType AllowedNSFWContent { get; set; }
 
         public IActionResult OnGet(Guid id)
         {
@@ -66,6 +69,7 @@ namespace MediaCloud.Pages.Gallery
             IsAutotaggingEnabled = Collection.Previews.Select(x => x.BlobType).Any(x => x.Contains("image")) 
                 && CurrentUser != null && CurrentUser.IsAutotaggingAllowed;
             MaxColumnCount = _configProvider.UserSettings.MaxColumnsCount;
+            AllowedNSFWContent = _configProvider.UserSettings.AllowedNSFWContent;
 
             return Page();
         }

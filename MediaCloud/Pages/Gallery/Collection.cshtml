@@ -92,7 +92,7 @@
         </div>
 
         <div class="row row-cols-sm-@(Model.MaxColumnCount) gallery thumbnail-sortable" id="gallery">
-            <partial name="~/Pages/Gallery/_Collection.cshtml" model=@(new _CollectionPageModel(Model.Previews))/>          
+            <partial name="~/Pages/Gallery/_Collection.cshtml" model=@(new _CollectionPageModel(Model.Previews, Model.AllowedNSFWContent))/>          
         </div>
 
         <div class="d-flex justify-content-center">

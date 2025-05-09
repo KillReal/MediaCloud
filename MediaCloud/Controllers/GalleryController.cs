@@ -60,7 +60,7 @@ namespace MediaCloud.WebApp.Controllers
         {
             var previews = collectionRepository.GetList(id, listRequest);
 
-            return PartialView("/Pages/Gallery/_Collection.cshtml", new _CollectionPageModel(previews, listRequest.Offset));
+            return PartialView("/Pages/Gallery/_Collection.cshtml", new _CollectionPageModel(previews, configProvider.UserSettings.AllowedNSFWContent, listRequest.Offset));
         }
 
         public FileContentResult Preview(Guid id)

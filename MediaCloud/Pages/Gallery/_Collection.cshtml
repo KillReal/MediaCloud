@@ -1,4 +1,5 @@
-﻿@model MediaCloud.WebApp._CollectionPageModel
+﻿@using MediaCloud.Extensions
+@model MediaCloud.WebApp._CollectionPageModel
 @{
 }
 
@@ -24,6 +25,12 @@
                     <div class="filename">
                         @Model.Previews[i].BlobName
                     </div>
+                </div>
+            }
+            @if (Model.Previews[i].Rating > Model.AllowedNSFWContentRating)
+            {
+                <div class="gallery-image-blurring">
+                    @Model.Previews[i].Rating.GetDisplayName()
                 </div>
             }
         </div>
