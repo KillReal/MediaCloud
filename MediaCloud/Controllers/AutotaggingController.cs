@@ -1,6 +1,7 @@
 ﻿using MediaCloud.Repositories;
 using MediaCloud.TaskScheduler;
 using MediaCloud.TaskScheduler.Tasks;
+using MediaCloud.WebApp.Repositories;
 using MediaCloud.WebApp.Services.ConfigProvider;
 using MediaCloud.WebApp.Services.TaskScheduler.Tasks;
 using MediaCloud.WebApp.Services.UserProvider;
@@ -115,11 +116,16 @@ public class AutotaggingController(IUserProvider userProvider, IConfigProvider c
         
         public Guid UpdateRatingsForAllPreviews()
         {
+            if (userProvider.GetCurrent().IsAdmin == false)
+            {
+                return Guid.Empty;
+            }
+            
             if (IsAutotaggingAllowed() == false)
             {
                 return Guid.Empty;
             }
-
+            
             var task = new RatePreviewTask(userProvider.GetCurrent());
 
             return taskScheduler.AddTask(task);
