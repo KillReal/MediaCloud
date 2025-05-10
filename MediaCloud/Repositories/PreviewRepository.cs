@@ -12,6 +12,7 @@ using NLog;
 using MediaCloud.Repositories;
 using MediaCloud.Data.Types;
 using MediaCloud.WebApp.Builders;
+using MediaCloud.WebApp.Data.Types;
 
 namespace MediaCloud.WebApp.Repositories
 {
@@ -58,39 +59,13 @@ namespace MediaCloud.WebApp.Repositories
 
         private IQueryable<Preview> SetFilterToQuery(IQueryable<Preview> query, string filter)
         {
-            if (string.IsNullOrEmpty(filter) == false)
+            if (string.IsNullOrEmpty(filter))
             {
-                // TODO: rework tag type to complete db model with TagTypeDataService.
-                // Rework TagType filtering
-                // Or exclude TagTypes at all...
-
-                if (filter.Contains("notag"))
-                {
-                    return query.Where(x => x.Tags.Count == 0);
-                }
-
-                if (filter.Contains("!character") || filter.Contains("!char"))
-                {
-                    query = query.Where(x => !x.Tags.Any(x => x.Color == TagColor.Orange));
-                }
-                else if (filter.Contains("character") || filter.Contains("char"))
-                {
-                    query = query.Where(x => x.Tags.Any(x => x.Color == TagColor.Orange));
-                }
-
-                if (filter.Contains("!series"))
-                {
-                    query = query.Where(x => !x.Tags.Any(x => x.Color == TagColor.Purple));
-                }
-                else if (filter.Contains("series"))
-                {
-                    query = query.Where(x => x.Tags.Any(x => x.Color == TagColor.Purple));
-                }
-                
-                return GetFilterQuery(query, filter);
+                return query;
             }
-
-            return query;
+            return filter.Contains("notag") 
+                ? query.Where(x => x.Tags.Count == 0) 
+                : GetFilterQuery(query, filter);
         }
 
         public override Preview? Get(Guid id)
