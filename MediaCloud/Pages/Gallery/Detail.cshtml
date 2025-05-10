@@ -97,6 +97,20 @@
                     <textarea asp-for="@Model.TagsString" class="form-control" id="filterGrab">        
                     </textarea>
                 </div>
+                @if (Model.IsUserAnAdmin)
+                {
+                    <div class="form-group autocomplete-list autocomplete mb-3 col">
+                        <label class="col-form-label">
+                            Override preview rating
+                        </label>
+                        <select asp-for="@Model.PreviewRating" class="form-control">
+                            <option value="1">General</option>
+                            <option value="2">Sensitive</option>
+                            <option value="3">Questionable</option>
+                            <option value="4">Explicit</option>
+                        </select>
+                    </div>
+                }
             </div>
             <div class="form-group d-flex justify-content-between">
                 <div class="button-panel w-100 mb-2">

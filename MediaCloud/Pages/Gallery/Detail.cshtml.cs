@@ -10,43 +10,29 @@ using MediaCloud.WebApp.Services.ConfigProvider;
 
 namespace MediaCloud.Pages.Gallery
 {
-    public class DetailModel(IUserProvider actorProvider, IPictureService pictureService, TagRepository tagRepository,
+    public class DetailModel(IUserProvider userProvider, IPictureService pictureService, TagRepository tagRepository,
         PreviewRepository previewRepository, BlobRepository blobRepository, IConfigProvider configProvider) 
-        : AuthorizedPageModel(actorProvider, configProvider)
+        : AuthorizedPageModel(userProvider, configProvider)
     {
-        private readonly IPictureService _pictureService = pictureService;
-        private readonly TagRepository _tagRepository = tagRepository;
-        private readonly PreviewRepository _previewRepository = previewRepository;
-        private readonly BlobRepository _blobRepository = blobRepository;
+        [BindProperty] public Guid PreviewId { get; set; }
+        [BindProperty] public PreviewRatingType PreviewRating { get; set; }
+        [BindProperty] public string BlobName {get; set; } = "unknown";
+        [BindProperty] public string BlobType {get; set; } = "unknown";    
+        [BindProperty] public Blob Blob { get; set; } = new Blob();
+        [BindProperty] public List<Tag> Tags { get; set; } = [];
+        [BindProperty] public string? TagsString { get; set; } = "";
+        [BindProperty] public Guid? PrevPreviewId { get; set; }
+        [BindProperty] public Guid? NextPreviewId { get; set; }
+        [BindProperty] public int RotationDegree { get; set; } = 0;
+        [BindProperty] public bool IsAutotaggingEnabled { get; set; } = configProvider.EnvironmentSettings.AutotaggingEnabled;
 
-        [BindProperty]
-        public Guid PreviewId { get; set; }
-        [BindProperty]
-        public PreviewRatingType PreviewRating { get; set; }
-        [BindProperty]
-        public string BlobName {get; set; } = "unknown";
-        [BindProperty]
-        public string BlobType {get; set; } = "unknown";    
-        [BindProperty]
-        public Blob Blob { get; set; } = new();
-        [BindProperty]
-        public List<Tag> Tags { get; set; } = [];
-        [BindProperty]
-        public string? TagsString { get; set; } = "";
-        [BindProperty]
-        public Guid? PrevPreviewId { get; set; } = null;
-        [BindProperty]
-        public Guid? NextPreviewId { get; set; } = null;
-        [BindProperty]
-        public int RotationDegree { get; set; } = 0;
-        [BindProperty]
-        public bool IsAutotaggingEnabled { get; set; } = configProvider.EnvironmentSettings.AutotaggingEnabled;
+        [BindProperty] public bool IsUserAnAdmin { get; set; } = userProvider.GetCurrent().IsAdmin;
 
         public IActionResult OnGet(Guid id)
         {
             TempData["ReturnUrl"] = Request.Headers.Referer.ToString();
 
-            var preview = _previewRepository.Get(id);
+            var preview = previewRepository.Get(id);
 
             if (preview == null)
             {
@@ -79,15 +65,15 @@ namespace MediaCloud.Pages.Gallery
 
         public IActionResult OnPost()
         {
-            var preview = _previewRepository.Get(PreviewId);
+            var preview = previewRepository.Get(PreviewId);
 
-            if (preview == null || Blob == null)
+            if (preview == null)
             {
                 return Redirect("/Error");
             }
 
-            var tags = _tagRepository.GetRangeByString(TagsString);
-            _tagRepository.UpdatePreviewLinks(tags, preview);
+            var tags = tagRepository.GetRangeByString(TagsString);
+            tagRepository.UpdatePreviewLinks(tags, preview);
             
             var blob = preview.Blob;
             blob.Rate = Blob.Rate;
@@ -95,18 +81,24 @@ namespace MediaCloud.Pages.Gallery
 
             if (RotationDegree != 0)
             {
-                blob.Preview.Content = _pictureService.Rotate(preview.Content, RotationDegree);
-                blob.Content = _pictureService.Rotate(blob.Content, RotationDegree);
+                blob.Preview.Content = pictureService.Rotate(preview.Content, RotationDegree);
+                blob.Content = pictureService.Rotate(blob.Content, RotationDegree);
             }
             
-            _blobRepository.Update(blob); 
+            blobRepository.Update(blob);
+
+            if (preview.Rating != PreviewRating)
+            {
+                preview.Rating = PreviewRating;
+                previewRepository.Update(preview);
+            }
 
             return Redirect(TempData["ReturnUrl"]?.ToString() ?? "/Gallery");
         }
 
         public IActionResult OnPostDelete(Guid id)
         {
-            if (_previewRepository.TryRemove(id) == false)
+            if (previewRepository.TryRemove(id) == false)
             {
                 return Redirect("/Error");
             }
