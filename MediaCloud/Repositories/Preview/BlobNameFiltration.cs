@@ -14,7 +14,7 @@ namespace MediaCloud.WebApp.Repositories
         
         public Expression<Func<T, bool>> GetExpression()
         {
-            return x => x.BlobName.Contains(_searchName);
+            return x => x.BlobName.ToLower().Contains(_searchName);
         }
     }
 }
