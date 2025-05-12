@@ -46,7 +46,7 @@ namespace MediaCloud.TaskScheduler.Tasks
         /// <summary>
         /// Completion message.
         /// </summary>
-        public string CompletionMessage { get; set; }
+        public string CompletionMessage { get; set; } = "Completed with unknown result";
 
         /// <summary>
         /// When task was executed.

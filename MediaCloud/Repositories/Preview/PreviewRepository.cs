@@ -2,87 +2,49 @@
 using MediaCloud.Builders.List;
 using MediaCloud.Data;
 using MediaCloud.Data.Models;
-using MediaCloud.Extensions;
-using MediaCloud.WebApp.Repositories.Base;
 using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp.Services.Data.Repositories.Interfaces;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.EntityFrameworkCore;
 using NLog;
+using MediaCloud.Repositories;
+using MediaCloud.WebApp.Builders;
 
-namespace MediaCloud.Repositories
+namespace MediaCloud.WebApp.Repositories
 {
-    public class PreviewRepository(AppDbContext context, StatisticProvider statisticProvider, IUserProvider actorProvider) : BaseRepository<Preview>(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider), IListBuildable<Preview>
+    public class PreviewRepository(AppDbContext context, StatisticProvider statisticProvider, IUserProvider actorProvider) 
+        : BaseRepository<Preview>(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider), IListBuildable<Preview>
     {
-        private static string[] GetDeduplicatedTags(string tagString)
+        private IQueryable<Preview> GetFilterQuery(IQueryable<Preview> query, string filter)
         {
-            var tags = tagString.Split(' ');
+            filter = filter.ToLower();
 
-            return tags.Length < 2 
-                ? tags 
-                : tags.Distinct().ToArray();
-        }
+            var ratingFilter = new RatingFiltration<Preview>(filter);
+            filter = ratingFilter.GetFilterWithoutRatings();
 
-        private TagFilter<Preview> GetFilterQueryByTags(string tagsString)
-        {
-            var tags = GetDeduplicatedTags(tagsString);
-
-            var positiveTags = new List<string>();
-            var negativeTags = new List<string>();
-            foreach (var tag in tags)
+            if (string.IsNullOrWhiteSpace(filter))
             {
-                if (tag.Contains('!'))
-                {
-                    negativeTags.Add(tag.Remove(0, 1));
-                    continue;
-                }
-
-                positiveTags.Add(tag);
+                return query.Where(ratingFilter.GetExpression());
             }
-
-            var positiveTagIds = _context.Tags.Where(x => positiveTags.Any(y => y.ToLower() == x.Name.ToLower()))
-                                              .Select(x => x.Id);
-            var negativeTagIds = _context.Tags.Where(x => negativeTags.Any(y => y.ToLower() == x.Name.ToLower()))
-                                              .Select(x => x.Id);
-
-            return new([.. positiveTagIds], [.. negativeTagIds]);
+            
+            var tagFilter = new TagFiltration<Preview>(filter, _context.Tags);
+            var nameFilter = new BlobNameFiltration<Preview>(filter);
+            
+            var filterExpression = tagFilter.GetExpression()
+                                    .And(ratingFilter.GetExpression())
+                                    .Or(nameFilter.GetExpression());
+            
+            return query.Where(filterExpression);
         }
 
         private IQueryable<Preview> SetFilterToQuery(IQueryable<Preview> query, string filter)
         {
-            if (string.IsNullOrEmpty(filter) == false)
+            if (string.IsNullOrEmpty(filter))
             {
-                // TODO: rework tag type to complete db model with TagTypeDataService.
-                // Rework TagType filtering
-                // Or exclude TagTypes at all...
-
-                if (filter.Contains("notag"))
-                {
-                    return query.Where(x => x.Tags.Count == 0);
-                }
-
-                if (filter.Contains("!character") || filter.Contains("!char"))
-                {
-                    query = query.Where(x => !x.Tags.Any(x => x.Type == Data.Types.TagType.Character));
-                }
-                else if (filter.Contains("character") || filter.Contains("char"))
-                {
-                    query = query.Where(x => x.Tags.Any(x => x.Type == Data.Types.TagType.Character));
-                }
-
-                if (filter.Contains("!series"))
-                {
-                    query = query.Where(x => !x.Tags.Any(x => x.Type == Data.Types.TagType.Series));
-                }
-                else if (filter.Contains("series"))
-                {
-                    query = query.Where(x => x.Tags.Any(x => x.Type == Data.Types.TagType.Series));
-                }
-
-                return GetFilterQueryByTags(filter).ApplyToQuery(query);
+                return query;
             }
 
-            return query;
+            return GetFilterQuery(query, filter);
         }
 
         public override Preview? Get(Guid id)
@@ -102,7 +64,7 @@ namespace MediaCloud.Repositories
             var query = _context.Previews.AsNoTracking().Where(x => x.Order == 0);
 
             return await SetFilterToQuery(query, listBuilder.Filtering.Filter)
-                .Where(x => x.CreatorId == _actor.Id)
+                .Where(x => x.CreatorId == _user.Id)
                 .CountAsync();
         }
 
@@ -113,10 +75,9 @@ namespace MediaCloud.Repositories
 
             _statisticProvider.ActivityFactorRaised.Invoke();
 
-            if (listBuilder.Sorting.PropertyName.Contains("Random") &&
-                int.TryParse(listBuilder.Sorting.PropertyName.Split('_').Last(), out var seed))
+            if (listBuilder.Sorting.PropertyName.Contains("Random"))
             {
-                return await query.Where(x => x.Order == 0 && x.CreatorId == _actor.Id)
+                return await query.Where(x => x.Order == 0 && x.CreatorId == _user.Id)
                     .Include(x => x.Collection)
                     .OrderBy(x => EF.Functions.Random())
                     .Skip(listBuilder.Pagination.Offset)
@@ -125,7 +86,7 @@ namespace MediaCloud.Repositories
             }  
 
             return await query.Order(listBuilder.Sorting.GetOrder())
-                        .Where(x => x.CreatorId == _actor.Id)
+                        .Where(x => x.CreatorId == _user.Id)
                         .Skip(listBuilder.Pagination.Offset)
                         .Take(listBuilder.Pagination.Count)
                         .Include(x => x.Collection)
@@ -160,7 +121,7 @@ namespace MediaCloud.Repositories
                     _context.Blobs.Remove(preview.Blob);
                     SaveChanges();
                     _logger.Info("Removed Media in Collection with id: {preview.Collection.Id} by: {_actor.Name}", 
-                        preview.Collection.Id, _actor.Name);
+                        preview.Collection.Id, _user.Name);
                     _statisticProvider.MediasCountChanged.Invoke(-1, -size);
 
                     return true;
@@ -171,7 +132,7 @@ namespace MediaCloud.Repositories
                 _context.Blobs.Remove(preview.Blob);
                 _context.Collections.Remove(preview.Collection);
                 SaveChanges();
-                _logger.Info("Removed Collection with id: {collectionId} by: {_actor.Name}", collectionId, _actor.Name);
+                _logger.Info("Removed Collection with id: {collectionId} by: {_actor.Name}", collectionId, _user.Name);
                 _statisticProvider.MediasCountChanged.Invoke(-1, -size);
 
                 return true;
@@ -181,7 +142,7 @@ namespace MediaCloud.Repositories
 
             _context.Blobs.Remove(preview.Blob);
             SaveChanges();
-            _logger.Info("Removed Media  with id: {mediaId} by: {_actor.Name}", mediaId, _actor.Name);
+            _logger.Info("Removed Media  with id: {mediaId} by: {_actor.Name}", mediaId, _user.Name);
             _statisticProvider.MediasCountChanged.Invoke(-1, -size);
 
             return true;

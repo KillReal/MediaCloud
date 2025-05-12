@@ -13,7 +13,7 @@
 
     <div class="button-panel">
         <div class="button-group justify-content-between w-100">
-            <a onclick="window.location.href = document.referrer;" class="btn btn-info">
+            <a onclick="history.back();" class="btn btn-info">
                 Back
             </a>
             <a class="btn btn-success btn-rounded" 
@@ -58,48 +58,7 @@
         </div>
 
         <div class="row">
-            <div class="col-sm">
-                <ul class="list-group">
-                    <li class="list-group-item h-100">
-                        Related tags:
-                        @foreach (var tag in Model.Tags)
-                        {
-                            if (tag.Type == TagType.Character)
-                            {
-                                <a class="btn btn-warning btn-rounded me-1 mb-2" 
-                                    asp-page="/Tags/Detail" 
-                                    asp-route-id=@tag.Id>
-                                    @tag.Name
-                                </a>
-                            }
-                            else if (tag.Type == TagType.Series)
-                            {
-                                <a class="btn btn-success btn-rounded me-1 mb-2" 
-                                    asp-page="/Tags/Detail" 
-                                    asp-route-id=@tag.Id>
-                                    @tag.Name
-                                </a>
-                            }
-                            else if (tag.Type == TagType.Clothes)
-                            {
-                                <a class="btn btn-danger btn-rounded me-1 mb-2" 
-                                    asp-page="/Tags/Detail" 
-                                    asp-route-id=@tag.Id>
-                                    @tag.Name
-                                </a>
-                            }
-                            else
-                            {
-                                <a class="btn btn-info btn-rounded me-1 mb-2" 
-                                    asp-page="/Tags/Detail" 
-                                    asp-route-id=@tag.Id>
-                                    @tag.Name
-                                </a>
-                            }
-                        }
-                    </li>
-                </ul>
-            </div>
+            <partial name="~/Pages/Gallery/_Tags.cshtml" model=@(new _TagsModel(Model.Tags))/>
         </div>
 
         <div class="form-group button-panel">
@@ -132,8 +91,8 @@
             </div>
         </div>
 
-        <div class="row gallery thumbnail-sortable" id="gallery">
-            <partial name="~/Pages/Gallery/_Collection.cshtml" model=@(new _CollectionPageModel(Model.Previews))/>          
+        <div class="row row-cols-sm-@(Model.MaxColumnCount) gallery thumbnail-sortable" id="gallery">
+            <partial name="~/Pages/Gallery/_Collection.cshtml" model=@(new _CollectionPageModel(Model.Previews, Model.AllowedNSFWContent))/>          
         </div>
 
         <div class="d-flex justify-content-center">
@@ -255,7 +214,7 @@
 
     if (@Json.Serialize(Model.IsAutotaggingEnabled))
     {
-        fetch('/Gallery/IsCollectionAutotaggingExecuted?collectionId=' + '@Model.Collection.Id')
+        fetch('/Autotagging/IsCollectionProcessing?collectionId=' + '@Model.Collection.Id')
             .then((response) => response.json())
             .then(function (data) {
                 if (data == true) {
@@ -267,7 +226,7 @@
 
     var averageExecutionTime = 45.0 * @Model.TotalCount;
 
-    fetch('/Gallery/GetAverageAutocompleteTagForCollectionExecution?previewsCount=' + @Model.TotalCount)
+    fetch('/Autotagging/GetCollectionTagsProcessingTime?previewsCount=' + @Model.TotalCount)
         .then((response) => response.json())
         .then(function (data) {
             if (data > 0) {
@@ -314,7 +273,7 @@
     var updateInterval = 3000;
 
     function autocompleteTags(collectionId) {
-        var url = "/Gallery/AutocompleteTagForCollection?collectionId=" + collectionId;
+        var url = "/Autotagging/GetTagsForCollection?collectionId=" + collectionId;
 
         var request = new XMLHttpRequest();
         request.open('POST', url, true);

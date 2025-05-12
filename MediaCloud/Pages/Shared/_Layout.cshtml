@@ -1,4 +1,5 @@
 ﻿@using System.Reflection
+@using System.Reflection.Metadata
 @using MediaCloud.WebApp.Pages;
 @using MediaCloud.WebApp.Services.UserProvider;
 <!DOCTYPE html>
@@ -10,7 +11,17 @@
         @ViewData["Title"] - MediaCloud v@(Assembly.GetEntryAssembly()?.GetName().Version?.ToString(3))
     </title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+    
+    @if (Model.GetType().IsSubclassOf(typeof(AuthorizedPageModel)) && Model.CurrentUser != null && Model.UIThemeName == "Dark")
+    {
+        <link rel="stylesheet" href="~/css/site-dark.css" asp-append-version="true" id="theme-styler"/>
+    }
+    else
+    {
+        <link rel="stylesheet" href="" asp-append-version="true" id="theme-styler"/>
+    }
+    
 </head>
 <body class="body">
     <header>
@@ -53,8 +64,8 @@
                                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0 text-nowrap">
                                     <li class="nav-item d-flex">
                                          <a class="nav-link text-white">Hello, @Model.CurrentUser.Name!</a>
-                                        <a class="btn btn-info ms-2 me-2 navbar-right" href="/Account" method="post">Settings</a>
-                                        <a class="btn btn-danger ms-2 ms-2 navbar-right" href="/Account/Logout" method="post" id="logoutForm">Logout</a>
+                                        <a class="btn btn-info ms-2 me-2 navbar-right" href="/User" method="post">Settings</a>
+                                        <a class="btn btn-danger ms-2 ms-2 navbar-right" href="/User/Logout" method="post" id="logoutForm">Logout</a>
                                     </li>
                                 </ul>
                             }
@@ -62,7 +73,7 @@
                             {
                                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                                     <li class="nav-item d-flex">
-                                        <a class="nav-link text-white" href="/Account/Login">Sign In</a>
+                                        <a class="nav-link text-white" href="/User/Login">Sign In</a>
                                     </li>
                                 </ul>
                             }
@@ -102,7 +113,31 @@
 </html>
 
 <script>
-    let mybutton = document.getElementById("btn-back-to-top");
+    var isAuthorized = @((Model.GetType().IsSubclassOf(typeof(AuthorizedPageModel)) && Model.CurrentUser != null).ToString().ToLower());
+    var targetTheme = '@((Model.GetType().IsSubclassOf(typeof(AuthorizedPageModel)) && Model.CurrentUser != null) ? Model.UIThemeName : "Light")';
+    var selectedTheme =  localStorage.getItem('ui-theme-name');
+    
+    if (targetTheme !== selectedTheme && isAuthorized) {
+        localStorage.setItem('ui-theme-name', targetTheme);
+    }
+    
+    if (isAuthorized === false) {
+        setTheme(selectedTheme);
+    }
+    
+    function setTheme(name) {
+        switch (name) {
+            default:
+            case "Light":
+                document.getElementById("theme-styler").remove();
+                break;
+            case "Dark":
+                document.getElementById("theme-styler").setAttribute('href', '/css/site-dark.css')
+                break;
+        }
+    }
+    
+    let scrollOnTopButton = document.getElementById("btn-back-to-top");
 
     // When the user scrolls down 20px from the top of the document, show the button
     window.onscroll = function () {
@@ -114,16 +149,18 @@
             document.body.scrollTop > 20 ||
             document.documentElement.scrollTop > 20
         ) {
-            mybutton.style.display = "block";
+            scrollOnTopButton.style.display = "block";
         } else {
-            mybutton.style.display = "none";
+            scrollOnTopButton.style.display = "none";
         }
     }
     // When the user clicks on the button, scroll to the top of the document
-    mybutton.addEventListener("click", backToTop);
+    scrollOnTopButton.addEventListener("click", backToTop);
 
     function backToTop() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     
+
+
 </script>

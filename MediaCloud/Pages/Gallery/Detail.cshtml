@@ -1,5 +1,8 @@
 ﻿@page
 @using MediaCloud.Data.Types
+@using MediaCloud.Extensions
+@using MediaCloud.WebApp
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model MediaCloud.Pages.Gallery.DetailModel
 
 @{
@@ -11,7 +14,7 @@
 
     <div class="button-panel">
         <div class="button-group justify-content-between w-100">
-            <a onclick="window.location.href = document.referrer;" class="btn btn-info">
+            <a onclick="history.back();" class="btn btn-info">
                 Back
             </a>
             <a class="btn btn-success btn-rounded" 
@@ -67,7 +70,7 @@
 
         @if (Model.BlobType.Contains("image"))
         {
-            <div class="picture-controls-container text-black">
+            <div class="picture-controls-container">
                 Rotation:
                 <button class="btn btn-info btn-rounded rotate-button" style="height: 2rem" onclick="rotatePicture(-90);">
                     <img class="h-100" src="/img/rotating-arrow-left.png">
@@ -94,6 +97,20 @@
                     <textarea asp-for="@Model.TagsString" class="form-control" id="filterGrab">        
                     </textarea>
                 </div>
+                @if (Model.IsUserAnAdmin)
+                {
+                    <div class="form-group autocomplete-list autocomplete mb-3 col-2">
+                        <label class="col-form-label">
+                            Override preview rating
+                        </label>
+                        <select asp-for="@Model.PreviewRating" class="form-control">
+                            <option value="1">General</option>
+                            <option value="2">Sensitive</option>
+                            <option value="3">Questionable</option>
+                            <option value="4">Explicit</option>
+                        </select>
+                    </div>
+                }
             </div>
             <div class="form-group d-flex justify-content-between">
                 <div class="button-panel w-100 mb-2">
@@ -130,48 +147,24 @@
     <div class="row">
         <div class="col-sm pt-3">
             <ul class="list-group">
-            <li class="list-group-item">Id: @Model.Blob.Id</li>  
-            @if (Model.Blob.Resolution.Contains('x'))
-            {
-                <li class="list-group-item">Resolution: @Model.Blob.Resolution</li>
-            }
-            <li class="list-group-item">File name: @Model.BlobName</li>
-            <li class="list-group-item">File type: @Model.BlobType</li>
-            <li class="list-group-item">Size: @Model.Blob.SizeInfo</li>
-            <li class="list-group-item">Creator: @Model.Blob.Creator.Name</li>
-            <li class="list-group-item">Updator: @Model.Blob.Updator.Name</li>
-            <li class="list-group-item">Time of create: @Model.Blob.CreatedAt</li>
-            <li class="list-group-item">Time of update: @Model.Blob.UpdatedAt</li>
-        </ul>
-        </div>
-        <div class="col-sm pt-3">
-             <ul class="list-group h-100">
-                 <li class="list-group-item h-100">
-                    Related tags: 
-                    @foreach(var tag in Model.Tags)
-                    {
-                        var classStyle = "btn-info";
-                        switch (tag.Type) 
-                        {
-                            case TagType.Character:
-                                classStyle = "btn-warning";
-                                break;
-                            case TagType.Series:
-                                classStyle = "btn-success";
-                                break;
-                            case TagType.Clothes:
-                                classStyle = "btn-danger";
-                                break;
-                        }
-                        <a class="btn @classStyle btn-rounded me-1 mb-2" 
-                            asp-page="/Tags/Detail" 
-                            asp-route-id=@tag.Id>
-                            @tag.Name
-                        </a>
-                    }
-                </li>         
+                <li class="list-group-item">Id: @Model.Blob.Id</li>  
+                @if (Model.Blob.Resolution.Contains('x'))
+                {
+                    <li class="list-group-item">Resolution: @Model.Blob.Resolution</li>
+                    <li class="list-group-item">Rating: @Model.PreviewRating.GetDisplayName()</li>
+                }
+                <li class="list-group-item">File name: @Model.BlobName</li>
+                <li class="list-group-item">File type: @Model.BlobType</li>
+                <li class="list-group-item">Size: @Model.Blob.SizeInfo</li>
+                <li class="list-group-item">Creator: @Model.Blob.Creator.Name</li>
+                <li class="list-group-item">Updator: @Model.Blob.Updator.Name</li>
+                <li class="list-group-item">Time of create: @Model.Blob.CreatedAt</li>
+                <li class="list-group-item">Time of update: @Model.Blob.UpdatedAt</li>
             </ul>
         </div>
+        
+        <partial name="~/Pages/Gallery/_Tags.cshtml" model=@(new _TagsModel(Model.Tags))/>
+        
     </div>
 
     <div class="modal text-black" id="loadingModal" tabindex="-1" role="dialog">
@@ -260,7 +253,7 @@
 
     if (@Json.Serialize(Model.IsAutotaggingEnabled))
     {
-        fetch('/Gallery/IsPreviewAutotaggingExecuted?previewId=' + '@Model.PreviewId')
+        fetch('/Autotagging/IsPreviewProcessing?previewId=' + '@Model.PreviewId')
             .then((response) => response.json())
             .then(function (data) {
                 if (data == true) {
@@ -272,7 +265,7 @@
 
         var averageExecutionTime = 45.0;
 
-        fetch('/Gallery/GetAverageAutocompleteTagExecution')
+        fetch('/Autotagging/GetPreviewTagsProcessingTime')
             .then((response) => response.json())
             .then(function (data) {
                 if (data > 0) {
@@ -319,7 +312,7 @@
 
         function autocompleteTags(previewId, isExecuted = false) {
             
-            var url = "/Gallery/AutocompleteTagForPreview?previewId=" + previewId;
+            var url = "/Autotagging/GetTagsForPreview?previewId=" + previewId;
 
             var request = new XMLHttpRequest();
             request.open('POST', url, true);

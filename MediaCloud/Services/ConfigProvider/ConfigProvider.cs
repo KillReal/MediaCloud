@@ -7,7 +7,7 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
 {
     public class ConfigProvider : IConfigProvider
     {
-        private readonly IUserProvider _actorProvider;
+        private readonly IUserProvider _userProvider;
         private readonly IConfiguration _configuration;
         private readonly ILogger _logger;
 
@@ -16,18 +16,12 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
         /// <summary>
         /// Direct access to a settings of current actor. Default values are taken from <see cref="IConfiguration"/>.
         /// Does not save changes to database implicitly. 
-        /// Use <see cref="SaveActorSettings()"/> for explicit save.
+        /// Use <see cref="SaveUserSettings"/> for explicit save.
         /// </summary>
         public UserSettings UserSettings
         { 
-            get 
-            { 
-                return _actorProvider.GetSettings() ?? new(_configuration);
-            }
-            set 
-            {
-                SaveActorSettings(value);
-            }
+            get => _userProvider.GetSettings() ?? new UserSettings(_configuration);
+            set => SaveUserSettings(value);
         }
         
         /// <summary>
@@ -37,10 +31,7 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
         /// </summary>
         public EnvironmentSettings EnvironmentSettings 
         { 
-            get
-            {
-                return _environmentSettings;
-            }
+            get => _environmentSettings;
             set
             {
                 _environmentSettings = value;
@@ -49,13 +40,13 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
         }
 
 
-        public ConfigProvider(IConfiguration configuration, IUserProvider actorProvider)
+        public ConfigProvider(IConfiguration configuration, IUserProvider userProvider)
         {
-            _actorProvider = actorProvider;
+            _userProvider = userProvider;
             _configuration = configuration;
             _logger = LogManager.GetLogger("ConfigurationProvider");
 
-            var actor = _actorProvider.GetCurrentOrDefault();
+            var actor = _userProvider.GetCurrentOrDefault();
 
             if (actor != null)
             {
@@ -66,17 +57,17 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
                 _logger.Debug("Initialized ConfigurationProvider anonymously");
             }
 
-            _environmentSettings = new(_configuration);
+            _environmentSettings = new EnvironmentSettings(_configuration);
         }
 
         /// <summary>
         /// Implicitly saves changes to database in json format.
         /// </summary>
         /// <returns> Result of operation. </returns>
-        public bool SaveActorSettings(UserSettings settings)
+        public bool SaveUserSettings(UserSettings settings)
         {
             var jsonSettings = JsonConvert.SerializeObject(settings, Formatting.Indented);
-            return _actorProvider.SaveSettings(jsonSettings);
+            return _userProvider.SaveSettings(jsonSettings);
         }
 
         /// <summary>

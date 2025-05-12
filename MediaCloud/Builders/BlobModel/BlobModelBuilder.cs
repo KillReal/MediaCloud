@@ -1,33 +1,20 @@
 ﻿using MediaCloud.Data.Models;
 using MediaCloud.Services;
+using MediaCloud.WebApp.Services.ConfigProvider;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Webp;
 
 namespace MediaCloud.WebApp.Builders.BlobModel
 {
-    public class BlobModelBuilder(IPictureService pictureService)
+    public class BlobModelBuilder(IPictureService pictureService, IConfigProvider configProvider)
     {
-        private readonly IPictureService _pictureService = pictureService;
-
-        private readonly WebpEncoder _webpEncoder = new() 
-        {
-            Quality = 75,
-            Method = WebpEncodingMethod.Level5,
-            
-        };
-
-        private const long _lowQualitySize = 512_000; 
-
-        private readonly WebpEncoder _highQualityWebpEncoder = new()
-        {
-            Quality = 90,
-            Method = WebpEncodingMethod.Level5
-        };
-
+        private readonly WebpEncoderFactory _webpEncoderFactory = new(configProvider);
+        
         public FileModel Build(UploadedFile file)
         {
             Blob blob;
             var extension = file.Name.Split('.').Last();
+            var fileSize = file.Content.Length;
 
             switch (extension)
             {
@@ -38,52 +25,28 @@ namespace MediaCloud.WebApp.Builders.BlobModel
                 case "tiff":
                 case "webp":
                     var image = Image.Load(file.Content);
-
-                    if (extension != "webp")
+                    
+                    if (extension != "webp" && file.KeepOriginalFormat == false)
                     {
                         var stream = new MemoryStream();
-
-                        if (file.Content.Length < _lowQualitySize)
-                        {
-                            image.SaveAsWebp(stream, _highQualityWebpEncoder);
-                        }
-                        else
-                        {
-                            image.SaveAsWebp(stream, _webpEncoder);
-                        }
-
-                        if (file.KeepOriginalFormat == false)
-                        {
-                            image = Image.Load(stream.ToArray());
-                            file.Type = "image/webp";
-                            file.Name = file.Name.Split('.').First() + ".webp";
-                            file.Content = stream.ToArray();
-                        }
+                        image.SaveAsWebp(stream, _webpEncoderFactory.GetBestEncoder(fileSize));
+                            
+                        image = Image.Load(stream.ToArray());
+                        file.Type = "image/webp";
+                        file.Name = file.Name.Split('.').First() + ".webp";
+                        file.Content = stream.ToArray();
                     }
 
-                    blob = new(file.Content, image.Width, image.Height);
-                    file.Content = _pictureService.LowerResolution(image, blob.Content);
-                    break;
-                case "xlsx":
-                case "xls":
-                    blob = new(file.Content);
-                    file.Content = File.ReadAllBytes("wwwroot/img/types/excel.png");
+                    blob = new Blob(file.Content, image.Width, image.Height);
+                    file.Content = pictureService.LowerResolution(image, blob.Content);
                     break;
                 default:
-                    blob = new(file.Content);
-                    if (File.Exists($"wwwroot/img/types/{extension}.png"))
-                    {
-                        File.Exists($"wwwroot/img/types/{extension}.png");
-                        file.Content = File.ReadAllBytes($"wwwroot/img/types/{extension}.png");
-                    }
-                    else 
-                    {
-                        file.Content = File.ReadAllBytes("wwwroot/img/types/file.png");
-                    }
+                    blob = new Blob(file.Content);
+                    file.Content = [];
                     break;
             }
 
-            return new(blob, new Preview(blob, file));
+            return new FileModel(blob, new Preview(blob, file));
         }
     }
 }

@@ -204,37 +204,55 @@ namespace MediaCloud.WebApp.Services.UserProvider
 
         public UserSettings? GetSettings()
         {
-            var currentUser = GetCurrent();
+            var currentUser = GetCurrentOrDefault();
 
-            if (_memoryCache.TryGetValue($"settings-{currentUser.Id}", out UserSettings? settings))
+            if (_memoryCache.TryGetValue($"settings-{currentUser?.Id}", out UserSettings? settings))
             {
                 return settings;
             }
 
-            if (currentUser != null && currentUser.PersonalSettings != null)
+            if (currentUser is not { PersonalSettings: not null })
             {
-                settings = JsonConvert.DeserializeObject<UserSettings>(currentUser.PersonalSettings);
-                _memoryCache.Set($"settings-{currentUser.Id}", settings, _memoryCacheOptions);
-
-                return settings;
+                return null;
             }
 
-            return null;
+            if (string.IsNullOrWhiteSpace(currentUser.PersonalSettings))
+            {
+                return null;
+            }
+            
+            settings = JsonConvert.DeserializeObject<UserSettings>(currentUser.PersonalSettings);
+            _memoryCache.Set($"settings-{currentUser.Id}", settings, _memoryCacheOptions);
+
+            return settings;
+
         }
 
         public bool SaveSettings(string jsonSettings)
         {
-            var currentUser = GetCurrent();
+            var currentUser = GetCurrentOrDefault();
 
-            if (currentUser != null) {
-                currentUser.PersonalSettings = jsonSettings;
-                _context.Users.Update(currentUser);
-                _context.SaveChanges();
+            if (currentUser == null)
+            {
+                return false;
+            }
+            
+            currentUser.PersonalSettings = jsonSettings;
+            _context.Users.Update(currentUser);
+            _context.SaveChanges();
 
+            if (!_memoryCache.TryGetValue($"settings-{currentUser?.Id}", out UserSettings? settings))
+            {
                 return true;
             }
+            
+            if (settings is not null)
+            {
+                _memoryCache.Remove($"settings-{currentUser?.Id}");
+            }
 
-            return false;
+            return true;
+
         }
     }
 }

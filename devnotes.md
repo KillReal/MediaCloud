@@ -1,18 +1,8 @@
-
-# Infrastructure             
-
-- 2.0.1 mediacloud
-- 2.0.1 mediacloud-dev
-
-
 # Publishing
 
 ```bash
 dotnet publish -r linux-x64 -p:PublishSingleFile=true --no-self-contained -o D:/Development/MediaCloud-Deploy
 ```
-
-# Next release - 2.1.0       
-# Next minor - 2.0.3
 
 
 TODO:
@@ -21,13 +11,32 @@ TODO:
 - Write unit tests 
 - Show first uploaded image on upload page
 - Fix statistic recalculation when only 1 day recorded
-- Remove Tag Types
-- Search by file name?
 - Fix previews ordering in gallery. Different order with filtering and without.
 - Fix worker task execution race condition (Error while running the task, mb cause of taking the task twice)
-- Research statisticsnapshot retrieving (happens several times for single page)
 
 # Changelog
+
+### Version 2.2.0 - 12 May, 2025
+- Add NSFW rating for previews
+- Gallery filtering by preview NSFW rating
+- Upgraded SixLabours.ImageSharp from 3.1.5 to 3.1.8
+- Upgraded Bootstrap from 5.3.3 to 5.3.5
+- Improved dark theme layout
+- Minor layout fixes
+
+### Version 2.1.0 - 23th Mar, 2025
+- Added dark theme
+- Added search by file name
+- Tag types switched to tag colors
+- Added more tag colors
+- Added more flexible image processing strategies, set up in config
+- Fixed incorrect variable names in config
+
+### Version 2.0.4 - 08th Mar, 2025
+- Added Autotagging AI model environment settings
+- Added gallery column count user setting
+- Fixed user settings saving
+- Improved shortcuts behaviour in gallery
 
 ### Version 2.0.3 - 27th Feb, 2025
 - File size check now initiating before uploading

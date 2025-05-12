@@ -12,15 +12,15 @@ using System.Net.Mime;
 using NLog;
 using Microsoft.IdentityModel.Tokens;
 using MediaCloud.Extensions;
+using MediaCloud.WebApp.Services.ConfigProvider;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace MediaCloud.TaskScheduler.Tasks
 {
-    public class UpgradeUserImagesTask(User actor, int batchSize) : Task(actor), ITask
+    public class UpgradeUserImagesTask(User user, int batchSize) : Task(user), ITask
     {
         private readonly Logger _logger = LogManager.GetLogger("Scheduler");
-        private readonly int _batchSize = batchSize;
         private int _workCount;
 
         public override int GetWorkCount() => _workCount;
@@ -29,23 +29,24 @@ namespace MediaCloud.TaskScheduler.Tasks
         {
             var context = serviceProvider.GetRequiredService<AppDbContext>();
             var pictureService = serviceProvider.GetRequiredService<IPictureService>();
+            var configProvider = serviceProvider.GetRequiredService<IConfigProvider>();
 
             var previewsCount = await context.Previews.Where(x => x.CreatorId == User.Id).CountAsync();
-            var blobModelBuilder = new BlobModelBuilder(pictureService);
+            var blobModelBuilder = new BlobModelBuilder(pictureService, configProvider);
 
             _workCount = previewsCount;
 
             var offset = 0;
             var totalShrinkSize = (long)0;
 
-            _logger.Info("Start preview processing for {0} with {1} previews", actor.Name, _workCount);
+            _logger.Info("Start preview processing for {0} with {1} previews", User.Name, _workCount);
 
             while (_workCount > 0)
             {
                 var previews = await context.Previews.Where(x => x.CreatorId == User.Id)
                     .OrderByDescending(x => x.CreatedAt)
                     .Skip(offset)
-                    .Take(_batchSize)
+                    .Take(batchSize)
                     .ToListAsync();
 
                 var shrinkedSize = (long)0;
@@ -89,7 +90,7 @@ namespace MediaCloud.TaskScheduler.Tasks
                 
                 statisticProvider.MediasCountChanged(0, -shrinkedSize);
                 _workCount -= previews.Count;
-                offset += _batchSize;
+                offset += batchSize;
                 totalShrinkSize += shrinkedSize;
 
                 context.Previews.UpdateRange(previews);

@@ -19,7 +19,7 @@ namespace MediaCloud.Repositories
         IUserProvider actorProvider, IPictureService pictureService, IConfigProvider configProvider) : 
         BaseRepository<Blob>(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider)
     {
-        private BlobModelBuilder _fileModelBuilder = new(pictureService);
+        private BlobModelBuilder _fileModelBuilder = new(pictureService, configProvider);
         private IConfigProvider _configProvider = configProvider;
 
         private Blob CreateFile(UploadedFile uploadedFile, User author)
@@ -53,12 +53,12 @@ namespace MediaCloud.Repositories
 
         public Blob Create(UploadedFile file)
         {
-            var author = _context.Users.First(x => x.Id == _actor.Id);
+            var author = _context.Users.First(x => x.Id == _user.Id);
             var blob = CreateFile(file, author);
             _context.Add(blob);
             SaveChanges();
 
-            _logger.Info("Created new media with id: {media.Id} by: {_actor.Name}", blob.Id, _actor.Name);
+            _logger.Info("Created new media with id: {media.Id} by: {_actor.Name}", blob.Id, _user.Name);
             _statisticProvider.MediasCountChanged.Invoke(1, blob.Size);
             return blob;
         }
@@ -78,7 +78,7 @@ namespace MediaCloud.Repositories
             _context.AddRange(blobs);
             SaveChanges();
 
-            _logger.Info("Created <{blobs.Count}> new blobs by: {_actor.Name}", blobs.Count, _actor.Name);
+            _logger.Info("Created <{blobs.Count}> new blobs by: {_actor.Name}", blobs.Count, _user.Name);
             _statisticProvider.MediasCountChanged.Invoke(blobs.Count, blobs.Sum(x => x.Size));
             return blobs;
         }
@@ -86,7 +86,7 @@ namespace MediaCloud.Repositories
         private List<Blob> GetBlobsRange(List<UploadedFile> files)
         {
             var blobs = new List<Blob>();
-            var author = _context.Users.First(x => x.Id == _actor.Id);
+            var author = _context.Users.First(x => x.Id == _user.Id);
 
             if (_configProvider.EnvironmentSettings.UseParallelProcessingForUploading)
             {
@@ -128,7 +128,7 @@ namespace MediaCloud.Repositories
             var previews = blobs.Select(x => x.Preview).ToList();
             var collection = new Collection(previews)
             {
-                Creator = _context.Users.First(x => x.Id == _actor.Id)
+                Creator = _context.Users.First(x => x.Id == _user.Id)
             };
             collection.Updator = collection.Creator;
 
@@ -149,7 +149,7 @@ namespace MediaCloud.Repositories
             _context.ChangeTracker.AutoDetectChangesEnabled = true;
 
             _logger.Info("Created new collection with <{collection.Count}> previews and id: {collection.Id} by: {_actor.Name}",
-                collection.Count, collection.Id, _actor.Name);
+                collection.Count, collection.Id, _user.Name);
             _statisticProvider.MediasCountChanged.Invoke(blobs.Count, blobs.Sum(x => x.Size));
 
             return blobs;

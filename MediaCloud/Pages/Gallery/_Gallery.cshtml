@@ -1,49 +1,67 @@
-﻿@model MediaCloud.WebApp._GalleryPageModel
+﻿@using System.Xml
+@using MediaCloud.Data.Models
+@using MediaCloud.Extensions
+@model MediaCloud.WebApp._GalleryPageModel
 @{
+    string BuildUrlByBlobType(string type)
+    {
+        return type switch
+        {
+            "video/mp4" => "/img/types/mp4.png",
+            "video/avi" => "/img/types/avi.png",
+            "application/x-compressed" => "/img/types/7z.png",
+            "application/x-zip-compressed" => "/img/types/zip.png",
+            "text/plain" => "/img/types/txt.png",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" => "/img/types/excel.png",
+            "application/vnd.android.package-archive" => "/img/types/apk.png",
+            _ => "/img/types/file.png"
+        };
+    }
+
+    string BuildUrlByPreview(Preview preview)
+    {
+        return preview.Collection != null
+            ? $"/Gallery/Collection?id={preview.Collection?.Id}" 
+            : $"/Gallery/Detail?id={preview.Id}";
+    }
 }
 
 
-@for(int i = 0; i < Model.Previews.Count; i += 1)
+@for(var i = 0; i < Model.Previews.Count; i += 1)
 {
-    @if (Model.Previews[i].Collection != null)
-    {
-        <div class="gallery-item-container col-sm">
-            <a draggable="false" href="/Gallery/Collection?id=@(Model.Previews[i].Collection?.Id)">
-                <div class="shadow-1-strong gallery-item">
+    <div class="gallery-item-container col-sm">
+        <a draggable="false" href="@BuildUrlByPreview(Model.Previews[i])">
+            <div class="shadow-1-strong gallery-item">
+                @if (Model.Previews[i].BlobType.Contains("image"))
+                {
+                    <img draggable="false" class="w-100 shadow-1-strong gallery-image"
+                         src="data:image/png;base64,@Convert.ToBase64String(Model.Previews[i].Content)"
+                         alt="@Model.Previews[i].BlobName"/>   
+                }
+                else
+                {
+                    <img draggable="false" class="w-100 shadow-1-strong gallery-image"
+                         src="@BuildUrlByBlobType(Model.Previews[i].BlobType)"
+                         alt="@Model.Previews[i].BlobName"/>
+                    <div class="filename-container">
+                        <div class="filename">
+                            @Model.Previews[i].BlobName
+                        </div>
+                    </div>
+                }
+                @if (Model.Previews[i].Rating > Model.AllowedNSFWContentRating)
+                {
+                    <div class="gallery-image-blurring">
+                        @Model.Previews[i].Rating.GetDisplayName()
+                    </div>
+                }
+                @if (Model.Previews[i].Collection != null)
+                {
                     <div class="bg-success rounded-circle gallery-item-bubble">
                         @Model.Previews[i].Collection?.Count
                     </div>
-                    <img draggable="false" class="w-100 shadow-1-strong gallery-image"
-                         src="data:image/png;base64,@Convert.ToBase64String(Model.Previews[i].Content)"/>
-                    @if (Model.Previews[i].BlobType.Contains("image") == false)
-                    {
-                        <div class="filename-container">
-                            <div class="filename">
-                                @Model.Previews[i].BlobName
-                            </div>
-                        </div>
-                    }
-                </div>
-            </a>
-        </div>
-    }
-    else
-    {
-        <div class="gallery-item-container col-sm">
-            <a draggable="false" href="/Gallery/Detail?id=@(Model.Previews[i].Id)">
-                <div class="shadow-1-strong gallery-item">
-                    <img draggable="false" class="w-100 shadow-1-strong gallery-image"
-                         src="data:image/png;base64,@Convert.ToBase64String(Model.Previews[i].Content)"/>
-                    @if (Model.Previews[i].BlobType.Contains("image") == false)
-                    {
-                        <div class="filename-container">
-                            <div class="filename">
-                                @Model.Previews[i].BlobName
-                            </div>
-                        </div>
-                    }
-                </div>
-            </a>
-        </div>
-    }
+                }
+            </div>
+        </a>
+    </div>
 }

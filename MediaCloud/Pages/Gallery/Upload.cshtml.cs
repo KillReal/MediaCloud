@@ -13,8 +13,10 @@ namespace MediaCloud.Pages.Gallery
 {
     public class UploadModel(IUserProvider userProvider, ITaskScheduler taskScheduler, IConfigProvider configProvider,
         StatisticProvider statisticProvider) 
-        : AuthorizedPageModel(userProvider)
+        : AuthorizedPageModel(userProvider, configProvider)
     {
+        private readonly IConfigProvider _configProvider = configProvider;
+
         [BindProperty]
         public List<IFormFile> Files { get; set; } = [];
         [BindProperty]
@@ -34,11 +36,10 @@ namespace MediaCloud.Pages.Gallery
         
         public IActionResult OnGet()
         {
-            IsAutotaggingEnabled = configProvider.EnvironmentSettings.AutotaggingEnabled 
-                && CurrentUser != null 
-                && CurrentUser.IsAutotaggingAllowed;
+            IsAutotaggingEnabled = _configProvider.EnvironmentSettings.AutotaggingEnabled 
+                                   && CurrentUser is { IsAutotaggingAllowed: true };
 
-            FileSizeLimit = configProvider.EnvironmentSettings.MaxFileSize;
+            FileSizeLimit = _configProvider.EnvironmentSettings.MaxFileSize;
             
             var userLimit = _userProvider.GetCurrent().SpaceLimitBytes;
             var userFilesSize = statisticProvider.GetTodaySnapshot().MediasSize;
@@ -69,7 +70,9 @@ namespace MediaCloud.Pages.Gallery
 
             var task = IsNeedAutotagging 
                 ? new UploadAndAutotagTask(CurrentUser, uploadedFiles, IsCollection, Tags)
-                : new UploadTask(CurrentUser, uploadedFiles, IsCollection, Tags);
+                : _configProvider.EnvironmentSettings.AutorateImages
+                    ? new UploadAndRateTask(CurrentUser, uploadedFiles, IsCollection, Tags)
+                    : new UploadTask(CurrentUser, uploadedFiles, IsCollection, Tags);
             var taskId = taskScheduler.AddTask(task);
 
             return Redirect($"/TaskScheduler/GetTaskStatus?id={taskId}");

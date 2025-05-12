@@ -29,13 +29,13 @@ namespace MediaCloud.Repositories
         {
             try
             {
-                tag.Creator = _context.Users.First(x => x.Id == _actor.Id);
+                tag.Creator = _context.Users.First(x => x.Id == _user.Id);
                 tag.Updator = tag.Creator;
 
                 _context.Tags.Add(tag);
                 SaveChanges();
 
-                _logger.Info("Created new tag with id:{tag.Id} by: {_actor.Name}", tag.Id, _actor.Name);
+                _logger.Info("Created new tag with id:{tag.Id} by: {_actor.Name}", tag.Id, _user.Name);
                 _statisticProvider.TagsCountChanged.Invoke(1);
                 return true;
             }
@@ -87,7 +87,7 @@ namespace MediaCloud.Repositories
             _context.Tags.UpdateRange(affectedTags);
             _context.SaveChanges();
 
-            _logger.Info("Recalculated <{affectedTags.Count()}> tags usage count by: {_actor.Name}", affectedTags.Count(), _actor.Name);
+            _logger.Info("Recalculated <{affectedTags.Count()}> tags usage count by: {_actor.Name}", affectedTags.Count(), _user.Name);
         }
 
         public List<Tag> GetRangeByString(string? tagsString)
@@ -99,7 +99,7 @@ namespace MediaCloud.Repositories
             tagsString = DeduplicateTagString(tagsString).ToLower();
             var tags = tagsString.ToLower().Split(' ');
             return [.. _context.Tags.Where(x => tags.Any(y => y.ToLower() == x.Name.ToLower())
-                                         && x.CreatorId == _actor.Id)];
+                                         && x.CreatorId == _user.Id)];
         }
 
         public List<Tag> GetRangeByAliasString(string? aliasesString)
@@ -115,7 +115,7 @@ namespace MediaCloud.Repositories
                     .Split(' ')
                     .Any(z => z == y))
                     .Any()
-                    && x.CreatorId == _actor.Id)
+                    && x.CreatorId == _user.Id)
                 .ToList();
 
             selectedTags.RemoveAll(x => x.Alias.Split(' ')
@@ -129,15 +129,24 @@ namespace MediaCloud.Repositories
         public async Task<List<Tag>> GetListAsync(ListBuilder<Tag> listBuilder)
         {
             return await _context.Tags.AsNoTracking().Order(listBuilder.Sorting.GetOrder())
-                                               .Where(x => x.CreatorId == _actor.Id)
+                                               .Where(x => x.CreatorId == _user.Id 
+                                                           && x.Name.ToLower().Contains(listBuilder.Filtering.Filter.ToLower()))
                                                .Skip(listBuilder.Pagination.Offset)
                                                .Take(listBuilder.Pagination.Count)
                                                .ToListAsync();
         }
 
         public async Task<int> GetListCountAsync(ListBuilder<Tag> listBuilder)
-            => await _context.Tags.Where(x => x.CreatorId == _actor.Id).AsNoTracking().CountAsync();
+            => await _context.Tags.Where(x => x.CreatorId == _user.Id 
+                                              && x.Name.ToLower().Contains(listBuilder.Filtering.Filter.ToLower()))
+                                    .AsNoTracking()
+                                    .CountAsync();
 
+        public async Task<int> GetTotalCountAsync()
+        {
+            return await _context.Tags.Where(x => x.CreatorId == _user.Id).AsNoTracking().CountAsync();
+        }
+        
         /// <summary>
         /// Return list of tags ordered by PreviewsCount with specified count.
         /// </summary>
@@ -146,13 +155,13 @@ namespace MediaCloud.Repositories
         public List<Tag> GetTopUsed(int limit)
         {
             return [.. _context.Tags.OrderByDescending(x => x.PreviewsCount)
-                                .Where(x => x.CreatorId == _actor.Id)
+                                .Where(x => x.CreatorId == _user.Id)
                                 .Take(limit)];
         }
 
         public List<string> GetSuggestionsByString(string searchString, int limit = 10)
         {
-            return [.. _context.Tags.Where(x => x.Name.ToLower().StartsWith(searchString.ToLower()) && x.CreatorId == _actor.Id)
+            return [.. _context.Tags.Where(x => x.Name.ToLower().StartsWith(searchString.ToLower()) && x.CreatorId == _user.Id)
                                 .OrderByDescending(x => x.PreviewsCount)
                                 .Select(x => x.Name)
                                 .Take(limit)];

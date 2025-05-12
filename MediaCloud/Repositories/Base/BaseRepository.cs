@@ -11,13 +11,13 @@ namespace MediaCloud.Repositories
         protected StatisticProvider _statisticProvider = statisticProvider;
         protected AppDbContext _context = context;
         protected ILogger _logger = logger;
-        protected User _actor = actorProvider.GetCurrent();
+        protected User _user = actorProvider.GetCurrent();
 
         public virtual T? Get(Guid id)
         {
             var entity = _context.Find<T>(id);
 
-            if (entity == null || entity.CreatorId != _actor.Id)
+            if (entity == null || entity.CreatorId != _user.Id)
             {
                 return null;
             }
@@ -29,7 +29,7 @@ namespace MediaCloud.Repositories
         {
             var entity = Get(id);
 
-            if (entity == null || entity.CreatorId != _actor.Id)
+            if (entity == null || entity.CreatorId != _user.Id)
             {
                 return false;
             }
@@ -40,7 +40,7 @@ namespace MediaCloud.Repositories
                 var entityName = entity.GetType().Name.ToLower();
 
                 Remove(entity);
-                _logger.Info("Removed {entityName} with id: {entityId} by: {_actor.Name}", entityName, entityId, _actor.Name);
+                _logger.Info("Removed {entityName} with id: {entityId} by: {_actor.Name}", entityName, entityId, _user.Name);
                 return true;
             }
 
@@ -55,7 +55,7 @@ namespace MediaCloud.Repositories
             _context.Update(entity);
             SaveChanges();
 
-            _logger.Info("Updated {entityName} with id: {entityId} by: {_actor.Name}", entityName, entityId, _actor.Name);
+            _logger.Info("Updated {entityName} with id: {entityId} by: {_actor.Name}", entityName, entityId, _user.Name);
         }
 
         public virtual void Update(List<T> entities)
@@ -66,7 +66,7 @@ namespace MediaCloud.Repositories
             _context.UpdateRange(entities);
             SaveChanges();
 
-            _logger.Info("Updated <{entityCount}> {entityName} by: {_actor.Name}", entityCount, entityName, _actor.Name);
+            _logger.Info("Updated <{entityCount}> {entityName} by: {_actor.Name}", entityCount, entityName, _user.Name);
         }
 
         public virtual void Remove(T entity)
@@ -77,7 +77,7 @@ namespace MediaCloud.Repositories
             _context.Remove(entity);
             SaveChanges();
 
-            _logger.Info("Removed {entityName} with id: {entityId} by: {_actor.Name}", entityName, entityId, _actor.Name);
+            _logger.Info("Removed {entityName} with id: {entityId} by: {_actor.Name}", entityName, entityId, _user.Name);
         }
 
         public virtual void Remove(List<T> entities)
@@ -87,7 +87,7 @@ namespace MediaCloud.Repositories
 
             _context.RemoveRange(entities);
             SaveChanges();
-            _logger.Info("Removed <{entityCount}> {entityName} by: {_actor.Name}", entityCount, entityName, _actor.Name);
+            _logger.Info("Removed <{entityCount}> {entityName} by: {_actor.Name}", entityCount, entityName, _user.Name);
         }
 
         public virtual void SaveChanges() => _context.SaveChanges();

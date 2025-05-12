@@ -63,7 +63,7 @@
             <div class="button-group">
                 <a class="btn btn-success btn-rounded" 
                     asp-page="Upload">
-                        Upload
+                        ⮭ Upload
                 </a>
             </div>
 
@@ -95,7 +95,7 @@
                 <a class="btn @randomButtonStyle btn-rounded text-nowrap" 
                     asp-page="Index" 
                     asp-route-filter=@(Model.ListBuilder.Filtering.Filter) 
-                    asp-route-sort=@($"Random_{new Random().Next(int.MaxValue)}") 
+                    asp-route-sort=@($"Random") 
                     asp-route-isUseAutoload=@(Model.IsAutoloadEnabled)>
                     🎲
                 </a>
@@ -117,7 +117,7 @@
         <div class="align-self-center d-flex flex-grow-1">
             <div class="button-group w-100">
                 <div class="descriptor">
-                    Tag filter:
+                    Search:
                 </div>
                 <div class="button-group-input autocomplete-list autocomplete flex-grow-1">
                     <input asp-for=@Model.ListBuilder.Filtering.Filter 
@@ -127,16 +127,19 @@
                         autocomplete="off"/>
                 </div>
                 <a class="btn btn-info btn-rounded me-0" onclick="filterClicked()">
-                    Filter
+                    ✓ Apply
                 </a>
             </div>
         </div>
     </div>  
 
     <hr style="margin-bottom: 1rem"/>
-    <partial name="~/Pages/Shared/_Pagination.cshtml" />
-    <div class="row image-row gallery" id="gallery">
-        <partial name="~/Pages/Gallery/_Gallery.cshtml" model=@(new _GalleryPageModel(Model.Previews))/>
+    @if (Model.ListBuilder.Sorting.PropertyName.Contains("Random") == false)
+    {
+        <partial name="~/Pages/Shared/_Pagination.cshtml" />
+    }
+    <div class="row row-cols-sm-@(Model.MaxColumnCount) row-col image-row gallery mb-3" id="gallery">
+        <partial name="~/Pages/Gallery/_Gallery.cshtml" model=@(new _GalleryPageModel(Model.Previews, Model.AllowedNSFWContent))/>
         
         @if (Model.Previews.Count == 0)
         {
@@ -146,7 +149,7 @@
         }
         
     </div>
-    <div class="d-flex justify-content-center">
+    <div class="d-flex justify-content-center mb-3">
         @if (Model.Previews.Count >= Model.ListBuilder.Pagination.Count && Model.IsAutoloadEnabled)
         {
             <div class="oad-spinner spinner-border" 
@@ -158,7 +161,7 @@
             Your are reached the end 😮
         </h1>
     </div>
-    @if (Model.IsAutoloadEnabled == false)
+    @if (Model.IsAutoloadEnabled == false && Model.ListBuilder.Sorting.PropertyName.Contains("Random") == false)
     {
         <partial name="~/Pages/Shared/_Pagination.cshtml" />
     }

@@ -3,7 +3,9 @@
 @{
     ViewData["Title"] = "Statistic";
 }
+@using MediaCloud.Extensions
 @using MediaCloud.Services;
+@using SixLabors.ImageSharp
 
 <h1 class="pt-3 text-white">Statistic</h1>
 
@@ -19,7 +21,7 @@
 <hr style="color: white"/>
 
 <div class="page-container">
-    <div class="overflow-scroll">
+    <div>
         <div class="row" style="justify-content: space-around; min-width: 45rem;">
             <div class="col whiteback-bar">
                 <canvas class="chart-canvas" id="CountChart"></canvas>
@@ -30,7 +32,7 @@
         </div>
         <div class="row" style="justify-content: space-around; min-width: 45rem;">
             <div class="col whiteback-bar" style="justify-content: space-around;">
-                <canvas class="chart-canvas-block" style="max-height: 35rem" id="TagsChart"></canvas>
+                <canvas class="chart-canvas-block" style="max-height: 50rem" id="TagsChart"></canvas>
             </div>
             <div class="col whiteback-bar">
                 <canvas class="chart-canvas" id="ActivityChart"></canvas>
@@ -68,7 +70,62 @@
 <script src="~/js/chartjs-adapter-luxon.js"></script>
 
 <script type="text/javascript">
-    var dayDisplayFormat = 'DD'
+    const dayDisplayFormat = 'DD';
+    var selectedTheme = localStorage.getItem('ui-theme-name');
+    let fontColor = 'black';
+    let cssStyleFile = 'site.css';
+    let tagsChartGroupsSelected = new Array(@Model.Tags.Select(x => x.Color).Distinct().Count()).fill(true);
+    
+    function getTagGroupIndex(color) {
+        const colors = ['@(Html.Raw(string.Join("', '", Model.Tags.Select(x => x.Color).Distinct())))']
+        return colors.indexOf(color);
+    }
+
+    function getStyleProperty(selector, style)
+    {
+        for (let i = 0; i < document.styleSheets.length; i++)
+        {
+            const mySheet = document.styleSheets[i];
+            const myRules = mySheet.cssRules ? mySheet.cssRules : mySheet.rules;
+
+            for (let j = 0; j < myRules.length; j++)
+            {
+                if (myRules[j].selectorText && myRules[j].selectorText.toLowerCase() === selector)
+                {
+                    return myRules[j].style[style];
+                }
+            }
+        }
+    };
+    
+    // Retrieve hex colors list from css file for class names ('btn-black' etc.)
+    function getHexColorStylesListByClassNames(colorNames) {
+        colors = []
+        
+        for (let i = 0; i < colorNames.length; i++) {
+            colors.push(getStyleProperty('.btn-' + colorNames[i], 'backgroundColor'));
+        }
+        
+        return colors;
+    }
+
+    function endsWith(str, suffix) {
+        if (str != null) {
+            return str.indexOf(suffix, str.length - suffix.length) !== -1;
+        }
+        return false;
+    };
+    
+    switch (selectedTheme)
+    {
+        default:
+        case "Light":
+            break
+        case "Dark":
+            fontColor = 'white'
+            cssStyleFile = 'site-dark.css'
+            break
+    }
 
     function formatBytes(bytes, decimals = 2) {
         if (!+bytes) return '0 Bytes'
@@ -109,10 +166,14 @@
             plugins: {
                 legend: {
                     position: 'top',
+                    labels: {
+                        color: fontColor
+                    }
                 },
                 title: {
                     display: true,
                     text: 'Medias size total uploaded',
+                    color: fontColor
                 },
                 tooltip: {
                     callbacks: {
@@ -136,7 +197,11 @@
                     },
                     title: {
                         display: true,
-                        text: 'Date'
+                        text: 'Date',
+                        color: fontColor
+                    },
+                    ticks: {
+                        color: fontColor
                     }
                 },
                 y: {
@@ -144,9 +209,11 @@
                     type: "linear",
                     title: {
                         display: true,
-                        text: 'Data size'
+                        text: 'Data size',
+                        color: fontColor
                     },
                     ticks: {
+                        color: fontColor,
                         callback: function (value, index, ticks) {
                             return formatBytes(value, 1);
                         }
@@ -185,7 +252,7 @@
                 fill: true,
                 cubicInterpolationMode: 'monotone',
                 tension: 0.4,
-                order: 2
+                order: 2,
             },
             {
                 label: 'Actors count',
@@ -211,11 +278,15 @@
             plugins: {
                 legend: {
                     position: 'top',
+                    labels: {
+                        color: fontColor
+                    }
                 },
                 title: {
                     display: true,
-                    text: 'Entities count'
-                }
+                    text: 'Entities count',
+                    color: fontColor
+                },
             },
             scales: {
                 x: {
@@ -230,39 +301,119 @@
                     },
                     title: {
                         display: true,
-                        text: 'Date'
+                        text: 'Date',
+                        color: fontColor
+                    },
+                    ticks: {
+                        color: fontColor
                     }
                 },
                 y: {
                     beginAtZero: true,
                     title: {
                         display: true,
-                        text: 'Count'
+                        text: 'Count',
+                        color: fontColor
+                    },
+                    ticks: {
+                        color: fontColor
                     }
                 }
             }
-        }
+        },
     });
 
-    new Chart(document.getElementById('TagsChart'), {
+    function updateTagsCountChart(legend) {
+        const dataColors = ['@(Html.Raw(string.Join("', '", Model.Tags.Select(x => x.Color))))'];
+        const dataValues = [@(Html.Raw(string.Join(", ", Model.Tags.Select(x => x.PreviewsCount))))];
+
+        let valuesSum = 0;
+        for (let i = 0; i < dataColors.length; i++) {
+            if (legend.chart.getDataVisibility(i) !== tagsChartGroupsSelected[getTagGroupIndex(dataColors[i])]) {
+                legend.chart.toggleDataVisibility(i);
+            }
+            if (legend.chart.getDataVisibility(i)) {
+                valuesSum += dataValues[i]
+            }
+        }
+
+        // Hide pies that smaller than 7.5% of full pie.
+        for (let i = 0; i < dataColors.length; i++) {
+            if (legend.chart.getDataVisibility(i) && dataValues[i] < valuesSum / 54) {
+                legend.chart.toggleDataVisibility(i);
+            }
+        }
+
+        legend.chart.update();
+    }
+    
+    function toggleTagsCountChartGroup(legendItem, legend) {
+        tagsChartGroupsSelected[legendItem.index] = !tagsChartGroupsSelected[legendItem.index];
+        updateTagsCountChart(legend)
+    }
+    
+    let tagsCountChart = new Chart(document.getElementById('TagsChart'), {
         type: 'pie',
         data: {
             labels: ['@(Html.Raw(string.Join("', '", Model.Tags.Select(x => x.Name))))'],
-            datasets: [{
-                label: 'Medias count',
-                data: [@(Html.Raw(string.Join(", ", Model.Tags.Select(x => x.PreviewsCount))))],
-                borderWidth: 1,
-            }]
+            datasets: [
+                {
+                    label: 'Files count',
+                    data: [@(Html.Raw(string.Join(", ", Model.Tags.Select(x => x.PreviewsCount))))],
+                    borderWidth: 1,
+                    backgroundColor: getHexColorStylesListByClassNames(['@(Html.Raw(string.Join("', '", Model.Tags.Select(x => x.Color.GetDisplayName().ToLower()))))'])
+                }
+            ]
         },
         options: {
             responsive: true,
             plugins: {
                 legend: {
-                    display: false,
+                    labels: {
+                        color: fontColor,
+                        generateLabels(chart) {
+                            const data = chart.data;
+                            if (data.labels.length && data.datasets.length) {
+                                const {
+                                    labels: {
+                                        pointStyle
+                                    }
+                                } = chart.legend.options;
+
+                                // Show every other label
+                                let indexCounter = 0;
+                                const labels = [];
+                                const dataColors = ['@(Html.Raw(string.Join("', '", Model.Tags.Select(x => x.Color))))'];
+                                for (let i = 0; i < dataColors.length; i += 1) {
+                                    const meta = chart.getDatasetMeta(0);
+                                    const style = meta.controller.getStyle(i);
+                                    
+                                    if (!labels.some(x => x.text === dataColors[i])) {
+                                        labels.push({
+                                            text: dataColors[i],
+                                            fillStyle: style.backgroundColor,
+                                            strokeStyle: style.borderColor,
+                                            lineWidth: style.borderWidth,
+                                            pointStyle: pointStyle,
+                                            hidden: !chart.getDataVisibility(i),
+                                            index: indexCounter,
+                                            fontColor: fontColor
+                                        })
+                                        indexCounter++;
+                                    }
+                                }
+                                return labels;
+                            }
+                        },
+                    },
+                    onClick(e, legendItem, legend) {
+                        toggleTagsCountChartGroup(legendItem, legend);
+                    }
                 },
                 title: {
                     display: true,
-                    text: 'Tag popularity (top ' + @Model.Tags.Count() + ' of ' + @Model.Tags.Count + ' total)'
+                    text: 'Tag popularity (top ' + @Model.Tags.Count() + ' of ' + @Model.TotalTagsCount + ' total)',
+                    color: fontColor
                 },
                 datalabels: {
                     clip: true,
@@ -288,6 +439,7 @@
         },
         plugins: [ChartDataLabels]
     });
+    updateTagsCountChart(tagsCountChart.legend);
 
     new Chart(document.getElementById('ActivityChart'), {
         type: 'bar',
@@ -302,7 +454,7 @@
                             snapshot.ActivityFactor + "'},"))
                     }
                 ],
-                fill: true,
+                fill: true
             }]
         },
         options: {
@@ -312,10 +464,16 @@
                 intersect: false,
             },
             plugins: {
+                legend: {
+                    labels: {
+                        color: fontColor
+                    }
+                },
                 title: {
                     display: true,
-                    text: 'Activity of users (last ' + @Model.ActivityBacktrackDayCount + ' days)'
-                },
+                    text: 'Activity of users (last ' + @Model.ActivityBacktrackDayCount + ' days)',
+                    color: fontColor
+                }
             },
             scales: {
                 x: {
@@ -330,22 +488,29 @@
                     },
                     title: {
                         display: true,
-                        text: 'Date'
+                        text: 'Date',
+                        color: fontColor
+                    },
+                    ticks: {
+                        color: fontColor
                     }
                 },
                 y: {
                     beginAtZero: true,
-                    stepSize: 1
+                    stepSize: 1,
+                    ticks: {
+                        color: fontColor
+                    }
                 }
             }
-        }
+        },
     });
 
-    var orderPosElem = document.getElementById('orderPos');
-    var mediaCountElem = document.getElementById('mediasCount');
-    var modalTitle = document.getElementById('modalTitle');
-    var modalBody = document.getElementById("modalBody");
-    var loadSpinner = document.getElementById("loadingSpinner");
+    const orderPosElem = document.getElementById('orderPos');
+    const mediaCountElem = document.getElementById('mediasCount');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById("modalBody");
+    const loadSpinner = document.getElementById("loadingSpinner");
 
     function updateModalLoadBody(data) {
         if (data == undefined) {
@@ -383,17 +548,17 @@
         showModalBody();
         updateModalLoadBody();
 
-        var url = "/Statistic/Recalculate";
-        var request = new XMLHttpRequest();
+        const url = "/Statistic/Recalculate";
+        const request = new XMLHttpRequest();
         request.open('POST', url, true);
         request.onload = function () { // request successful
             setModalTitle('Waiting queue for processing...');
             showModalBody();
             updateModalLoadBody();
             $('#loadingModal').modal('show');
-            var data = JSON.parse(request.response);
+            const data = JSON.parse(request.response);
 
-            var url = "/Uploader/GetTaskStatus?id=" + data.id;
+            const url = "/Uploader/GetTaskStatus?id=" + data.id;
 
             console.log('Goes to update status');
 

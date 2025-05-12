@@ -12,7 +12,9 @@ using NLog.Web;
 using NLog;
 using MediaCloud.WebApp.Services.ConfigProvider;
 using MediaCloud.WebApp;
+using MediaCloud.WebApp.Services.AutotagService;
 using Npgsql;
+using MediaCloud.WebApp.Repositories;
 
 var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 logger.Debug("Early NLog initialization");
@@ -60,7 +62,7 @@ builder.Services.Configure<KestrelServerOptions>(options =>
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options => 
     {
-        options.LoginPath = "/Account/Login";
+        options.LoginPath = "/User/Login";
         options.ExpireTimeSpan = TimeSpan.FromMinutes(builder.Configuration.GetValue<int>("Security:CookieExpireTime"));
     });
 builder.Services.AddAuthorization();

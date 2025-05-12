@@ -14,7 +14,7 @@
 
     <div class="button-panel">
         <div class="button-group">
-           <a onclick="window.location.href = document.referrer;" class="btn btn-info">
+           <a onclick="history.back();" class="btn btn-info">
 				Back
 			</a>
         </div>
@@ -44,8 +44,8 @@
                     </textarea>
                 </div>
                 <div class="form-group mb-3">
-                    <label class="col-form-label">Choose tag type</label>
-                    <select asp-for="@Model.Tag.Type" asp-items="Html.GetEnumSelectList<TagType>()">
+                    <label class="col-form-label">Choose tag color</label>
+                    <select asp-for="@Model.Tag.Color" asp-items="Html.GetEnumSelectList<TagColor>()">
                         <option selected="selected" value="">
                             Please select
                         </option>

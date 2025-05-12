@@ -1,17 +1,43 @@
 ﻿@page
-@model ChangelogModel
+@model ChangeLogModel
 @{
     ViewData["Title"] = "Version changelog";
 }
 
-<h1 class="pt-3 text-white">Version changelog</h1>
+<div class="page-container">
+    <h1 class="pt-3 text-white">Version changelog</h1>
 
-<hr />
+    <hr />
 
-<div class="container">
     <div class="row justify-content-left">
-        <div class="col-lg-8 col-md-10 col-12 bg-white rounded mb-3">
+        <div class="col-lg-8 col-md-10 col-12 card rounded mb-3">
 
+            <h5 class="mt-4"> <span class="p-2 bg-success shadow rounded text-white"> Version 2.2.0 </span> - 12th May, 2024</h5>
+            <ul class="list-unstyled mt-3">
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Added NSFW rating for <b>Previews</b></li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Added <b>/Gallery</b> filtering by NSFW rating</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Upgraded SixLabours.ImageSharp from <b>3.1.5</b> to <b>3.1.8</b></li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Upgraded Bootstrap from <b>5.3.3</b> to <b>5.3.5</b></li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Improved dark theme layout</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Minor layout fixes</li>
+            </ul>
+            
+            <h5 class="mt-4"> <span class="p-2 bg-success shadow rounded text-white"> Version 2.1.0 </span> - 23th Mar, 2024</h5>
+            <ul class="list-unstyled mt-3">
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Add dark theme</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Added new user settings</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Minor fixes in page layouts</li>
+            </ul>
+            
+            <h5 class="mt-4"> <span class="p-2 bg-info shadow rounded text-white"> Version 2.0.4 </span> - 08th Mar, 2025</h5>
+            <ul class="list-unstyled mt-3">
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Added autotagging ai model selection and confidence level</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Added <b>/Galley</b> column count user setting</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Updated user settings layout</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixed user settings saving</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Improved shortcuts behaviour in gallery <b>/Gallery</b></li>
+            </ul>
+            
             <h5 class="mt-4"> <span class="p-2 bg-info shadow rounded text-white"> Version 2.0.3 </span> - 27th Feb, 2025</h5>
             <ul class="list-unstyled mt-3">
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>File size check now initiating before uploading</li>
@@ -67,7 +93,7 @@
 
             <h5 class="mt-4"> <span class="p-2 bg-info shadow rounded text-white"> Version 1.6.3 </span> - 21th Jul, 2024</h5>
             <ul class="list-unstyled mt-3">
-                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Upgraged <b>NET</b>. from <b>6.0</b> to <b>8.0</b></li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Upgraded <b>NET</b>. from <b>6.0</b> to <b>8.0</b></li>
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Upgraded <b>Npgsql.EntityFrameworkCore.PostgreSQL</b> from <b>6.0.7</b> to <b>8.0.4</b></li>
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Upgraded <b>bootstrap</b> from <b>5.2.1</b> to <b>5.3.3</b></li>
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>More Other packages upgraded to upstream versions</li>
@@ -93,7 +119,7 @@
             <h5 class="mt-4"> <span class="p-2 bg-success shadow rounded text-white"> Version 1.6.0 </span> - 12th Jun, 2024</h5>
             <ul class="list-unstyled mt-3">
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Added AI <b>/Medias</b> and <b>/Collection</b> autotagging with JoyTag AI model</li>
-                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Added newe account personal settings page <b>/Account/Settings</b></li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Added new account personal settings page <b>/Account/Settings</b></li>
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Updated <b>SixLabour.ImageSharp</b> lib to <b>3.1.4</b></li>
                  <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Optimized autoloading speed for first page</li>
                  <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Various layout fixes for narrow displays</li>
@@ -104,7 +130,7 @@
             <ul class="list-unstyled mt-3">
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixed exception handling when empty password provided for <b>/Account/Login</b></li>
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Removed unused config settings in <b>/Account/Settings</b></li>
-                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Varios fixes and improvements</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Various fixes and improvements</li>
             </ul>
 
             <h5 class="mt-4"> <span class="p-2 bg-success shadow rounded text-white"> Version 1.5.0 </span> - 07th Apr, 2024</h5>
@@ -115,7 +141,7 @@
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Added recalculation option to <b>/Statistic</b> with modal window of recalculation task status</li>
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Massive code cleanup and refactor</li>
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Improved overall page loading speed by 10-40%</li>
-                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Improved <b>Tag</b> and <b>Media</b> saving perfomance</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Improved <b>Tag</b> and <b>Media</b> saving performance</li>
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>New universal gallery layout</li>
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Implemented multiple actor session caching</li>
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Added <b>Media</b> rotating option</li>
@@ -147,16 +173,16 @@
 
             <h5 class="mt-4"> <span class="p-2 bg-info shadow rounded text-white"> Version 1.4.2 </span> - 02th Mar, 2024</h5>
             <ul class="list-unstyled mt-3">
-                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Improved content processing perfomance after uploading by 30-50%</li>
-                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Improved <b>Collection</b> removing perfomance by 20-40%</li>
-                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Switched preview processing alghorithm from <b>Bicubic</b> to <b>Lanzcos3</b></li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Improved content processing performance after uploading by 30-50%</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Improved <b>Collection</b> removing performance by 20-40%</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Switched preview processing algorithm from <b>Bicubic</b> to <b>Lanczos3</b></li>
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixed <b>Collection</b> upload counter in <b>Statistic</b></li>
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Code cleanup and small improvements</li>
             </ul>
 
             <h5 class="mt-4"> <span class="p-2 bg-info shadow rounded text-white"> Version 1.4.1 </span> - 01th Mar, 2024</h5>
             <ul class="list-unstyled mt-3">
-                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Improved content saving perfomance after uploading by 80%</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Improved content saving performance after uploading by 80%</li>
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixed <b>Tag</b> editing</li>
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixed repeating content upload</li>
             </ul>
@@ -164,7 +190,7 @@
             <h5 class="mt-4"> <span class="p-2 bg-success shadow rounded text-white"> Version 1.4.0 </span> - 13th Jan, 2024</h5>
             <ul class="list-unstyled mt-3">
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Switched from <b>SQLite 3</b> database to <b>PostgreSQL</b></li>
-                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Imroved overall app perfomance by 10-40%</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Improved overall app performance by 10-40%</li>
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Added new favicon</li>
             </ul>
 
@@ -186,7 +212,7 @@
 
             <h5 class="mt-4"> <span class="p-2 bg-info shadow rounded text-white"> Version 1.3.2 </span> - 08th Oct, 2023</h5>
             <ul class="list-unstyled mt-3">
-                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixes and improvements in tag autocomplition</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixes and improvements in tag autocompletion</li>
             </ul>
 
             <h5 class="mt-4"> <span class="p-2 bg-info shadow rounded text-white"> Version 1.3.1 </span> - 06th Oct, 2023</h5>
@@ -202,8 +228,8 @@
 
             <h5 class="mt-4"> <span class="p-2 bg-success shadow rounded text-white"> Version 1.2.3 </span> - 02th Aug, 2023</h5>
             <ul class="list-unstyled mt-3">
-                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Switched graphics library to crossplatform <b>ImageSharp</b></li>
-                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Switched to self made file name comporator</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Switched graphics library to cross-platform <b>ImageSharp</b></li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Switched to self-made file name comparator</li>
             </ul>
 
             <h5 class="mt-4"> <span class="p-2 bg-info shadow rounded text-white"> Version 1.2.2 </span> - 10th Mar, 2023</h5>
@@ -213,10 +239,10 @@
 
             <h5 class="mt-4"> <span class="p-2 bg-info shadow rounded text-white"> Version 1.2.1 </span> - 11th Mar, 2023</h5>
             <ul class="list-unstyled mt-3">
-                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Improved perfomance for statistic recalculation</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Improved performance for statistic recalculation</li>
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Statistic recalculation now skip 'empty' days</li>
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixes and minor improvements in statistic layout for <b>/Statistic</b></li>
-                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Statistic service fixes and perfomance improvements</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Statistic service fixes and performance improvements</li>
             </ul>
 
             <h5 class="mt-4"> <span class="p-2 bg-success shadow rounded text-white"> Version 1.2.0 </span> - 10th Mar, 2023</h5>
@@ -246,7 +272,7 @@
 
             <h5 class="mt-4"> <span class="p-2 bg-info shadow rounded text-white"> Version 1.1.3 </span> - 22th Jan, 2023</h5>
             <ul class="list-unstyled mt-3">
-                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Change onlick event to onauxclick</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Change onclick event to onauxclick</li>
             </ul>
 
             <h5 class="mt-4"> <span class="p-2 bg-info shadow rounded text-white"> Version 1.1.2 </span> - 16th Jan, 2023</h5>
@@ -320,13 +346,13 @@
             <h5 class="mt-4"> <span class="p-2 bg-info shadow rounded text-white"> Version 0.3.3 </span> - 22th Oct, 2022</h5>
             <ul class="list-unstyled mt-3">
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Added related medias button to (<b>Tags/Detail</b> and <b>Tags</b>)</li>
-                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Some minor perfomance improvements</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Some minor performance improvements</li>
             </ul> 
 
             <h5 class="mt-4"> <span class="p-2 bg-info shadow rounded text-white"> Version 0.3.2 </span> - 21th Oct, 2022</h5>
             <ul class="list-unstyled mt-3">
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Increased lists loading speed (<b>Medias</b> and <b>Tags</b>) by 20-50%</li>
-                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Implemented entity chaching</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Implemented entity caching</li>
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixed some layouts issues</li>
             </ul> 
 
@@ -339,7 +365,7 @@
             <h5 class="mt-4"> <span class="p-2 bg-success shadow rounded text-white"> Version 0.3.0 </span> - 20th Oct, 2022</h5>
             <ul class="list-unstyled mt-3">
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Implemented drag-and-drop collection reorder</li>
-                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixed disapearing tags in collection after reordering</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixed disappearing tags in collection after reordering</li>
             </ul> 
 
             <h5 class="mt-4"> <span class="p-2 bg-info shadow rounded text-white"> Version 0.2.1 </span> - 19th Oct, 2022</h5>
@@ -361,7 +387,7 @@
             <ul class="list-unstyled mt-3">
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Added <b>Medias/Index</b> "Random" ordering</li>
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Added <b>Medias/Collection</b> view for Collection medias</li>
-                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Reworker <b>Medias/Detail</b> for single media view</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Reworked <b>Medias/Detail</b> for single media view</li>
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixed <b>Tags/Index</b> MediasCount sorting</li>
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixed <b>Medias/Detail</b> pages return url</li>
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixed <b>Medias/Index</b> filter button returnUrl</li>
@@ -370,7 +396,7 @@
             <h5 class="mt-4"> <span class="p-2 bg-info shadow rounded text-white"> Version 0.0.2 </span> - 8th Oct, 2022</h5>
             <ul class="list-unstyled mt-3">
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixed <b>Medias/Edit</b> ReturnUrls</li>
-                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixed <b>Medias/Index</b> missing tags in filter queryes</li>
+                <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixed <b>Medias/Index</b> missing tags in filter queries</li>
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixed <b>Medias/Upload</b> unnecessary require validation for tags textarea</li>
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixed <b>Tags/Detail</b> tags links</li>
                 <li class="text-muted ml-3"><i class="mdi mdi-circle-medium mr-2"></i>Fixed overlapping <b>Footer</b> on pages</li>

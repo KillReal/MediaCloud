@@ -11,7 +11,6 @@ namespace MediaCloud.WebApp.Pages
     public class JoininModel(IUserProvider userProvider) : PageModel
     {
         private readonly ILogger _logger = LogManager.GetLogger("Actor");
-        private readonly IUserProvider _actorProvider = userProvider;
 
         [BindProperty]
         public RegistrationResult Result { get; set; } = new();
@@ -24,7 +23,7 @@ namespace MediaCloud.WebApp.Pages
 
         public IActionResult OnGet()
         {
-            if (_actorProvider.GetCurrentOrDefault() != null)
+            if (userProvider.GetCurrentOrDefault() != null)
             {
                 return Redirect(Request.Headers.Referer.ToString());
             }
@@ -34,13 +33,13 @@ namespace MediaCloud.WebApp.Pages
 
         public IActionResult OnPost()
         {
-            Result = _actorProvider.Register(AuthData, InviteCode);
+            Result = userProvider.Register(AuthData, InviteCode);
 
             _logger.Info(Result.Message);
 
             if (Result.IsSuccess)
             {
-                return Redirect("/Account/Login");
+                return Redirect("/User/Login");
             }
 
             CurrentUser = null;

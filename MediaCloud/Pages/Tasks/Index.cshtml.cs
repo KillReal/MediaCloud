@@ -1,21 +1,19 @@
 using MediaCloud.TaskScheduler;
+using MediaCloud.WebApp.Services.ConfigProvider;
 using MediaCloud.WebApp.Services.UserProvider;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace MediaCloud.WebApp.Pages.Tasks
 {
-    public class ListModel(IUserProvider userProvider, ITaskScheduler taskScheduler) : AuthorizedPageModel(userProvider)
+    public class ListModel(IUserProvider userProvider, ITaskScheduler taskScheduler, IConfigProvider configProvider) 
+        : AuthorizedPageModel(userProvider, configProvider)
     {
-        private readonly ITaskScheduler _taskScheduler = taskScheduler;
-
         [BindProperty]
-        public TaskSchedulerStatus TaskSchedulerStatus { get; set; }
+        public TaskSchedulerStatus TaskSchedulerStatus { get; set; } = taskScheduler.GetStatus();
 
         public IActionResult OnGet()
         {
-            TaskSchedulerStatus = _taskScheduler.GetStatus();
-
             if (CurrentUser == null || CurrentUser.IsAdmin == false)
             {
                 return Redirect("/Error");
@@ -31,7 +29,7 @@ namespace MediaCloud.WebApp.Pages.Tasks
                 return Redirect("/Error");
             }
 
-            _taskScheduler.CleanupQueue();
+            taskScheduler.CleanupQueue();
 
             return Redirect("/Tags");
         }
@@ -43,7 +41,7 @@ namespace MediaCloud.WebApp.Pages.Tasks
                 return Redirect("/Error");
             }
 
-            _taskScheduler.CleanupQueue(false);
+            taskScheduler.CleanupQueue(false);
 
             return Redirect("/Tags");
         }

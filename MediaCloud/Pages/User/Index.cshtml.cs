@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using MediaCloud.Data.Models;
 using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp.Services.ConfigProvider;
@@ -17,10 +18,13 @@ namespace MediaCloud.WebApp.Pages
         public UserSettings UserSettings { get; set; }
         [BindProperty]
         public EnvironmentSettings? EnvironmentSettings { get; set; }
-        [BindProperty]
+        [BindProperty]  
         public bool IsEnvironmentSettingsChanged { get; set; }
+        [BindProperty]
+        public List<string> AutotaggingAIModels { get; set; }
 
-        public IndexModel(IUserProvider userProvider, IConfigProvider configProvider) : base(userProvider)
+        public IndexModel(IUserProvider userProvider, IConfigProvider configProvider, IAutotagService autotagService) 
+            : base(userProvider, configProvider)
         {
             _logger = LogManager.GetLogger("Actor");
             _configProvider = configProvider;
@@ -31,6 +35,8 @@ namespace MediaCloud.WebApp.Pages
             EnvironmentSettings = User.IsAdmin 
                 ? _configProvider.EnvironmentSettings 
                 : null;
+
+            AutotaggingAIModels = autotagService.GetAvailableModels();
         }
 
         public IActionResult OnGet()
@@ -40,6 +46,11 @@ namespace MediaCloud.WebApp.Pages
 
         public IActionResult OnPost()
         {
+            if (!ModelState.IsValid)
+            {
+                return Redirect($"/Error?message={string.Join("\n", ModelState.Select(x => x.Value?.Errors).Where(y=>y?.Count>0).ToList())}");
+            }
+            
             _configProvider.UserSettings = UserSettings;
 
             var actualActor = _userProvider.GetCurrent();
@@ -49,7 +60,7 @@ namespace MediaCloud.WebApp.Pages
                 _configProvider.EnvironmentSettings = EnvironmentSettings;
             }
 
-            return Page();
+            return Redirect("/User");
         }
     }
 }

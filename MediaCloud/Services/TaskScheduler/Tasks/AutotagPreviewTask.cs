@@ -2,6 +2,7 @@
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
 using MediaCloud.TaskScheduler.Tasks;
+using MediaCloud.WebApp.Repositories;
 using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.Extensions.Caching.Memory;
@@ -11,31 +12,11 @@ namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
 {
     public class AutotagPreviewTask(User actor, List<Guid> previewsIds) : Task(actor), ITask
     {
-        public new List<Guid> AffectedEntities = previewsIds;
-        private double _aproximateExecutionTime;
+        private int _workCount = previewsIds.Count;
 
         public override int GetWorkCount()
         {
-            if (IsCompleted)
-            {
-                return 0;
-            }
-
-            if (ExecutedAt == DateTime.MinValue)
-            {
-                return 100;
-            }
-
-            var time = (DateTime.Now - ExecutedAt).TotalSeconds;
-
-            if (time > _aproximateExecutionTime)
-            {
-                return 1;
-            }
-
-            var progress = (double)(time / _aproximateExecutionTime) * 100;
-
-            return 100 - (int)Math.Clamp(progress, 0, 100);
+            return _workCount;
         }
 
         public override void DoTheTask(IServiceProvider serviceProvider, IUserProvider userProvider, StatisticProvider statisticProvider)
@@ -49,37 +30,34 @@ namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
             var successfullyProceededCount = 0;
             var message = "";
 
-            var previews = new List<Preview>();
-
-            foreach (var id in AffectedEntities)
+            var previews = previewsIds.Select(id => previewRepository.Get(id))
+                                            .OfType<Preview>()
+                                            .ToList();
+            
+            foreach (var preview in previews)
             {
-                var preview = previewRepository.Get(id);
+                var result = autotagService.AutotagPreview(preview, tagRepository);
 
-                if (preview == null)
-                {
-                    continue;
-                }
-
-                previews.Add(preview);
-            }
-
-            var results = autotagService.AutotagPreviewRange(previews, tagRepository);
-
-            foreach (var result in results)
-            {
-                var preview = previews.First(x => x.Id == result.PreviewId);
-
-                if (result.IsSuccess && result.Tags.Count != 0)
+                if (result.IsSuccess)
                 {
                     var tags = preview.Tags.Union(result.Tags).ToList();
                     tagRepository.UpdatePreviewLinks(tags, preview);
+                    
+                    if (preview.Rating != result.Rating)
+                    {
+                        preview.Rating = result.Rating;
+                        previewRepository.Update(preview);
+                    }
+                    
                     successfullyProceededCount++;
-                    message += $"\nPreview {preview.Id}\nSuggested aliases: {result.SuggestedAliases}";
+                    message += $"\nPreview {preview.Id}\nSuggested aliases: {result.SuggestedAliases}\nRating: {result.Rating}";
                 }
                 else 
                 {
                     message += $"\nPreview {preview.Id} failed to proceed due to: {result.ErrorMessage}";
                 }
+
+                _workCount--;
             }
 
             CompletionMessage = $"Proceeded {successfullyProceededCount} previews [ {message} ]";

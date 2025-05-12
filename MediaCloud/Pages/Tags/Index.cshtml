@@ -1,7 +1,6 @@
 ﻿@page
 @model MediaCloud.Pages.Tags.ListModel
 @using MediaCloud.Extensions
-@using MediaCloud.Data.Types
 
 @{
     ViewData["Title"] = "Tag list";
@@ -12,9 +11,9 @@
     var createdAtSortType = "CreatedAtDesc";
     var createdAtSortSymbol = "";
     var createdAtButtonStyle = "btn-info";
-    var typeSortType = "TypeDesc";
-    var typeSortSymbol = "";
-    var typeButtonStyle = "btn-info";
+    var colorSortType = "ColorDesc";
+    var colorSortSymbol = "";
+    var colorButtonStyle = "btn-info";
     var previewsCountSortType = "PreviewsCountDesc";
     var previewsCountSortSymbol = "";
     var previewsCountButtonStyle = "btn-info";
@@ -41,15 +40,15 @@
         createdAtButtonStyle = "btn-warning";
     }
 
-    @if (@Model.ListBuilder.Sorting.PropertyName == "TypeDesc"){
-        typeSortType = "Type";
-        typeSortSymbol = "↓";
-        typeButtonStyle = "btn-warning";
+    @if (@Model.ListBuilder.Sorting.PropertyName == "ColorDesc"){
+        colorSortType = "Color";
+        colorSortSymbol = "↓";
+        colorButtonStyle = "btn-warning";
     }
-    else if (@Model.ListBuilder.Sorting.PropertyName == "Type"){
-        typeSortType = "TypeDesc";
-        typeSortSymbol = "↑";
-        typeButtonStyle = "btn-warning";
+    else if (@Model.ListBuilder.Sorting.PropertyName == "Color"){
+        colorSortType = "ColorDesc";
+        colorSortSymbol = "↑";
+        colorButtonStyle = "btn-warning";
     }
 
     @if (@Model.ListBuilder.Sorting.PropertyName == "PreviewsCountDesc"){
@@ -71,8 +70,8 @@
 
     <div class="button-panel justify-content-start">
         <div class="button-group">
-             <a class="btn btn-success btn-rounded" asp-page="Create">
-                Create
+            <a class="btn btn-success btn-rounded" asp-page="Create">
+                ✏️ Create
             </a>
             <div class="separator"></div>
         </div>
@@ -82,25 +81,45 @@
                 Sort:
             </div>
             <a class="btn @nameButtonStyle btn-rounded text-nowrap" 
-                asp-page="Index" 
-                asp-route-sort=@(nameSortType)>
+               asp-page="Index" 
+               asp-route-sort=@(nameSortType)>
                 🅰️ @(nameSortSymbol)
             </a>
             <a class="btn @createdAtButtonStyle btn-rounded text-nowrap" 
-                asp-page="Index" 
-                asp-route-sort=@(createdAtSortType)>
+               asp-page="Index" 
+               asp-route-sort=@(createdAtSortType)>
                 📅 @(createdAtSortSymbol)
             </a>
-            <a class="btn @typeButtonStyle btn-rounded text-nowrap" 
-                asp-page="Index" 
-                asp-route-sort=@(typeSortType)>
-                🔖 @(typeSortSymbol)
+            <a class="btn @colorButtonStyle btn-rounded text-nowrap" 
+               asp-page="Index" 
+               asp-route-sort=@(colorSortType)>
+                🔖 @(colorSortSymbol)
             </a>
             <a class="btn @previewsCountButtonStyle btn-rounded text-nowrap" 
-                asp-page="Index" 
-                asp-route-sort=@(previewsCountSortType)>
+               asp-page="Index" 
+               asp-route-sort=@(previewsCountSortType)>
                 🗃️ @(previewsCountSortSymbol)
             </a>
+            <div class="separator"></div>
+        </div>
+        <div class="align-self-center d-flex flex-grow-1">
+            <div class="button-group w-100">
+                <div class="descriptor">
+                    Search:
+                </div>
+                <div class="button-group-input autocomplete-list autocomplete flex-grow-1">
+                    <input asp-for=@Model.ListBuilder.Filtering.Filter
+                           class="form-control"
+                           id="filterGrab"
+                           placeholder="example: @(Model.Tags.FirstOrDefault() == null
+                                                     ? "TagName"
+                                                     : Model.Tags.FirstOrDefault()?.Name)"
+                           autocomplete="off"/>
+                </div>
+                <a class="btn btn-info btn-rounded me-0" onclick="filterClicked()">
+                    ✓ Apply
+                </a>
+            </div>
         </div>
 
     </div>  
@@ -108,25 +127,25 @@
 
     <partial name="~/Pages/Shared/_Pagination.cshtml" />
 
-    <table class="table" style="background-color: white; border-radius: 1rem">
+    <table class="table">
         <thead>
-            <tr>
-                <th class="table-item-padding">
-                    @Html.DisplayNameFor(model => model.Tags[0].Name)
-                </th>
-                <th class="table-item-padding">
-                    @Html.DisplayNameFor(model => model.Tags[0].Description)
-                </th>
-                <th class="table-item-padding">
-                    @Html.DisplayNameFor(model => model.Tags[0].Type)
-                </th>
-                <th class="table-item-padding">
-                    Files count
-                </th>
-            </tr>
+        <tr>
+            <th class="table-item-padding">
+                @Html.DisplayNameFor(model => model.Tags[0].Name)
+            </th>
+            <th class="table-item-padding">
+                @Html.DisplayNameFor(model => model.Tags[0].Description)
+            </th>
+            <th class="table-item-padding">
+                @Html.DisplayNameFor(model => model.Tags[0].Color)
+            </th>
+            <th class="table-item-padding">
+                Files count
+            </th>
+        </tr>
         </thead>
         <tbody>
-    @foreach (var item in Model.Tags) {
+        @foreach (var item in Model.Tags) {
             <tr class="list-clickable" 
                 onclick="document.location='/Tags/Detail?id=@item.Id';">
                 <td class="table-item-padding">
@@ -136,16 +155,45 @@
                     @Html.DisplayFor(modelItem => item.Description)
                 </td>
                 <td class="table-item-padding">
-                    @(item.Type.GetDisplayName())
+                    @(item.Color.GetDisplayName())
                 </td>
                 <td class="table-item-padding">
                     @Html.DisplayFor(modelItem => item.PreviewsCount)
                 </td>
             </tr>
-    }
+        }
         </tbody>
     </table>
 
     <partial name="~/Pages/Shared/_Pagination.cshtml" />
 </div>
+
+<script>
+    var filterInput = document.getElementById("filterGrab");
+    var filterInputChanged = false;
+    
+    filterInput.onkeyup = function (e) {
+        if (e.keyCode === 13) {
+            if (filterInput.value !== "" || filterInputChanged) {
+                filterClicked();
+            }
+        }
+        else {
+            filterInputChanged = true;
+        }
+    }
+
+    document.onkeyup = function (e) {
+        if (e.keyCode === 13) {
+            filterInput.focus();
+        }
+    }
+
+    function filterClicked()
+    {
+        var filter = document.getElementById("filterGrab").value.replace(/\\/g, '');
+        window.location.href = "/Tags?filter=" + filter + "&sort=@(Model.ListBuilder.Sorting.PropertyName)&isUseAutoload=@(Model.IsAutoloadEnabled)";
+    }
+
+</script>
 
