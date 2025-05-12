@@ -19,6 +19,7 @@ TODO:
 ### Version 2.2.0 - 12 May, 2025
 - Add NSFW rating for previews
 - Gallery filtering by preview NSFW rating
+- Upgraded SixLabours.ImageSharp from 3.1.5 to 3.1.8
 - Improved dark theme layout
 - Minor layout fixes
 
