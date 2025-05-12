@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using MediaCloud.WebApp.Data.Models.Interfaces;
 
-namespace MediaCloud.WebApp.Repositories.Base
+namespace MediaCloud.WebApp.Repositories
 {
     public class BlobNameFiltration<T> where T : IBlobNameSearchable
     {

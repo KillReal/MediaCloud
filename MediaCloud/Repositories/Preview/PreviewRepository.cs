@@ -1,23 +1,19 @@
-﻿using DynamicExpression.Entities;
-using DynamicExpression.Extensions;
+﻿using DynamicExpression.Extensions;
 using MediaCloud.Builders.List;
 using MediaCloud.Data;
 using MediaCloud.Data.Models;
-using MediaCloud.WebApp.Repositories.Base;
 using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp.Services.Data.Repositories.Interfaces;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.EntityFrameworkCore;
 using NLog;
 using MediaCloud.Repositories;
-using MediaCloud.Data.Types;
 using MediaCloud.WebApp.Builders;
-using MediaCloud.WebApp.Data.Types;
-using Microsoft.IdentityModel.Tokens;
 
 namespace MediaCloud.WebApp.Repositories
 {
-    public class PreviewRepository(AppDbContext context, StatisticProvider statisticProvider, IUserProvider actorProvider) : BaseRepository<Preview>(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider), IListBuildable<Preview>
+    public class PreviewRepository(AppDbContext context, StatisticProvider statisticProvider, IUserProvider actorProvider) 
+        : BaseRepository<Preview>(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider), IListBuildable<Preview>
     {
         private IQueryable<Preview> GetFilterQuery(IQueryable<Preview> query, string filter)
         {
@@ -47,9 +43,8 @@ namespace MediaCloud.WebApp.Repositories
             {
                 return query;
             }
-            return filter.Contains("notag") 
-                ? query.Where(x => x.Tags.Count == 0) 
-                : GetFilterQuery(query, filter);
+
+            return GetFilterQuery(query, filter);
         }
 
         public override Preview? Get(Guid id)

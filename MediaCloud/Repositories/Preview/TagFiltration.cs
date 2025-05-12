@@ -1,13 +1,13 @@
 ﻿using System.Linq.Expressions;
-using DynamicExpression.Entities;
 using MediaCloud.Data.Models;
 using MediaCloud.WebApp.Data.Models.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace MediaCloud.WebApp.Repositories.Base
+namespace MediaCloud.WebApp.Repositories
 {
-    public class TagFiltration<T> where T : ITaggable
+    public class TagFiltration<T> : IHasCustomAliases where T : ITaggable
     {
+        private readonly bool _noTags;
         private List<Guid> _positiveTagIds { get; set; }
 
         private List<Guid> _negativeTagIds { get; set; }
@@ -15,6 +15,12 @@ namespace MediaCloud.WebApp.Repositories.Base
         public TagFiltration(string filter, DbSet<Tag> tagsDbSet)
         {
             var tags = GetDeduplicatedTags(filter);
+            
+            if (filter.Contains("notags"))
+            {
+                _noTags = true;
+                return;
+            }
 
             var positiveTags = new List<string>();
             var negativeTags = new List<string>();
@@ -38,6 +44,11 @@ namespace MediaCloud.WebApp.Repositories.Base
         
         public Expression<Func<T, bool>> GetExpression()
         {
+            if (_noTags)
+            {
+                return x => x.Tags.Count == 0;
+            }
+            
             return x => (x.Tags.Concat(x.Collection.Previews.Where(x => x.Order != 0)
                                     .SelectMany(z => z.Tags))
                                 .Distinct()
@@ -60,6 +71,11 @@ namespace MediaCloud.WebApp.Repositories.Base
             return tags.Length < 2 
                 ? tags 
                 : [.. tags.Distinct()];
+        }
+
+        public static List<string> GetAliasSuggestions()
+        {
+            return ["NoTags"];
         }
     }
 }

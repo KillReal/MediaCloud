@@ -8,10 +8,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IO.Compression;
 using MediaCloud.Extensions;
+using MediaCloud.WebApp.Data.Types;
 using MediaCloud.WebApp.Services.Statistic;
 using MediaCloud.WebApp.Services.TaskScheduler.Tasks;
 using MediaCloud.WebApp.Repositories;
-using MediaCloud.WebApp.Repositories.Base;
 
 namespace MediaCloud.WebApp.Controllers
 {
@@ -21,16 +21,20 @@ namespace MediaCloud.WebApp.Controllers
         IUserProvider userProvider,
         StatisticProvider statisticProvider) : Controller
     {
+        private readonly List<string> _customAliases = RatingFiltration<Preview>.GetAliasSuggestions()
+                .Union(TagFiltration<Preview>.GetAliasSuggestions().Select(x => new string(x))).ToList();
+        
         public List<string> GetTagSuggestions(string searchString, int limit = 10)
         {
             var tags = tagRepository.GetSuggestionsByString(searchString, limit);
-            return tags.Union(RatingFiltration<Preview>.GetAliasSuggestions()).ToList();
+            
+            return tags.Union(_customAliases).ToList();
         }
 
         public async Task<List<object>> PreviewsBatchAsync(ListRequest listRequest)
         {
-            var ListBuilder = new ListBuilder<Preview>(listRequest, configProvider.UserSettings);
-            var previews = await ListBuilder.BuildAsync(previewRepository);
+            var listBuilder = new ListBuilder<Preview>(listRequest, configProvider.UserSettings);
+            var previews = await listBuilder.BuildAsync(previewRepository);
 
             var jsonPreviews = new List<object>();
             foreach (var preview in previews)
@@ -52,8 +56,8 @@ namespace MediaCloud.WebApp.Controllers
 
         public async Task<ActionResult> GetPreviewsBatchAsync(ListRequest listRequest)
         {
-            var ListBuilder = new ListBuilder<Preview>(listRequest, configProvider.UserSettings);
-            var previews = await ListBuilder.BuildAsync(previewRepository);
+            var listBuilder = new ListBuilder<Preview>(listRequest, configProvider.UserSettings);
+            var previews = await listBuilder.BuildAsync(previewRepository);
 
             return PartialView("/Pages/Gallery/_Gallery.cshtml", new _GalleryPageModel(previews, configProvider.UserSettings.AllowedNSFWContent));
         }

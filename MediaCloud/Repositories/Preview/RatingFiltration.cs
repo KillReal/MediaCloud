@@ -3,9 +3,9 @@ using MediaCloud.Extensions;
 using MediaCloud.WebApp.Data.Models.Interfaces;
 using MediaCloud.WebApp.Data.Types;
 
-namespace MediaCloud.WebApp.Repositories.Base
+namespace MediaCloud.WebApp.Repositories
 {
-    public class RatingFiltration<T> where T : IPreviewRatable
+    public class RatingFiltration<T> : IHasCustomAliases where T : IPreviewRatable
     {
         private string _filterWithoutRatings;
         private readonly List<PreviewRatingType> _positiveRatingTypes = [];
