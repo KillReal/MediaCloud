@@ -9,7 +9,7 @@ namespace MediaCloud.WebApp.Repositories
         
         public BlobNameFiltration(string filter)
         {
-            _searchName = filter.Split(' ').First();
+            _searchName = filter.Split(' ', StringSplitOptions.RemoveEmptyEntries).First();
         }
         
         public Expression<Func<T, bool>> GetExpression()

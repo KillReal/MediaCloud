@@ -66,7 +66,7 @@ namespace MediaCloud.WebApp.Repositories
         
         private static string[] GetDeduplicatedTags(string tagString)
         {
-            var tags = tagString.Split(' ');
+            var tags = tagString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
             return tags.Length < 2 
                 ? tags 

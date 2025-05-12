@@ -43,7 +43,7 @@ namespace MediaCloud.WebApp.Repositories
                         && _negativeRatingTypes.Any(y => x.Rating == y) == false;
         }
 
-        public string GetFilterWIthoutRatings()
+        public string GetFilterWithoutRatings()
         {
             return _filterWithoutRatings;
         }

@@ -20,7 +20,7 @@ namespace MediaCloud.WebApp.Repositories
             filter = filter.ToLower();
 
             var ratingFilter = new RatingFiltration<Preview>(filter);
-            filter = ratingFilter.GetFilterWIthoutRatings();
+            filter = ratingFilter.GetFilterWithoutRatings();
 
             if (string.IsNullOrWhiteSpace(filter))
             {
