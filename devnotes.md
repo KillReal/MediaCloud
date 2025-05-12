@@ -16,7 +16,13 @@ TODO:
 
 # Changelog
 
-### Version 2.1 - tbd, 2025
+### Version 2.2.0 - 12 May, 2025
+- Add NSFW rating for previews
+- Gallery filtering by preview NSFW rating
+- Improved dark theme layout
+- Minor layout fixes
+
+### Version 2.1.0 - 23th Mar, 2025
 - Added dark theme
 - Added search by file name
 - Tag types switched to tag colors
