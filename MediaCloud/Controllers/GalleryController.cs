@@ -11,6 +11,7 @@ using MediaCloud.Extensions;
 using MediaCloud.WebApp.Services.Statistic;
 using MediaCloud.WebApp.Services.TaskScheduler.Tasks;
 using MediaCloud.WebApp.Repositories;
+using MediaCloud.WebApp.Repositories.Base;
 
 namespace MediaCloud.WebApp.Controllers
 {
@@ -22,7 +23,8 @@ namespace MediaCloud.WebApp.Controllers
     {
         public List<string> GetTagSuggestions(string searchString, int limit = 10)
         {
-            return tagRepository.GetSuggestionsByString(searchString, limit);
+            var tags = tagRepository.GetSuggestionsByString(searchString, limit);
+            return tags.Union(RatingFiltration<Preview>.GetAliasSuggestions()).ToList();
         }
 
         public async Task<List<object>> PreviewsBatchAsync(ListRequest listRequest)

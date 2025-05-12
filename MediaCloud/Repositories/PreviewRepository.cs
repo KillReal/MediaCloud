@@ -13,46 +13,30 @@ using MediaCloud.Repositories;
 using MediaCloud.Data.Types;
 using MediaCloud.WebApp.Builders;
 using MediaCloud.WebApp.Data.Types;
+using Microsoft.IdentityModel.Tokens;
 
 namespace MediaCloud.WebApp.Repositories
 {
     public class PreviewRepository(AppDbContext context, StatisticProvider statisticProvider, IUserProvider actorProvider) : BaseRepository<Preview>(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider), IListBuildable<Preview>
     {
-        private static string[] GetDeduplicatedTags(string tagString)
-        {
-            var tags = tagString.Split(' ');
-
-            return tags.Length < 2 
-                ? tags 
-                : [.. tags.Distinct()];
-        }
-
         private IQueryable<Preview> GetFilterQuery(IQueryable<Preview> query, string filter)
         {
-            var tags = GetDeduplicatedTags(filter);
+            filter = filter.ToLower();
 
-            var positiveTags = new List<string>();
-            var negativeTags = new List<string>();
-            foreach (var tag in tags)
+            var ratingFilter = new RatingFiltration<Preview>(filter);
+            filter = ratingFilter.GetFilterWIthoutRatings();
+
+            if (string.IsNullOrWhiteSpace(filter))
             {
-                if (tag.Contains('!'))
-                {
-                    negativeTags.Add(tag[1..]);
-                    continue;
-                }
-
-                positiveTags.Add(tag);
+                return query.Where(ratingFilter.GetExpression());
             }
-
-            var positiveTagIds = _context.Tags.Where(x => positiveTags.Any(y => y.ToLower() == x.Name.ToLower()))
-                                              .Select(x => x.Id);
-            var negativeTagIds = _context.Tags.Where(x => negativeTags.Any(y => y.ToLower() == x.Name.ToLower()))
-                                              .Select(x => x.Id);
-
-            var tagFilter = new TagFilter<Preview>([.. positiveTagIds], [.. negativeTagIds]);
-            var nameFilter = new BlobNameFilter<Preview>(filter);
             
-            var filterExpression = tagFilter.GetExpression().Or(nameFilter.GetExpression());
+            var tagFilter = new TagFiltration<Preview>(filter, _context.Tags);
+            var nameFilter = new BlobNameFiltration<Preview>(filter);
+            
+            var filterExpression = tagFilter.GetExpression()
+                                    .And(ratingFilter.GetExpression())
+                                    .Or(nameFilter.GetExpression());
             
             return query.Where(filterExpression);
         }

@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MediaCloud.Data.Models
 {
-    public class Preview : Entity, ITaggable, IBlobNameSearchable
+    public class Preview : Entity, ITaggable, IBlobNameSearchable, IPreviewRatable
     {
         [ForeignKey("BlobId")]
         public virtual Blob Blob { get; set; }
