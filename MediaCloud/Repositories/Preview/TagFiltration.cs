@@ -8,9 +8,9 @@ namespace MediaCloud.WebApp.Repositories
     public class TagFiltration<T> : IHasCustomAliases where T : ITaggable
     {
         private readonly bool _noTags;
-        private List<Guid> _positiveTagIds { get; set; }
+        private List<Guid> _positiveTagIds { get; set; } = [];
 
-        private List<Guid> _negativeTagIds { get; set; }
+        private List<Guid> _negativeTagIds { get; set; } = [];
 
         public TagFiltration(string filter, DbSet<Tag> tagsDbSet)
         {
@@ -49,18 +49,17 @@ namespace MediaCloud.WebApp.Repositories
                 return x => x.Tags.Count == 0;
             }
             
-            return x => (x.Tags.Concat(x.Collection.Previews.Where(x => x.Order != 0)
+            return t => (t.Tags.Concat(t.Collection!.Previews.Where(x => x.Order != 0)
+                                 .SelectMany(z => z.Tags))
+                             .Distinct()
+                             .Count(y => _positiveTagIds.Contains(y.Id)) == _positiveTagIds.Count 
+                         && (_positiveTagIds.Count != 0 || _negativeTagIds.Count != 0) 
+                        )
+                        && (t.Tags
+                                .Concat(t.Collection!.Previews.Where(x => x.Order != 0)
                                     .SelectMany(z => z.Tags))
                                 .Distinct()
-                                .Where(y => _positiveTagIds.Contains(y.Id))
-                                .Count() == _positiveTagIds.Count 
-                                    && (_positiveTagIds.Count != 0 || _negativeTagIds.Count != 0) 
-                        )
-                        && (x.Tags.Concat(x.Collection.Previews.Where(x => x.Order != 0)
-                                .SelectMany(z => z.Tags))
-                            .Distinct()
-                            .Where(y => _negativeTagIds.Contains(y.Id))
-                            .Any() == false
+                                .Any(y => _negativeTagIds.Contains(y.Id)) == false
                         );
         }
         

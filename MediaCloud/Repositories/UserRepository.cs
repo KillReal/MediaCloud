@@ -45,14 +45,9 @@ namespace MediaCloud.Repositories
 
         public bool TryRemove(Guid id)
         {
-            var actor = Get(id);
+            var user = Get(id);
 
-            if (actor == null)
-            {
-                return false;
-            }
-
-            _context.Users.Remove(actor);
+            _context.Users.Remove(user);
             _context.SaveChanges();
 
             return true;
@@ -60,7 +55,7 @@ namespace MediaCloud.Repositories
 
         public async Task<List<User>> GetListAsync(ListBuilder<User> listBuilder)
         {
-            return await _context.Users.AsNoTracking().Where(x => x.Name.ToLower().Contains(listBuilder.Filtering.Filter.ToLower()))
+            return await _context.Users.AsNoTracking().Where(x => x.Name != null && x.Name.ToLower().Contains(listBuilder.Filtering.Filter.ToLower()))
                                                     .Order(listBuilder.Sorting.GetOrder())
                                                     .Skip(listBuilder.Pagination.Offset)
                                                     .Take(listBuilder.Pagination.Count)
@@ -69,7 +64,7 @@ namespace MediaCloud.Repositories
 
         public async Task<int> GetListCountAsync(ListBuilder<User> listBuilder)
             => await _context.Users.AsNoTracking()
-                .Where(x => x.Name.ToLower().Contains(listBuilder.Filtering.Filter.ToLower()))
+                .Where(x => x.Name != null && x.Name.ToLower().Contains(listBuilder.Filtering.Filter.ToLower()))
                 .CountAsync();
     }
 }

@@ -28,7 +28,7 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
         public bool ListAutoloadingEnabled { get; set; }
         [Required]
         [AllowedValues("Light", "Dark")]
-        public string UITheme { get; set; }
+        public string UITheme { get; set; } = "Light";
         [Required]
         [AllowedValues(PreviewRatingType.Unknown, PreviewRatingType.General, PreviewRatingType.Sensitive, PreviewRatingType.Questionable, PreviewRatingType.Explicit)]
         public PreviewRatingType AllowedNSFWContent  { get; set; }

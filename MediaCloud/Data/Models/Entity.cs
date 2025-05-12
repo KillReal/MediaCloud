@@ -6,7 +6,7 @@ namespace MediaCloud.Data.Models
     {
         [ForeignKey("Creator")]
         public Guid CreatorId { get; set; }
-        public virtual User Creator { get; set; }
-        public virtual User Updator { get; set; }
+        public virtual User Creator { get; set; } = null!;
+        public virtual User Updator { get; set; } = null!;
     }
 }

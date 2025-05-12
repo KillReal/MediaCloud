@@ -28,7 +28,7 @@ namespace MediaCloud.Pages
             ActivityBacktrackDayCount = _configProvider.UserSettings.StatisticActivityBacktrackDayCount;
             Snapshots = statisticProvider.GetAllSnapshots();
 
-            var tagsCountLimit = configProvider.UserSettings.StatisticTagsTopCount;
+            var tagsCountLimit = _configProvider.UserSettings.StatisticTagsTopCount;
             
             Tags = tagRepository.GetTopUsed(tagsCountLimit).Where(x => x.PreviewsCount > 0).ToList();
             TotalTagsCount = await tagRepository.GetTotalCountAsync();

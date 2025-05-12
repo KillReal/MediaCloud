@@ -2,6 +2,6 @@
 
 public class AutotagResponse
 {
-    public string Aliases { get; set; }
-    public string Rating { get; set; }
+    public required string Aliases { get; set; }
+    public required string Rating { get; set; }
 }

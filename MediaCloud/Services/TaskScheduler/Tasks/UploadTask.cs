@@ -53,14 +53,13 @@ namespace MediaCloud.TaskScheduler.Tasks
     public class UploadTask(User user, List<UploadedFile> uploadedFiles, bool isCollection, string? tagString) 
         : Task(user), ITask
     {
-        protected IConfigProvider _configProvider;
-        protected List<Preview> _processedPreviews = [];
+        private protected List<Preview> _processedPreviews = [];
 
-        public List<UploadedFile> UploadedFiles { get; set; } = [.. uploadedFiles.OrderByDescending(x => x.Name, new FileNameComparer())];
+        private List<UploadedFile> UploadedFiles { get; set; } = [.. uploadedFiles.OrderByDescending(x => x.Name, new FileNameComparer())];
 
-        public bool IsCollection { get; set; } = isCollection;
+        private bool IsCollection { get; set; } = isCollection;
 
-        public string TagString { get; set; } = tagString ?? "";
+        private string TagString { get; set; } = tagString ?? "";
 
         public override int GetWorkCount() => UploadedFiles.Count(x => x.IsProcessed == false);
 
@@ -68,7 +67,7 @@ namespace MediaCloud.TaskScheduler.Tasks
         {
             var context = serviceProvider.GetRequiredService<AppDbContext>();
             var pictureService = serviceProvider.GetRequiredService<IPictureService>();
-            _configProvider = serviceProvider.GetRequiredService<IConfigProvider>();
+            var configProvider = serviceProvider.GetRequiredService<IConfigProvider>();
 
             var sizeToUpload = UploadedFiles.Select(x => x.Content.LongLength).Sum();
             var targetSize = statisticProvider.GetTodaySnapshot().MediasSize + sizeToUpload;
@@ -79,7 +78,7 @@ namespace MediaCloud.TaskScheduler.Tasks
             }
 
             var tagRepository = new TagRepository(context, statisticProvider, userProvider);
-            var blobRepository = new BlobRepository(context, statisticProvider, userProvider, pictureService, _configProvider);
+            var blobRepository = new BlobRepository(context, statisticProvider, userProvider, pictureService, configProvider);
 
             var foundTags = tagRepository.GetRangeByString(TagString);
             
