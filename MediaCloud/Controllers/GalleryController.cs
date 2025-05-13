@@ -1,40 +1,60 @@
 ﻿using MediaCloud.Builders.List;
 using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
-using MediaCloud.TaskScheduler;
 using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp.Services.ConfigProvider;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IO.Compression;
 using MediaCloud.Extensions;
-using MediaCloud.WebApp.Data.Types;
 using MediaCloud.WebApp.Services.Statistic;
-using MediaCloud.WebApp.Services.TaskScheduler.Tasks;
 using MediaCloud.WebApp.Repositories;
 
 namespace MediaCloud.WebApp.Controllers
 {
     [Authorize]
-    public class GalleryController(IConfigProvider configProvider, TagRepository tagRepository,
-        PreviewRepository previewRepository, CollectionRepository collectionRepository,
-        IUserProvider userProvider,
-        StatisticProvider statisticProvider) : Controller
+    public class GalleryController : Controller
     {
-        private readonly List<string> _customAliases = RatingFiltration<Preview>.GetAliasSuggestions()
-                .Union(TagFiltration<Preview>.GetAliasSuggestions().Select(x => new string(x))).ToList();
+        private readonly IConfigProvider _configProvider;
+        private readonly TagRepository _tagRepository;
+        private readonly PreviewRepository _previewRepository;
+        private readonly CollectionRepository _collectionRepository;
+        private readonly IUserProvider _userProvider;
+        private readonly StatisticProvider _statisticProvider;
+
+        private readonly List<string> _customAliases = [];
+        
+        public GalleryController(IConfigProvider configProvider, TagRepository tagRepository,
+            PreviewRepository previewRepository, CollectionRepository collectionRepository,
+            IUserProvider userProvider,
+            StatisticProvider statisticProvider)
+        {
+            _configProvider = configProvider;
+            _tagRepository = tagRepository;
+            _previewRepository = previewRepository;
+            _collectionRepository = collectionRepository;
+            _userProvider = userProvider;
+            _statisticProvider = statisticProvider;
+            
+            _customAliases.AddRange(RatingFiltration<Preview>.GetAliasSuggestions().Select(x => new string(x)));
+
+            if (userProvider.GetCurrent().IsAutotaggingAllowed)
+            {
+                _customAliases.AddRange(RatingFiltration<Preview>.GetAliasSuggestions());
+            }
+        }
         
         public List<string> GetTagSuggestions(string searchString, int limit = 10)
         {
-            var tags = tagRepository.GetSuggestionsByString(searchString, limit);
+            var tags = _tagRepository.GetSuggestionsByString(searchString, limit);
             
             return tags.Union(_customAliases).ToList();
         }
 
         public async Task<List<object>> PreviewsBatchAsync(ListRequest listRequest)
         {
-            var listBuilder = new ListBuilder<Preview>(listRequest, configProvider.UserSettings);
-            var previews = await listBuilder.BuildAsync(previewRepository);
+            var listBuilder = new ListBuilder<Preview>(listRequest, _configProvider.UserSettings);
+            var previews = await listBuilder.BuildAsync(_previewRepository);
 
             var jsonPreviews = new List<object>();
             foreach (var preview in previews)
@@ -56,22 +76,22 @@ namespace MediaCloud.WebApp.Controllers
 
         public async Task<ActionResult> GetPreviewsBatchAsync(ListRequest listRequest)
         {
-            var listBuilder = new ListBuilder<Preview>(listRequest, configProvider.UserSettings);
-            var previews = await listBuilder.BuildAsync(previewRepository);
+            var listBuilder = new ListBuilder<Preview>(listRequest, _configProvider.UserSettings);
+            var previews = await listBuilder.BuildAsync(_previewRepository);
 
-            return PartialView("/Pages/Gallery/_Gallery.cshtml", new _GalleryPageModel(previews, configProvider.UserSettings.AllowedNSFWContent));
+            return PartialView("/Pages/Gallery/_Gallery.cshtml", new _GalleryPageModel(previews, _configProvider.UserSettings.AllowedNSFWContent));
         }
 
         public ActionResult GetCollectionPreviewsBatch(Guid id, ListRequest listRequest)
         {
-            var previews = collectionRepository.GetList(id, listRequest);
+            var previews = _collectionRepository.GetList(id, listRequest);
 
-            return PartialView("/Pages/Gallery/_Collection.cshtml", new _CollectionPageModel(previews, configProvider.UserSettings.AllowedNSFWContent, listRequest.Offset));
+            return PartialView("/Pages/Gallery/_Collection.cshtml", new _CollectionPageModel(previews, _configProvider.UserSettings.AllowedNSFWContent, listRequest.Offset));
         }
 
         public FileContentResult Preview(Guid id)
         {
-            var preview = previewRepository.Get(id);
+            var preview = _previewRepository.Get(id);
 
             if (preview != null)
             {
@@ -83,7 +103,7 @@ namespace MediaCloud.WebApp.Controllers
 
         public FileContentResult Source(Guid id)
         {
-            var preview = previewRepository.Get(id);
+            var preview = _previewRepository.Get(id);
 
             if (preview != null)
             {
@@ -95,7 +115,7 @@ namespace MediaCloud.WebApp.Controllers
 
         public IActionResult Download(Guid id)
         {
-            var preview = previewRepository.Get(id);
+            var preview = _previewRepository.Get(id);
 
             if (preview != null)
             {
@@ -112,7 +132,7 @@ namespace MediaCloud.WebApp.Controllers
 
         public IActionResult DownloadCollection(Guid id)
         {
-            var collection = collectionRepository.Get(id);
+            var collection = _collectionRepository.Get(id);
 
             if (collection != null)
             {
@@ -141,7 +161,7 @@ namespace MediaCloud.WebApp.Controllers
 
         public object IsCanUploadFiles(List<long> fileSizes)
         {
-            var fileSizeLimit = configProvider.EnvironmentSettings.MaxFileSize;
+            var fileSizeLimit = _configProvider.EnvironmentSettings.MaxFileSize;
             var totalFileSize = fileSizes.Sum();
 
             if (fileSizes.Any(x => x > fileSizeLimit))
@@ -153,8 +173,8 @@ namespace MediaCloud.WebApp.Controllers
                 };
             }
             
-            var userLimit = userProvider.GetCurrent().SpaceLimitBytes;
-            var userFilesSize = statisticProvider.GetTodaySnapshot().MediasSize;
+            var userLimit = _userProvider.GetCurrent().SpaceLimitBytes;
+            var userFilesSize = _statisticProvider.GetTodaySnapshot().MediasSize;
 
             if (userLimit != 0 && userFilesSize + totalFileSize > userLimit)
             {
