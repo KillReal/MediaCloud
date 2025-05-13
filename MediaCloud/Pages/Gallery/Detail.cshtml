@@ -90,7 +90,7 @@
             <input type="hidden" asp-for=@(Model.Blob.Id) class="form-control">
             <input type="hidden" asp-for=@(Model.RotationDegree) class="form-control" id="modelRotationDegree">
             <div class="row">
-                <div class="form-group autocomplete-list autocomplete mb-3 col-sm-10">
+                <div class="form-group autocomplete-list autocomplete mb-3 col-sm{@(Model.IsUserAnAdmin ? "-2" : string.Empty)}">
                     <label class="col-form-label">
                         Enter tags with spaces between
                     </label>
