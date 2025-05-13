@@ -305,32 +305,33 @@ body {
     animation-iteration-count: 1;
     margin-top: 1rem;
     margin-bottom: 1rem;
+    -webkit-backface-visibility: hidden;
 }
 
 .gallery-item-container {
     transition: all 0.3s ease-in-out;
+    backface-visibility: hidden;
 }
 
 .gallery-item-container:hover {
     transition: all 0.3s ease-in-out;
-    transform: scale(1.05);
+    transform: scale3d(1.03, 1.03, 1);
     cursor: pointer;
 }
 
 .gallery-image {
-    transition: border-radius 0.6s; /* Animation */
+    transition: border-radius 0.6s;
     border-radius: 0.75rem;
     background: white;
 }
 
 .gallery-image:hover {
-    transition: border-radius 0.6s; /* Animation */
     border-radius: 2rem;
     background: white;
 }
 
 .gallery-image-blurring {
-    backdrop-filter: blur(1.9rem);
+    backdrop-filter: blur(100px);
     border-radius: 0.75rem;
     width: calc(100% + 1px);
     height: calc(100% + 1px);
@@ -344,14 +345,13 @@ body {
     bottom: -1px;
     right: -1px;
     transition: all 1s ease-in-out;
-    -webkit-transform: translateZ(0);
-    -webkit-backface-visibility: hidden;
-    -webkit-perspective: 1000;
+    backface-visibility: hidden;
 }
 
 .gallery-image-blurring:hover {
-    backdrop-filter: blur(1.5rem);
-    transition: all 1s ease-in-out;
+    opacity: 0;
+    transition: all 2s ease-in-out;
+    transition-delay: 1s;
 }
 
 .gallery-item-bubble {
