@@ -36,7 +36,7 @@ namespace MediaCloud.WebApp.Controllers
             _userProvider = userProvider;
             _statisticProvider = statisticProvider;
             
-            _customAliases.AddRange(RatingFiltration<Preview>.GetAliasSuggestions().Select(x => new string(x)));
+            _customAliases.AddRange(TagFiltration<Preview>.GetAliasSuggestions().Select(x => new string(x)));
 
             if (userProvider.GetCurrent().IsAutotaggingAllowed)
             {
