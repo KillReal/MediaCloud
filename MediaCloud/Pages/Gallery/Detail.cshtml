@@ -90,7 +90,7 @@
             <input type="hidden" asp-for=@(Model.Blob.Id) class="form-control">
             <input type="hidden" asp-for=@(Model.RotationDegree) class="form-control" id="modelRotationDegree">
             <div class="row">
-                <div class="form-group autocomplete-list autocomplete mb-3 col">
+                <div class="form-group autocomplete-list autocomplete mb-3 col-sm-10">
                     <label class="col-form-label">
                         Enter tags with spaces between
                     </label>
@@ -99,9 +99,9 @@
                 </div>
                 @if (Model.IsUserAnAdmin)
                 {
-                    <div class="form-group autocomplete-list autocomplete mb-3 col-2">
+                    <div class="form-group autocomplete-list autocomplete mb-3 col-sm-2">
                         <label class="col-form-label">
-                            Override preview rating
+                            Preview rating
                         </label>
                         <select asp-for="@Model.PreviewRating" class="form-control">
                             <option value="1">General</option>
