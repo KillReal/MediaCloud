@@ -330,7 +330,7 @@ body {
 }
 
 .gallery-image-blurring {
-    backdrop-filter: blur(1.85rem);
+    backdrop-filter: blur(1.9rem);
     border-radius: 0.75rem;
     width: calc(100% + 1px);
     height: calc(100% + 1px);
@@ -343,6 +343,15 @@ body {
     font-family: cursive;
     bottom: -1px;
     right: -1px;
+    transition: all 1s ease-in-out;
+    -webkit-transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    -webkit-perspective: 1000;
+}
+
+.gallery-image-blurring:hover {
+    backdrop-filter: blur(1.5rem);
+    transition: all 1s ease-in-out;
 }
 
 .gallery-item-bubble {
