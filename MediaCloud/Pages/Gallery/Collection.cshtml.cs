@@ -17,7 +17,7 @@ namespace MediaCloud.Pages.Gallery
         private readonly IConfigProvider _configProvider = configProvider;
 
         [BindProperty]
-        public Collection Collection { get; set; } = new();
+        public Collection Collection { get; set; } = new Collection();
         [BindProperty]
         public List<Preview> Previews { get; set; } = [];
         [BindProperty]
@@ -27,7 +27,7 @@ namespace MediaCloud.Pages.Gallery
         [BindProperty]
         public bool IsAutotaggingEnabled { get; set; }
         [BindProperty]
-        public ListRequest ListRequest { get; set; } = new() { Count = 42};
+        public ListRequest ListRequest { get; set; } = new ListRequest { Count = 42};
         [BindProperty]
         public int TotalCount { get; set; }
         [BindProperty]
@@ -37,18 +37,13 @@ namespace MediaCloud.Pages.Gallery
         [BindProperty]
         public int MaxColumnCount { get; set; }
         [BindProperty]
-        public PreviewRatingType AllowedNSFWContent { get; set; }
+        public PreviewRatingType AllowedNsfwContent { get; set; }
 
         public IActionResult OnGet(Guid id)
         {
             TempData["ReturnUrl"] = Request.Headers.Referer.ToString();
 
-            Collection = _collectionRepository.Get(id) ?? new();
-
-            if (Collection == null)
-            {
-                return Redirect("/Error");
-            }
+            Collection = _collectionRepository.Get(id) ?? new Collection();
 
             Previews = Collection.Previews.OrderBy(x => x.Order).Take(ListRequest.Count).ToList();
 
@@ -61,7 +56,7 @@ namespace MediaCloud.Pages.Gallery
                 tagsUnion = tagsUnion.Union(tags);
            }
 
-            Tags = [.. tagsUnion?.OrderBy(x => x.Color)];
+            Tags = [.. tagsUnion?.OrderBy(x => x.Color) ?? (IEnumerable<Tag>)Array.Empty<object>()];
             
             var collectionSize = _collectionRepository.GetSize(id);
             CollectionSizeInfo = collectionSize.FormatSize();
@@ -69,18 +64,13 @@ namespace MediaCloud.Pages.Gallery
             IsAutotaggingEnabled = Collection.Previews.Select(x => x.BlobType).Any(x => x.Contains("image")) 
                 && CurrentUser != null && CurrentUser.IsAutotaggingAllowed;
             MaxColumnCount = _configProvider.UserSettings.MaxColumnsCount;
-            AllowedNSFWContent = _configProvider.UserSettings.AllowedNSFWContent;
+            AllowedNsfwContent = _configProvider.UserSettings.AllowedNSFWContent;
 
             return Page();
         }
 
         public IActionResult OnPost()
         {
-            if (Collection == null)
-            {
-                return Redirect("/Error");
-            }
-
             if (_collectionRepository.TryUpdateOrder(Collection.Id, Orders) == false)
             {
                 return Redirect("/Error");

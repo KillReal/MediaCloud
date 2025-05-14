@@ -13,7 +13,7 @@ namespace MediaCloud.Pages.Tags
         private readonly TagRepository _tagRepository = tagRepository;
 
         [BindProperty]
-        public Tag Tag { get; set; } = new();
+        public Tag Tag { get; set; } = new Tag();
 
         public IActionResult OnGet()
         {
@@ -24,15 +24,7 @@ namespace MediaCloud.Pages.Tags
 
         public IActionResult OnPost()
         {
-            if (Tag.Alias == null)
-            {
-                Tag.Alias = string.Empty;
-            }
-
-            if (Tag.Description == null)
-            {
-                Tag.Description = string.Empty;
-            }
+            Tag.Description ??= string.Empty;
 
             _tagRepository.Create(Tag);
 

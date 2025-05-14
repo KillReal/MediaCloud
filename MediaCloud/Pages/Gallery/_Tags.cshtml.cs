@@ -9,5 +9,5 @@ public class _GalleryPageModel(List<Preview> previews, PreviewRatingType rating)
     [BindProperty]
     public List<Preview> Previews { get; set; } = previews;
     [BindProperty]
-    public PreviewRatingType AllowedNSFWContentRating { get; set; } = rating;
+    public PreviewRatingType AllowedNsfwContentRating { get; set; } = rating;
 }

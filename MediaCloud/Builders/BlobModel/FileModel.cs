@@ -5,6 +5,6 @@ namespace MediaCloud.WebApp;
 
 public class FileModel(Blob file, Preview preview)
 {
-   public Blob File = file;
-   public Preview Preview = preview;
+   public readonly Blob File = file;
+   public readonly Preview Preview = preview;
 }

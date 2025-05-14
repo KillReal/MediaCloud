@@ -27,7 +27,7 @@
                     </div>
                 </div>
             }
-            @if (Model.Previews[i].Rating > Model.AllowedNSFWContentRating)
+            @if (Model.Previews[i].Rating > Model.AllowedNsfwContentRating)
             {
                 <div class="gallery-image-blurring">
                     @Model.Previews[i].Rating.GetDisplayName()

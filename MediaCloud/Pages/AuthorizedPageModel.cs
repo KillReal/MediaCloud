@@ -12,15 +12,15 @@ namespace MediaCloud.WebApp.Pages
     [Authorize]
     public class AuthorizedPageModel : PageModel
     {   
-        protected IUserProvider _userProvider;
-        protected ILogger _logger;
+        protected IUserProvider UserProvider;
+        protected ILogger Logger;
         public User? CurrentUser { get; set; }
         public string UIThemeName { get; set; }
 
         public AuthorizedPageModel(IUserProvider userProvider, IConfigProvider configProvider) 
         {
-            _userProvider = userProvider;
-            _logger = LogManager.GetLogger("PageModel");
+            UserProvider = userProvider;
+            Logger = LogManager.GetLogger("PageModel");
 
             UIThemeName = configProvider.UserSettings.UITheme;
 
@@ -29,11 +29,11 @@ namespace MediaCloud.WebApp.Pages
 
         private void LogPageInit()
         {
-            CurrentUser = _userProvider.GetCurrent();
+            CurrentUser = UserProvider.GetCurrent();
 
             var url = GetType().Name;
 
-            _logger.Debug("Page: {url} initialized by {CurrentActor.Name}", url, CurrentUser.Name);
+            Logger.Debug("Page: {url} initialized by {CurrentActor.Name}", url, CurrentUser.Name);
         }
     }
 }

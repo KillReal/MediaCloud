@@ -26,12 +26,12 @@ namespace MediaCloud.Pages.Tags
             _configProvider = configProvider;
             _tagRepository = tagRepository;
 
-            ListBuilder = new(new(), _configProvider.UserSettings);
+            ListBuilder = new ListBuilder<Tag>(new ListRequest(), _configProvider.UserSettings);
         }
 
         public async Task<IActionResult> OnGetAsync(ListRequest request)
         {
-            ListBuilder = new(request, _configProvider.UserSettings);
+            ListBuilder = new ListBuilder<Tag>(request, _configProvider.UserSettings);
             Tags = await ListBuilder.BuildAsync(_tagRepository);
 
             return Page();

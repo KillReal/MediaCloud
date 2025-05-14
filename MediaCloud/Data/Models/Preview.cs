@@ -36,7 +36,7 @@ namespace MediaCloud.Data.Models
 
         public Preview()
         {
-            Blob = new();
+            Blob = new Blob();
             BlobName = "unknown";
             BlobType = "unknown";
             Content = [];

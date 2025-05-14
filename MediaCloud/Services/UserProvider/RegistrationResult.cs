@@ -1,20 +1,12 @@
 ﻿namespace MediaCloud.WebApp.Services.UserProvider
 {
-    public class RegistrationResult
+    public class RegistrationResult(bool success, string message)
     {
-        public bool IsSuccess;
-        public string Message;
+        public readonly bool IsSuccess = success;
+        public readonly string Message = message;
 
-        public RegistrationResult()
+        public RegistrationResult() : this(true, "")
         {
-            IsSuccess = true;
-            Message = "";
-        }
-
-        public RegistrationResult(bool success, string message)
-        {
-            IsSuccess = success;
-            Message = message;
         }
     }
 }

@@ -17,7 +17,7 @@ namespace MediaCloud.Pages.Gallery
         private readonly IConfigProvider _configProvider;
         private readonly TagRepository _tagRepository;
         private readonly PreviewRepository _previewRepository;
-        private const int SpaceSizePrecision = 1;
+        private const int _spaceSizePrecision = 1;
 
         [BindProperty]
         public List<Preview> Previews { get; set; } = [];
@@ -37,7 +37,7 @@ namespace MediaCloud.Pages.Gallery
         [BindProperty]
         public int MaxColumnCount { get; set; }
         [BindProperty]
-        public PreviewRatingType AllowedNSFWContent { get; set; }
+        public PreviewRatingType AllowedNsfwContent { get; set; }
 
         public ListModel(IUserProvider userProvider, IConfigProvider configProvider, TagRepository tagRepository, 
             PreviewRepository previewRepository, StatisticProvider statisticProvider) 
@@ -52,18 +52,18 @@ namespace MediaCloud.Pages.Gallery
                 ? $"{topTagNames.First()} !{topTagNames.Last()}" 
                 : "Create more tags to filtering";
 
-            ListBuilder = new ListBuilder<Preview>(new(), _configProvider.UserSettings);
+            ListBuilder = new ListBuilder<Preview>(new ListRequest(), _configProvider.UserSettings);
             IsAutoloadEnabled = _configProvider.UserSettings.ListAutoloadingEnabled;
 
             var currentUsedSpace = statisticProvider.GetTodaySnapshot().MediasSize;
-            SpaceUsage = $"{currentUsedSpace.FormatSize(true, SpaceSizePrecision)} / ";
+            SpaceUsage = $"{currentUsedSpace.FormatSize(true, _spaceSizePrecision)} / ";
 
             MaxColumnCount = configProvider.UserSettings.MaxColumnsCount;
-            AllowedNSFWContent = configProvider.UserSettings.AllowedNSFWContent;
+            AllowedNsfwContent = configProvider.UserSettings.AllowedNSFWContent;
 
             if (CurrentUser is { SpaceLimit: > 0 })
             {
-                SpaceUsage += CurrentUser.SpaceLimitBytes.FormatSize(true, SpaceSizePrecision);
+                SpaceUsage += CurrentUser.SpaceLimitBytes.FormatSize(true, _spaceSizePrecision);
                 SpaceUsagePercent = Convert.ToInt32((double)currentUsedSpace / CurrentUser.SpaceLimitBytes * 100);
             }
             else

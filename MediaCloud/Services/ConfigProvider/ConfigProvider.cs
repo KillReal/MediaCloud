@@ -1,7 +1,6 @@
 using MediaCloud.WebApp.Services.UserProvider;
 using Newtonsoft.Json;
 using NLog;
-using ILogger = NLog.ILogger;
 
 namespace MediaCloud.WebApp.Services.ConfigProvider
 {
@@ -9,7 +8,7 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
     {
         private readonly IUserProvider _userProvider;
         private readonly IConfiguration _configuration;
-        private readonly ILogger _logger;
+        private readonly Logger _logger;
 
         private EnvironmentSettings _environmentSettings;
 
@@ -59,7 +58,7 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
 
             _environmentSettings = new EnvironmentSettings(_configuration);
         }
-
+        
         /// <summary>
         /// Implicitly saves changes to database in json format.
         /// </summary>

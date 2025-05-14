@@ -8,7 +8,7 @@ namespace MediaCloud.WebApp.Builders.BlobModel
 {
     public class BlobModelBuilder(IPictureService pictureService, IConfigProvider configProvider)
     {
-        private readonly WebpEncoderFactory _webpEncoderFactory = new(configProvider);
+        private readonly WebpEncoderFactory _webpEncoderFactory = new WebpEncoderFactory(configProvider);
         
         public FileModel Build(UploadedFile file)
         {

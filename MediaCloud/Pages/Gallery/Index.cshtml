@@ -139,7 +139,7 @@
         <partial name="~/Pages/Shared/_Pagination.cshtml" />
     }
     <div class="row row-cols-sm-@(Model.MaxColumnCount) row-col image-row gallery mb-3" id="gallery">
-        <partial name="~/Pages/Gallery/_Gallery.cshtml" model=@(new _GalleryPageModel(Model.Previews, Model.AllowedNSFWContent))/>
+        <partial name="~/Pages/Gallery/_Gallery.cshtml" model=@(new _GalleryPageModel(Model.Previews, Model.AllowedNsfwContent))/>
         
         @if (Model.Previews.Count == 0)
         {

@@ -18,7 +18,6 @@ public class AutotaggingController(IUserProvider userProvider, IConfigProvider c
         var currentUser = userProvider.GetCurrent();
 
         return configProvider.EnvironmentSettings.AutotaggingEnabled 
-               && currentUser != null 
                && currentUser.IsAutotaggingAllowed;
     }
     

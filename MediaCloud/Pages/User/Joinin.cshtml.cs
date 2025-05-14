@@ -10,14 +10,14 @@ namespace MediaCloud.WebApp.Pages
 {
     public class JoininModel(IUserProvider userProvider) : PageModel
     {
-        private readonly ILogger _logger = LogManager.GetLogger("Actor");
+        private readonly ILogger _logger = LogManager.GetLogger("User");
 
         [BindProperty]
-        public RegistrationResult Result { get; set; } = new();
+        public RegistrationResult Result { get; set; } = new RegistrationResult();
         [BindProperty]
         public string InviteCode { get; set; } = "";
         [BindProperty]
-        public AuthData AuthData { get; set; } = new();
+        public AuthData AuthData { get; set; } = new AuthData();
         [BindProperty]
         public User? CurrentUser { get; set; } = null;
 

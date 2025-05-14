@@ -15,7 +15,6 @@ namespace MediaCloud.Builders.List
     /// Init list builder via list request.
     /// </remarks>
     /// <param name="request"> List request. </param>
-    /// <param name="configProvider"> Config provider for current user <see cref="IDataService"/>. </param>
     public class ListBuilder<T>(ListRequest request, UserSettings userSettings) where T : Record
     {
         public Sorting Sorting { get; init; } = new Sorting(request.Sort ?? "CreatedAtDesc");

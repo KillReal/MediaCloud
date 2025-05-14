@@ -10,12 +10,12 @@ namespace MediaCloud.WebApp.Pages
     public class LoginModel(IUserProvider userProvider) : PageModel
     {
         private readonly IUserProvider _userProvider = userProvider;
-        private readonly ILogger _logger = LogManager.GetLogger("Actor");
+        private readonly Logger _logger = LogManager.GetLogger("User");
 
         [BindProperty]
-        public AuthorizationResult Result { get; set; } = new();
+        public AuthorizationResult Result { get; set; } = new AuthorizationResult();
         [BindProperty]
-        public AuthData AuthData { get; set; } = new();
+        public AuthData AuthData { get; set; } = new AuthData();
         [BindProperty]
         public User? CurrentUser { get; set; } = null;
 

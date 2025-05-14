@@ -8,5 +8,5 @@ public class _CollectionPageModel(List<Preview> previews, PreviewRatingType rati
 {
     [BindProperty] public List<Preview> Previews { get; set; } = previews;
     [BindProperty] public int BatchIdOffset { get; set; } = batchIdOffset;
-    [BindProperty] public PreviewRatingType AllowedNSFWContentRating { get; set; } = rating;
+    [BindProperty] public PreviewRatingType AllowedNsfwContentRating { get; set; } = rating;
 }

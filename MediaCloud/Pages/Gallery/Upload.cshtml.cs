@@ -41,7 +41,7 @@ namespace MediaCloud.Pages.Gallery
 
             FileSizeLimit = _configProvider.EnvironmentSettings.MaxFileSize;
             
-            var userLimit = _userProvider.GetCurrent().SpaceLimitBytes;
+            var userLimit = UserProvider.GetCurrent().SpaceLimitBytes;
             var userFilesSize = statisticProvider.GetTodaySnapshot().MediasSize;
             FilesTotalSizeLimit = userLimit - userFilesSize;
             
@@ -73,6 +73,7 @@ namespace MediaCloud.Pages.Gallery
                 : _configProvider.EnvironmentSettings.AutorateImages
                     ? new UploadAndRateTask(CurrentUser, uploadedFiles, IsCollection, Tags)
                     : new UploadTask(CurrentUser, uploadedFiles, IsCollection, Tags);
+            
             var taskId = taskScheduler.AddTask(task);
 
             return Redirect($"/TaskScheduler/GetTaskStatus?id={taskId}");

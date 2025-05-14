@@ -117,46 +117,47 @@ namespace MediaCloud.WebApp.Controllers
         {
             var preview = _previewRepository.Get(id);
 
-            if (preview != null)
+            if (preview == null)
             {
-                if (preview.BlobName == "")
-                {
-                    preview.BlobName = preview.Id.ToString() + '.' + preview.BlobType.Split('/').Last();
-                }
-
-                return File(preview.Blob.Content, "application/octet-stream", preview.BlobName);
+                return new FileContentResult(System.IO.File.ReadAllBytes("wwwroot/img/types/noimg.jpg"), "image/jpeg");
+            }
+            
+            if (preview.BlobName == "")
+            {
+                preview.BlobName = preview.Id.ToString() + '.' + preview.BlobType.Split('/').Last();
             }
 
-            return new FileContentResult(System.IO.File.ReadAllBytes("wwwroot/img/types/noimg.jpg"), "image/jpeg");
+            return File(preview.Blob.Content, "application/octet-stream", preview.BlobName);
         }
 
         public IActionResult DownloadCollection(Guid id)
         {
             var collection = _collectionRepository.Get(id);
 
-            if (collection != null)
+            if (collection == null)
             {
-                var fileName = collection.Id.ToString() + ".zip";
-                using var stream = new MemoryStream();
-                using (var zip = new ZipArchive(stream, ZipArchiveMode.Create, true))
-                {
-                    foreach (var preview in collection.Previews)
-                    {
-                        if (preview.BlobName == "")
-                        {
-                            preview.BlobName = preview.Id.ToString() + '.' + preview.BlobType.Split('/').Last();
-                        }
-
-                        var entry = zip.CreateEntry(preview.BlobName, CompressionLevel.Optimal);
-                        using var file = entry.Open();
-                        file.Write(preview.Blob.Content, 0, preview.Blob.Content.Length);
-                    }
-                }
-                stream.Position = 0;
-                return File(stream.ToArray(), "application/zip", fileName);
+                return new FileContentResult(System.IO.File.ReadAllBytes("wwwroot/img/types/noimg.jpg"), "image/jpeg");
             }
+            
+            var fileName = collection.Id.ToString() + ".zip";
+            using var stream = new MemoryStream();
+            using (var zip = new ZipArchive(stream, ZipArchiveMode.Create, true))
+            {
+                foreach (var preview in collection.Previews)
+                {
+                    if (preview.BlobName == "")
+                    {
+                        preview.BlobName = preview.Id.ToString() + '.' + preview.BlobType.Split('/').Last();
+                    }
 
-            return new FileContentResult(System.IO.File.ReadAllBytes("wwwroot/img/types/noimg.jpg"), "image/jpeg");
+                    var entry = zip.CreateEntry(preview.BlobName, CompressionLevel.Optimal);
+                    using var file = entry.Open();
+                    file.Write(preview.Blob.Content, 0, preview.Blob.Content.Length);
+                }
+            }
+            stream.Position = 0;
+            
+            return File(stream.ToArray(), "application/zip", fileName);
         }
 
         public object IsCanUploadFiles(List<long> fileSizes)

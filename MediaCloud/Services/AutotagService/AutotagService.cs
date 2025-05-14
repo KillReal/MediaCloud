@@ -14,7 +14,7 @@ public class AutotagService : IAutotagService
 {
     private readonly Logger _logger = LogManager.GetLogger("AutotagService");
     private readonly HttpClient _httpClient;
-    private readonly Mutex _mutex = new();
+    private readonly Mutex _mutex = new Mutex();
     private readonly Semaphore _semaphore;
     private readonly IMemoryCache _memoryCache;
     private readonly MemoryCacheEntryOptions _memoryCacheOptions;

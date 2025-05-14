@@ -10,7 +10,6 @@ namespace MediaCloud.TaskScheduler
     /// </summary>
     public partial class TaskScheduler : ITaskScheduler
     {
-        private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly Logger _logger;
         private readonly List<Worker> _workers = [];
         private readonly Queue _queue;
@@ -21,19 +20,18 @@ namespace MediaCloud.TaskScheduler
         /// <summary>
         /// Init internal scheduler.
         /// </summary>
-        /// <param name="dataService"> Current dataService instance. </param>
-        /// <param name="queue"> Current <see cref="Uploader"/> queue. </param>
+        /// <param name="serviceScopeFactory"></param>
+        /// <param name="configProvider"></param>
         public TaskScheduler(IServiceScopeFactory serviceScopeFactory, IConfigProvider configProvider)
         {
-            _serviceScopeFactory = serviceScopeFactory;
             _logger = LogManager.GetLogger("Scheduler");
             _workers = [];
             _queue = new Queue(configProvider);
 
             var workersCount = configProvider.EnvironmentSettings.TaskSchedulerWorkerCount;
-            for (int i = 0; i < workersCount; i++)
+            for (var i = 0; i < workersCount; i++)
             {
-                _workers.Add(new Worker(_queue, this, _serviceScopeFactory));
+                _workers.Add(new Worker(_queue, this, serviceScopeFactory));
             }
 
             MaxWorkersCount = _workers.Count;
@@ -72,14 +70,14 @@ namespace MediaCloud.TaskScheduler
                 return;
             }
 
-            _workers.Where(worker => worker.IsReady).FirstOrDefault()?.Run();
+            _workers.FirstOrDefault(worker => worker.IsReady)?.Run();
         }
 
         /// <summary>
         /// Collect info about uploader status.
         /// </summary>
         /// <returns> <see cref="TaskSchedulerStatus"/> with state of internal queue and scheduler. </returns>
-        public TaskSchedulerStatus GetStatus() => new(_queue, this);
+        public TaskSchedulerStatus GetStatus() => new TaskSchedulerStatus(_queue, this);
 
         /// <summary>
         /// Collect info about certain task.

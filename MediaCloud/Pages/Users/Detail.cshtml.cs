@@ -19,10 +19,10 @@ namespace MediaCloud.Pages.Users
         public DetailModel(IUserProvider userProvider, UserRepository userRepository, IConfigProvider configProvider) 
             : base(userProvider, configProvider)
         {
-            _logger = LogManager.GetLogger("User.Detail");
+            Logger = LogManager.GetLogger("User.Detail");
             _userRepository = userRepository;
 
-            User =  _userProvider.GetCurrent();
+            User =  UserProvider.GetCurrent();
         }
 
         public IActionResult OnGet(Guid id)
@@ -34,7 +34,7 @@ namespace MediaCloud.Pages.Users
                 return Redirect("/Account/Login");
             }
 
-            User = _userRepository.Get(id) ?? new();
+            User = _userRepository.Get(id) ?? new Data.Models.User();
             User.PasswordHash = string.Empty;
 
             return Page();
@@ -42,11 +42,11 @@ namespace MediaCloud.Pages.Users
 
         public IActionResult OnPost()
         {
-            var currentActor = _userProvider.GetCurrent();
+            var currentActor = UserProvider.GetCurrent();
 
             if (currentActor.IsAdmin == false)
             {
-                _logger.Error("Fail attempt to access to User/Detail by: {User.Id}", User.Id);
+                Logger.Error("Fail attempt to access to User/Detail by: {User.Id}", User.Id);
                 return Redirect("/Account/Login");
             }
 
@@ -77,15 +77,16 @@ namespace MediaCloud.Pages.Users
 
         public IActionResult OnPostDelete(Guid id)
         {
-            User = _userProvider.GetCurrent();
+            User = UserProvider.GetCurrent();
 
-            if (User.IsAdmin == false || _userRepository.TryRemove(id) == false)
+            if (User.IsAdmin && _userRepository.TryRemove(id))
             {
-                _logger.Error("Fail attempt to access to User/Detail?action=Delete by: {User.Id}", User.Id);
-                return Redirect("/Account/Login");
+                return Redirect(TempData["ReturnUrl"]?.ToString() ?? "/Users");
             }
-
-            return Redirect(TempData["ReturnUrl"]?.ToString() ?? "/Users");
+            
+            Logger.Error("Fail attempt to access to User/Detail?action=Delete by: {User.Id}", User.Id);
+            
+            return Redirect("/Account/Login");
         }
     }
 }

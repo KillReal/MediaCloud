@@ -53,6 +53,7 @@ namespace MediaCloud.Pages.Gallery
             if (preview.Collection != null)
             {
                 var collectionPreviews = preview.Collection.Previews.OrderBy(x => x.Order);
+                
                 PrevPreviewId = collectionPreviews.LastOrDefault(x => x.Order < preview.Order)?.Id;
                 NextPreviewId = collectionPreviews.FirstOrDefault(x => x.Order > preview.Order)?.Id;
             }

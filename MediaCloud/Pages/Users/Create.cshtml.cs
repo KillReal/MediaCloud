@@ -14,12 +14,12 @@ namespace MediaCloud.Pages.Users
         private readonly UserRepository _actorRepository;
 
         [BindProperty]
-        public new Data.Models.User User { get; set; } = new();
+        public new Data.Models.User User { get; set; } = new Data.Models.User();
 
         public CreateModel(IUserProvider userProvider, UserRepository userRepository, IConfigProvider configProvider) 
             : base(userProvider, configProvider)
         {
-            _logger = LogManager.GetLogger("Users.Create");
+            Logger = LogManager.GetLogger("Users.Create");
             _actorRepository = userRepository;
         }
 
@@ -27,24 +27,26 @@ namespace MediaCloud.Pages.Users
         {
             TempData["ReturnUrl"] = Request.Headers.Referer.ToString();
 
-            var currentActor = _userProvider.GetCurrent();
+            var currentActor = UserProvider.GetCurrent();
 
-            if (currentActor.IsAdmin == false)
+            if (currentActor.IsAdmin)
             {
-                _logger.Error("Fail attempt to access to Actor/Create by: {currentUser.Id}", currentActor.Id);
-                return Redirect("/Account/Login");
+                return Page();
             }
+            
+            Logger.Error("Fail attempt to access to Actor/Create by: {currentUser.Id}", currentActor.Id);
+            
+            return Redirect("/Account/Login");
 
-            return Page();
         }
 
         public IActionResult OnPost()
         {
-            var currentUser = _userProvider.GetCurrent();
+            var currentUser = UserProvider.GetCurrent();
 
             if (currentUser.IsAdmin == false)
             {
-                _logger.Error("Fail attempt to access to Actor/Create by: {currentUser.Id}", currentUser.Id);
+                Logger.Error("Fail attempt to access to Actor/Create by: {currentUser.Id}", currentUser.Id);
                 return Redirect("/Account/Login");
             }
 

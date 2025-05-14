@@ -18,7 +18,7 @@ namespace MediaCloud.WebApp.Services.Statistic
         private readonly IUserProvider _userProvider;
         private readonly MemoryCacheEntryOptions _memoryCacheOptions;
         
-        private const int CacheDurationInMinutes = 120;
+        private const int _cacheDurationInMinutes = 120;
 
         public StatisticProvider(IServiceScopeFactory scopeFactory, IUserProvider userProvider, IMemoryCache cache)
         {
@@ -27,7 +27,7 @@ namespace MediaCloud.WebApp.Services.Statistic
             _userProvider = userProvider;
             _cache = cache;
             _memoryCacheOptions = new MemoryCacheEntryOptions()
-                .SetAbsoluteExpiration(TimeSpan.FromMinutes(CacheDurationInMinutes));
+                .SetAbsoluteExpiration(TimeSpan.FromMinutes(_cacheDurationInMinutes));
 
             MediasCountChanged += MediasCountChangedAction;
             TagsCountChanged += TagsCountChangedAction;
@@ -166,7 +166,7 @@ namespace MediaCloud.WebApp.Services.Statistic
         /// <returns> New snapshot with changes for certain day. This snapshot need to be inserted. </returns>
         public StatisticSnapshot CaptureSnapshot(DateTime date)
         {
-            return new()
+            return new StatisticSnapshot
             {
                 Creator = _context.Users.First(x => x.Id == _userProvider.GetCurrent().Id),
                 Updator = _context.Users.First(x => x.Id == _userProvider.GetCurrent().Id),

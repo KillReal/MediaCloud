@@ -15,7 +15,7 @@ namespace MediaCloud.WebApp.Services.UserProvider
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly AppDbContext _context;
         private readonly IMemoryCache _memoryCache;
-        private readonly Mutex _mutex = new();
+        private readonly Mutex _mutex = new Mutex();
         private readonly EnvironmentSettings _environmentSettings; 
 
         private readonly MemoryCacheEntryOptions _memoryCacheOptions;
@@ -64,16 +64,9 @@ namespace MediaCloud.WebApp.Services.UserProvider
 
         public User? GetCurrentOrDefault()
         {
-            var httpContext = _httpContextAccessor.HttpContext;
+            var identity = _httpContextAccessor.HttpContext?.User.Identity;
 
-            if (httpContext == null)
-            {
-                return null;
-            }
-
-            var identity = httpContext.User.Identity;
-
-            if (identity == null || identity.Name == null)
+            if (identity?.Name == null)
             {
                 return null;
             }
@@ -97,9 +90,9 @@ namespace MediaCloud.WebApp.Services.UserProvider
         {
             var user = _context.Users.FirstOrDefault(x => x.Name == data.Name && x.IsActivated);
 
-            if (user == null || user.PasswordHash == null)
+            if (user?.PasswordHash == null)
             {
-                return new(false, "Invalid data.");
+                return new AuthorizationResult(false, "Invalid data.");
             }
 
             _context.Entry(user).Reload();
@@ -107,7 +100,7 @@ namespace MediaCloud.WebApp.Services.UserProvider
             if (_environmentSettings.LimitLoginAttempts && user.NextLoginAttemptAt > DateTime.Now)
             {
                 var time = (int)(user.NextLoginAttemptAt - DateTime.Now).Value.TotalMinutes + 1;
-                return new(false, $"Account locked due to run out of attempts.\r\nNext attempt in {time} minute(-s).");
+                return new AuthorizationResult(false, $"Account locked due to run out of attempts.\r\nNext attempt in {time} minute(-s).");
             }
 
             if (SecureHash.Verify(data.Password, user.PasswordHash) == false)
@@ -115,7 +108,7 @@ namespace MediaCloud.WebApp.Services.UserProvider
                 if (_environmentSettings.LimitLoginAttempts) 
                 {
                     user.FailLoginAttemptCount += 1;
-                    var freeAttemptCount = 3;
+                    const int freeAttemptCount = 3;
 
                     if (user.FailLoginAttemptCount >= freeAttemptCount)
                     {
@@ -127,12 +120,12 @@ namespace MediaCloud.WebApp.Services.UserProvider
                 _context.Users.Update(user);
                 _context.SaveChanges();
                 
-                return new(false, $"Incorrect username or password.");
+                return new AuthorizationResult(false, $"Incorrect username or password.");
             }
 
             var claims = new List<Claim>
             {
-                new(ClaimTypes.Name, data.Name)
+                new Claim(ClaimTypes.Name, data.Name)
             };
             var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
 
@@ -148,14 +141,14 @@ namespace MediaCloud.WebApp.Services.UserProvider
             _context.SaveChanges();
             _memoryCache.Set(data.Name, user, _memoryCacheOptions);
 
-            return new (true, $"Successfully authorized for {user.Name}");
+            return new AuthorizationResult(true, $"Successfully authorized for {user.Name}");
         }
 
         public void Logout(HttpContext httpContext)
         {
             var identity = httpContext.User.Identity;
 
-            if (identity == null || identity.Name == null)
+            if (identity?.Name == null)
             {
                 throw new ArgumentException("Cannot get actor without HttpContext");
             }
@@ -174,22 +167,22 @@ namespace MediaCloud.WebApp.Services.UserProvider
 
             if (user == null)
             {
-                return new(false, $"Join attempt failed due to incorrect invite code: {inviteCode}");
+                return new RegistrationResult(false, $"Join attempt failed due to incorrect invite code: {inviteCode}");
             }
 
             if (_context.Users.Any(x => x.Name == data.Name))
             {
-                return new(false, $"Join attempt failed due to already existing name: {data.Name}");
+                return new RegistrationResult(false, $"Join attempt failed due to already existing name: {data.Name}");
             }
 
             if (data.Password.Length < _environmentSettings.PasswordMinLength)
             {
-                return new(false, $"Join attempt failed due to short password, it must be longer than 6 characters");
+                return new RegistrationResult(false, $"Join attempt failed due to short password, it must be longer than 6 characters");
             }
 
             if (data.Password.Any(char.IsSymbol) == false && _environmentSettings.PasswordMustHaveSymbols)
             {
-                return new(false, $"Join attempt failed due to week password, it must contain at least one symbol");
+                return new RegistrationResult(false, $"Join attempt failed due to week password, it must contain at least one symbol");
             }
 
             user.Name = data.Name;
@@ -199,7 +192,7 @@ namespace MediaCloud.WebApp.Services.UserProvider
             _context.Users.Update(user);
             _context.SaveChanges();
 
-            return new(true, $"Joined in by {data.Name} and invite code: {inviteCode}");
+            return new RegistrationResult(true, $"Joined in by {data.Name} and invite code: {inviteCode}");
         }
 
         public UserSettings? GetSettings()

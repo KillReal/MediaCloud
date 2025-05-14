@@ -8,7 +8,8 @@ using NLog;
 
 namespace MediaCloud.Repositories
 {
-    public class CollectionRepository(AppDbContext context, StatisticProvider statisticProvider, IUserProvider actorProvider) : BaseRepository<Collection>(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider)
+    public class CollectionRepository(AppDbContext context, StatisticProvider statisticProvider, IUserProvider actorProvider) 
+        : BaseRepository<Collection>(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider)
     {
         public override Collection? Get(Guid id)
         {
@@ -97,9 +98,8 @@ namespace MediaCloud.Repositories
             {
                 return false;
             }
-
-            var collectionId = collection.Id;
-            var blobs = collection.Previews.Select(x => x.Blob).ToList();
+            
+            var blobs = _context.Previews.Where(x => x.Collection == collection).Select(x => x.Blob).ToList();
             var count = blobs.Count;
             var size = blobs.Sum(x => x.Size);
 

@@ -11,16 +11,11 @@ namespace MediaCloud.Repositories
     {
         private readonly AppDbContext _context = context;
 
-        public bool Create(User actor)
+        public bool Create(User user)
         {
-            if (actor == null)
-            {
-                return false;
-            }
-
             try
             {
-                _context.Users?.Add(actor);
+                _context.Users.Add(user);
                 _context.SaveChanges();
 
                 return true;
@@ -35,11 +30,11 @@ namespace MediaCloud.Repositories
             => _context.Users.FirstOrDefault(x => x.Name == actorName);
 
         public User Get(Guid id) 
-            => _context.Users.Find(id) ?? new();
+            => _context.Users.Find(id) ?? new User();
 
-        public void Update(User actor)
+        public void Update(User user)
         {
-            _context.Update(actor);
+            _context.Update(user);
             _context.SaveChanges();
         }
 

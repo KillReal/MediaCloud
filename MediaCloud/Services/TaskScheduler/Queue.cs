@@ -5,8 +5,8 @@ namespace MediaCloud.TaskScheduler
 {
     public class Queue
     {
-        private Mutex _takeMutex = new();
-        private int _completedTaskLifetimeMin;
+        private readonly Mutex _takeMutex = new Mutex();
+        private readonly int _completedTaskLifetimeMin;
         private readonly List<Task> _tasks = [];
 
         private void RemoveOldCompletedTasks()
@@ -15,7 +15,7 @@ namespace MediaCloud.TaskScheduler
                 && DateTime.Now - x.CompletedAt > new TimeSpan(0, _completedTaskLifetimeMin, 0));
         }
 
-        public Action<Task> OnTaskComplete;
+        public readonly Action<Task> OnTaskComplete;
 
         public Queue(IConfigProvider configProvider) 
         {
@@ -26,21 +26,21 @@ namespace MediaCloud.TaskScheduler
 
         public bool IsEmpty => _tasks.Count == 0;
 
-        public int TaskCount => _tasks.Where(x => x.IsCompleted == false).Count();
+        public int TaskCount => _tasks.Count(x => x.IsCompleted == false);
 
         public int WorkCount => _tasks.Sum(x => x.GetWorkCount());
-
-        public void AddTask(Task task)
-        { 
-            _tasks.Add(task);
+        
+        private void CompleteTask(Task task) 
+        {
+            task.IsCompleted = true;
+            task.CompletedAt = DateTime.Now;
 
             RemoveOldCompletedTasks();
         }
 
-        public void CompleteTask(Task task) 
-        {
-            task.IsCompleted = true;
-            task.CompletedAt = DateTime.Now;
+        public void AddTask(Task task)
+        { 
+            _tasks.Add(task);
 
             RemoveOldCompletedTasks();
         }
@@ -58,7 +58,7 @@ namespace MediaCloud.TaskScheduler
         public Task? TakeNextTask() 
         {
             _takeMutex.WaitOne();
-            var task = _tasks.Where(x => x.IsCompleted == false && x.IsExecuted == false).FirstOrDefault();
+            var task = _tasks.FirstOrDefault(x => x is { IsCompleted: false, IsExecuted: false });
 
             if (task == null)
             {
@@ -97,7 +97,7 @@ namespace MediaCloud.TaskScheduler
 
             if (task == null)
             {
-                return new();
+                return new TaskStatus();
             }
 
 
@@ -116,14 +116,7 @@ namespace MediaCloud.TaskScheduler
 
         public List<TaskStatus> GetTaskStatuses()
         {
-            var taskStatuses = new List<TaskStatus>();
-
-            foreach (var task in _tasks)
-            {
-                taskStatuses.Add(GetTaskStatus(task.Id));
-            }
-
-            return taskStatuses;
+            return _tasks.Select(task => GetTaskStatus(task.Id)).ToList();
         }
     }
 }

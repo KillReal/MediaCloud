@@ -15,7 +15,7 @@ namespace MediaCloud.TaskScheduler
         /// <summary>
         /// Current task. Return's null if no task currently taken.
         /// </summary>
-        public Task? Task;
+        private Task? _task;
 
         /// <summary>
         /// State of Worker that it ready to take next <see cref="ITask"/>.
@@ -40,9 +40,9 @@ namespace MediaCloud.TaskScheduler
         /// </summary>
         public void Run()
         {
-            Task = _queue.TakeNextTask();
+            _task = _queue.TakeNextTask();
 
-            if (Task == null)
+            if (_task == null)
             {
                 return;
             }
@@ -54,27 +54,27 @@ namespace MediaCloud.TaskScheduler
         {
             IsReady = false;
 
-            if (Task == null)
+            if (_task == null)
             {
                 return;
             }
 
-            _scheduler.OnTaskStarted.Invoke(Task);
+            _scheduler.OnTaskStarted.Invoke(_task);
 
             try
             {
-                var taskContext = new TaskExecutionContext(Task);
+                var taskContext = new TaskExecutionContext(_task);
 
                 taskContext.DoTheTask(_serviceScopeFactory.CreateScope().ServiceProvider);
             }
             catch (Exception ex)
             {
-                _scheduler.OnTaskErrorOccured.Invoke(Task, ex);
+                _scheduler.OnTaskErrorOccured.Invoke(_task, ex);
             }
 
             IsReady = true;
 
-            _scheduler.OnTaskCompleted.Invoke(Task);
+            _scheduler.OnTaskCompleted.Invoke(_task);
         }
     }
 }

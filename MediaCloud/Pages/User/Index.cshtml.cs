@@ -21,12 +21,12 @@ namespace MediaCloud.WebApp.Pages
         [BindProperty]  
         public bool IsEnvironmentSettingsChanged { get; set; }
         [BindProperty]
-        public List<string> AutotaggingAIModels { get; set; }
+        public List<string> AutotaggingAiModels { get; set; }
 
         public IndexModel(IUserProvider userProvider, IConfigProvider configProvider, IAutotagService autotagService) 
             : base(userProvider, configProvider)
         {
-            _logger = LogManager.GetLogger("Actor");
+            Logger = LogManager.GetLogger("User");
             _configProvider = configProvider;
 
             User = userProvider.GetCurrent();
@@ -36,7 +36,7 @@ namespace MediaCloud.WebApp.Pages
                 ? _configProvider.EnvironmentSettings 
                 : null;
 
-            AutotaggingAIModels = autotagService.GetAvailableModels();
+            AutotaggingAiModels = autotagService.GetAvailableModels();
         }
 
         public IActionResult OnGet()
@@ -53,9 +53,9 @@ namespace MediaCloud.WebApp.Pages
             
             _configProvider.UserSettings = UserSettings;
 
-            var actualActor = _userProvider.GetCurrent();
+            var user = UserProvider.GetCurrent();
 
-            if (IsEnvironmentSettingsChanged && EnvironmentSettings != null && actualActor.IsAdmin)
+            if (IsEnvironmentSettingsChanged && EnvironmentSettings != null && user.IsAdmin)
             {
                 _configProvider.EnvironmentSettings = EnvironmentSettings;
             }

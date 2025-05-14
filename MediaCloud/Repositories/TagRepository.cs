@@ -11,7 +11,8 @@ using Preview = MediaCloud.Data.Models.Preview;
 
 namespace MediaCloud.Repositories
 {
-    public class TagRepository(AppDbContext context, StatisticProvider statisticProvider, IUserProvider actorProvider) : BaseRepository<Tag>(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider), IListBuildable<Tag>
+    public class TagRepository(AppDbContext context, StatisticProvider statisticProvider, IUserProvider actorProvider) 
+        : BaseRepository<Tag>(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider), IListBuildable<Tag>
     {
         private static string DeduplicateTagString(string tagString)
         {
@@ -111,12 +112,11 @@ namespace MediaCloud.Repositories
             aliasesString = DeduplicateTagString(aliasesString).ToLower();
             var aliases = aliasesString.ToLower().Split(' ');
             
-            var selectedTags = _context.Tags.AsEnumerable().Where(x => aliases.Where(y => x.Alias
-                    .Split(' ')
-                    .Any(z => z == y))
-                    .Any()
-                    && x.CreatorId == _user.Id)
-                .ToList();
+            var selectedTags = _context.Tags.AsEnumerable().Where(x => aliases.Any(y => x.Alias
+                                                                               .Split(' ')
+                                                                               .Any(z => z == y))
+                                                                       && x.CreatorId == _user.Id)
+                                                            .ToList();
 
             selectedTags.RemoveAll(x => x.Alias.Split(' ')
                 .Any(y => y.Contains('!') && aliases.Contains(y.Replace("!", ""))));

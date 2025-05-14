@@ -19,8 +19,8 @@ namespace MediaCloud.Pages.Users
             _configProvider = configProvider;
             _userRepository = userRepository;
 
-            CurrentUser = _userProvider.GetCurrent();
-            ListBuilder = new(new(), _configProvider.UserSettings);
+            CurrentUser = UserProvider.GetCurrent();
+            ListBuilder = new ListBuilder<Data.Models.User>(new ListRequest(), _configProvider.UserSettings);
         }
 
         [BindProperty]
@@ -35,7 +35,7 @@ namespace MediaCloud.Pages.Users
                 return Redirect("/Account/Login");
             }
 
-            ListBuilder = new(request, _configProvider.UserSettings);
+            ListBuilder = new ListBuilder<Data.Models.User>(request, _configProvider.UserSettings);
             Users = await ListBuilder.BuildAsync(_userRepository);
 
             return Page();
