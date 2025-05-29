@@ -38,6 +38,15 @@ namespace MediaCloud.Data.Models
             Rate = 0;
         }
 
+        public Blob(BlobInfo blobInfo)
+        {
+            Id = blobInfo.Id;
+            Resolution = blobInfo.Resolution;
+            Size = blobInfo.Size;
+            Rate = blobInfo.Rate;
+            CreatorId = blobInfo.CreatorId;
+        }
+
         public Blob()
         {
 

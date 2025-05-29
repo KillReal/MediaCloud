@@ -8,6 +8,7 @@ namespace MediaCloud.Data.Models
     public class Preview : Entity, ITaggable, IBlobNameSearchable, IPreviewRatable
     {
         [ForeignKey("BlobId")]
+        public Guid BlobId { get; set; }
         public virtual Blob Blob { get; set; }
 
         public string BlobType { get; set; }

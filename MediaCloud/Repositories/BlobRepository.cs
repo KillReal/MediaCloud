@@ -12,6 +12,7 @@ using Blob = MediaCloud.Data.Models.Blob;
 using MediaCloud.WebApp.Builders.BlobModel;
 using MediaCloud.WebApp.Services.ConfigProvider;
 using MediaCloud.WebApp.Extensions;
+using Microsoft.EntityFrameworkCore;
 
 namespace MediaCloud.Repositories
 {
@@ -83,6 +84,27 @@ namespace MediaCloud.Repositories
             return blobs;
         }
 
+        public BlobInfo GetBlobInfo(Guid blobId)
+        {
+            var obj = _context.Blobs.AsNoTracking().Select(x => new
+            {
+                x.Id, 
+                x.CreatorId, 
+                x.CreatedAt, 
+                x.UpdatedAt, 
+                x.Resolution, 
+                x.Rate, 
+                x.Size
+            }).FirstOrDefault(x => x.Id == blobId);
+
+            if (obj == null)
+            {
+                return new BlobInfo();
+            }
+            
+            return new BlobInfo(obj.Id, obj.CreatorId, obj.CreatedAt, obj.UpdatedAt, obj.Resolution, obj.Rate, obj.Size);
+        }
+        
         private List<Blob> GetBlobsRange(List<UploadedFile> files)
         {
             var blobs = new List<Blob>();

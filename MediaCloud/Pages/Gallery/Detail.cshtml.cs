@@ -17,8 +17,11 @@ namespace MediaCloud.Pages.Gallery
         [BindProperty] public Guid PreviewId { get; set; }
         [BindProperty] public PreviewRatingType PreviewRating { get; set; }
         [BindProperty] public string BlobName {get; set; } = "unknown";
-        [BindProperty] public string BlobType {get; set; } = "unknown";    
-        [BindProperty] public Blob Blob { get; set; } = new Blob();
+        [BindProperty] public string BlobType {get; set; } = "unknown";
+        [BindProperty] public string BlobCreator {get; set; } = "unknown";
+        [BindProperty] public string BlobUpdator {get; set; } = "unknown";
+        [BindProperty] public BlobInfo BlobInfo { get; set; } = new BlobInfo();
+        [BindProperty] public byte[] BlobContent { get; set; } = [];
         [BindProperty] public List<Tag> Tags { get; set; } = [];
         [BindProperty] public string? TagsString { get; set; } = "";
         [BindProperty] public Guid? PrevPreviewId { get; set; }
@@ -27,7 +30,7 @@ namespace MediaCloud.Pages.Gallery
         [BindProperty] public bool IsAutotaggingEnabled { get; set; } = configProvider.EnvironmentSettings.AutotaggingEnabled;
 
         [BindProperty] public bool IsUserAnAdmin { get; set; } = userProvider.GetCurrent().IsAdmin;
-
+        
         public IActionResult OnGet(Guid id)
         {
             TempData["ReturnUrl"] = Request.Headers.Referer.ToString();
@@ -43,8 +46,23 @@ namespace MediaCloud.Pages.Gallery
             PreviewRating = preview.Rating;
             BlobName = preview.BlobName;
             BlobType = preview.BlobType;
-            Blob = preview.Blob;
+            BlobCreator = preview.Creator.Name ?? "unknown";
+            BlobUpdator = preview.Updator.Name ?? "unknown";
 
+            if (BlobType.Contains("image") || BlobType.Contains("plain") || BlobName.Contains("md"))
+            {
+                var blob = blobRepository.Get(preview.BlobId);
+
+                BlobInfo = blob == null 
+                    ? new BlobInfo() 
+                    : new BlobInfo(blob);
+                BlobContent = blob?.Content ?? [];
+            }
+            else
+            {
+                BlobInfo = blobRepository.GetBlobInfo(preview.BlobId);
+            }
+            
             if (IsAutotaggingEnabled)
             {
                 IsAutotaggingEnabled = CurrentUser != null && CurrentUser.IsAutotaggingAllowed;
@@ -75,9 +93,9 @@ namespace MediaCloud.Pages.Gallery
 
             var tags = tagRepository.GetRangeByString(TagsString);
             tagRepository.UpdatePreviewLinks(tags, preview);
-            
+
             var blob = preview.Blob;
-            blob.Rate = Blob.Rate;
+            blob.Rate = BlobInfo.Rate;
             blob.UpdatedAt = DateTime.UtcNow;
 
             if (RotationDegree != 0)
