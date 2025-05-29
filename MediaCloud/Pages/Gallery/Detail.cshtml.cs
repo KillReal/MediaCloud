@@ -49,7 +49,7 @@ namespace MediaCloud.Pages.Gallery
             BlobCreator = preview.Creator.Name ?? "unknown";
             BlobUpdator = preview.Updator.Name ?? "unknown";
 
-            if (BlobType.Contains("image") || BlobType.Contains("plain") || BlobName.Contains("md"))
+            if (BlobType.Contains("image") || BlobType.Contains("plain") || BlobName.Contains(".md"))
             {
                 var blob = blobRepository.Get(preview.BlobId);
 

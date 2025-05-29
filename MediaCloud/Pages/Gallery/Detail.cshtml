@@ -42,7 +42,7 @@
                 <img class="picture-viewer shadow-1-strong mb-4 me-2 ms-2 rounded" id="picture" src="data:image/png;base64,@Convert.ToBase64String(Model.BlobContent)"
                 />
             }
-            else if (Model.BlobType.Contains("text") || Model.BlobName.Contains("md"))
+            else if (Model.BlobType.Contains("text") || Model.BlobName.Contains(".md"))
             {
                 <div class="form-group mb-3 col">
                     <label class="col-form-label">
