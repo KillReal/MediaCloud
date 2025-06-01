@@ -1,5 +1,8 @@
 ﻿using System.Linq.Expressions;
+using MediaCloud.Data.Models;
 using MediaCloud.WebApp.Data.Models.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using NLog.Config;
 
 namespace MediaCloud.WebApp.Repositories
 {
@@ -7,10 +10,17 @@ namespace MediaCloud.WebApp.Repositories
     {
         private readonly string _searchName;
         
-        public BlobNameFiltration(string filter)
+        public BlobNameFiltration(string filter, DbSet<Tag> tagsDbSet)
         {
             _searchName = filter.Split(' ', StringSplitOptions.RemoveEmptyEntries).First();
+
+            if (tagsDbSet.Any(x => x.Name.ToLower() == _searchName.ToLower()))
+            {
+                _searchName = string.Empty;
+            }
         }
+        
+        public bool IsValid() => _searchName != string.Empty;
         
         public Expression<Func<T, bool>> GetExpression()
         {

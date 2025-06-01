@@ -28,11 +28,15 @@ namespace MediaCloud.WebApp.Repositories
             }
             
             var tagFilter = new TagFiltration<Preview>(filter, _context.Tags);
-            var nameFilter = new BlobNameFiltration<Preview>(filter);
-            
+            var nameFilter = new BlobNameFiltration<Preview>(filter, _context.Tags);
+
             var filterExpression = tagFilter.GetExpression()
-                                    .And(ratingFilter.GetExpression())
-                                    .Or(nameFilter.GetExpression());
+                .And(ratingFilter.GetExpression());
+
+            if (nameFilter.IsValid())
+            {
+                filterExpression = filterExpression.Or(nameFilter.GetExpression());
+            }
             
             return query.Where(filterExpression);
         }
