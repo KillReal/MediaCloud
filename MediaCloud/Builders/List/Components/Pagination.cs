@@ -24,7 +24,7 @@
                 ? 0
                 : CurrentPageNumber - PageMaxCount / 2;
 
-            EndPageNumber = CurrentPageNumber + 1 + PageMaxCount / 2;
+            EndPageNumber = (int)Math.Round(CurrentPageNumber + (double)PageMaxCount / 2, MidpointRounding.ToPositiveInfinity);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@
             }
 
             EndPageNumber = EndPageNumber * Count > TotalCount
-                ? TotalCount / Count + 1
+                ? (int)Math.Round((double)TotalCount / Count, MidpointRounding.ToPositiveInfinity)
                 : EndPageNumber;
 
             var rightOffset = EndPageNumber - CurrentPageNumber;
