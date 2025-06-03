@@ -10,11 +10,11 @@ namespace MediaCloud.WebApp.Repositories
     {
         private readonly string _searchName;
         
-        public BlobNameFiltration(string filter, DbSet<Tag> tagsDbSet)
+        public BlobNameFiltration(string filter, DbSet<Tag> tagsDbSet, List<string> customAliases)
         {
             _searchName = filter.Split(' ', StringSplitOptions.RemoveEmptyEntries).First();
 
-            if (tagsDbSet.Any(x => x.Name.ToLower() == _searchName.ToLower()))
+            if (tagsDbSet.Any(x => x.Name.ToLower() == _searchName.ToLower()) || customAliases.Contains(_searchName))
             {
                 _searchName = string.Empty;
             }

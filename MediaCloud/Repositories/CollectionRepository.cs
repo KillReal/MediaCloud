@@ -8,8 +8,8 @@ using NLog;
 
 namespace MediaCloud.Repositories
 {
-    public class CollectionRepository(AppDbContext context, StatisticProvider statisticProvider, IUserProvider actorProvider) 
-        : BaseRepository<Collection>(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider)
+    public class CollectionRepository(AppDbContext context, StatisticProvider statisticProvider, IUserProvider userProvider) 
+        : BaseRepository<Collection>(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), userProvider)
     {
         public override Collection? Get(Guid id)
         {

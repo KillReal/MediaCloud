@@ -17,8 +17,8 @@ using Microsoft.EntityFrameworkCore;
 namespace MediaCloud.Repositories
 {
     public class BlobRepository(AppDbContext context, StatisticProvider statisticProvider, 
-        IUserProvider actorProvider, IPictureService pictureService, IConfigProvider configProvider) : 
-        BaseRepository<Blob>(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider)
+        IUserProvider userProvider, IPictureService pictureService, IConfigProvider configProvider) : 
+        BaseRepository<Blob>(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), userProvider)
     {
         private readonly BlobModelBuilder _fileModelBuilder = new BlobModelBuilder(pictureService, configProvider);
         private readonly IConfigProvider _configProvider = configProvider;

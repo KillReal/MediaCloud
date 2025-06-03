@@ -11,8 +11,8 @@ using Preview = MediaCloud.Data.Models.Preview;
 
 namespace MediaCloud.Repositories
 {
-    public class TagRepository(AppDbContext context, StatisticProvider statisticProvider, IUserProvider actorProvider) 
-        : BaseRepository<Tag>(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider), IListBuildable<Tag>
+    public class TagRepository(AppDbContext context, StatisticProvider statisticProvider, IUserProvider userProvider) 
+        : BaseRepository<Tag>(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), userProvider), IListBuildable<Tag>
     {
         private static string DeduplicateTagString(string tagString)
         {
