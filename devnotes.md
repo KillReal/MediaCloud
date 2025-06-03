@@ -13,3 +13,5 @@ TODO:
 - Fix statistic recalculation when only 1 day recorded
 - Fix previews ordering in gallery. Different order with filtering and without.
 - Fix worker task execution race condition (Error while running the task, mb cause of taking the task twice)
+- Implement blob streaming
+- Implement text editing in uploaded files

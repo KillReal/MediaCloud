@@ -23,8 +23,9 @@ namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
         {
             var context = serviceProvider.GetRequiredService<AppDbContext>();
             var autotagService = serviceProvider.GetRequiredService<IAutotagService>();
+            var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
             
-            var previewRepository = new PreviewRepository(context, statisticProvider, userProvider);
+            var previewRepository = new PreviewRepository(context, statisticProvider, userProvider, memoryCache);
             var tagRepository = new TagRepository(context, statisticProvider, userProvider);
 
             var successfullyProceededCount = 0;

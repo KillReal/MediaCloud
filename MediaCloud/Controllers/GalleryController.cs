@@ -21,8 +21,6 @@ namespace MediaCloud.WebApp.Controllers
         private readonly CollectionRepository _collectionRepository;
         private readonly IUserProvider _userProvider;
         private readonly StatisticProvider _statisticProvider;
-
-        private readonly List<string> _customAliases = [];
         
         public GalleryController(IConfigProvider configProvider, TagRepository tagRepository,
             PreviewRepository previewRepository, CollectionRepository collectionRepository,
@@ -35,20 +33,13 @@ namespace MediaCloud.WebApp.Controllers
             _collectionRepository = collectionRepository;
             _userProvider = userProvider;
             _statisticProvider = statisticProvider;
-            
-            _customAliases.AddRange(TagFiltration<Preview>.GetAliasSuggestions().Select(x => new string(x)));
-
-            if (userProvider.GetCurrent().IsAutotaggingAllowed)
-            {
-                _customAliases.AddRange(RatingFiltration<Preview>.GetAliasSuggestions());
-            }
         }
         
         public List<string> GetTagSuggestions(string searchString, int limit = 10)
         {
             var tags = _tagRepository.GetSuggestionsByString(searchString, limit);
             
-            return tags.Union(_customAliases).ToList();
+            return tags.Union(_previewRepository.GetCustomFilterAliases()).ToList();
         }
 
         public async Task<List<object>> PreviewsBatchAsync(ListRequest listRequest)

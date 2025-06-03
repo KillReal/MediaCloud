@@ -9,11 +9,12 @@ using Microsoft.EntityFrameworkCore;
 using NLog;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Builders;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace MediaCloud.WebApp.Repositories
 {
-    public class PreviewRepository(AppDbContext context, StatisticProvider statisticProvider, IUserProvider actorProvider) 
-        : BaseRepository<Preview>(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), actorProvider), IListBuildable<Preview>
+    public class PreviewRepository(AppDbContext context, StatisticProvider statisticProvider, IUserProvider userProvider, IMemoryCache memoryCache) 
+        : BaseRepository<Preview>(context, statisticProvider, LogManager.GetLogger("CollectionRepository"), userProvider), IListBuildable<Preview>
     {
         private IQueryable<Preview> GetFilterQuery(IQueryable<Preview> query, string filter)
         {
@@ -28,7 +29,7 @@ namespace MediaCloud.WebApp.Repositories
             }
             
             var tagFilter = new TagFiltration<Preview>(filter, _context.Tags);
-            var nameFilter = new BlobNameFiltration<Preview>(filter, _context.Tags);
+            var nameFilter = new BlobNameFiltration<Preview>(filter, _context.Tags, GetCustomFilterAliases());
 
             var filterExpression = tagFilter.GetExpression()
                 .And(ratingFilter.GetExpression());
@@ -150,6 +151,34 @@ namespace MediaCloud.WebApp.Repositories
             _statisticProvider.MediasCountChanged.Invoke(-1, -size);
 
             return true;
+        }
+
+        public List<string> GetCustomFilterAliases()
+        {
+            var aliases = new List<string>();
+
+            if (memoryCache.TryGetValue("PreviewTagFilterAliases", out List<string>? tagAliases) == false)
+            {
+                tagAliases = TagFiltration<Preview>.GetAliasSuggestions().Select(x => new string(x)).ToList();
+                memoryCache.Set("PreviewTagFilterAliases", tagAliases);
+            }
+            
+            aliases.AddRange(tagAliases ?? []);
+
+            if (userProvider.GetCurrent().IsAutotaggingAllowed == false)
+            {
+                return aliases;
+            }
+            
+            if (memoryCache.TryGetValue("PreviewRatingFilterAliases", out List<string>? ratingAliases) == false)
+            {
+                ratingAliases = TagFiltration<Preview>.GetAliasSuggestions().Select(x => new string(x)).ToList();
+                memoryCache.Set("PreviewRatingFilterAliases", ratingAliases);
+            }
+                
+            aliases.AddRange(ratingAliases ?? []);
+
+            return aliases;
         }
     }
 }
