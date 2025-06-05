@@ -15,3 +15,5 @@ TODO:
 - Fix worker task execution race condition (Error while running the task, mb cause of taking the task twice)
 - Implement blob streaming
 - Implement text editing in uploaded files
+- Fix autotagging service hung when no respond from external ai model for 2 times in a row
+- Add partial work output to CompleteMessage into Task when exception raised
