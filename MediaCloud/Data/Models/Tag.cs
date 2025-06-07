@@ -6,8 +6,8 @@ namespace MediaCloud.Data.Models
     {
         public string Name { get; set; } = "";
 
-        public string? Description { get; set; } = "";
-        public string? Alias { get; set; } = "";
+        public string? Description { get; set; }
+        public string? Alias { get; set; } 
 
         public TagColor Color { get; set; }
 

@@ -112,9 +112,9 @@ namespace MediaCloud.Repositories
             aliasesString = DeduplicateTagString(aliasesString).ToLower();
             var aliases = aliasesString.ToLower().Split(' ');
             
-            var selectedTags = _context.Tags.AsEnumerable().Where(x => aliases.Any(y => x.Alias
-                                                                               .Split(' ')
-                                                                               .Any(z => z == y))
+            var selectedTags = _context.Tags.AsEnumerable().Where(x => aliases.Any(y => x.Alias != null && x.Alias
+                                                                           .Split(' ')
+                                                                           .Any(z => z == y))
                                                                        && x.CreatorId == _user.Id)
                                                             .ToList();
 
