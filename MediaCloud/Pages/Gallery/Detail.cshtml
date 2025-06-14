@@ -1,7 +1,9 @@
 ﻿@page
+@using System.Text
 @using MediaCloud.Data.Types
 @using MediaCloud.Extensions
 @using MediaCloud.WebApp
+@using MediaCloud.WebApp.Extensions
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model MediaCloud.Pages.Gallery.DetailModel
 
@@ -48,7 +50,7 @@
                     <label class="col-form-label">
                         @Model.BlobName
                     </label>
-                    <textarea readonly class="form-control" style="resize: none; height: 60vh;">@System.Text.Encoding.Default.GetString(Model.BlobContent)</textarea>
+                    <textarea id="blob-content-textarea" onchange="updateBlobContent()" class="form-control" style="resize: none; height: 60vh;">@Encoding.UTF8.GetString(Model.BlobContent)</textarea>
                 </div>
             }
             else 
@@ -87,7 +89,14 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for=@(Model.PreviewId) class="form-control">
             <input type="hidden" asp-for=@(Model.BlobInfo.Id) class="form-control">
+            <input type="hidden" asp-for=@(Model.BlobType) class="form-control">
+            <input type="hidden" asp-for=@(Model.BlobName) class="form-control">
             <input type="hidden" asp-for=@(Model.RotationDegree) class="form-control" id="modelRotationDegree">
+            @if (Model.BlobType.Contains("text") || Model.BlobName.Contains(".md"))
+            {
+                <input type="hidden" asp-for=@(Model.BlobContent) class="form-control" id="blob-content">
+            }
+
             <div class="row">
                 <div class="form-group autocomplete-list autocomplete mb-3 col-sm@(Model.IsUserAnAdmin ? "-10" : string.Empty)">
                     <label class="col-form-label">
@@ -201,7 +210,12 @@
 
 <script src="~/js/tagAutocompletion.js"></script>
 
-<script>
+<script>    
+    function updateBlobContent() {
+        var text = document.getElementById("blob-content-textarea").value;
+        document.getElementById("blob-content").value = btoa(text);
+    }
+
     autocomplete(document.getElementById("filterGrab"));
     let isPreviewSwitchingEnabled = true;
 
@@ -215,10 +229,10 @@
 
     document.addEventListener('keydown', (event) => {
         if (isPreviewSwitchingEnabled) {
-            if (event.code == 'ArrowLeft') {
+            if (event.code === 'ArrowLeft') {
                 document.getElementById("left-arrow").click();
             }
-            if (event.code == 'ArrowRight') {
+            if (event.code === 'ArrowRight') {
                 document.getElementById("right-arrow").click();
             }
         }
@@ -354,6 +368,7 @@
             request.send();
         }
     }
+
 </script>
 
 @section Scripts {

@@ -1,22 +1,43 @@
-namespace MediaCloud.Extensions
+﻿using System.Text;
+
+namespace MediaCloud.WebApp.Extensions;
+
+public static class BytesExtensions
 {
-    public static class LongExtensions
+    public static Encoding GetEncoding(this byte[] bytes)
     {
-         public static string FormatSize(this long bytes, bool useUnit = true, int precision = 1)
+        if (bytes[0] == 0x2b && bytes[1] == 0x2f && bytes[2] == 0x76)
         {
-            string[] Suffix = [" B", " kB", " MB", " GB", " TB"];
-
-            var sign = bytes < 0 
-                ? "-" 
-                : "";
-
-            double dblSByte = Math.Abs(bytes);
-            int i;
-            for (i = 0; i < Suffix.Length && dblSByte >= 1024; i++)
-            {
-                dblSByte /= 1024.0;
-            }
-            return $"{sign}{dblSByte.ToString($"n{precision}")}{(useUnit ? Suffix[i] : null)}";
+            return Encoding.UTF7;
         }
+        
+        if (bytes[0] == 0xef && bytes[1] == 0xbb && bytes[2] == 0xbf)
+        {
+            return Encoding.UTF8;
+        }
+        
+        if (bytes[0] == 0xff && bytes[1] == 0xfe && bytes[2] == 0 && bytes[3] == 0) 
+        {
+            return Encoding.UTF32;
+        }
+        
+        if (bytes[0] == 0xff && bytes[1] == 0xfe) 
+        {
+            return Encoding.Unicode;
+        }      
+        
+        if (bytes[0] == 0xfe && bytes[1] == 0xff) 
+        {
+            return Encoding.BigEndianUnicode;
+        }
+        
+        if (bytes[0] == 0 && bytes[1] == 0 && bytes[2] == 0xfe && bytes[3] == 0xff) 
+        {
+            return new UTF32Encoding(true, true);
+        }
+
+        // We actually have no idea what the encoding is if we reach this point, so
+        // you may wish to return null instead of defaulting to ASCII
+        return Encoding.ASCII;
     }
 }

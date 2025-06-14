@@ -16,12 +16,12 @@ namespace MediaCloud.Pages.Gallery
     {
         [BindProperty] public Guid PreviewId { get; set; }
         [BindProperty] public PreviewRatingType PreviewRating { get; set; }
-        [BindProperty] public string BlobName {get; set; } = "unknown";
-        [BindProperty] public string BlobType {get; set; } = "unknown";
-        [BindProperty] public string BlobCreator {get; set; } = "unknown";
-        [BindProperty] public string BlobUpdator {get; set; } = "unknown";
+        [BindProperty] public string BlobName {get; set; }
+        [BindProperty] public string BlobType {get; set; }
+        [BindProperty] public string BlobCreator {get; set; } 
+        [BindProperty] public string BlobUpdator {get; set; }
         [BindProperty] public BlobInfo BlobInfo { get; set; } = new BlobInfo();
-        [BindProperty] public byte[] BlobContent { get; set; } = [];
+        [BindProperty] public byte[] BlobContent { get; set; }
         [BindProperty] public List<Tag> Tags { get; set; } = [];
         [BindProperty] public string? TagsString { get; set; } = "";
         [BindProperty] public Guid? PrevPreviewId { get; set; }
@@ -102,6 +102,12 @@ namespace MediaCloud.Pages.Gallery
             {
                 blob.Preview.Content = pictureService.Rotate(preview.Content, RotationDegree);
                 blob.Content = pictureService.Rotate(blob.Content, RotationDegree);
+            }
+
+            if (BlobContent.Length > 0 && (BlobType.Contains("text") || BlobName.Contains(".md")))
+            {
+                blob.Content = BlobContent;
+                blob.Size = BlobContent.Length;
             }
             
             blobRepository.Update(blob);
