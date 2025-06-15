@@ -444,7 +444,7 @@ body {
 }
 
 .picture-viewport {
-    max-height: 85vh;
+    max-height: 76vh;
     display: flex;
     justify-content: center;
 }
@@ -462,7 +462,7 @@ body {
 
 .picture-viewer {
     object-fit: contain; 
-    height: 80vh;
+    height: 76vh;
     max-width: 82vw;
     animation-iteration-count: 1;
 }
