@@ -21,7 +21,7 @@ namespace MediaCloud.Pages.Gallery
         [BindProperty] public string BlobCreator {get; set; } 
         [BindProperty] public string BlobUpdator {get; set; }
         [BindProperty] public BlobInfo BlobInfo { get; set; } = new BlobInfo();
-        [BindProperty] public byte[] BlobContent { get; set; }
+        [BindProperty] public byte[]? BlobContent { get; set; }
         [BindProperty] public List<Tag> Tags { get; set; } = [];
         [BindProperty] public string? TagsString { get; set; } = "";
         [BindProperty] public Guid? PrevPreviewId { get; set; }
@@ -104,7 +104,7 @@ namespace MediaCloud.Pages.Gallery
                 blob.Content = pictureService.Rotate(blob.Content, RotationDegree);
             }
 
-            if (BlobContent.Length > 0 && (BlobType.Contains("text") || BlobName.Contains(".md")))
+            if (BlobContent is { Length: > 0 } && (BlobType.Contains("text") || BlobName.Contains(".md")))
             {
                 blob.Content = BlobContent;
                 blob.Size = BlobContent.Length;
