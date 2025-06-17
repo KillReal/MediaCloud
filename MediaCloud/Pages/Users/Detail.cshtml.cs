@@ -71,7 +71,7 @@ namespace MediaCloud.Pages.Users
             referenceUser.IsAutotaggingAllowed = User.IsAutotaggingAllowed;
 
             _userRepository.Update(referenceUser);
-            UserProvider.CleanCache();
+            UserProvider.TryCleanCacheForUser(User.Id);
 
             return Redirect(TempData["ReturnUrl"]?.ToString() ?? "/Users");
         }
