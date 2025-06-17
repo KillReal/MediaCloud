@@ -34,6 +34,7 @@ namespace MediaCloud.WebApp.Services.UserProvider
 
             _mutex.WaitOne();
 
+            _context.ChangeTracker.Clear();
             var user = _context.Users.First(x => x.Name == identity.Name);
 
             _mutex.ReleaseMutex();
@@ -279,6 +280,8 @@ namespace MediaCloud.WebApp.Services.UserProvider
         public bool TryCleanCacheForUser(Guid userId)
         {
             var currentUser = GetCurrentWithNoCache();
+            
+            _context.ChangeTracker.Clear();
             var user = _context.Users.FirstOrDefault(x => x.Id == userId);
 
             if (user == null)
