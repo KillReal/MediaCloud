@@ -18,6 +18,9 @@ public class AutotagService : IAutotagService
     private readonly Semaphore _semaphore;
     private readonly IMemoryCache _memoryCache;
     private readonly MemoryCacheEntryOptions _memoryCacheOptions;
+    
+    private const string _autotagAvailableModelsCacheKey = "Autotagging-AvailableModels";
+    private const string _autotagSuggestionsModelsCacheKey = "Autotagging-TagSuggestion";
 
     private const int _maxParallelDegree = 1;
     private double? _averageExecutionTime = null;
@@ -182,7 +185,7 @@ public class AutotagService : IAutotagService
 
     public List<string> GetSuggestionsByString(string searchString, int limit = 10)
     {
-        if (_memoryCache.TryGetValue("tagSuggestions", out List<string>? aliases))
+        if (_memoryCache.TryGetValue(_autotagSuggestionsModelsCacheKey, out List<string>? aliases))
         {
             return aliases?.Where(x => x.StartsWith(searchString)).Take(limit).ToList() ?? [];
         }
@@ -204,7 +207,7 @@ public class AutotagService : IAutotagService
             }
 
             aliases = JsonConvert.DeserializeObject<List<string>>(result);
-            _memoryCache.Set("tagSuggestions", aliases, _memoryCacheOptions);
+            _memoryCache.Set(_autotagSuggestionsModelsCacheKey, aliases, _memoryCacheOptions);
 
             aliases = aliases?.Where(x => x.StartsWith(searchString)).Take(limit).ToList();
 
@@ -219,7 +222,7 @@ public class AutotagService : IAutotagService
 
     public List<string> GetAvailableModels()
     {
-        if (_memoryCache.TryGetValue("availableModels", out List<string>? availableModels))
+        if (_memoryCache.TryGetValue(_autotagAvailableModelsCacheKey, out List<string>? availableModels))
         {
             return availableModels ?? [];
         }
@@ -234,7 +237,7 @@ public class AutotagService : IAutotagService
             }
             
             availableModels = JsonConvert.DeserializeObject<List<string>>(result);
-            _memoryCache.Set("availableModels", availableModels, _memoryCacheOptions);
+            _memoryCache.Set(_autotagAvailableModelsCacheKey, availableModels, _memoryCacheOptions);
             
             return availableModels ?? [];
         }

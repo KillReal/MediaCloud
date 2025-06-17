@@ -42,9 +42,9 @@ namespace MediaCloud.Pages.Users
 
         public IActionResult OnPost()
         {
-            var currentActor = UserProvider.GetCurrent();
+            var currentUser = UserProvider.GetCurrent();
 
-            if (currentActor.IsAdmin == false)
+            if (currentUser.IsAdmin == false)
             {
                 Logger.Error("Fail attempt to access to User/Detail by: {User.Id}", User.Id);
                 return Redirect("/Account/Login");
@@ -70,8 +70,8 @@ namespace MediaCloud.Pages.Users
             referenceUser.SpaceLimit = User.SpaceLimit;
             referenceUser.IsAutotaggingAllowed = User.IsAutotaggingAllowed;
 
-            _userRepository.Update(referenceUser);
             UserProvider.CleanCache();
+            _userRepository.Update(referenceUser);
 
             return Redirect(TempData["ReturnUrl"]?.ToString() ?? "/Users");
         }
@@ -82,7 +82,7 @@ namespace MediaCloud.Pages.Users
 
             if (User.IsAdmin && _userRepository.TryRemove(id))
             {
-                UserProvider.CleanCache();
+                UserProvider.TryCleanCacheForUser(id);
                 return Redirect(TempData["ReturnUrl"]?.ToString() ?? "/Users");
             }
             

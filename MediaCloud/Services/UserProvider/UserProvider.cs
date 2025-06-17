@@ -47,15 +47,15 @@ namespace MediaCloud.WebApp.Services.UserProvider
                 throw new ArgumentException("Cannot get actor without HttpContext");
             }
 
-            if (_memoryCache.TryGetValue(identity.Name, out User? actor) && actor != null)
+            if (_memoryCache.TryGetValue($"User-{identity.Name}", out User? user) && user != null)
             {
-                return actor;
+                return user;
             }
 
             _mutex.WaitOne();
 
             var cachedUser = _context.Users.First(x => x.Name == identity.Name);
-            _memoryCache.Set(identity.Name, cachedUser, _memoryCacheOptions);
+            _memoryCache.Set($"User-{identity.Name}", cachedUser, _memoryCacheOptions);
 
             _mutex.ReleaseMutex();
 
@@ -79,7 +79,7 @@ namespace MediaCloud.WebApp.Services.UserProvider
             _mutex.WaitOne();
 
             var cachedUser = _context.Users.First(x => x.Name == identity.Name);
-            _memoryCache.Set(identity.Name, cachedUser, _memoryCacheOptions);
+            _memoryCache.Set($"User-{identity.Name}", cachedUser, _memoryCacheOptions);
 
             _mutex.ReleaseMutex();
 
@@ -139,7 +139,7 @@ namespace MediaCloud.WebApp.Services.UserProvider
             
             _context.Users.Update(user);
             _context.SaveChanges();
-            _memoryCache.Set(data.Name, user, _memoryCacheOptions);
+            _memoryCache.Set($"User-{data.Name}", user, _memoryCacheOptions);
 
             return new AuthorizationResult(true, $"Successfully authorized for {user.Name}");
         }
@@ -153,9 +153,9 @@ namespace MediaCloud.WebApp.Services.UserProvider
                 throw new ArgumentException("Cannot get actor without HttpContext");
             }
 
-            if (_memoryCache.TryGetValue(identity.Name, out User? _))
+            if (_memoryCache.TryGetValue($"User-{identity.Name}", out User? _))
             {
-                _memoryCache.Remove(identity.Name);
+                _memoryCache.Remove($"User-{identity.Name}");
             }
 
             _ = httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -199,14 +199,14 @@ namespace MediaCloud.WebApp.Services.UserProvider
         {
             var currentUser = GetCurrentOrDefault();
 
-            if (_memoryCache.TryGetValue($"settings-{currentUser?.Id}", out UserSettings? settings))
-            {
-                return settings;
-            }
-
             if (currentUser is not { PersonalSettings: not null })
             {
                 return null;
+            }
+            
+            if (_memoryCache.TryGetValue($"User-{currentUser.Id}-settings", out UserSettings? settings))
+            {
+                return settings;
             }
 
             if (string.IsNullOrWhiteSpace(currentUser.PersonalSettings))
@@ -215,7 +215,7 @@ namespace MediaCloud.WebApp.Services.UserProvider
             }
             
             settings = JsonConvert.DeserializeObject<UserSettings>(currentUser.PersonalSettings);
-            _memoryCache.Set($"settings-{currentUser.Id}", settings, _memoryCacheOptions);
+            _memoryCache.Set($"User-{currentUser.Name}-settings", settings, _memoryCacheOptions);
 
             return settings;
 
@@ -234,14 +234,14 @@ namespace MediaCloud.WebApp.Services.UserProvider
             _context.Users.Update(currentUser);
             _context.SaveChanges();
 
-            if (!_memoryCache.TryGetValue($"settings-{currentUser?.Id}", out UserSettings? settings))
+            if (!_memoryCache.TryGetValue($"User-{currentUser.Name}-settings", out UserSettings? settings))
             {
                 return true;
             }
             
             if (settings is not null)
             {
-                _memoryCache.Remove($"settings-{currentUser?.Id}");
+                _memoryCache.Remove($"User-{currentUser.Name}-settings");
             }
 
             return true;
@@ -251,8 +251,8 @@ namespace MediaCloud.WebApp.Services.UserProvider
         {
             var currentUser = GetCurrent();
             
-            _memoryCache.Remove($"settings-{currentUser.Id}");
-            _memoryCache.Remove($"{currentUser.Name}");
+            _memoryCache.Remove($"User-{currentUser.Name}-settings");
+            _memoryCache.Remove($"User-{currentUser.Name}");
         }
         
         public bool TryCleanCacheForUser(Guid userId)
@@ -276,8 +276,8 @@ namespace MediaCloud.WebApp.Services.UserProvider
                 return false;
             }
             
-            _memoryCache.Remove($"settings-{user.Id}");
-            _memoryCache.Remove($"{user.Name}");
+            _memoryCache.Remove($"User-{user.Name}-settings");
+            _memoryCache.Remove($"User-{user.Name}");
 
             return true;
         }
