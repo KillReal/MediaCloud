@@ -16,3 +16,4 @@ TODO:
 - Implement blob streaming
 - Fix autotagging service hung when no respond from external ai model for 2 times in a row
 - Add partial work output to CompleteMessage into Task when exception raised
+- Rewrite auth to native identity usage

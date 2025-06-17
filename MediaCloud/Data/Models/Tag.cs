@@ -1,11 +1,13 @@
-﻿using MediaCloud.Data.Types;
+﻿using System.ComponentModel.DataAnnotations;
+using MediaCloud.Data.Types;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MediaCloud.Data.Models
 {
     public class Tag : Entity
     {
+        [Remote(action: "VerifyTagName", controller: "Validation")]
         public string Name { get; set; } = "";
-
         public string? Description { get; set; }
         public string? Alias { get; set; } 
 
