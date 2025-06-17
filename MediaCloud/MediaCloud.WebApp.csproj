@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <AssemblyVersion>2.2.0.0</AssemblyVersion>
+    <AssemblyVersion>2.2.1.0</AssemblyVersion>
     <UserSecretsId>abeeaaa9-0888-4646-a5f4-624149549b6f</UserSecretsId>
     <DockerDefaultTargetOS>Windows</DockerDefaultTargetOS>
     <PlatformTarget>x64</PlatformTarget>
