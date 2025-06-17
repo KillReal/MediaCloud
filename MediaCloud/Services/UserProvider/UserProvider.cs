@@ -245,7 +245,41 @@ namespace MediaCloud.WebApp.Services.UserProvider
             }
 
             return true;
+        }
 
+        public void CleanCache()
+        {
+            var currentUser = GetCurrent();
+            
+            _memoryCache.Remove($"settings-{currentUser.Id}");
+            _memoryCache.Remove($"{currentUser.Name}");
+        }
+        
+        public bool TryCleanCacheForUser(Guid userId)
+        {
+            var currentUser = GetCurrent();
+            var user = _context.Users.FirstOrDefault(x => x.Id == userId);
+
+            if (user == null)
+            {
+                var logger = LogManager.GetLogger("ActorProvider");
+                logger.Error("{currentUser.Name} tried to clean cache for userId: {userId}, user not found.", currentUser.Name, userId);
+                
+                return false;
+            }
+            
+            if (currentUser.IsAdmin == false)
+            {
+                var logger = LogManager.GetLogger("ActorProvider");
+                logger.Error("{currentUser.Name} tried to clean cache for {userName}, insufficient rights.", currentUser.Name, user.Name);
+                
+                return false;
+            }
+            
+            _memoryCache.Remove($"settings-{user.Id}");
+            _memoryCache.Remove($"{user.Name}");
+
+            return true;
         }
     }
 }

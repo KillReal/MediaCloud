@@ -1,6 +1,7 @@
 ﻿using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
 using MediaCloud.WebApp.Services.ConfigProvider;
+using Newtonsoft.Json;
 using NLog;
 
 namespace MediaCloud.WebApp.Services.UserProvider
@@ -47,7 +48,23 @@ namespace MediaCloud.WebApp.Services.UserProvider
 
         public UserSettings? GetSettings()
         {
-            throw new NotImplementedException();
+            if (_currentUser.PersonalSettings == null)
+            {
+                return null;    
+            }
+            
+            return JsonConvert.DeserializeObject<UserSettings>(_currentUser.PersonalSettings);
         }
+        
+        public void CleanCache()
+        {
+            throw new NotImplementedException($"Dummy provider cannot clean cache");
+        }
+
+        public bool TryCleanCacheForUser(Guid userId)
+        {
+            throw new NotImplementedException($"Dummy provider cannot clean cache");
+        }
+
     }
 }

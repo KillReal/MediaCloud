@@ -12,5 +12,7 @@ namespace MediaCloud.WebApp.Services.UserProvider
         public RegistrationResult Register(AuthData data, string inviteCode);
          public UserSettings? GetSettings();
         public bool SaveSettings(string jsonSettings);
+        public void CleanCache();
+        public bool TryCleanCacheForUser(Guid userId);
     }
 }

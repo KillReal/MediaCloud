@@ -3,6 +3,7 @@ using MediaCloud.Builders.List;
 using MediaCloud.Data;
 using MediaCloud.Data.Models;
 using MediaCloud.WebApp.Services.Data.Repositories.Interfaces;
+using MediaCloud.WebApp.Services.UserProvider;
 using Microsoft.EntityFrameworkCore;
 
 namespace MediaCloud.Repositories
