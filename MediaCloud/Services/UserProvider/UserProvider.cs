@@ -53,7 +53,7 @@ namespace MediaCloud.WebApp.Services.UserProvider
 
             _httpContextAccessor = httpContextAccessor;
 
-            LogManager.GetLogger("ActorProvider").Debug("ActorProvider initialized");
+            LogManager.GetLogger("UserProvider").Debug("UserProvider initialized");
         }
 
         public User GetCurrent()
@@ -283,16 +283,16 @@ namespace MediaCloud.WebApp.Services.UserProvider
 
             if (user == null)
             {
-                var logger = LogManager.GetLogger("ActorProvider");
-                logger.Error("{currentUser.Name} tried to clean cache for userId: {userId}, user not found.", currentUser.Name, userId);
+                var logger = LogManager.GetLogger("UserProvider");
+                logger.Error("{currentUser.Name} tried to clean cache for userId: {userId}. User not found.", currentUser.Name, userId);
                 
                 return false;
             }
             
             if (currentUser.IsAdmin == false)
             {
-                var logger = LogManager.GetLogger("ActorProvider");
-                logger.Error("{currentUser.Name} tried to clean cache for {userName}, insufficient rights.", currentUser.Name, user.Name);
+                var logger = LogManager.GetLogger("UserProvider");
+                logger.Error("{currentUser.Name} tried to clean cache for {userName}. Insufficient rights.", currentUser.Name, user.Name);
                 
                 return false;
             }
