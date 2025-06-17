@@ -20,6 +20,27 @@ namespace MediaCloud.WebApp.Services.UserProvider
 
         private readonly MemoryCacheEntryOptions _memoryCacheOptions;
 
+        private User GetCurrentWithNoCache()
+        {
+            var httpContext = _httpContextAccessor.HttpContext ?? 
+                              throw new ArgumentException("Cannot get actor without HttpContext");
+            
+            var identity = httpContext.User.Identity;
+
+            if (identity?.Name == null)
+            {
+                throw new ArgumentException("Cannot get actor without HttpContext");
+            }
+
+            _mutex.WaitOne();
+
+            var user = _context.Users.First(x => x.Name == identity.Name);
+
+            _mutex.ReleaseMutex();
+
+            return user;
+        }
+        
         public UserProvider(IServiceScopeFactory scopeFactory, IHttpContextAccessor httpContextAccessor, 
             IMemoryCache memoryCache, IConfiguration configuration)
         {
@@ -42,7 +63,7 @@ namespace MediaCloud.WebApp.Services.UserProvider
             
             var identity = httpContext.User.Identity;
 
-            if (identity == null || identity.Name == null)
+            if (identity?.Name == null)
             {
                 throw new ArgumentException("Cannot get actor without HttpContext");
             }
@@ -71,7 +92,7 @@ namespace MediaCloud.WebApp.Services.UserProvider
                 return null;
             }
 
-            if (_memoryCache.TryGetValue(identity.Name, out User? user))
+            if (_memoryCache.TryGetValue($"User-{identity.Name}", out User? user))
             {
                 return user;
             }
@@ -249,7 +270,7 @@ namespace MediaCloud.WebApp.Services.UserProvider
 
         public void CleanCache()
         {
-            var currentUser = GetCurrent();
+            var currentUser = GetCurrentWithNoCache();
             
             _memoryCache.Remove($"User-{currentUser.Name}-settings");
             _memoryCache.Remove($"User-{currentUser.Name}");
@@ -257,7 +278,7 @@ namespace MediaCloud.WebApp.Services.UserProvider
         
         public bool TryCleanCacheForUser(Guid userId)
         {
-            var currentUser = GetCurrent();
+            var currentUser = GetCurrentWithNoCache();
             var user = _context.Users.FirstOrDefault(x => x.Id == userId);
 
             if (user == null)

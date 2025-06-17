@@ -70,8 +70,8 @@ namespace MediaCloud.Pages.Users
             referenceUser.SpaceLimit = User.SpaceLimit;
             referenceUser.IsAutotaggingAllowed = User.IsAutotaggingAllowed;
 
-            UserProvider.CleanCache();
             _userRepository.Update(referenceUser);
+            UserProvider.CleanCache();
 
             return Redirect(TempData["ReturnUrl"]?.ToString() ?? "/Users");
         }
