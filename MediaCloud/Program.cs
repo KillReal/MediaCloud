@@ -1,3 +1,4 @@
+using System.IO.Compression;
 using MediaCloud.Data;
 using MediaCloud.Repositories;
 using MediaCloud.Services;
@@ -15,6 +16,7 @@ using MediaCloud.WebApp;
 using MediaCloud.WebApp.Services.AutotagService;
 using Npgsql;
 using MediaCloud.WebApp.Repositories;
+using Microsoft.AspNetCore.ResponseCompression;
 
 var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 logger.Debug("Early NLog initialization");
@@ -25,7 +27,6 @@ builder.Logging.ClearProviders();
 builder.Logging.AddNLogWeb();
 builder.Host.UseNLog();
 
-// Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddDbContext<AppDbContext>(options => 
 {
@@ -53,14 +54,16 @@ builder.Services.Configure<FormOptions>(x =>
     x.MultipartBodyLengthLimit = int.MaxValue;
     x.MultipartHeadersLengthLimit = int.MaxValue;
 });
-
 builder.Services.Configure<KestrelServerOptions>(options =>
 {
     options.Limits.MaxRequestBodySize = int.MaxValue;
 });
 
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options => 
+builder.Services.AddResponseCompression(options => options.EnableForHttps = true);
+builder.Services.Configure<BrotliCompressionProviderOptions>(options => options.Level = CompressionLevel.Fastest);
+builder.Services.AddResponseCaching();
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options => 
     {
         options.LoginPath = "/User/Login";
         options.ExpireTimeSpan = TimeSpan.FromMinutes(builder.Configuration.GetValue<int>("Security:CookieExpireTime"));
@@ -68,23 +71,31 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
-//using var scope = app.Services.CreateScope();
-
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 //app.UseHttpsRedirection();
-app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions()
+{
+    HttpsCompression = HttpsCompressionMode.Compress,               
+    OnPrepareResponse = (context) =>
+    {
+        var headers = context.Context.Response.GetTypedHeaders();
+        headers.CacheControl = new Microsoft.Net.Http.Headers.CacheControlHeaderValue
+        {
+            Public = true,
+            MaxAge = TimeSpan.FromDays(7)
+        };
+    }
+});
 app.UseRouting();
+app.UseResponseCompression();
+app.UseResponseCaching();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.UseAuthentication();
 app.UseAuthorization();
