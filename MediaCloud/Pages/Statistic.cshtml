@@ -7,20 +7,24 @@
 @using MediaCloud.Services;
 @using SixLabors.ImageSharp
 
-<h1 class="pt-3 text-white">Statistic</h1>
-
-<div class="button-panel d-flex flex-row align-items-center mt-3">
-    <a onclick="history.back();" class="btn btn-info">
-        Back
-    </a>
-    <div>
-        <a id="recalculateButton" class="btn btn-info">Recalculate</a>
-    </div>
-</div>
-
-<hr style="color: white"/>
-
 <div class="page-container">
+    <h1 class="text-white">Statistic</h1>
+
+    <div class="button-panel">
+        <div class="button-group">
+            <a onclick="history.back();" class="btn btn-info">
+                ⮨ Back
+            </a>
+        </div>
+        <div class="button-group">
+            <a id="recalculateButton" class="btn btn-info">
+                🧮 Recalculate
+            </a>
+        </div>
+    </div>
+
+    <hr style="color: white"/>
+    
     <div>
         <div class="row" style="justify-content: space-around; min-width: 45rem;">
             <div class="col whiteback-bar">
@@ -35,7 +39,7 @@
                 <canvas class="chart-canvas-block" style="max-height: 50rem" id="TagsChart"></canvas>
             </div>
             <div class="col whiteback-bar">
-                <canvas class="chart-canvas" id="ActivityChart"></canvas>
+                <canvas class="chart-canvas" style="max-height: 50rem" id="ActivityChart"></canvas>
             </div>
         </div>
     </div>
@@ -459,6 +463,7 @@
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             interaction: {
                 mode: 'index',
                 intersect: false,

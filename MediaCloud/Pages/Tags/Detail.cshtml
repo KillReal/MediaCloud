@@ -15,7 +15,7 @@
     <div class="button-panel">
         <div class="button-group">
            <a onclick="history.back();" class="btn btn-info">
-				Back
+               ⮨ Back
 			</a>
         </div>
 	</div>
@@ -62,16 +62,16 @@
                 </div>
                 <div class="form-group button-panel">
                     <div class="button-group">
-                        <input type="submit" value="Edit" class="btn btn-success" />
+                        <input type="submit" value="💾 Save" class="btn btn-success" />
                     </div>
                     <div class="button-group">
                         <a href="/Gallery/Index?filter=@Model.Tag.Name" class="btn btn-info text-nowrap">
-                            Show related files
+                            🔎 Find related
                         </a>
                         <button class="btn btn-danger btn-rounded" 
                             asp-page-handler="Delete" 
                             asp-route-id=@(Model.Tag.Id)>
-                            Remove
+                            🗑️ Remove
                         </button>
                     </div>
                 </div>

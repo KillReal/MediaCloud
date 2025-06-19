@@ -7,14 +7,14 @@
 }
 
 <div class="page-container"> 
-	<h1 class="pt-3 text-white">
+	<h1>
 		User details
 	</h1>
 
 	<div class="button-panel">
-        <div>
+        <div class="button-group">
            <a onclick="history.back();" class="btn btn-info">
-				Back
+	           ⮨ Back
 			</a>
         </div>
 	</div>
@@ -69,11 +69,11 @@
 					<input asp-for="@Model.User.SpaceLimit" class="form-control" min="0">
 				</div>
 				<div class="form-group mb-3 d-flex justify-content-between">
-					<input type="submit" value="Edit" class="btn btn-success" />
+					<input type="submit" value="💾 Save" class="btn btn-success" />
 					<button class="btn btn-danger btn-rounded" 
 						asp-page-handler="Delete" 
 						asp-route-id=@(Model.User.Id)>
-						Remove
+						🗑️ Remove
 					</button>
 				</div>
 			</form>

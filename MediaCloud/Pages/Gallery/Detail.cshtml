@@ -17,11 +17,11 @@
     <div class="button-panel">
         <div class="button-group justify-content-between w-100">
             <a onclick="history.back();" class="btn btn-info">
-                Back
+                ⮨ Back
             </a>
             <a class="btn btn-success btn-rounded" 
                 href="@Url.Action("Download", "Gallery", new { id = Model.PreviewId })">
-                Download
+                🠋 Download
             </a>
         </div>
 	</div>
@@ -123,12 +123,12 @@
             <div class="form-group d-flex justify-content-between">
                 <div class="button-panel w-100 mb-2">
                     <div class="button-group justify-content-between">
-                        <input type="submit" value="Edit" class="btn btn-success" />
+                        <input type="submit" value="💾 Save" class="btn btn-success" />
                         @if (Model.IsAutotaggingEnabled && Model.BlobType.Contains("image"))
                         {
                             <input class="btn btn-success btn-rounded" 
                                 type="button" 
-                                value="Autotag ✨" 
+                                value="✨ Autotag" 
                                 id="autotagButton" 
                                 onclick="autocompleteTags('@Model.PreviewId')" 
                             />
@@ -139,12 +139,12 @@
                             asp-page="Index" 
                             asp-route-filter=@(Model.TagsString) 
                             asp-route-sort=@("UpdatedAtDesc")>
-                            Show similar
+                            🔎 Find similar
                         </a>
                         <button class="btn btn-danger btn-rounded" 
                             asp-page-handler="Delete" 
                             asp-route-id=@(Model.PreviewId)>
-                            Remove
+                            🗑️ Remove
                         </button>
                     </div>
                 </div>

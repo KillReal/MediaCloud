@@ -64,8 +64,8 @@
                                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0 text-nowrap">
                                     <li class="nav-item d-flex">
                                          <a class="nav-link text-white">Hello, @Model.CurrentUser.Name!</a>
-                                        <a class="btn btn-info ms-2 me-2 navbar-right" href="/User" method="post">Settings</a>
-                                        <a class="btn btn-danger ms-2 ms-2 navbar-right" href="/User/Logout" method="post" id="logoutForm">Logout</a>
+                                        <a class="btn btn-info ms-2 me-2 navbar-right" href="/User" method="post">⚙️ Settings</a>
+                                        <a class="btn btn-danger ms-2 ms-2 navbar-right" href="/User/Logout" method="post" id="logoutForm">🚪 Logout</a>
                                     </li>
                                 </ul>
                             }
@@ -73,7 +73,7 @@
                             {
                                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                                     <li class="nav-item d-flex">
-                                        <a class="nav-link text-white" href="/User/Login">Sign In</a>
+                                        <a class="btn btn-success nav-link text-white" href="/User/Login">⮩ Log In</a>
                                     </li>
                                 </ul>
                             }
@@ -83,12 +83,13 @@
             </div>
         </nav>
     </header>
-        <button type="button"
-                class="btn btn-lg"
-                id="btn-back-to-top"
-                style="z-index: 1000; max-width: 5rem">
-            <img style="width:100%" src="~/img/up.png">
-        </button>
+<button type="button"
+        class="btn btn-lg btn-up btn-up-hidden"
+        id="btn-back-to-top"
+        style="z-index: 1000; max-width: 5rem">
+    UP
+    <img style="width:100%" src="~/img/up.png">
+</button>
     <div class="main-frame">
         <div class="main-container">
             <div class="container-fluid">
@@ -146,12 +147,12 @@
 
     function scrollFunction() {
         if (
-            document.body.scrollTop > 20 ||
-            document.documentElement.scrollTop > 20
+            document.body.scrollTop > 400 ||
+            document.documentElement.scrollTop > 400
         ) {
-            scrollOnTopButton.style.display = "block";
+            scrollOnTopButton.classList.remove('btn-up-hidden');
         } else {
-            scrollOnTopButton.style.display = "none";
+            scrollOnTopButton.classList.add('btn-up-hidden');
         }
     }
     // When the user clicks on the button, scroll to the top of the document

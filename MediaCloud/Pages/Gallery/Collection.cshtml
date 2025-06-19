@@ -29,7 +29,7 @@
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="hidden" asp-for=@(Model.IsOrderChanged) class="form-control" id="order-changed">
         <input type="hidden" asp-for=@(Model.Collection.Id) class="form-control">        
-        <div class="row">
+        <div class="row mb-2">
             <div class="col-sm">
                 <ul class="list-group">
                     <li class="list-group-item">Id: @Model.Collection.Id</li>
