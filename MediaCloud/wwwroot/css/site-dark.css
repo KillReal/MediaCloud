@@ -9,6 +9,14 @@
     background: linear-gradient(to bottom, rgba(77, 37, 116, 1), rgb(0 0 0));
 }
 
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'><path stroke='rgba%28190, 190, 190, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/></svg>")!important;
+}
+
+.navbar-light .navbar-toggler {
+    border-color: rgb(255 255 255 / 10%)!important;
+}
+
 .footer {
     /* Chrome 10-25, Safari 5.1-6 */
     background: -webkit-linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(77, 37, 116, 1));
