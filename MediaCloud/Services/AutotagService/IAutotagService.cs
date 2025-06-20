@@ -7,8 +7,8 @@ namespace MediaCloud.WebApp;
 
 public interface IAutotagService
 {
-    public List<AutotagResult> AutotagPreviewRange(List<Preview> previews, TagRepository tagRepository, string model, double confidence);
-    public AutotagResult AutotagPreview(Preview preview, TagRepository tagRepository, string model, double confidence);
+    public List<AutotagResult> AutotagPreviewRange(List<Preview> previews, AutotagRequest request);
+    public AutotagResult AutotagPreview(Preview preview, AutotagRequest request);
     public List<string> GetSuggestionsByString(string model, string searchString, int limit = 10);
     public List<string> GetAvailableModels();
     public double GetAverageExecutionTime();

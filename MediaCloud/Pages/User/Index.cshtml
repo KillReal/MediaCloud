@@ -132,11 +132,11 @@
 
 					@if (Model.User.IsAutotaggingAllowed)
 					{
-						<h5>Autotagging</h5>
+						<h5>AI autotagging</h5>
 
 						<div class="form-group mb-5">
 							<label class="col-form-label">
-								AI model
+								Model
 							</label>
 							<select class="form-control" asp-for="@Model.UserSettings.AutotaggingAiModel">
 								<option selected>Select model</option>
@@ -146,10 +146,18 @@
 								}
 							</select>
 							<label class="col-form-label">
-								AI model confidence to tag accepting
+								Threshold confidence to tag accepting
 							</label>
 							<input class="form-control" asp-for="@Model.UserSettings.AutotaggingAiModelConfidence"/>
 							<span asp-validation-for="@Model.UserSettings.AutotaggingAiModelConfidence"></span>
+							<label class="col-form-label">
+								Use MCut threshold (Strategy for Multi-Label classification)
+							</label>
+							<div class="w-100">
+								<input class="form-check-input big-form-check-input"
+								       type="checkbox"
+								       asp-for="@Model.UserSettings.AutotaggingMCutThresholdEnabled"/>
+							</div>
 						</div>
 					}
 				</div>

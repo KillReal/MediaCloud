@@ -64,7 +64,7 @@ public class AutotagService : IAutotagService
         };
     }
 
-    public List<AutotagResult> AutotagPreviewRange(List<Preview> previews, TagRepository tagRepository, string model, double confidence)
+    public List<AutotagResult> AutotagPreviewRange(List<Preview> previews, AutotagRequest request)
     {
         var results = new List<AutotagResult>();
         
@@ -74,7 +74,7 @@ public class AutotagService : IAutotagService
 
             var tasks = chunks.Select(chunk => Task.Run(() =>
             {
-                results.AddRange(chunk.Select(preview => AutotagPreview(preview, tagRepository, model, confidence)));
+                results.AddRange(chunk.Select(preview => AutotagPreview(preview, request)));
             }))
             .ToList();
 
@@ -83,23 +83,24 @@ public class AutotagService : IAutotagService
             return results;
         }
 
-        results.AddRange(previews.Select(preview => AutotagPreview(preview, tagRepository, model, confidence)));
+        results.AddRange(previews.Select(preview => AutotagPreview(preview, request)));
 
         return results;
     }
 
-    public AutotagResult AutotagPreview(Preview preview, TagRepository tagRepository, string model, double confidence)
+    public AutotagResult AutotagPreview(Preview preview, AutotagRequest request)
     {
         try {
             var stopwatch = DateTime.Now;
 
-            _logger.Info("Executed AI tag autocompletion for Preview: {previewId} with model {_autotaggingAiModel}", preview.Id, model);
+            _logger.Info("Executed AI tag autocompletion for Preview: {previewId} with model {_autotaggingAiModel}", preview.Id, request.Model);
             
             object data = new
             {
                 image = preview.Content,
-                model = model,
-                confidence = confidence
+                model = request.Model,
+                confidence = request.Confidence,
+                mCutEnabled = request.MCutEnabled,
             };
             
             var result = JsonConvert.DeserializeObject<AutotagResponse>(Post("predictTags", data));
@@ -109,7 +110,7 @@ public class AutotagService : IAutotagService
                 return new AutotagResult
                 {
                     PreviewId = preview.Id,
-                    Tags = [],
+                    SuggestedAliases = string.Empty,
                     IsSuccess = false,
                     ErrorMessage = "Autotagging service return empty result",
                     Rating = PreviewRatingType.Unknown
@@ -145,19 +146,10 @@ public class AutotagService : IAutotagService
 
             _logger.Debug("AI tag autocompletion for Preview: {previewId} successfully executed within: {elapsedTime} sec, suggested tags: {suggestedTagsString} rating: {suggestedRating}", 
                 preview.Id, elapsedTime.ToString("N0"), suggestedTagsString, suggestedRating);
-            
-            _mutex.WaitOne();
-            var actualTags = tagRepository.GetRangeByAliasString(suggestedTagsString);
-            _mutex.ReleaseMutex();
-
-            var actualTagsString = string.Join(" ", actualTags.Select(x => x.Name));
-
-            _logger.Debug("Existing tags for suggestion: {actualTagsString}", actualTagsString);
 
             return new AutotagResult
             {
                 PreviewId = preview.Id,
-                Tags = actualTags,
                 SuggestedAliases = suggestedTagsString,
                 Rating = suggestedRating,
                 IsSuccess = true
@@ -170,7 +162,7 @@ public class AutotagService : IAutotagService
             return new AutotagResult
             {
                 PreviewId = preview.Id,
-                Tags = [],
+                SuggestedAliases = string.Empty,
                 IsSuccess = false,
                 ErrorMessage = ex.Message,
                 Rating = PreviewRatingType.Unknown

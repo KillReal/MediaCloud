@@ -3,6 +3,7 @@ using MediaCloud.Data.Models;
 using MediaCloud.Repositories;
 using MediaCloud.TaskScheduler.Tasks;
 using MediaCloud.WebApp.Repositories;
+using MediaCloud.WebApp.Services.AutotagService;
 using MediaCloud.WebApp.Services.UserProvider;
 using MediaCloud.WebApp.Services.Statistic;
 using Microsoft.Extensions.Caching.Memory;
@@ -26,18 +27,7 @@ namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
             var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
            
             var configProvider = new ConfigProvider.ConfigProvider(serviceProvider.GetRequiredService<IConfiguration>(), userProvider);
-            var model = string.IsNullOrWhiteSpace(configProvider.UserSettings.AutotaggingAiModel)
-                ? configProvider.EnvironmentSettings.AutotaggingAiModel
-                : configProvider.UserSettings.AutotaggingAiModel;
-            var confidence = configProvider.UserSettings.AutotaggingAiModelConfidence == 0.0
-                ? configProvider.EnvironmentSettings.AutotaggingAiModelConfidence
-                : configProvider.UserSettings.AutotaggingAiModelConfidence;
-
-            if (model == null)
-            {
-                CompletionMessage = $"Need to select AI model in user or environment settings before run the task.";
-                return;
-            }
+            var autotagRequest = new AutotagRequest(configProvider);
             
             var previewRepository = new PreviewRepository(context, statisticProvider, userProvider, memoryCache);
             var tagRepository = new TagRepository(context, statisticProvider, userProvider);
@@ -51,11 +41,12 @@ namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
             
             foreach (var preview in previews)
             {
-                var result = autotagService.AutotagPreview(preview, tagRepository, model, confidence);
+                var result = autotagService.AutotagPreview(preview, autotagRequest);
 
                 if (result.IsSuccess)
                 {
-                    var tags = preview.Tags.Union(result.Tags).ToList();
+                    var suggestedTags = tagRepository.GetRangeByAliasString(result.SuggestedAliases);
+                    var tags = preview.Tags.Union(suggestedTags).ToList();
                     tagRepository.UpdatePreviewLinks(tags, preview);
                     
                     if (preview.Rating != result.Rating)
@@ -75,7 +66,8 @@ namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
                 _workCount--;
             }
 
-            CompletionMessage = $"Proceeded {successfullyProceededCount} previews <{model}> and <{confidence}> confidence [ {message} ]";
+            CompletionMessage = $"Proceeded {successfullyProceededCount} previews <{autotagRequest.Model}> and " +
+                                $"<{autotagRequest.Confidence}{(autotagRequest.MCutEnabled ? "(MCut)" : string.Empty)}> confidence [ {message} ]";
         }
 
     }

@@ -8,8 +8,7 @@ public class AutotagResult
 {
    public required Guid PreviewId { get; set; }
    public required bool IsSuccess { get; set; }
-   public required List<Tag> Tags { get; set; }
+   public required string SuggestedAliases { get; set; }
    public required PreviewRatingType Rating { get; set; }
-   public string? SuggestedAliases { get; set; }
    public string? ErrorMessage { get; set; }
 }

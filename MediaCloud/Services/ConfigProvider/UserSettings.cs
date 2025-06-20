@@ -37,7 +37,9 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
         [Required]
         [Range(0.0, 1.0)]
         public double AutotaggingAiModelConfidence {get; set;}
-
+        [Required]
+        public bool AutotaggingMCutThresholdEnabled { get; set; }
+        
         public UserSettings(IConfiguration configuration)
         {   
             ListMaxEntitiesCount = configuration.GetValue<int>("Gallery:List:MaxEntitiesCount");
