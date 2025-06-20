@@ -53,7 +53,7 @@
 					
 					<div class="form-group mb-5">
 						<label class="col-form-label">
-							Max columns count
+							Columns
 						</label>
 						<select class="form-select" asp-for="@Model.UserSettings.MaxColumnsCount">
 							<option value="2">2</option>
@@ -63,7 +63,7 @@
 							<option value="6">6</option>
 						</select>
 						<label class="col-form-label">
-							Count of entities per page
+							Items per page
 						</label>
 						<select class="form-select" asp-for="@Model.UserSettings.ListMaxEntitiesCount">
 							<option value="12">12</option>
@@ -73,7 +73,7 @@
 							<option value="64">64</option>
 						</select>
 						<label class="col-form-label">
-							Count of showing pages in pagination
+							Pages count in pagination
 						</label>
 						<select class="form-select" asp-for="@Model.UserSettings.ListMaxPageCount">
 							<option value="4">4</option>
@@ -84,7 +84,7 @@
 							<option value="16">16</option>
 						</select>
 						<label class="col-form-label" asp-for="@Model.UserSettings.ListAutoloadingEnabled">
-							Autoload next entities in list
+							Autoload items
 						</label>
 						<div class="w-100">
 							<input class="form-check-input big-form-check-input"
@@ -92,7 +92,7 @@
 							       asp-for="@Model.UserSettings.ListAutoloadingEnabled"/>
 						</div>
 						<label class="col-form-label" asp-for="@Model.UserSettings.AllowedNSFWContent">
-							Allowed NSFW content type to show
+							Allowed NSFW content
 						</label>
 						<select class="form-select" asp-for="@Model.UserSettings.AllowedNSFWContent">
 							<option value="1">None</option>
@@ -108,7 +108,7 @@
 
 					<div class="form-group mb-5">
 						<label class="col-form-label">
-							Count of days to show in activity statistic
+							Recent activity days
 						</label>
 						<select class="form-select" asp-for="@Model.UserSettings.StatisticActivityBacktrackDayCount">
 							<option value="7">7</option>
@@ -118,7 +118,7 @@
 							<option value="90">90</option>
 						</select>
 						<label class="col-form-label">
-							Count of top tags to use in statistics view
+							Top tags
 						</label>
 						<select class="form-select" asp-for="@Model.UserSettings.StatisticTagsTopCount">
 							<option value="15">15</option>
@@ -146,12 +146,12 @@
 								}
 							</select>
 							<label class="col-form-label">
-								Threshold confidence to tag accepting
+								Threshold confidence
 							</label>
 							<input class="form-control" asp-for="@Model.UserSettings.AutotaggingAiModelConfidence"/>
 							<span asp-validation-for="@Model.UserSettings.AutotaggingAiModelConfidence"></span>
 							<label class="col-form-label">
-								Use MCut threshold (Strategy for Multi-Label classification)
+								Use MCut threshold
 							</label>
 							<div class="w-100">
 								<input class="form-check-input big-form-check-input"
