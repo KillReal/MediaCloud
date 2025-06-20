@@ -94,12 +94,16 @@ public class AutotagService : IAutotagService
             var stopwatch = DateTime.Now;
 
             _logger.Info("Executed AI tag autocompletion for Preview: {previewId} with model {_autotaggingAiModel}", preview.Id, configProvider.UserSettings.AutotaggingAiModel);
-
+            
             object data = new
             {
                 image = preview.Content,
-                model = configProvider.UserSettings.AutotaggingAiModel,
-                confidence = configProvider.UserSettings.AutotaggingAiModelConfidence
+                model = string.IsNullOrWhiteSpace(configProvider.UserSettings.AutotaggingAiModel) 
+                    ? configProvider.EnvironmentSettings.AutotaggingAiModel 
+                    : configProvider.UserSettings.AutotaggingAiModel,
+                confidence = configProvider.UserSettings.AutotaggingAiModelConfidence == 0.0
+                    ? configProvider.EnvironmentSettings.AutotaggingAiModelConfidence
+                    : configProvider.UserSettings.AutotaggingAiModelConfidence,
             };
             
             var result = JsonConvert.DeserializeObject<AutotagResponse>(Post("predictTags", data));

@@ -48,7 +48,8 @@ namespace MediaCloud.WebApp.Pages
         {
             if (!ModelState.IsValid)
             {
-                return Redirect($"/Error?message={string.Join("\n", ModelState.Select(x => x.Value?.Errors).Where(y=>y?.Count>0).ToList())}");
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                return Redirect($"/Error?message={string.Join(",", errors)}");
             }
             
             _configProvider.UserSettings = UserSettings;
