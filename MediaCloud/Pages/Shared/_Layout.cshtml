@@ -117,6 +117,7 @@
     var isAuthorized = @((Model.GetType().IsSubclassOf(typeof(AuthorizedPageModel)) && Model.CurrentUser != null).ToString().ToLower());
     var targetTheme = '@((Model.GetType().IsSubclassOf(typeof(AuthorizedPageModel)) && Model.CurrentUser != null) ? Model.UIThemeName : "Light")';
     var selectedTheme =  localStorage.getItem('ui-theme-name');
+    const scrollDistanceToUpButtonAppear = 700;
     
     if (targetTheme !== selectedTheme && isAuthorized) {
         localStorage.setItem('ui-theme-name', targetTheme);
@@ -139,23 +140,17 @@
     }
     
     let scrollOnTopButton = document.getElementById("btn-back-to-top");
-
-    // When the user scrolls down 20px from the top of the document, show the button
+    
     window.onscroll = function () {
-        scrollFunction();
-    };
-
-    function scrollFunction() {
-        if (
-            document.body.scrollTop > 400 ||
-            document.documentElement.scrollTop > 400
+        if (document.body.scrollTop > scrollDistanceToUpButtonAppear ||
+            document.documentElement.scrollTop > scrollDistanceToUpButtonAppear
         ) {
             scrollOnTopButton.classList.remove('btn-up-hidden');
         } else {
             scrollOnTopButton.classList.add('btn-up-hidden');
         }
-    }
-    // When the user clicks on the button, scroll to the top of the document
+    };
+    
     scrollOnTopButton.addEventListener("click", backToTop);
 
     function backToTop() {
