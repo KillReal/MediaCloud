@@ -88,7 +88,7 @@ namespace MediaCloud.Repositories
             _context.Tags.UpdateRange(affectedTags);
             _context.SaveChanges();
 
-            _logger.Info("Recalculated <{affectedTags.Count()}> tags usage count by: {_actor.Name}", affectedTags.Count(), _user.Name);
+            _logger.Info("Recalculated <{affectedTags.Count()}> tags usage count for: {preview.Id} by: {_actor.Name}", affectedTags.Count(), preview.Id, _user.Name);
         }
 
         public List<Tag> GetRangeByString(string? tagsString)
