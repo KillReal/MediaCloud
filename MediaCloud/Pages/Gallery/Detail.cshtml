@@ -41,7 +41,7 @@
         <div class="picture-viewport w-100 shadow-1-strong">
             @if (Model.BlobType.Contains("image"))
             {
-                <img class="picture-viewer shadow-1-strong mb-4 me-2 ms-2 rounded" id="picture" src="data:image/png;base64,@Convert.ToBase64String(Model.BlobContent)"
+                <img class="picture-viewer shadow-1-strong mb-4 rounded" id="picture" src="data:image/png;base64,@Convert.ToBase64String(Model.BlobContent)"
                 />
             }
             else if (Model.BlobType.Contains("text") || Model.BlobName.Contains(".md"))
@@ -110,7 +110,7 @@
             }
 
             <div class="row">
-                <div class="form-group autocomplete-list autocomplete mb-3 col-sm@(Model.IsUserAnAdmin ? "-10" : string.Empty)">
+                <div class="form-group autocomplete-list autocomplete col-sm@(Model.IsUserAnAdmin ? "-10" : string.Empty)">
                     <label class="col-form-label">
                         Edit tags
                     </label>
@@ -119,7 +119,7 @@
                 </div>
                 @if (Model.IsUserAnAdmin)
                 {
-                    <div class="form-group autocomplete-list autocomplete mb-3 col-sm-2">
+                    <div class="form-group autocomplete-list autocomplete col-sm-2">
                         <label class="col-form-label">
                             Preview rating
                         </label>
@@ -164,22 +164,31 @@
         </form>
     </div>
 
-    <div class="row">
-        <ul class="list-group">
-            <li class="list-group-item">Id: @Model.BlobInfo.Id</li>
-            @if (Model.BlobInfo.Resolution.Contains('x'))
-            {
-                <li class="list-group-item">Resolution: @Model.BlobInfo.Resolution</li>
-                <li class="list-group-item">Rating: @Model.PreviewRating.GetDisplayName()</li>
-            }
-            <li class="list-group-item">File name: @Model.BlobName</li>
-            <li class="list-group-item">File type: @Model.BlobType</li>
-            <li class="list-group-item">Size: @Model.BlobInfo.SizeInfo</li>
-            <li class="list-group-item">Creator: @Model.BlobCreator</li>
-            <li class="list-group-item">Updator: @Model.BlobUpdator</li>
-            <li class="list-group-item">Time of create: @Model.BlobInfo.CreatedAt</li>
-            <li class="list-group-item">Time of update: @Model.BlobInfo.UpdatedAt</li>
-        </ul>
+    <div class="row mt-3">
+        <div class="col">
+            <ul class="list-group">
+                <li class="list-group-item">Id: @Model.BlobInfo.Id</li>
+                @if (Model.BlobInfo.Resolution.Contains('x'))
+                {
+                    <li class="list-group-item">Resolution: @Model.BlobInfo.Resolution</li>
+                }
+                <li class="list-group-item">File name: @Model.BlobName</li>
+                <li class="list-group-item">File type: @Model.BlobType</li>
+                <li class="list-group-item">Size: @Model.BlobInfo.SizeInfo</li>
+            </ul>
+        </div>
+        <div class="col">
+            <ul class="list-group">
+                @if (Model.BlobInfo.Resolution.Contains('x'))
+                {
+                    <li class="list-group-item">Rating: @Model.PreviewRating.GetDisplayName()</li>
+                }
+                <li class="list-group-item">Creator: @Model.BlobCreator</li>
+                <li class="list-group-item">Updator: @Model.BlobUpdator</li>
+                <li class="list-group-item">Time of create: @Model.BlobInfo.CreatedAt</li>
+                <li class="list-group-item">Time of update: @Model.BlobInfo.UpdatedAt</li>
+            </ul>
+        </div>
     </div>
 
     <div class="modal text-black" id="loadingModal" tabindex="-1" role="dialog">
