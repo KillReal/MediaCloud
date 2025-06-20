@@ -32,12 +32,8 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
         [Required]
         [AllowedValues(PreviewRatingType.Unknown, PreviewRatingType.General, PreviewRatingType.Sensitive, PreviewRatingType.Questionable, PreviewRatingType.Explicit)]
         public PreviewRatingType AllowedNSFWContent  { get; set; }
-        [Required]
         public string? AutotaggingAiModel { get; set; }
-        [Required]
-        [Range(0.0, 1.0)]
         public double AutotaggingAiModelConfidence {get; set;}
-        [Required]
         public bool AutotaggingMCutThresholdEnabled { get; set; }
         
         public UserSettings(IConfiguration configuration)
