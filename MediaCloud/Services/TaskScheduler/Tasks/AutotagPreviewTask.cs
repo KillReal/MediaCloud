@@ -24,7 +24,20 @@ namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
             var context = serviceProvider.GetRequiredService<AppDbContext>();
             var autotagService = serviceProvider.GetRequiredService<IAutotagService>();
             var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
+           
             var configProvider = new ConfigProvider.ConfigProvider(serviceProvider.GetRequiredService<IConfiguration>(), userProvider);
+            var model = string.IsNullOrWhiteSpace(configProvider.UserSettings.AutotaggingAiModel)
+                ? configProvider.EnvironmentSettings.AutotaggingAiModel
+                : configProvider.UserSettings.AutotaggingAiModel;
+            var confidence = configProvider.UserSettings.AutotaggingAiModelConfidence == 0.0
+                ? configProvider.EnvironmentSettings.AutotaggingAiModelConfidence
+                : configProvider.UserSettings.AutotaggingAiModelConfidence;
+
+            if (model == null)
+            {
+                CompletionMessage = $"Need to select AI model in user or environment settings before run the task.";
+                return;
+            }
             
             var previewRepository = new PreviewRepository(context, statisticProvider, userProvider, memoryCache);
             var tagRepository = new TagRepository(context, statisticProvider, userProvider);
@@ -38,7 +51,7 @@ namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
             
             foreach (var preview in previews)
             {
-                var result = autotagService.AutotagPreview(preview, tagRepository, configProvider);
+                var result = autotagService.AutotagPreview(preview, tagRepository, model, confidence);
 
                 if (result.IsSuccess)
                 {
@@ -62,8 +75,7 @@ namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
                 _workCount--;
             }
 
-            CompletionMessage = $"Proceeded {successfullyProceededCount} previews with " +
-                                $"<{configProvider.UserSettings.AutotaggingAiModel}> and <{configProvider.UserSettings.AutotaggingAiModelConfidence}> confidence [ {message} ]";
+            CompletionMessage = $"Proceeded {successfullyProceededCount} previews <{model}> and <{confidence}> confidence [ {message} ]";
         }
 
     }
