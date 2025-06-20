@@ -7,7 +7,7 @@
 <div class="col-sm pt-3">
     <ul class="list-group">
         <li class="list-group-item h-100">
-            Related tags:
+            Tags:
             @foreach (var tag in Model.Tags)
             {
                 var classStyle = "btn-info";
@@ -38,7 +38,7 @@
                         classStyle = "btn-pink";
                         break;
                 }
-                <a class="btn @classStyle btn-rounded me-1 mb-2" 
+                <a class="btn @classStyle btn-rounded me-1 mb-1" 
                    asp-page="/Tags/Detail" 
                    asp-route-id=@tag.Id>
                     @tag.Name

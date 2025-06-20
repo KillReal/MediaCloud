@@ -1,10 +1,13 @@
 ﻿using MediaCloud.Data.Models;
+using MediaCloud.WebApp.Data.Types;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MediaCloud.WebApp;
 
-public class _TagsModel(List<Tag> tags)
+public class _GalleryPageModel(List<Preview> previews, PreviewRatingType rating)
 {
     [BindProperty]
-    public List<Tag> Tags { get; set; } = tags;
+    public List<Preview> Previews { get; set; } = previews;
+    [BindProperty]
+    public PreviewRatingType AllowedNsfwContentRating { get; set; } = rating;
 }
