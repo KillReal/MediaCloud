@@ -14,11 +14,11 @@
     <div class="button-panel">
         <div class="button-group justify-content-between w-100">
             <a onclick="history.back();" class="btn btn-info">
-                Back
+                ⮨ Back
             </a>
             <a class="btn btn-success btn-rounded" 
                 href="@Url.Action("DownloadCollection", "Gallery", new { id = Model.Collection.Id })">
-                Download
+                🠋 Download
             </a>
         </div>
 	</div>
@@ -63,13 +63,13 @@
 
         <div class="form-group button-panel">
             <div class="button-group">
-                <input type="submit" value="Edit" class="btn btn-success" />
+                <input type="submit" value="💾 Save" class="btn btn-success" />
 
                 @if (Model.IsAutotaggingEnabled) 
                 {
                     <input class="btn btn-success btn-rounded" 
                         type="button" 
-                        value="Autotag ✨" 
+                        value="✨ Autotag" 
                         id="autotagButton" 
                         onclick="autocompleteTags('@Model.Collection.Id')" 
                     />
@@ -81,12 +81,12 @@
                     asp-page="Index" 
                     asp-route-filter=@(string.Join(' ', Model.Tags.Select(x => x.Name)))) 
                     asp-route-sort=@("UpdatedAtDesc")>
-                    Show similar
+                    🔎 Find similar
                 </a>
                 <button class="btn btn-danger btn-rounded" 
                     asp-page-handler="Delete" 
                     asp-route-id=@(Model.Collection.Id)>
-                    Remove
+                    🗑️ Remove
                 </button>
             </div>
         </div>
