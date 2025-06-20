@@ -61,7 +61,7 @@ namespace MediaCloud.WebApp.Pages
                 _configProvider.EnvironmentSettings = EnvironmentSettings;
             }
 
-            return Redirect("/User");
+            return Redirect(TempData["ReturnUrl"]?.ToString() ?? "/Gallery");
         }
     }
 }
