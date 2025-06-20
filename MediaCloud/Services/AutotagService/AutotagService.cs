@@ -64,7 +64,7 @@ public class AutotagService : IAutotagService
         };
     }
 
-    public List<AutotagResult> AutotagPreviewRange(List<Preview> previews, TagRepository tagRepository, IConfigProvider configProvider)
+    public List<AutotagResult> AutotagPreviewRange(List<Preview> previews, TagRepository tagRepository, string model, double confidence)
     {
         var results = new List<AutotagResult>();
         
@@ -74,7 +74,7 @@ public class AutotagService : IAutotagService
 
             var tasks = chunks.Select(chunk => Task.Run(() =>
             {
-                results.AddRange(chunk.Select(preview => AutotagPreview(preview, tagRepository, configProvider)));
+                results.AddRange(chunk.Select(preview => AutotagPreview(preview, tagRepository, model, confidence)));
             }))
             .ToList();
 
@@ -83,27 +83,23 @@ public class AutotagService : IAutotagService
             return results;
         }
 
-        results.AddRange(previews.Select(preview => AutotagPreview(preview, tagRepository, configProvider)));
+        results.AddRange(previews.Select(preview => AutotagPreview(preview, tagRepository, model, confidence)));
 
         return results;
     }
 
-    public AutotagResult AutotagPreview(Preview preview, TagRepository tagRepository, IConfigProvider configProvider)
+    public AutotagResult AutotagPreview(Preview preview, TagRepository tagRepository, string model, double confidence)
     {
         try {
             var stopwatch = DateTime.Now;
 
-            _logger.Info("Executed AI tag autocompletion for Preview: {previewId} with model {_autotaggingAiModel}", preview.Id, configProvider.UserSettings.AutotaggingAiModel);
+            _logger.Info("Executed AI tag autocompletion for Preview: {previewId} with model {_autotaggingAiModel}", preview.Id, model);
             
             object data = new
             {
                 image = preview.Content,
-                model = string.IsNullOrWhiteSpace(configProvider.UserSettings.AutotaggingAiModel) 
-                    ? configProvider.EnvironmentSettings.AutotaggingAiModel 
-                    : configProvider.UserSettings.AutotaggingAiModel,
-                confidence = configProvider.UserSettings.AutotaggingAiModelConfidence == 0.0
-                    ? configProvider.EnvironmentSettings.AutotaggingAiModelConfidence
-                    : configProvider.UserSettings.AutotaggingAiModelConfidence,
+                model = model,
+                confidence = confidence
             };
             
             var result = JsonConvert.DeserializeObject<AutotagResponse>(Post("predictTags", data));
@@ -182,7 +178,7 @@ public class AutotagService : IAutotagService
         }
     }
 
-    public List<string> GetSuggestionsByString(IConfigProvider configProvider, string searchString, int limit = 10)
+    public List<string> GetSuggestionsByString(string model, string searchString, int limit = 10)
     {
         if (_memoryCache.TryGetValue(_autotagSuggestionsModelsCacheKey, out List<string>? aliases))
         {
@@ -195,7 +191,7 @@ public class AutotagService : IAutotagService
             {
                 searchString = "",
                 limit = -1,
-                model = configProvider.UserSettings.AutotaggingAiModel
+                model = model
             };
 
             var result = Post("suggestedTags", data);

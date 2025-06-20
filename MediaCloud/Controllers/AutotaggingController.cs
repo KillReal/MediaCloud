@@ -27,8 +27,17 @@ public class AutotaggingController(IUserProvider userProvider, IConfigProvider c
         {
             return [];
         }
+        
+        var model = string.IsNullOrWhiteSpace(configProvider.UserSettings.AutotaggingAiModel)
+            ? configProvider.EnvironmentSettings.AutotaggingAiModel
+            : configProvider.UserSettings.AutotaggingAiModel;
 
-        return autotagService.GetSuggestionsByString(configProvider, searchString, limit);
+        if (model == null)
+        {
+            throw new Exception($"Need to select AI model in user or environment settings before run the task.");
+        }
+
+        return autotagService.GetSuggestionsByString(model, searchString, limit);
     }
     
     public Guid GetTagsForPreview(Guid previewId)
