@@ -26,8 +26,6 @@ public class AutotagService : IAutotagService
     private double? _averageExecutionTime = null;
     private readonly int _autotaggingRequestTimeout;
     private readonly string _autotaggingServiceConnectionString;
-    private readonly string _autotaggingAiModel;
-    private readonly double _autotaggingAiModelConfidence;
 
     public double GetAverageExecutionTime() => (_averageExecutionTime ?? _autotaggingRequestTimeout) / 1000;
 
@@ -48,9 +46,6 @@ public class AutotagService : IAutotagService
     {
         _autotaggingServiceConnectionString = configProvider.EnvironmentSettings.AutotaggingServiceConnectionString ?? 
                                               throw new Exception("Autotagging service Connection String is not set");
-        _autotaggingAiModel = configProvider.EnvironmentSettings.AutotaggingAiModel ?? 
-            throw new Exception("Autotagging AI Model is not set");
-        _autotaggingAiModelConfidence = configProvider.EnvironmentSettings.AutotaggingAiModelConfidence;
         _autotaggingRequestTimeout = configProvider.EnvironmentSettings.AutotaggingRequestTimeout;
 
         var maxParallelDegree = configProvider.EnvironmentSettings.UseParallelProcessingForAutotagging 
@@ -69,7 +64,7 @@ public class AutotagService : IAutotagService
         };
     }
 
-    public List<AutotagResult> AutotagPreviewRange(List<Preview> previews, TagRepository tagRepository)
+    public List<AutotagResult> AutotagPreviewRange(List<Preview> previews, TagRepository tagRepository, IConfigProvider configProvider)
     {
         var results = new List<AutotagResult>();
         
@@ -79,7 +74,7 @@ public class AutotagService : IAutotagService
 
             var tasks = chunks.Select(chunk => Task.Run(() =>
             {
-                results.AddRange(chunk.Select(preview => AutotagPreview(preview, tagRepository)));
+                results.AddRange(chunk.Select(preview => AutotagPreview(preview, tagRepository, configProvider)));
             }))
             .ToList();
 
@@ -88,23 +83,23 @@ public class AutotagService : IAutotagService
             return results;
         }
 
-        results.AddRange(previews.Select(preview => AutotagPreview(preview, tagRepository)));
+        results.AddRange(previews.Select(preview => AutotagPreview(preview, tagRepository, configProvider)));
 
         return results;
     }
 
-    public AutotagResult AutotagPreview(Preview preview, TagRepository tagRepository)
+    public AutotagResult AutotagPreview(Preview preview, TagRepository tagRepository, IConfigProvider configProvider)
     {
         try {
             var stopwatch = DateTime.Now;
 
-            _logger.Info("Executed AI tag autocompletion for Preview: {previewId} with model {_autotaggingAiModel}", preview.Id, _autotaggingAiModel);
+            _logger.Info("Executed AI tag autocompletion for Preview: {previewId} with model {_autotaggingAiModel}", preview.Id, configProvider.UserSettings.AutotaggingAiModel);
 
             object data = new
             {
                 image = preview.Content,
-                model = _autotaggingAiModel,
-                confidence = _autotaggingAiModelConfidence
+                model = configProvider.UserSettings.AutotaggingAiModel,
+                confidence = configProvider.UserSettings.AutotaggingAiModelConfidence
             };
             
             var result = JsonConvert.DeserializeObject<AutotagResponse>(Post("predictTags", data));
@@ -183,7 +178,7 @@ public class AutotagService : IAutotagService
         }
     }
 
-    public List<string> GetSuggestionsByString(string searchString, int limit = 10)
+    public List<string> GetSuggestionsByString(IConfigProvider configProvider, string searchString, int limit = 10)
     {
         if (_memoryCache.TryGetValue(_autotagSuggestionsModelsCacheKey, out List<string>? aliases))
         {
@@ -196,7 +191,7 @@ public class AutotagService : IAutotagService
             {
                 searchString = "",
                 limit = -1,
-                model = _autotaggingAiModel
+                model = configProvider.UserSettings.AutotaggingAiModel
             };
 
             var result = Post("suggestedTags", data);

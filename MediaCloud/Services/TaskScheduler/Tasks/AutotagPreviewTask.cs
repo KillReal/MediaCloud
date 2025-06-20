@@ -24,6 +24,7 @@ namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
             var context = serviceProvider.GetRequiredService<AppDbContext>();
             var autotagService = serviceProvider.GetRequiredService<IAutotagService>();
             var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
+            var configProvider = new ConfigProvider.ConfigProvider(serviceProvider.GetRequiredService<IConfiguration>(), userProvider);
             
             var previewRepository = new PreviewRepository(context, statisticProvider, userProvider, memoryCache);
             var tagRepository = new TagRepository(context, statisticProvider, userProvider);
@@ -37,7 +38,7 @@ namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
             
             foreach (var preview in previews)
             {
-                var result = autotagService.AutotagPreview(preview, tagRepository);
+                var result = autotagService.AutotagPreview(preview, tagRepository, configProvider);
 
                 if (result.IsSuccess)
                 {
@@ -61,7 +62,8 @@ namespace MediaCloud.WebApp.Services.TaskScheduler.Tasks
                 _workCount--;
             }
 
-            CompletionMessage = $"Proceeded {successfullyProceededCount} previews [ {message} ]";
+            CompletionMessage = $"Proceeded {successfullyProceededCount} previews with " +
+                                $"<{configProvider.UserSettings.AutotaggingAiModel}> and <{configProvider.UserSettings.AutotaggingAiModelConfidence}> confidence [ {message} ]";
         }
 
     }

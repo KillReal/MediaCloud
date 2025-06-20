@@ -32,9 +32,9 @@ namespace MediaCloud.WebApp.Pages
             User = userProvider.GetCurrent();
 
             UserSettings = _configProvider.UserSettings;
-            EnvironmentSettings = User.IsAdmin 
-                ? _configProvider.EnvironmentSettings 
-                : null;
+            // EnvironmentSettings = User.IsAdmin 
+            //     ? _configProvider.EnvironmentSettings 
+            //     : null;
 
             AutotaggingAiModels = autotagService.GetAvailableModels();
         }

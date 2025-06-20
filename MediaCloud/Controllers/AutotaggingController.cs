@@ -28,7 +28,7 @@ public class AutotaggingController(IUserProvider userProvider, IConfigProvider c
             return [];
         }
 
-        return autotagService.GetSuggestionsByString(searchString, limit);
+        return autotagService.GetSuggestionsByString(configProvider, searchString, limit);
     }
     
     public Guid GetTagsForPreview(Guid previewId)

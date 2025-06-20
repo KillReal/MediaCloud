@@ -32,6 +32,11 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
         [Required]
         [AllowedValues(PreviewRatingType.Unknown, PreviewRatingType.General, PreviewRatingType.Sensitive, PreviewRatingType.Questionable, PreviewRatingType.Explicit)]
         public PreviewRatingType AllowedNSFWContent  { get; set; }
+        [Required]
+        public string? AutotaggingAiModel { get; set; }
+        [Required]
+        [Range(0.0, 1.0)]
+        public double AutotaggingAiModelConfidence {get; set;}
 
         public UserSettings(IConfiguration configuration)
         {   
@@ -43,6 +48,8 @@ namespace MediaCloud.WebApp.Services.ConfigProvider
             MaxColumnsCount = configuration.GetValue<int>("Gallery:MaxColumnCount");
             UITheme = configuration.GetValue<string>("UI:Theme") ?? "Light";
             AllowedNSFWContent = configuration.GetValue<PreviewRatingType>("Gallery:AllowedNSFWContent");
+            AutotaggingAiModel = configuration["Autotagging:AiModel"];
+            AutotaggingAiModelConfidence = configuration.GetValue<double>("Autotagging:AiModelConfidence");
         }
 
         public UserSettings()
