@@ -69,9 +69,7 @@
                 onclick="window.location.replace('/Gallery/Detail/?id=@(Model.NextPreviewId)')"
             />
         }
-
-        @if (Model.BlobType.Contains("image"))
-        {
+        
             <div class="picture-controls-container">
                 <div class="picture-control" style="width: 85%">
                     <div class="picture-control-background d-flex align-content-center" style="padding-top: 0.25rem">
@@ -81,19 +79,21 @@
                         <partial name="~/Pages/Gallery/_FloatingTags.cshtml" model=@(new _FloatingTagsModel(Model.Tags))/>
                     </div>
                 </div>
-                <div class="picture-control">
-                    <div class="picture-control-background d-flex align-items-center">
-                        Rotation:
-                        <button class="btn btn-info btn-rounded rotate-button" style="height: 2rem" onclick="rotatePicture(-90);">
-                            <img class="h-100" src="/img/rotating-arrow-left.png">
-                        </button>
-                        <button class="btn btn-info btn-rounded rotate-button" style="height: 2rem" onclick="rotatePicture(90);">
-                            <img class="h-100" src="/img/rotating-arrow-right.png">
-                        </button>
+                @if (Model.BlobType.Contains("image"))
+                {
+                    <div class="picture-control">
+                        <div class="picture-control-background d-flex align-items-center">
+                            Rotation:
+                            <button class="btn btn-info btn-rounded rotate-button" style="height: 2rem" onclick="rotatePicture(-90);">
+                                <img class="h-100" src="/img/rotating-arrow-left.png">
+                            </button>
+                            <button class="btn btn-info btn-rounded rotate-button" style="height: 2rem" onclick="rotatePicture(90);">
+                                <img class="h-100" src="/img/rotating-arrow-right.png">
+                            </button>
+                        </div>
                     </div>
-                </div>
+                }
             </div>
-        }
     </div>
 
     <div class="row">
