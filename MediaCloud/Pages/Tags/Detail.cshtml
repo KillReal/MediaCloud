@@ -35,6 +35,7 @@
                         Enter tag name
                     </label>
                     <input asp-for="@Model.Tag.Name" class="form-control" />
+                    <span asp-validation-for="@Model.Tag.Name"></span>
                 </div>
                 <div class="form-group mb-3">
                     <label class="col-form-label">
