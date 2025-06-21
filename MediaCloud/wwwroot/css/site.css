@@ -99,10 +99,12 @@ body {
 .progress {
     color: black;
     background-color: rgb(38, 84, 112);
-    min-width: 20rem;
+    min-width: 15rem;
     width: 25%;
     height: 1.5rem;
     border-radius: 2rem;
+    display: flex;
+    justify-content: space-between;
 }
 
 .progress-bar-value {
@@ -111,6 +113,8 @@ body {
     line-height: 1.5rem;
     font-size: small;
     color: white;
+    margin-right: 1rem;
+    margin-left: 1rem;
 }
 
 .button-panel {

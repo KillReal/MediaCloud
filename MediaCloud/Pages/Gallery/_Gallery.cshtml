@@ -29,7 +29,7 @@
 
 @for(var i = 0; i < Model.Previews.Count; i += 1)
 {
-    <div class="gallery-item-container col-sm">
+    <div class="gallery-item-container col-lg">
         <a draggable="false" href="@BuildUrlByPreview(Model.Previews[i])">
             <div class="shadow-1-strong gallery-item">
                 @if (Model.Previews[i].BlobType.Contains("image"))

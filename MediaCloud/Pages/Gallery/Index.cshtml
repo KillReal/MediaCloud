@@ -50,9 +50,9 @@
     <div class="page-header-container">
         <h1>Gallery</h1>
         <div class="progress position-relative">
-            <small class="ms-2 progress-bar-value d-flex position-absolute w-100">Used space: </small>
+            <small class="progress-bar-value d-flex position-absolute">Used space: </small>
             <div class="progress-bar bg-success" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: @Model.SpaceUsagePercent%"></div>
-            <small class="progress-bar-value justify-content-center d-flex position-absolute w-100">
+            <small class="progress-bar-value">
                 @Model.SpaceUsage
             </small>
         </div>
@@ -138,7 +138,7 @@
     {
         <partial name="~/Pages/Shared/_Pagination.cshtml" />
     }
-    <div class="row row-cols-sm-@(Model.MaxColumnCount) row-col image-row gallery mb-3" id="gallery">
+    <div class="row row-cols-xl-@(Model.MaxColumnCount) row-cols-lg-@(Model.MaxColumnCount < 4 ? Model.MaxColumnCount : 4) row-cols-md-@(Model.MaxColumnCount < 3 ? Model.MaxColumnCount : 3) row-cols-sm-@(Model.MaxColumnCount < 2 ? Model.MaxColumnCount : 2) row-col image-row gallery mb-3" id="gallery">
         <partial name="~/Pages/Gallery/_Gallery.cshtml" model=@(new _GalleryPageModel(Model.Previews, Model.AllowedNsfwContent))/>
         
         @if (Model.Previews.Count == 0)
