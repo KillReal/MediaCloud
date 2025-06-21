@@ -57,9 +57,9 @@ namespace MediaCloud.Repositories
             var author = _context.Users.First(x => x.Id == _user.Id);
             var blob = CreateBlobWithPreview(file, author);
             _context.Add(blob);
-            SaveChangesAsync();
+            SaveChanges();
 
-            _logger.Info("Created new media with id: {media.Id} by: {_user.Name}", blob.Id, _user.Name);
+            _logger.Info("Created new media with id: {media.Id} by: {_actor.Name}", blob.Id, _user.Name);
             _statisticProvider.MediasCountChanged.Invoke(1, blob.Size);
             return blob;
         }
@@ -77,7 +77,7 @@ namespace MediaCloud.Repositories
             var blobs = GetBlobsRange(files);
 
             _context.AddRange(blobs);
-            SaveChangesAsync();
+            SaveChanges();
 
             _logger.Info("Created <{blobs.Count}> new blobs by: {_actor.Name}", blobs.Count, _user.Name);
             _statisticProvider.MediasCountChanged.Invoke(blobs.Count, blobs.Sum(x => x.Size));
@@ -167,10 +167,10 @@ namespace MediaCloud.Repositories
 
             _context.ChangeTracker.AutoDetectChangesEnabled = false;        
             _context.Blobs.AddRange(blobs);
-            SaveChangesAsync();
+            SaveChanges();
             _context.ChangeTracker.AutoDetectChangesEnabled = true;
 
-            _logger.Info("Created new collection with <{collection.Count}> previews and id: {collection.Id} by: {_user.Name}",
+            _logger.Info("Created new collection with <{collection.Count}> previews and id: {collection.Id} by: {_actor.Name}",
                 collection.Count, collection.Id, _user.Name);
             _statisticProvider.MediasCountChanged.Invoke(blobs.Count, blobs.Sum(x => x.Size));
 

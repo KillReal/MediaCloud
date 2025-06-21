@@ -34,9 +34,9 @@ namespace MediaCloud.Repositories
                 tag.Updator = tag.Creator;
 
                 _context.Tags.Add(tag);
-                SaveChangesAsync();
+                SaveChanges();
 
-                _logger.Info("Created new tag with id:{tag.Id} by: {_user.Name}", tag.Id, _user.Name);
+                _logger.Info("Created new tag with id:{tag.Id} by: {_actor.Name}", tag.Id, _user.Name);
                 _statisticProvider.TagsCountChanged.Invoke(1);
                 return true;
             }
@@ -86,9 +86,9 @@ namespace MediaCloud.Repositories
 
             _context.Previews.Update(preview);
             _context.Tags.UpdateRange(affectedTags);
-            _context.SaveChangesAsync();
+            _context.SaveChanges();
 
-            _logger.Info("Recalculated <{affectedTags.Count()}> tags usage count for: {preview.Id} by: {_user.Name}", affectedTags.Count(), preview.Id, _user.Name);
+            _logger.Info("Recalculated <{affectedTags.Count()}> tags usage count for: {preview.Id} by: {_actor.Name}", affectedTags.Count(), preview.Id, _user.Name);
         }
 
         public List<Tag> GetRangeByString(string? tagsString)

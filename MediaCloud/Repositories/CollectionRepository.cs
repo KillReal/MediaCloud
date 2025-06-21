@@ -75,6 +75,8 @@ namespace MediaCloud.Repositories
 
             var previews = collection.Previews.OrderBy(x => x.Order).ToList();
 
+            var tags = new List<Tag>();
+
             for (var i = 0; i < orders.Count; i++)
             {
                 previews[i].Order = orders[i];
@@ -83,7 +85,7 @@ namespace MediaCloud.Repositories
             _context.Previews.UpdateRange(previews);
             Update(collection);
 
-            _logger.Info("Updated previews order for collection with id: {collection.Id} by: {_user.Name}",
+            _logger.Info("Updated previews order for collection with id: {collection.Id} by: {_actor.Name}",
                 collection.Id, _user.Name);
             return true;
         }
