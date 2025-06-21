@@ -34,17 +34,13 @@ namespace MediaCloud.Repositories
                 return false;
             }
 
-            if (entity != null)
-            {
-                var entityId = entity.Id;
-                var entityName = entity.GetType().Name.ToLower();
+            var entityId = entity.Id;
+            var entityName = entity.GetType().Name.ToLower();
 
-                Remove(entity);
-                _logger.Info("Removed {entityName} with id: {entityId} by: {_actor.Name}", entityName, entityId, _user.Name);
-                return true;
-            }
+            Remove(entity);
+            _logger.Info("Removed {entityName} with id: {entityId} by: {_actor.Name}", entityName, entityId, _user.Name);
+            return true;
 
-            return false;
         }
 
         public virtual void Update(T entity)
@@ -53,7 +49,7 @@ namespace MediaCloud.Repositories
             var entityName = entity.GetType().Name.ToLower();
 
             _context.Update(entity);
-            SaveChanges();
+            SaveChangesAsync();
 
             _logger.Info("Updated {entityName} with id: {entityId} by: {_actor.Name}", entityName, entityId, _user.Name);
         }
@@ -64,7 +60,7 @@ namespace MediaCloud.Repositories
             var entityName = entities.First().GetType().Name.ToLower();
 
             _context.UpdateRange(entities);
-            SaveChanges();
+            SaveChangesAsync();
 
             _logger.Info("Updated <{entityCount}> {entityName} by: {_actor.Name}", entityCount, entityName, _user.Name);
         }
@@ -75,7 +71,7 @@ namespace MediaCloud.Repositories
             var entityName = entity.GetType().Name.ToLower();
 
             _context.Remove(entity);
-            SaveChanges();
+            SaveChangesAsync();
 
             _logger.Info("Removed {entityName} with id: {entityId} by: {_actor.Name}", entityName, entityId, _user.Name);
         }
@@ -86,10 +82,11 @@ namespace MediaCloud.Repositories
             var entityName = entities.First().GetType().Name.ToLower();
 
             _context.RemoveRange(entities);
-            SaveChanges();
+            SaveChangesAsync();
             _logger.Info("Removed <{entityCount}> {entityName} by: {_actor.Name}", entityCount, entityName, _user.Name);
         }
 
-        public virtual void SaveChanges() => _context.SaveChanges();
+        protected virtual void SaveChanges() => _context.SaveChanges();
+        protected Task<int> SaveChangesAsync() => _context.SaveChangesAsync();
     }
 }

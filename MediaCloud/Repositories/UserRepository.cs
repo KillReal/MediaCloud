@@ -17,7 +17,7 @@ namespace MediaCloud.Repositories
             try
             {
                 _context.Users.Add(user);
-                _context.SaveChanges();
+                _context.SaveChangesAsync();
 
                 return true;
             }
@@ -36,7 +36,7 @@ namespace MediaCloud.Repositories
         public void Update(User user)
         {
             _context.Update(user);
-            _context.SaveChanges();
+            _context.SaveChangesAsync();
         }
 
         public bool TryRemove(Guid id)
@@ -44,7 +44,7 @@ namespace MediaCloud.Repositories
             var user = Get(id);
 
             _context.Users.Remove(user);
-            _context.SaveChanges();
+            _context.SaveChangesAsync();
 
             return true;
         }
