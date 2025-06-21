@@ -77,10 +77,10 @@ namespace MediaCloud.TaskScheduler.Tasks
                     var blob = blobModelBuilder.Build(fileToConvert);
 
                     var sizeBefore = preview.Blob.Size;
-                    shrinkedSize += sizeBefore - blob.File.Content.Length;
+                    shrinkedSize += sizeBefore - blob.Blob.Content.Length;
 
-                    preview.Blob.Content = blob.File.Content;
-                    preview.Blob.Size = blob.File.Content.Length;
+                    preview.Blob.Content = blob.Blob.Content;
+                    preview.Blob.Size = blob.Blob.Content.Length;
                     preview.BlobName = blob.Preview.BlobName;
                     preview.BlobType = "image/webp";
                     preview.Content = blob.Preview.Content;

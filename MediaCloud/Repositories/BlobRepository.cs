@@ -23,11 +23,11 @@ namespace MediaCloud.Repositories
         private readonly FileModelBuilder _fileModelBuilder = new FileModelBuilder(pictureService, configProvider);
         private readonly IConfigProvider _configProvider = configProvider;
 
-        private Blob CreateFile(UploadedFile uploadedFile, User author)
+        private Blob CreateBlobWithPreview(UploadedFile uploadedFile, User author)
         {
             var fileModel = _fileModelBuilder.Build(uploadedFile);
     
-            var blob = fileModel.File;
+            var blob = fileModel.Blob;
             blob.Preview = fileModel.Preview;
             blob.Creator = author;
             blob.Updator = blob.Creator;
@@ -55,7 +55,7 @@ namespace MediaCloud.Repositories
         public Blob Create(UploadedFile file)
         {
             var author = _context.Users.First(x => x.Id == _user.Id);
-            var blob = CreateFile(file, author);
+            var blob = CreateBlobWithPreview(file, author);
             _context.Add(blob);
             SaveChanges();
 
@@ -118,7 +118,7 @@ namespace MediaCloud.Repositories
                 };
 
                 Parallel.ForEach(files, options, (file) => {
-                    blobs.Add(CreateFile(file, author));
+                    blobs.Add(CreateBlobWithPreview(file, author));
                     file.IsProcessed = true;
                 });
 
@@ -129,7 +129,7 @@ namespace MediaCloud.Repositories
                 while (files.Count > 0)
                 {
                     var file = files.Last();
-                    blobs.Add(CreateFile(file, author));
+                    blobs.Add(CreateBlobWithPreview(file, author));
                     file.IsProcessed = true;
                 }
             }
