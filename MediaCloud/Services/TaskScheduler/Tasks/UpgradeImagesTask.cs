@@ -32,7 +32,7 @@ namespace MediaCloud.TaskScheduler.Tasks
             var configProvider = serviceProvider.GetRequiredService<IConfigProvider>();
 
             var previewsCount = await context.Previews.Where(x => x.CreatorId == User.Id).CountAsync();
-            var blobModelBuilder = new BlobModelBuilder(pictureService, configProvider);
+            var blobModelBuilder = new FileModelBuilder(pictureService, configProvider);
 
             _workCount = previewsCount;
 

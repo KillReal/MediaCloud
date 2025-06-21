@@ -6,7 +6,7 @@ using SixLabors.ImageSharp.Formats.Webp;
 
 namespace MediaCloud.WebApp.Builders.BlobModel
 {
-    public class BlobModelBuilder(IPictureService pictureService, IConfigProvider configProvider)
+    public class FileModelBuilder(IPictureService pictureService, IConfigProvider configProvider)
     {
         private readonly WebpEncoderFactory _webpEncoderFactory = new WebpEncoderFactory(configProvider);
         
