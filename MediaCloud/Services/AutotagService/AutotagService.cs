@@ -172,7 +172,7 @@ public class AutotagService : IAutotagService
 
     public List<string> GetSuggestionsByString(string model, string searchString, int limit = 10)
     {
-        if (_memoryCache.TryGetValue(_autotagSuggestionsModelsCacheKey, out List<string>? aliases))
+        if (_memoryCache.TryGetValue($"{_autotagSuggestionsModelsCacheKey}-{model}", out List<string>? aliases))
         {
             return aliases?.Where(x => x.StartsWith(searchString)).Take(limit).ToList() ?? [];
         }
@@ -194,7 +194,7 @@ public class AutotagService : IAutotagService
             }
 
             aliases = JsonConvert.DeserializeObject<List<string>>(result);
-            _memoryCache.Set(_autotagSuggestionsModelsCacheKey, aliases, _memoryCacheOptions);
+            _memoryCache.Set($"{_autotagSuggestionsModelsCacheKey}-{model}", aliases, _memoryCacheOptions);
 
             aliases = aliases?.Where(x => x.StartsWith(searchString)).Take(limit).ToList();
 
