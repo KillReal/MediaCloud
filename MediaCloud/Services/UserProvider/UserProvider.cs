@@ -76,6 +76,7 @@ namespace MediaCloud.WebApp.Services.UserProvider
 
             _mutex.WaitOne();
 
+            _context.ChangeTracker.Clear();
             var cachedUser = _context.Users.First(x => x.Name == identity.Name);
             _memoryCache.Set($"User-{identity.Name}", cachedUser, _memoryCacheOptions);
 
@@ -99,7 +100,8 @@ namespace MediaCloud.WebApp.Services.UserProvider
             }
 
             _mutex.WaitOne();
-
+            
+            _context.ChangeTracker.Clear();
             var cachedUser = _context.Users.First(x => x.Name == identity.Name);
             _memoryCache.Set($"User-{identity.Name}", cachedUser, _memoryCacheOptions);
 
@@ -110,6 +112,7 @@ namespace MediaCloud.WebApp.Services.UserProvider
 
         public AuthorizationResult Authorize(AuthData data, HttpContext httpContext)
         {
+            _context.ChangeTracker.Clear();
             var user = _context.Users.FirstOrDefault(x => x.Name == data.Name && x.IsActivated);
 
             if (user?.PasswordHash == null)
@@ -185,6 +188,7 @@ namespace MediaCloud.WebApp.Services.UserProvider
 
         public RegistrationResult Register(AuthData data, string inviteCode)
         {
+            _context.ChangeTracker.Clear();
             var user = _context.Users.FirstOrDefault(x => x.InviteCode == inviteCode && x.IsActivated == false);
 
             if (user == null)
