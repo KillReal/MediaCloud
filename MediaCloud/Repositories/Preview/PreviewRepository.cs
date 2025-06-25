@@ -172,7 +172,7 @@ namespace MediaCloud.WebApp.Repositories
             
             if (memoryCache.TryGetValue("PreviewRatingFilterAliases", out List<string>? ratingAliases) == false)
             {
-                ratingAliases = TagFiltration<Preview>.GetAliasSuggestions().Select(x => new string(x)).ToList();
+                ratingAliases = RatingFiltration<Preview>.GetAliasSuggestions().Select(x => new string(x)).ToList();
                 memoryCache.Set("PreviewRatingFilterAliases", ratingAliases);
             }
                 
